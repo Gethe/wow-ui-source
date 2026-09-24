@@ -15,16 +15,9 @@ function AuraContainerUtil.GetPandemicWindow(unitToken, auraData)
 		return nil;
 	end
 
-	local extendedDuration = C_UnitAuras.GetRefreshExtendedDuration(unitToken, auraData.auraInstanceID);
+	local carriedOverDuration = C_UnitAuras.GetRefreshCarryOverDuration(unitToken, auraData.auraInstanceID);
 
-	if not extendedDuration then
-		return nil;
-	end
-
-	local baseDuration = C_UnitAuras.GetAuraBaseDuration(unitToken, auraData.auraInstanceID);
-	local carriedOverDuration = baseDuration and (extendedDuration - baseDuration) or 0;
-
-	if carriedOverDuration <= 0 then
+	if not carriedOverDuration or carriedOverDuration <= 0 then
 		return nil;
 	end
 

@@ -502,7 +502,7 @@
 
 			<Frame parentKey="GamepadUndoButton" inherits="InputIconTextureFrameTemplate" hidden="true">
 				<KeyValues>
-					<KeyValue key="mappedButtonKey" value="GAMEPAD_TRIGGER_RIGHT" type="global"/>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_TOP" type="global"/>
 					<KeyValue key="useDropShadow" value="true" type="boolean"/>
 				</KeyValues>
 				<Size x="30" y="30"/>

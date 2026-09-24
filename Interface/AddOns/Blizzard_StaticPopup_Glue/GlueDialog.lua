@@ -236,6 +236,37 @@ function GlueDialogMixin:GetButton(index)
 	return nil;
 end
 
+function GlueDialogMixin:GetContentSize()
+	-- In gamepad UI the container has dialog frame art applied to it, that always extends outside
+	-- the container, so :GetBoundsRect() will always be larger than the current size. Those frames
+	-- must be excluded.
+	local ignored = { self.Container.FrameGlow, self.Container.LeftJumpHint, self.Container.RightJumpHint, self.Container.FocusJumpHint };
+	local left, right, bottom, top;
+
+	for _, child in ipairs({self.Container:GetChildren()}) do
+		if not table.contains(ignored, child) then
+			local cleft, cbottom, cwidth, cheight = child:GetRect();
+			if cleft then
+				local cright, ctop = cleft + cwidth, cbottom + cheight;
+				if left then
+					left = math.min(left, cleft);
+					right = math.max(right, cright);
+					bottom = math.min(bottom, cbottom);
+					top = math.max(top, ctop);
+				else
+					left, right, bottom, top = cleft, cright, cbottom, ctop;
+				end
+			end
+		end
+	end
+
+	if left then
+		return right - left, top - bottom;
+	end
+
+	return 0, 0;
+end
+
 function GlueDialogMixin:Resize(which)
 	local dialogInfo = self.dialogInfo;
 	local button1, button2, button3, alertIcon, text, htmlText, spinner = GetContainerRegions(self);
@@ -313,7 +344,7 @@ function GlueDialogMixin:Resize(which)
 
 	self.Container:SetHeight(math.floor(displayHeight + 0.5));
 
-	local boundsLeft, boundsBottom, boundsWidth, boundsHeight = self.Container:GetBoundsRect();
+	local boundsWidth, boundsHeight = self:GetContentSize();
 	local currentContainerWidth, currentContainerHeight = self.Container:GetSize();
 	local containerWidth = math.max(currentContainerWidth, boundsWidth);
 	local containerHeight = math.max(currentContainerHeight, boundsHeight);

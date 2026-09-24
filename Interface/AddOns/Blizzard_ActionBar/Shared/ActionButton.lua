@@ -111,6 +111,16 @@ function TryUseActionButton(self, checkingFromDown)
 	local isSecureAction = true;
 	local usedActionButton = SecureActionButton_OnClick(self, "LeftButton", checkingFromDown, isKeyPress, isSecureAction);
 	if usedActionButton then
+		local actionType = GetActionInfo(self.action);
+		if actionType == "item" then
+			if C_Spell.TargetSpellIsEnchanting() then
+				ItemButtonUtil.MarkItemSelectionFromActionBarItem();
+			else
+				ItemButtonUtil.ClearPendingItemSelectionSource();
+			end
+		end
+	end
+	if usedActionButton then
 		if GetNewActionHighlightMark(self.action) then
 			ClearNewActionHighlight(self.action);
 			self:UpdateHighlightMark();

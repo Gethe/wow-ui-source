@@ -82,29 +82,23 @@
 				</Scripts>
 			</Button>
 			
-			<Frame name="$parentPortrait" inherits="LFGEyeTemplate" hidden="true">
+			<Button name="$parentPortrait" inherits="LFGEyeBigTemplate" frameStrata="HIGH">
 				<Size x="64" y="64"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="9" y="-5"/>
+					<Anchor point="CENTER" relativePoint="TOPLEFT" x="25" y="-22"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="$parentIcon" file="Interface\LFGFrame\UI-LFG-PORTRAIT">
-							<Size x="64" y="64"/>
-							<Anchors>
-								<Anchor point="TOPLEFT" x="3" y="0"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
 				<Scripts>
-					<OnLoad function="LowerFrameLevel"/>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnClick method="OnClick"/>
+					<OnUpdate method="OnUpdate"/>
 				</Scripts>
-			</Frame>
+			</Button>
 			<Frame parentKey="ListingTab" inherits="LFGVanillaRightTabTemplate" id="1">
 				<KeyValues>
 					<KeyValue key="tooltipText" value="LFG_LIST_TAB_1" type="global"/>
-					<KeyValue key="iconTexture" value="Interface\ICONS\INV_Helmet_08" type="string"/>
+					<KeyValue key="iconTexture" value="Interface\ICONS\INV_SideTab_GroupFinder_c60" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-60"/>
@@ -113,7 +107,7 @@
 			<Frame parentKey="BrowsingTab" inherits="LFGVanillaRightTabTemplate" id="2">
 				<KeyValues>
 					<KeyValue key="tooltipText" value="LFG_LIST_TAB_2" type="global"/>
-					<KeyValue key="iconTexture" value="Interface\ICONS\Achievement_General_StayClassy" type="string"/>
+					<KeyValue key="iconTexture" value="Interface\ICONS\INV_SideTab_GroupBrowsing_c60" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ListingTab" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
@@ -123,7 +117,7 @@
 			<Frame parentKey="WhoListingTab" inherits="LFGVanillaRightTabTemplate" id="3">
 				<KeyValues>
 					<KeyValue key="tooltipText" value="LFG_LIST_TAB_3" type="global"/>
-					<KeyValue key="iconTexture" value="Interface\ICONS\INV_OwlDragonMount" type="string"/>
+					<KeyValue key="iconTexture" value="Interface\ICONS\INV_SideTab_WhoList_c60" type="string"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.BrowsingTab" relativePoint="BOTTOMLEFT" x="0" y="-2"/>

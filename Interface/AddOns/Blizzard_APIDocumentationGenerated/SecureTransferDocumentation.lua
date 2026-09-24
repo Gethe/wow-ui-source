@@ -74,7 +74,7 @@ local SecureTransfer =
 
 			Returns =
 			{
-				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "name", Type = "string", Nilable = true },
 			},
 		},
 		{

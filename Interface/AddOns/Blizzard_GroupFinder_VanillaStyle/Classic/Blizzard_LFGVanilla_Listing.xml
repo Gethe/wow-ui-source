@@ -553,6 +553,9 @@
 				<Frames>
 					<Frame name="$parentScrollBox" parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Size x="324" y="194"/>
+						<KeyValues>
+							<KeyValue key="TopAnchorY" value="0" type="number"/>
+						</KeyValues>
 					</Frame>
 					<EventFrame name="$parentScrollBar" parentKey="ScrollBar" inherits="WowClassicScrollBar">
 						<Anchors>

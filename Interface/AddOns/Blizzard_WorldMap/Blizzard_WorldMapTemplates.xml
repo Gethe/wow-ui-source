@@ -73,6 +73,22 @@
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeKey="$parent.BorderFrame" x="10" y="-23"/>
 		</Anchors>
+		<Frames>
+			<Frame parentKey="GamepadPreviousAreaIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_LEFT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="22" y="22"/>
+			</Frame>
+			<Frame parentKey="GamepadNextAreaIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="22" y="22"/>
+			</Frame>
+		</Frames>
 		<Layers>
 			<Layer level="BORDER" textureSubLevel="-5">
 				<Texture inherits="UI-Frame-InnerBotLeftCorner" parentKey="InsetBorderBottomLeft">

@@ -175,6 +175,7 @@ local EditModeManager =
 			{
 				{ Name = "layoutName", Type = "string", Nilable = false },
 				{ Name = "layoutType", Type = "EditModeLayoutType", Nilable = false },
+				{ Name = "interfaceStyle", Type = "InputDeviceInterfaceType", Nilable = true },
 				{ Name = "systems", Type = "table", InnerType = "EditModeSystemInfo", Nilable = false },
 			},
 		},

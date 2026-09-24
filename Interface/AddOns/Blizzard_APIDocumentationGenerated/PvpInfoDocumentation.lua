@@ -185,6 +185,25 @@ local PvpInfo =
 			},
 		},
 		{
+			Name = "GetArenaOpponentSpec",
+			Type = "Function",
+			MayReturnNothing = true,
+			Namespace = "",
+			SecretReturns = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "specializationID", Type = "number", Nilable = false },
+				{ Name = "gender", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetArenaRewards",
 			Type = "Function",
 			MayReturnNothing = true,

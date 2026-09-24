@@ -241,18 +241,18 @@ for _, key in ipairs({"Generic", "Letters"}) do
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-stick-l3_down");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-stick-l3-focus");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-stick-l3-disabled");
-	
+
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-stick-updown-normal");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-stick-updown-over");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-stick-updown-down");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-stick-updown-focus");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-stick-updown-disabled");
-	
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-stickr-leftright-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-stickr-leftright-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-stickr-leftright-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-stickr-leftright-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-stickr-leftright-disabled");
+
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-stickr-leftright-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-stickr-leftright-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-stickr-leftright-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-stickr-leftright-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-stickr-leftright-disabled");
 
 	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-menu-normal");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-menu-over");

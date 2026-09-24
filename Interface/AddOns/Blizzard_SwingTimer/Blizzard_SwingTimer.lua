@@ -1,6 +1,92 @@
 local SHOW_SWING_TIMER_CVAR = "showSwingTimer";
 local OUT_OF_RANGE_ALPHA = 0.4;
+local SHARED_EVENTS = {
+	"PLAYER_IN_COMBAT_CHANGED",
+	"PLAYER_TARGET_CHANGED",
+	"WEAPON_SLOT_CHANGED",
+	"PLAYER_ENTERING_WORLD",
+	"PLAYER_SWING_RANGE_UPDATE",
+};
+local SHARED_UNIT_EVENTS = {
+	"UNIT_ATTACK_SPEED",
+};
 CVarCallbackRegistry:SetCVarCachable(SHOW_SWING_TIMER_CVAR);
+
+SwingTimerManagerMixin = {};
+
+function SwingTimerManagerMixin:OnLoad()
+	self.swingTimerFrames = {};
+
+	CVarCallbackRegistry:RegisterCallback(SHOW_SWING_TIMER_CVAR, self.OnShowSwingTimerCVarChanged, self);
+
+	self:UpdateSharedEventRegistration();
+end
+
+function SwingTimerManagerMixin:RegisterFrame(frame)
+	table.insert(self.swingTimerFrames, frame);
+end
+
+function SwingTimerManagerMixin:OnEvent(event, ...)
+	for _, frame in ipairs(self.swingTimerFrames) do
+		frame:OnEvent(event, ...);
+	end
+
+	-- Certain types of events can cause individual frames to change their swing handling state, which
+	-- may require the manager to register or unregister for PLAYER_SWING.
+	if event == "WEAPON_SLOT_CHANGED" or event == "PLAYER_ENTERING_WORLD" or event == "UNIT_ATTACK_SPEED" then
+		self:UpdateSwingEventRegistration();
+	end
+end
+
+function SwingTimerManagerMixin:OnShowSwingTimerCVarChanged()
+	self:UpdateSharedEventRegistration();
+
+	for _, frame in ipairs(self.swingTimerFrames) do
+		frame:UpdateFrameState();
+	end
+
+	self:UpdateSwingEventRegistration();
+end
+
+function SwingTimerManagerMixin:UpdateSharedEventRegistration()
+	if CVarCallbackRegistry:GetCVarValueBool(SHOW_SWING_TIMER_CVAR) then
+		FrameUtil.RegisterFrameForEvents(self, SHARED_EVENTS);
+		FrameUtil.RegisterFrameForUnitEvents(self, SHARED_UNIT_EVENTS, "player");
+	else
+		FrameUtil.UnregisterFrameForEvents(self, SHARED_EVENTS);
+		FrameUtil.UnregisterFrameForEvents(self, SHARED_UNIT_EVENTS);
+
+		if self:IsEventRegistered("PLAYER_SWING") then
+			self:UnregisterEvent("PLAYER_SWING");
+		end
+	end
+end
+
+function SwingTimerManagerMixin:ShouldRegisterSwingEvent()
+	if not CVarCallbackRegistry:GetCVarValueBool(SHOW_SWING_TIMER_CVAR) then
+		return false;
+	end
+
+	-- If any of the registered frames are currently handling swings, the manager needs to register for PLAYER_SWING.
+	for _, frame in ipairs(self.swingTimerFrames) do
+		if frame:ShouldHandleSwing() then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function SwingTimerManagerMixin:UpdateSwingEventRegistration()
+	local shouldRegister = self:ShouldRegisterSwingEvent();
+	if shouldRegister then
+		if not self:IsEventRegistered("PLAYER_SWING") then
+			self:RegisterEvent("PLAYER_SWING");
+		end
+	elseif self:IsEventRegistered("PLAYER_SWING") then
+		self:UnregisterEvent("PLAYER_SWING");
+	end
+end
 
 SwingTimerMixin = {};
 
@@ -39,13 +125,7 @@ end
 function SwingTimerMixin:OnLoad()
 	EditModeSystemMixin.OnSystemLoad(self);
 
-	CVarCallbackRegistry:RegisterCallback(SHOW_SWING_TIMER_CVAR, self.OnVisibilityCVarChanged, self);
-	self:RegisterEvent("PLAYER_IN_COMBAT_CHANGED");
-	self:RegisterEvent("PLAYER_TARGET_CHANGED");
-	self:RegisterEvent("WEAPON_SLOT_CHANGED");
-	self:RegisterEvent("PLAYER_ENTERING_WORLD");
-	self:RegisterEvent("PLAYER_SWING_RANGE_UPDATE");
-	self:RegisterUnitEvent("UNIT_ATTACK_SPEED", "player");
+	SwingTimerManagerFrame:RegisterFrame(self);
 
 	self:InitializeBarPresentation();
 	self:ClearSwingTimer();
@@ -61,7 +141,7 @@ end
 function SwingTimerMixin:OnEvent(event, ...)
 	if event == "PLAYER_SWING" then
 		local swingDuration, swingType = ...;
-		if self.swingType == swingType then
+		if self.swingType == swingType and self:ShouldDisplaySwing() then
 			self:ResetSwingTimer(swingDuration);
 		end
 	elseif event == "PLAYER_IN_COMBAT_CHANGED" then
@@ -69,11 +149,10 @@ function SwingTimerMixin:OnEvent(event, ...)
 	elseif event == "PLAYER_TARGET_CHANGED" then
 		self:UpdateRangeState();
 	elseif event == "WEAPON_SLOT_CHANGED" then
-		self:UpdateShownStateAndRegistration();
-	elseif event == "PLAYER_ENTERING_WORLD" then
-		self:UpdateShownStateAndRegistration();
-	elseif event == "UNIT_ATTACK_SPEED" then
-		self:UpdateShownStateAndRegistration();
+		self:UpdateFrameState();
+		self:ResetSwingTimerForEquippedWeapon();
+	elseif event == "PLAYER_ENTERING_WORLD" or event == "UNIT_ATTACK_SPEED" then
+		self:UpdateFrameState();
 	elseif event == "PLAYER_SWING_RANGE_UPDATE" then
 		local swingType, isInRange, checksRange = ...;
 		if self.swingType == swingType then
@@ -82,24 +161,73 @@ function SwingTimerMixin:OnEvent(event, ...)
 	end
 end
 
-function SwingTimerMixin:CanSwingOffHand()
+function SwingTimerMixin:HasOffHandWeapon()
 	local _mainHandAttackSpeed, offHandAttackSpeed = UnitAttackSpeed("player");
 	return offHandAttackSpeed ~= nil and offHandAttackSpeed > 0;
 end
 
-function SwingTimerMixin:CanSwingRanged()
+function SwingTimerMixin:HasRangedWeapon()
 	local _mainHandAttackSpeed, _offHandAttackSpeed, rangedAttackSpeed = UnitAttackSpeed("player");
 	return rangedAttackSpeed ~= nil and rangedAttackSpeed > 0;
 end
 
-function SwingTimerMixin:CanSwing()
+function SwingTimerMixin:HasAppropriateWeapon()
 	if self.swingType == Enum.PlayerSwingType.OffHand then
-		return self:CanSwingOffHand();
+		return self:HasOffHandWeapon();
 	elseif self.swingType == Enum.PlayerSwingType.Ranged then
-		return self:CanSwingRanged();
+		return self:HasRangedWeapon();
 	end
 
 	return true;
+end
+
+function SwingTimerMixin:GetEquippedSwingDuration()
+	local mainHandAttackSpeed, offHandAttackSpeed, rangedAttackSpeed = UnitAttackSpeed("player");
+	if self.swingType == Enum.PlayerSwingType.OffHand then
+		return offHandAttackSpeed;
+	elseif self.swingType == Enum.PlayerSwingType.Ranged then
+		return rangedAttackSpeed;
+	end
+
+	return mainHandAttackSpeed;
+end
+
+function SwingTimerMixin:ShouldDisplaySwing()
+	-- Rather than using OnShow/OnHide, the event needs to be handled when visibility is set to InCombat
+	-- so the first swing when entering combat is captured.
+	return self.visibility == Enum.EditModeSwingTimerVisibility.Always or self.visibility == Enum.EditModeSwingTimerVisibility.InCombat;
+end
+
+function SwingTimerMixin:ShouldHandleSwing()
+	if not self:HasAppropriateWeapon() then
+		return false;
+	end
+
+	return self:ShouldDisplaySwing();
+end
+
+function SwingTimerMixin:ShouldCheckRange()
+	if not CVarCallbackRegistry:GetCVarValueBool(SHOW_SWING_TIMER_CVAR) then
+		return false;
+	end
+
+	return self:ShouldHandleSwing();
+end
+
+function SwingTimerMixin:ShouldClearSwing()
+	if not self:HasSwingTimer() then
+		return false;
+	end
+
+	if not CVarCallbackRegistry:GetCVarValueBool(SHOW_SWING_TIMER_CVAR) then
+		return true;
+	end
+
+	if not self:ShouldHandleSwing() then
+		return true;
+	end
+
+	return false;
 end
 
 function SwingTimerMixin:ShouldBeShown()
@@ -107,12 +235,11 @@ function SwingTimerMixin:ShouldBeShown()
 		return true;
 	end
 
-	local swingTimerEnabled = CVarCallbackRegistry:GetCVarValueBool(SHOW_SWING_TIMER_CVAR);
-	if not swingTimerEnabled then
+	if not CVarCallbackRegistry:GetCVarValueBool(SHOW_SWING_TIMER_CVAR) then
 		return false;
 	end
 
-	if not self:CanSwing() then
+	if not self:HasAppropriateWeapon() then
 		return false;
 	end
 
@@ -125,37 +252,6 @@ function SwingTimerMixin:ShouldBeShown()
 	end
 
 	return true;
-end
-
-function SwingTimerMixin:ShouldRegisterSwingEvent()
-	local swingTimerEnabled = CVarCallbackRegistry:GetCVarValueBool(SHOW_SWING_TIMER_CVAR);
-	if not swingTimerEnabled then
-		return false;
-	end
-
-	if not self:CanSwing() then
-		return false;
-	end
-
-	-- Rather than using OnShow/OnHide, the event needs to be registered when visibility is set to InCombat
-	-- so the first swing when entering combat is captured.
-	return self.visibility == Enum.EditModeSwingTimerVisibility.Always or self.visibility == Enum.EditModeSwingTimerVisibility.InCombat;
-end
-
-function SwingTimerMixin:ShouldCheckRange()
-	return self:ShouldRegisterSwingEvent();
-end
-
-function SwingTimerMixin:UpdateSwingEventRegistration()
-	local shouldRegister = self:ShouldRegisterSwingEvent();
-	if shouldRegister then
-		if not self:IsEventRegistered("PLAYER_SWING") then
-			self:RegisterEvent("PLAYER_SWING");
-		end
-	elseif self:IsEventRegistered("PLAYER_SWING") then
-		self:UnregisterEvent("PLAYER_SWING");
-		self:ClearSwingTimer();
-	end
 end
 
 function SwingTimerMixin:InitializeBarPresentation()
@@ -185,14 +281,22 @@ function SwingTimerMixin:SetIsInEditMode(isInEditMode)
 	self:ApplyRangePresentation();
 end
 
-function SwingTimerMixin:UpdateShownStateAndRegistration()
+function SwingTimerMixin:UpdateFrameState()
 	self:UpdateRangeCheckRegistration();
 	self:UpdateShownState();
-	self:UpdateSwingEventRegistration();
+
+	if self:ShouldClearSwing() then
+		self:ClearSwingTimer();
+	end
 end
 
-function SwingTimerMixin:OnVisibilityCVarChanged()
-	self:UpdateShownStateAndRegistration();
+function SwingTimerMixin:UpdateShownStateAndRegistration()
+	self:UpdateFrameState();
+	SwingTimerManagerFrame:UpdateSwingEventRegistration();
+end
+
+function SwingTimerMixin:HasSwingTimer()
+	return self.swingDuration ~= nil;
 end
 
 function SwingTimerMixin:ClearSwingTimer()
@@ -208,6 +312,19 @@ function SwingTimerMixin:ClearSwingTimer()
 
 	local timeLabel = self:GetTimeLabel();
 	timeLabel:SetText("0.0");
+end
+
+function SwingTimerMixin:ResetSwingTimerForEquippedWeapon()
+	if not self:HasSwingTimer() then
+		return;
+	end
+
+	if not self:ShouldHandleSwing() then
+		return;
+	end
+
+	local equippedSwingDuration = self:GetEquippedSwingDuration();
+	self:ResetSwingTimer(equippedSwingDuration);
 end
 
 function SwingTimerMixin:ResetSwingTimer(duration)
@@ -230,7 +347,7 @@ function SwingTimerMixin:ResetSwingTimer(duration)
 end
 
 function SwingTimerMixin:OnUpdate(_elapsed)
-	if not self.swingEndTime or not self.swingDuration then
+	if not self:HasSwingTimer() then
 		return;
 	end
 

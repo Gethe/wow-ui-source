@@ -69,12 +69,6 @@ function LootFrameMixin:OnLoad()
 				local link = GetLootSlotLink(frame:GetSlotIndex());
 				HandleModifiedItemClick(link);
 			else
-				if self:IsContextMenuActive() then
-					Menu.GetManager():CloseMenus();
-					self.contextMenuActive = false;
-					return;
-				end
-
 				-- Values required by GroupLoot and MasterLoot frames. If these frames are returned
 				-- to service, it would be ideal to expose these values through an API.
 				local itemLink = GetLootSlotLink(frame:GetSlotIndex());
@@ -211,10 +205,6 @@ function LootFrameMixin:OnShow()
 		GamepadMode.FrameControlsManager:ReturnToPlayerControl(self);
 	end
 	GamepadMode.FrameControlsManager:FrameShown(self, true);
-end
-
-function LootFrameMixin:IsContextMenuActive()
-	return self.contextMenuActive == true;
 end
 
 function LootFrameMixin:OnHide()
@@ -627,20 +617,14 @@ end
 
 function LootFrameItemElementMixin:OnEnter()
 	LootFrameElementMixin.OnEnter(self);
-	if LootFrame:IsContextMenuActive() then
-		return;
-	end
 
 	local lootSlotType = self:GetItemSlotType();
-	GameTooltip:SetOwner(self, "ANCHOR_NONE");
-	GameTooltip:ClearAllPoints();
-	GameTooltip:SetPoint("LEFT", self, "RIGHT");
-
 	if lootSlotType == Enum.LootSlotType.Currency then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetLootCurrency(self:GetSlotIndex());
 		CursorUpdate(self);
 	elseif lootSlotType == Enum.LootSlotType.Item then
-		GameTooltip_SuppressAutomaticCompareItem(GameTooltip);
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 		GameTooltip:SetLootItem(self:GetSlotIndex());
 		CursorUpdate(self);
 	end

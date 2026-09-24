@@ -784,7 +784,7 @@ local PlayerScript =
 				{ Name = "localizedRace", Type = "cstring", Nilable = false },
 				{ Name = "englishRace", Type = "cstring", Nilable = false },
 				{ Name = "sex", Type = "number", Nilable = false },
-				{ Name = "name", Type = "cstring", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "realmName", Type = "cstring", Nilable = false },
 				{ Name = "level", Type = "number", Nilable = true },
 			},

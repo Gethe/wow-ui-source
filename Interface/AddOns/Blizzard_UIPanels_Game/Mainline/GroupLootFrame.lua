@@ -185,11 +185,7 @@ function GroupLootFrame_DisableLootButton(button)
 	button:GetNormalTexture():SetDesaturated(true);
 end
 
-local function GroupLootFrame_RegisterForTransitions(self)
-	InputUtil.RegisterForInterfaceTransitions(self);
-end
-
-local function SortPlayersByClassAndName(pInfo1, pInfo2)
+local function MasterLooterPlayerSort(pInfo1, pInfo2)
 	if ( pInfo1.class == pInfo2.class ) then
 		return pInfo1.name < pInfo2.name;
 	else
@@ -198,6 +194,19 @@ local function SortPlayersByClassAndName(pInfo1, pInfo2)
 end
 
 function GroupLootFrame_OnLoad(self)
+	local function OpenMenu()
+		MenuUtil.CreateContextMenu(LootFrame.selectedLootFrame, function(owner, rootDescription)
+			rootDescription:SetTag("MENU_GROUP_LOOT");
+			rootDescription:CreateTitle(MASTER_LOOTER);
+			rootDescription:CreateButton(ASSIGN_LOOT, function()
+				MasterLooterFrame_Show();
+			end);
+			rootDescription:CreateButton(REQUEST_ROLL, function()
+				DoMasterLootRoll(LootFrame.selectedSlot);
+			end);
+		end);
+	end
+
 	local function GenerateAssignLootMenu(_owner, rootDescription, contextData)
 		rootDescription:SetTag("MENU_GROUP_LOOT");
 		rootDescription:AddMenuAcquiredCallback(function(menuFrame)
@@ -264,7 +273,7 @@ function GroupLootFrame_OnLoad(self)
 				tinsert(playerInfo, { index = i, name = name, class = class, className = className });
 			end
 		end
-		table.sort(playerInfo, SortPlayersByClassAndName);
+		table.sort(playerInfo, MasterLooterPlayerSort);
 
 		local contextData =
 		{
@@ -274,14 +283,9 @@ function GroupLootFrame_OnLoad(self)
 
 		local menu = MenuUtil.CreateContextMenu(LootFrame.selectedLootFrame, GenerateAssignLootMenu, contextData);
 		LootFrame.contextMenu = menu;
-		LootFrame.contextMenuActive = true;
 		menu:HookScript("OnHide", function()
 			if LootFrame.contextMenu == menu then
 				LootFrame.contextMenu = nil;
-				local ownerFrame = LootFrame.selectedLootFrame;
-				if not ownerFrame or not ownerFrame:IsMouseOver() then
-					LootFrame.contextMenuActive = false;
-				end
 			end
 		end);
 
@@ -299,9 +303,11 @@ function GroupLootFrame_OnLoad(self)
 	end
 
 	-- Requires retest if/when this feature is reenabled
-	EventRegistry:RegisterFrameEventAndCallback("OPEN_MASTER_LOOT_LIST", OpenAssignLootMenu, self);
-
-	GroupLootFrame_RegisterForTransitions(self);
+	if InputUtil.IsGamepadUIEnabled() then
+		EventRegistry:RegisterFrameEventAndCallback("OPEN_MASTER_LOOT_LIST", OpenAssignLootMenu, self);
+	else
+		EventRegistry:RegisterFrameEventAndCallback("OPEN_MASTER_LOOT_LIST", OpenMenu, self);
+	end
 end
 
 function GroupLootFrame_SetupItemDisplay(self)
@@ -825,25 +831,12 @@ end
 
 local buttonsToHide = { };
 
-local function MasterLooterFrame_SetupGamepad(self)
-	local giveAction = InputPromptLegends.CreateFrameAction("Give", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_FACE_BOTTOM }, FRAME_ACTION_GIVE );
-	self.InputLegend = InputPromptLegends.CreateInputLegend(self, "inputLegend");
-	self.InputLegend:SetLegendWidth(175);
-	self.InputLegend:SetPoint("TOPLEFT", MasterLooterFrame, "BOTTOMLEFT");
-	self.InputLegend:AddFrameAction(giveAction);
-	self.InputLegend:AddFrameAction(InputPromptLegends.CommonReusableFrameActions.PAD2_CLOSE);
-	self.InputLegend:InitializePrompts();
-	self.InputLegend:Hide();
-end
-
 local function MasterLooterFrame_InitializeGamepad(self)
-	self.InputLegend:Show();
 	self.HighlightFrame:Show();
 	self.CloseButton:Hide();
 end
 
 local function MasterLooterFrame_UninitializeGamepad(self)
-	self.InputLegend:Hide();
 	self.HighlightFrame:Hide();
 	self.CloseButton:Show();
 end
@@ -868,7 +861,6 @@ function MasterLooterFrame_OnLoad(self)
 	EventRegistry:RegisterCallback("LootFrame.ItemLooted", OnLootFrameItemLooted, self);
 
 	InputUtil.RegisterForInterfaceTransitions(self, nil);
-	InputUtil.RegisterGamepadSetup(self, GenerateClosure(MasterLooterFrame_SetupGamepad, self));
 	InputUtil.RegisterGamepadInit(self, GenerateClosure(MasterLooterFrame_InitializeGamepad, self));
 	InputUtil.RegisterGamepadUninit(self, GenerateClosure(MasterLooterFrame_UninitializeGamepad, self));
 end
@@ -902,19 +894,22 @@ function MasterLooterFrame_Show()
 	MasterLooterFrame:Show();
 	MasterLooterFrame_UpdatePlayers();
 
-	MasterLooterFrame:ClearAllPoints();
-	local contextMenu = LootFrame.contextMenu;
-	if contextMenu and contextMenu:IsShown() then
-		MasterLooterFrame:SetPoint("TOPLEFT", contextMenu, "TOPRIGHT");
-	else
-		MasterLooterFrame:SetPoint("TOPLEFT", LootFrame.selectedLootFrame, "TOPRIGHT");
-	end
-
 	if InputUtil.IsGamepadUIEnabled() then
+		MasterLooterFrame:ClearAllPoints();
+		local contextMenu = LootFrame.contextMenu;
+		if contextMenu and contextMenu:IsShown() then
+			MasterLooterFrame:SetPoint("TOPLEFT", contextMenu, "TOPRIGHT");
+		else
+			MasterLooterFrame:SetPoint("TOPLEFT", LootFrame.selectedLootFrame, "TOPRIGHT");
+		end
+
 		-- This show event was triggered by a micro menu, which will attempt to close itself and return focus to the previous frame,
 		-- so we want to prevent the automatic re-focus event and then inform gamepad that the master loot frame should receive focus.
 		GamepadMode.FrameControlsManager:SuspendFrame();
 		GamepadMode.FrameControlsManager:FrameShown(MasterLooterFrame, false);
+	else
+		MasterLooterFrame:ClearAllPoints();
+		MasterLooterFrame:SetPoint("TOPLEFT", LootFrame.selectedLootFrame, 0, 0);
 	end
 end
 
@@ -931,7 +926,7 @@ function MasterLooterFrame_UpdatePlayers()
 			tinsert(playerInfo, pInfo);
 		end
 	end
-	table.sort(playerInfo, SortPlayersByClassAndName);
+	table.sort(playerInfo, MasterLooterPlayerSort);
 
 	local numColumns = ceil(#playerInfo / 10);
 	numColumns = max(numColumns, 2);
@@ -1004,7 +999,30 @@ function MasterLooterFrame_SelectLootRecipient(candidateId, candidateName)
 	end
 end
 
-function MasterLooterPlayerFrame_OnClick(self)
+function MasterLooterPlayerButton_OnEnter(self)
+	self.Highlight:Show();
+	if (self.tooltip) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
+	end
+end
+
+function MasterLooterPlayerButton_OnLeave(self)
+	self.Highlight:Hide();
+	if GameTooltip:IsOwned(self) then
+		GameTooltip_Hide();
+	end
+end
+
+function MasterLooterPlayerButton_OnMouseDown(self)
+	self.Name:SetPoint("LEFT", 11, -1);
+end
+
+function MasterLooterPlayerButton_OnMouseUp(self)
+	self.Name:SetPoint("LEFT", 10, 0);
+end
+
+function MasterLooterPlayerButton_OnClick(self)
 	MasterLooterFrame_SelectLootRecipient(self.id, self.Name:GetText());
 end
 

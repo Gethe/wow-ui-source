@@ -3,7 +3,7 @@
 	<Frame name="GamepadMainActionBarFrame" parentKey="GamepadMainActionBarFrame" parent="UIParent" mixin="GamepadMainActionBarFrameMixin" hidden="true">
 		<Size x="656" y="202" />
 		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="25"/>
+			<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="110"/>
 		</Anchors>
 		<Scripts>
 			<OnShow method="OnShow"/>
@@ -92,6 +92,51 @@
 							<OnHide method="OnHide"/>
 							<OnEvent method="OnEvent"/>
 						</Scripts>
+					</Frame>
+					<CheckButton name="$parentLeftClassAction" parentKey="LeftClassAction" inherits="GamepadClassActionButtonTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.BottomCenteredAnchor" x="-138" y="-50"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="shoulderButton" type="global" value="GAMEPAD_SHOULDER_LEFT"/>
+							<KeyValue key="triggerButton" type="global" value="GAMEPAD_TRIGGER_LEFT"/>
+							<KeyValue key="inputPromptKey" type="string" value="LeftInputPrompt"/>
+						</KeyValues>
+					</CheckButton>
+					<CheckButton name="$parentRightClassAction" parentKey="RightClassAction" inherits="GamepadClassActionButtonTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.BottomCenteredAnchor" x="138" y="-50"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="shoulderButton" type="global" value="GAMEPAD_SHOULDER_RIGHT"/>
+							<KeyValue key="triggerButton" type="global" value="GAMEPAD_TRIGGER_RIGHT"/>
+							<KeyValue key="inputPromptKey" type="string" value="RightInputPrompt"/>
+						</KeyValues>
+					</CheckButton>
+					<!--
+						These aren't in the class action button template since that would cause them
+						to show up on top of flyouts. Additionally they're not anchored to their
+						buttons since that would cause them to move when buttons get pressed.
+					-->
+					<Frame parentKey="LeftInputPrompt" inherits="InputPromptTwoIconTemplate" hidden="true">
+						<Size x="72" y="24"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.BottomCenteredAnchor" x="-138" y="-80"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="Icon1" type="global" value="GAMEPAD_SHOULDER_LEFT"/>
+							<KeyValue key="Icon2" type="global" value="GAMEPAD_TRIGGER_LEFT"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RightInputPrompt" inherits="InputPromptTwoIconTemplate" hidden="true">
+						<Size x="72" y="24"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.BottomCenteredAnchor" x="138" y="-80"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="Icon1" type="global" value="GAMEPAD_SHOULDER_RIGHT"/>
+							<KeyValue key="Icon2" type="global" value="GAMEPAD_TRIGGER_RIGHT"/>
+						</KeyValues>
 					</Frame>
 				</Frames>
 			</Frame>

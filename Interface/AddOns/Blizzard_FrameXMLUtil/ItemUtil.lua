@@ -1,4 +1,31 @@
 local FEED_PET_SPELL_ID = 6991;
+local ITEM_SELECTION_SOURCE_BAG = 1;
+local ITEM_SELECTION_SOURCE_ACTION_BAR_ITEM = 2;
+
+local pendingItemSelectionSource = nil;
+
+local function SetPendingItemSelectionSource(itemSelectionSource)
+	pendingItemSelectionSource = itemSelectionSource;
+end
+
+local function ClearPendingItemSelectionSource()
+	pendingItemSelectionSource = nil;
+end
+
+local function GetPendingItemSelectionSource()
+	return pendingItemSelectionSource;
+end
+
+local function ConsumePendingItemSelectionSource()
+	local itemSelectionSource = pendingItemSelectionSource;
+	pendingItemSelectionSource = nil;
+	return itemSelectionSource;
+end
+
+local SetPendingItemSelectionSourceSecure = CreateSecureDelegate(SetPendingItemSelectionSource);
+local ClearPendingItemSelectionSourceSecure = CreateSecureDelegate(ClearPendingItemSelectionSource);
+local GetPendingItemSelectionSourceSecure = CreateSecureDelegate(GetPendingItemSelectionSource);
+local ConsumePendingItemSelectionSourceSecure = CreateSecureDelegate(ConsumePendingItemSelectionSource);
 
 ItemButtonUtil = {};
 
@@ -95,6 +122,43 @@ function ItemButtonUtil.OpenAndFilterCharacterFrame()
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 
 	ShowCharacterFrameIfMatchesContext();
+end
+
+function ItemButtonUtil.IsItemSelectionSourceTrackingEnabled()
+	return false;
+end
+
+function ItemButtonUtil.ShouldOpenBagsForEnchantSelection()
+	return true;
+end
+
+function ItemButtonUtil.MarkItemSelectionFromBag()
+	SetPendingItemSelectionSourceSecure(ITEM_SELECTION_SOURCE_BAG);
+end
+
+function ItemButtonUtil.MarkItemSelectionFromActionBarItem()
+	SetPendingItemSelectionSourceSecure(ITEM_SELECTION_SOURCE_ACTION_BAR_ITEM);
+end
+
+function ItemButtonUtil.ClearPendingItemSelectionSource()
+	ClearPendingItemSelectionSourceSecure();
+end
+
+function ItemButtonUtil.ConsumePendingItemSelectionSource()
+	return ConsumePendingItemSelectionSourceSecure();
+end
+
+function ItemButtonUtil.GetPendingItemSelectionSource()
+	return GetPendingItemSelectionSourceSecure();
+end
+
+function ItemButtonUtil.ShouldOpenCharacterFrameForEnchantSelection()
+	if not ItemButtonUtil.IsItemSelectionSourceTrackingEnabled() then
+		return true;
+	end
+
+	local itemSelectionSource = ItemButtonUtil.GetPendingItemSelectionSource();
+	return itemSelectionSource == ITEM_SELECTION_SOURCE_BAG;
 end
 
 function ItemButtonUtil.CloseFilteredBags(frame)

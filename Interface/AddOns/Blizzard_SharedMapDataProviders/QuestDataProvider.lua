@@ -239,7 +239,9 @@ function QuestPinMixin:OnMouseEnter()
 
 	title = SetQuestTitleLevelAndDifficultyColor(questID, title);
 
-	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
+	local anchor = InputUtil.IsMKBUIEnabled() and "ANCHOR_CURSOR_RIGHT" or "ANCHOR_RIGHT";
+	GameTooltip:SetOwner(self, anchor, 5, 2);
+
 	GameTooltip:SetText(title);
 	QuestUtils_AddQuestTypeToTooltip(GameTooltip, questID, NORMAL_FONT_COLOR);
 	GameTooltip_CheckAddQuestTimeToTooltip(GameTooltip, questID);
@@ -267,6 +269,12 @@ function QuestPinMixin:OnMouseEnter()
 			end
 		end
 	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GameTooltip_AddLineWithInputIcon(GameTooltip, MAP_PIN_TOGGLE_QUEST_FOCUS, GREEN_FONT_COLOR, GAMEPAD_FACE_BOTTOM);
+		GameTooltip_AddLineWithInputIcon(GameTooltip, MAP_PIN_TOGGLE_QUEST_DETAILS, GREEN_FONT_COLOR, GAMEPAD_FACE_LEFT);
+	end
+
 	GameTooltip:Show();
 	POIButtonHighlightManager:SetHighlight(questID);
     EventRegistry:TriggerEvent("MapCanvas.QuestPin.OnEnter", self, questID);

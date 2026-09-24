@@ -23,6 +23,7 @@ CommunitiesUtil.lua
 RuneforgeUtil.lua [AllowLoadGameType mainline]
 RuneforgeUtil.xml [AllowLoadGameType mainline]
 ItemUtil.lua
+Camelot\ItemUtil.lua [AllowLoadGameType camelot]
 PVPUtil.lua [AllowLoadGameType mainline]
 AnimationSystem.lua
 CurrencyContainer.lua

@@ -99,6 +99,11 @@ function GameEvent.HandleAlertRegionalChatDisabled(_dispatcher, _event)
 	StaticPopup_Show("REGIONAL_CHAT_DISABLED");
 end
 
+function GameEvent.HandleAlertAgeVerificationRestricted(_dispatcher, _event)
+	local isMinor = C_SocialRestrictions.IsAgeVerificationRestrictedMinor();
+	StaticPopup_Show(isMinor and "AGE_VERIFICATION_RESTRICTED_MINOR" or "AGE_VERIFICATION_RESTRICTED_UNVERIFIED");
+end
+
 function GameEvent.HandleAreaSpiritHealerInRange(_dispatcher, _event)
 	AcceptAreaSpiritHeal();
 	StaticPopup_Show("AREA_SPIRIT_HEAL");

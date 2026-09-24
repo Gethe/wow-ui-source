@@ -447,7 +447,8 @@ function CharCustomizeMixin:UpdateAlteredFormsMaxWidth()
 end
 
 function CharCustomizeMixin:UpdateSmallButtons()
-	if self.SmallButtons:GetRight() > CharacterCreateFrame.NameChoiceFrame:GetLeft() then
+	-- CharacterCreateFrame only exists on glue screen.
+	if CharacterCreateFrame and self.SmallButtons:GetRight() > CharacterCreateFrame.NameChoiceFrame:GetLeft() then
 		self.SmallButtons:ClearAllPoints();
 		self.SmallButtons:SetPoint("TOP", CharacterCreateFrame.NameChoiceFrame, "BOTTOM", 0, 0);
 		self.SmallButtons:SetPoint("LEFT", 40);
@@ -682,7 +683,10 @@ function CharCustomizeMixin:OnOptionButtonsUpdated()
 		local lastOption = options[#options];
 
 		if (firstOption) then
-			local nameChoice = CharacterCreateFrame.NameChoiceFrame.EditBoxSurname;
+			local nameChoice = nil;
+			if CharacterCreateFrame then
+				nameChoice = CharacterCreateFrame.NameChoiceFrame.EditBoxSurname;
+			end
 			SmartNavigation_AddJumpNavigationOverride(firstOption, SMART_NAV_INPUT_DIRECTION.UP, nameChoice);
 		end
 

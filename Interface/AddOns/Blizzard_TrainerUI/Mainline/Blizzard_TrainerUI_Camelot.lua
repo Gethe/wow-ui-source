@@ -1,5 +1,5 @@
 -- Camelot-specific trainer UI overrides
 
 function TrainerUI_UseCategories()
-	return true;
+	return C_Trainer.GetTrainerType() ~= Enum.TrainerType.Pet;
 end

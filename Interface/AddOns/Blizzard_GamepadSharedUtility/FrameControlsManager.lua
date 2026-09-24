@@ -77,6 +77,9 @@ local function FocusFrame(self, index)
 	end
 
 	if self.focusedFrame == frame then
+		if not self.isUIFocused then
+			self:SetUIFocusState(true);
+		end
 		return true;
 	end
 
@@ -91,6 +94,7 @@ local function FocusFrame(self, index)
 	end
 
 	-- Enable navigation before updating focus to ensure panel info is created.
+	self.isUIFocused = true;
 	self.focusedFrame = frame;
 	EnableNavigation(frame);
 
@@ -231,6 +235,8 @@ function GamepadFrameControlsManagerMixin:Init()
 		EventRegistry:RegisterCallback("ContainerFrame.CloseBag", function(_)
 			self:FrameHidden(ContainerFrameCombinedBags);
 		end, self)
+
+		EventRegistry:RegisterFrameEventAndCallback("GLOBAL_REGION_MOUSE_DOWN", self.OnGlobalRegionMouseDown, self);
 	end
 
 	--[[
@@ -345,7 +351,6 @@ function GamepadFrameControlsManagerMixin:FocusFrame(frame)
 		return false;
 	end
 
-	self.isUIFocused = true;
 	return FocusFrame(self, index);
 end
 
@@ -669,16 +674,38 @@ function GamepadFrameControlsManagerMixin:ToggleUIFocus()
 	self:SetUIFocusState(newFocusState);
 end
 
+function GamepadFrameControlsManagerMixin:OnGlobalRegionMouseDown(region, button)
+	if not region then
+		-- As a special case, don't drop focus if the cursor is holding something, to allow dropping
+		-- it on the world frame.
+		if self.isUIFocused and not GetCursorInfo() then
+			self:SetUIFocusState(false);
+		end
+		return;
+	end
+
+	local frame = region;
+	while frame do
+		if self:FocusFrame(frame) then
+			SmartNavigation:TrySelectButton(region);
+			break;
+		end
+		frame = frame:GetParent();
+	end
+end
+
 --[[
 	Records the current frame that will be focused in the expected following UnsuspendFrame call.
 	For instances where we open subsequent frame and expect to return to a specific position on closing that frame
 ]]
 function GamepadFrameControlsManagerMixin:SuspendFrame()
 	local currentFrame = self.focusedFrame;
-	if currentFrame and currentFrame ~= self.topSuspendedFrame then
+	if currentFrame then
 		currentFrame.suspendedButton = SmartNavigation:GetCurrentButton();
-		currentFrame.unsuspendToFrame = self.topSuspendedFrame; -- Sets to nil for initial/bottom suspended frame.
-		self.topSuspendedFrame = currentFrame;
+		if currentFrame ~= self.topSuspendedFrame then
+			currentFrame.unsuspendToFrame = self.topSuspendedFrame; -- Sets to nil for initial/bottom suspended frame.
+			self.topSuspendedFrame = currentFrame;
+		end
 		return true;
 	end
 	return false;
@@ -972,18 +999,22 @@ end
 	Processes a prompted binding as the "Right" directional jump hint. Called from footers.
 ]]
 function GamepadFrameControlsManagerMixin:RegisterJumpHintRightBinding(frame, promptedBinding)
-	promptedBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
-	promptedBinding:AddCondition(GenerateClosure(HasJumpHintRight, self, frame));
-	promptedBinding:SetLabelFunction(GenerateClosure(GetJumpHintRightLabel, self, frame));
+	promptedBinding:AddFooterBinding({
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		conditions = GenerateClosure(HasJumpHintRight, self, frame),
+		label = GenerateClosure(GetJumpHintRightLabel, self, frame),
+	})
 end
 
 --[[
 	Processes a prompted binding as the "Left" directional jump hint. Called from footers.
 ]]
 function GamepadFrameControlsManagerMixin:RegisterJumpHintLeftBinding(frame, promptedBinding)
-	promptedBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
-	promptedBinding:AddCondition(GenerateClosure(HasJumpHintLeft, self, frame));
-	promptedBinding:SetLabelFunction(GenerateClosure(GetJumpHintLeftLabel, self, frame));
+	promptedBinding:AddFooterBinding({
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		conditions = GenerateClosure(HasJumpHintLeft, self, frame),
+		label = GenerateClosure(GetJumpHintLeftLabel, self, frame),
+	})
 end
 
 function GamepadFrameControlsManagerMixin:ClearAllJumpHints()

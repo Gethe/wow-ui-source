@@ -59,33 +59,21 @@ function StaticOverrideActionBarMixin:OnLoad()
 		SetUpDefaultActionButton(actionButton);
 	end
 
-	-- Ignore dpad/face swapping here; it will be sorted after variables have been loaded. Also
-	-- note that these names remain the same even if dpad/face buttons are being swapped.
-	-- `dpadLeftButton` refers to the action button that is _normally_ on the dpad left. If
-	-- dpad/face buttons are swapped, it instead refers to the left face button. It follows the
-	-- action, not the input.
-	self.dpadLeftButton = self.Left.ActionButton1;
-	self.dpadTopButton = self.Left.ActionButton2;
-	self.dpadRightButton = self.Left.ActionButton3;
-	self.dpadBottomButton = self.Left.ActionButton4;
-	self.faceLeftButton = self.Right.ActionButton1;
-	self.faceTopButton = self.Right.ActionButton2;
-	self.faceRightButton = self.Right.ActionButton3;
-	self.faceBottomButton = self.Right.ActionButton4;
-
-	self.dpadButtons = {
-		self.dpadLeftButton,
-		self.dpadTopButton,
-		self.dpadRightButton,
-		self.dpadBottomButton,
+	self.Left.actionButtons = {
+		self.Left.ActionButton1,
+		self.Left.ActionButton2,
+		self.Left.ActionButton3,
+		self.Left.ActionButton4,
 	};
 
-	self.faceButtons = {
-		self.faceLeftButton,
-		self.faceTopButton,
-		self.faceRightButton,
-		self.faceBottomButton,
+	self.Right.actionButtons = {
+		self.Right.ActionButton1,
+		self.Right.ActionButton2,
+		self.Right.ActionButton3,
+		self.Right.ActionButton4,
 	};
+
+	self:SetActionButtonReferences(self.Left, self.Right);
 
 	EventUtil.ContinueOnVariablesLoaded(GenerateClosure(self.PostVariableSetUp, self));
 end
@@ -96,6 +84,25 @@ end
 
 function StaticOverrideActionBarMixin:ShouldSwapLeftAndRightButtons()
 	return self.swapLeftAndRightCvar and CVarCallbackRegistry:GetCVarValueBool(self.swapLeftAndRightCvar);
+end
+
+function StaticOverrideActionBarMixin:SetActionButtonReferences(leftParent, rightParent)
+	-- Ignore dpad/face swapping here; it will be sorted after variables have been loaded. Also
+	-- note that these names remain the same even if dpad/face buttons are being swapped.
+	-- `dpadLeftButton` refers to the action button that is _normally_ on the dpad left. If
+	-- dpad/face buttons are swapped, it instead refers to the left face button. It follows the
+	-- action, not the input.
+	self.dpadLeftButton = leftParent.ActionButton1;
+	self.dpadTopButton = leftParent.ActionButton2;
+	self.dpadRightButton = leftParent.ActionButton3;
+	self.dpadBottomButton = leftParent.ActionButton4;
+	self.faceLeftButton = rightParent.ActionButton1;
+	self.faceTopButton = rightParent.ActionButton2;
+	self.faceRightButton = rightParent.ActionButton3;
+	self.faceBottomButton = rightParent.ActionButton4;
+
+	self.dpadButtons = leftParent.actionButtons;
+	self.faceButtons = rightParent.actionButtons;
 end
 
 function StaticOverrideActionBarMixin:SetUpActionButtons()
@@ -123,14 +130,7 @@ function StaticOverrideActionBarMixin:SetUpActionButtons()
 		actionButton.IconOverlay:Hide();
 	end
 
-	self.dpadLeftButton = leftParent.ActionButton1;
-	self.dpadTopButton = leftParent.ActionButton2;
-	self.dpadRightButton = leftParent.ActionButton3;
-	self.dpadBottomButton = leftParent.ActionButton4;
-	self.faceLeftButton = rightParent.ActionButton1;
-	self.faceTopButton = rightParent.ActionButton2;
-	self.faceRightButton = rightParent.ActionButton3;
-	self.faceBottomButton = rightParent.ActionButton4;
+	self:SetActionButtonReferences(leftParent, rightParent);
 
 	self:SetUpDpadLeft();
 	self:SetUpDpadTop();

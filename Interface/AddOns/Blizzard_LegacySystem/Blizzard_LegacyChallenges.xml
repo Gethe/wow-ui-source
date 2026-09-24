@@ -40,8 +40,8 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="Legacy-Challenge-BG">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-10"/>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="-2"/>
+						<Anchor point="TOPLEFT" x="1" y="-10"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
 					</Anchors>
 				</Texture>
 			</Layer>

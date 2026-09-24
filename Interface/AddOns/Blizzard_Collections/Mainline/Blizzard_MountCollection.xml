@@ -411,11 +411,11 @@
 			<EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" parentKey="searchBox" letters="40">
 				<Size x="145" y="20"/>
 				<Anchors>
-					<!-- Overidden in MountJournal_OnSearchLoad --> 
+					<!-- Overidden in CollectionsJournal_SearchBox_OnLoad -->
 					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="15" y="-9"/>
 				</Anchors>
 				<Scripts>
-					<OnLoad function="MountJournal_OnSearchLoad" inherit="prepend"/>
+					<OnLoad function="CollectionsJournal_SearchBox_OnLoad" inherit="prepend"/>
 					<OnTextChanged function="MountJournal_OnSearchTextChanged"/>
 					<OnHide function="MountJournal_ClearSearch"/>
 				</Scripts>
@@ -566,7 +566,7 @@
 			</EventFrame>
 			
 			<Button parentKey="MountButton" name="$parentMountButton" motionScriptsWhileDisabled="true" inherits="MagicButtonTemplate" text="MOUNT">
-				<Size x="140" y="22"/>
+				<Size x="160" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT"/>
 				</Anchors>

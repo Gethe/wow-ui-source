@@ -24,16 +24,6 @@ function RaidTargetingFreeSelectionMixin:OnHide()
 	GroupTargeting:StopTargeting();
 end
 
-function RaidTargetingFreeSelectionMixin:OnUpdate()
-	self.raidInputLegendInactive:ClearAllPoints();
-
-	local _, _, top, bottom = CompactRaidFrameContainer:GetBounds();
-	local height = bottom - top;
-
-	self.raidInputLegendInactive:SetPoint("TOPLEFT", CompactRaidFrameContainer, "TOPLEFT", 0, -height);
-	self:SetScript("OnUpdate", nil);
-end
-
 function RaidTargetingFreeSelectionMixin:UpdateVisibility()
 	if not InputUtil.IsGamepadUIEnabled() then
 		self:Hide();
@@ -43,8 +33,7 @@ function RaidTargetingFreeSelectionMixin:UpdateVisibility()
 	local inRaid = IsInRaid();
 	if (IsInGroup() and (inRaid or EditModeManagerFrame:UseRaidStylePartyFrames())) then
 		local raidFrame = inRaid and CompactRaidFrameContainer or CompactPartyFrame;
-		self.raidInputLegendInactive:ClearAllPoints();
-		self.raidInputLegendInactive:SetPoint("TOPLEFT", raidFrame, "BOTTOMLEFT");
+		self.raidTargetingFooter:SetParentFrame(raidFrame);
 
 		self:Show();
 	else
@@ -59,23 +48,25 @@ function RaidTargetingFreeSelectionMixin:CanUseFocusButton()
 end
 
 function RaidTargetingFreeSelectionMixin:SetupFooter()
-	local openAction = InputPromptLegends.CreateFrameAction("Open", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_SHOULDER_LEFT }, "");
+	local open = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_SHOULDER_LEFT, nil, "");
+	open:AddCondition(function()
+		return self:CanUseFocusButton();
+	end);
+	open:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ALWAYS);
 
-	local raidInputLegendInactive = InputPromptLegends.CreateInputLegend(self, "raidInputLegendInactive");
-	raidInputLegendInactive:SetLegendWidth(45);
-	raidInputLegendInactive:AddFrameAction(openAction);
-	raidInputLegendInactive:InitializePrompts();
+	self.raidTargetingFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "RaidTargetingFooter");
+	self.raidTargetingFooter:AddPromptedBinding(open);
+	self.raidTargetingFooter:Finalize();
 
 	GamepadSharedUtility.BindingStack.InputBindingManager:BindToCoreBindingActive(GenerateClosure(self.UpdateFooter, self));
 end
 
 function RaidTargetingFreeSelectionMixin:UpdateFooter()
-	self.raidInputLegendInactive:SetFrameActionPromptEnabled("Open", self:CanUseFocusButton());
-
 	if GroupTargeting:IsActive() then
-		self.raidInputLegendInactive:Hide();
+		self.raidTargetingFooter:HideAndDeactivateBindings();
 	else
-		self.raidInputLegendInactive:Show();
+		self.raidTargetingFooter:ShowAndActivateBindings();
+		self.raidTargetingFooter:Refresh();
 	end
 end
 

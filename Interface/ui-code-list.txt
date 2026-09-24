@@ -177,6 +177,7 @@ Interface\AddOns\Blizzard_APIDocumentationGenerated\ExpansionLandingPageConstant
 Interface\AddOns\Blizzard_APIDocumentationGenerated\ExpansionLevelConstantsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\ExpansionTrialDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\ExternalEventURLDocumentation.lua
+Interface\AddOns\Blizzard_APIDocumentationGenerated\FlyoutDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\FogOfWarDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\FontDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\ForbiddenAspectConstantsDocumentation.lua
@@ -343,6 +344,7 @@ Interface\AddOns\Blizzard_APIDocumentationGenerated\NameGenConstantsDocumentatio
 Interface\AddOns\Blizzard_APIDocumentationGenerated\NamePlateConstantsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\NamePlateDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\NamePlateManagerDocumentation.lua
+Interface\AddOns\Blizzard_APIDocumentationGenerated\NameUtilDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\NeighborhoodInitiativeDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\NeighborhoodInitiativesConstantsDocumentation.lua
 Interface\AddOns\Blizzard_APIDocumentationGenerated\NewItemsDocumentation.lua
@@ -1688,6 +1690,7 @@ Interface\AddOns\Blizzard_FrameXMLUtil\Blizzard_FrameXMLUtil.toc
 Interface\AddOns\Blizzard_FrameXMLUtil\CalendarUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\Camelot\CollectionsUtilOverrides.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\Camelot\DifficultyUtilOverrides.lua
+Interface\AddOns\Blizzard_FrameXMLUtil\Camelot\ItemUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\Camelot\NameUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\Camelot\QuestUtilsOverrides.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\CampaignUtil.lua
@@ -1945,6 +1948,13 @@ Interface\AddOns\Blizzard_GamepadActionBars\ActionBarTemplates.xml
 Interface\AddOns\Blizzard_GamepadActionBars\ActionBindingUtil.lua
 Interface\AddOns\Blizzard_GamepadActionBars\Bindings.xml
 Interface\AddOns\Blizzard_GamepadActionBars\Blizzard_GamepadActionBars.toc
+Interface\AddOns\Blizzard_GamepadActionBars\Camelot\ClassSpellFlyout.lua
+Interface\AddOns\Blizzard_GamepadActionBars\Camelot\PetActionFlyout.lua
+Interface\AddOns\Blizzard_GamepadActionBars\Camelot\PetActionFlyoutButton.lua
+Interface\AddOns\Blizzard_GamepadActionBars\Camelot\PetClassFlyouts.xml
+Interface\AddOns\Blizzard_GamepadActionBars\Camelot\PetSpellFlyout.lua
+Interface\AddOns\Blizzard_GamepadActionBars\ClassActionFlyout.lua
+Interface\AddOns\Blizzard_GamepadActionBars\ClassActionFlyout.xml
 Interface\AddOns\Blizzard_GamepadActionBars\FlyoutRadial.lua
 Interface\AddOns\Blizzard_GamepadActionBars\FlyoutRadial.xml
 Interface\AddOns\Blizzard_GamepadActionBars\GamepadOverrideBarMixin.lua
@@ -1954,6 +1964,8 @@ Interface\AddOns\Blizzard_GamepadActionBars\MainActionBarFrame.lua
 Interface\AddOns\Blizzard_GamepadActionBars\MainActionBarFrame.xml
 Interface\AddOns\Blizzard_GamepadActionBars\PageUnit.lua
 Interface\AddOns\Blizzard_GamepadActionBars\PossessBar.lua
+Interface\AddOns\Blizzard_GamepadActionBars\SpellFlyoutRadial.lua
+Interface\AddOns\Blizzard_GamepadActionBars\SpellFlyoutRadial.xml
 Interface\AddOns\Blizzard_GamepadActionBars\StanceBar.lua
 Interface\AddOns\Blizzard_GamepadActionBars\TargetActionBars\FriendlyTargetingActionBar.lua
 Interface\AddOns\Blizzard_GamepadActionBars\TargetActionBars\HostileTargetingActionBar.lua
@@ -2003,7 +2015,6 @@ Interface\AddOns\Blizzard_GamepadTargeting\TargetLogic.lua
 Interface\AddOns\Blizzard_Gamepad\Bindings.xml
 Interface\AddOns\Blizzard_Gamepad\Blizzard_Gamepad.toc
 Interface\AddOns\Blizzard_Gamepad\Core.lua
-Interface\AddOns\Blizzard_Gamepad\Gameplay\SpecialInputStates.lua
 Interface\AddOns\Blizzard_Gamepad\SmartNavigationInGame\FrameBoltOns\GamepadItemPickupCursor.lua
 Interface\AddOns\Blizzard_Gamepad\SmartNavigationInGame\FrameBoltOns\GamepadItemPickupCursor.xml
 Interface\AddOns\Blizzard_Gamepad\UI\CinematicMovie.lua
@@ -2019,7 +2030,6 @@ Interface\AddOns\Blizzard_Gamepad\UI\Radials\GamepadRadial.xml
 Interface\AddOns\Blizzard_Gamepad\UI\Reticle\GamepadReticle.lua
 Interface\AddOns\Blizzard_Gamepad\UI\Reticle\GamepadReticle.xml
 Interface\AddOns\Blizzard_Gamepad\Utility\Bindings\HoldBindings.lua
-Interface\AddOns\Blizzard_Gamepad\Utility\Utility.lua
 Interface\AddOns\Blizzard_GarrisonBase\AdventuresFollowerTooltip.lua
 Interface\AddOns\Blizzard_GarrisonBase\AdventuresFollowerTooltip.xml
 Interface\AddOns\Blizzard_GarrisonBase\Blizzard_GarrisonBase.toc
@@ -2111,6 +2121,8 @@ Interface\AddOns\Blizzard_GlueXMLBase\Shared\GlueContextMenu.xml
 Interface\AddOns\Blizzard_GlueXML\Bindings.xml
 Interface\AddOns\Blizzard_GlueXML\Blizzard_GlueXML.toc
 Interface\AddOns\Blizzard_GlueXML\Camelot\AccountLoginOverrides.lua
+Interface\AddOns\Blizzard_GlueXML\Camelot\CharacterCopy.lua
+Interface\AddOns\Blizzard_GlueXML\Camelot\CharacterCopy.xml
 Interface\AddOns\Blizzard_GlueXML\Camelot\CharacterSelect\CharacterSelectList.lua
 Interface\AddOns\Blizzard_GlueXML\Camelot\CharacterSelect\CharacterSelectListBackground.xml
 Interface\AddOns\Blizzard_GlueXML\Camelot\CharacterSelect\CharacterSelectTemplates.lua
@@ -2121,6 +2133,8 @@ Interface\AddOns\Blizzard_GlueXML\ForceRenameFullNameDialog.lua
 Interface\AddOns\Blizzard_GlueXML\ForceRenameFullNameDialog.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\AccountLogin.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\AccountLogin.xml
+Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterCopy.lua
+Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterCopy.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterLoginUtil.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterSelect.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\CharacterSelect.xml
@@ -2492,14 +2506,14 @@ Interface\AddOns\Blizzard_Kiosk\Unused\Unused.lua
 Interface\AddOns\Blizzard_Kiosk\Unused\Unused.xml
 Interface\AddOns\Blizzard_LFGUtil\Blizzard_LFGUtil.toc
 Interface\AddOns\Blizzard_LFGUtil\Camelot\LFGUtil.lua
+Interface\AddOns\Blizzard_LFGUtil\Mainline\LFGEye.lua
+Interface\AddOns\Blizzard_LFGUtil\Mainline\LFGEye.xml
 Interface\AddOns\Blizzard_LFGUtil\Mainline\LFGUtil.lua
 Interface\AddOns\Blizzard_LFGUtil\Mainline\PVPHelper.lua
 Interface\AddOns\Blizzard_LFGUtil\Mainline\PVPHelper.xml
 Interface\AddOns\Blizzard_LFGUtil\Mainline\PvpPopup.lua
 Interface\AddOns\Blizzard_LFGUtil\Mainline\PvpPopup.xml
 Interface\AddOns\Blizzard_LFGUtil\Shared\Constants.lua
-Interface\AddOns\Blizzard_LFGUtil\Shared\LFGEye.lua
-Interface\AddOns\Blizzard_LFGUtil\Shared\LFGEye.xml
 Interface\AddOns\Blizzard_LFGUtil\Shared\LFGInvitePopup.lua
 Interface\AddOns\Blizzard_LFGUtil\Shared\LFGInvitePopup.xml
 Interface\AddOns\Blizzard_LFGUtil\Shared\LFGRole.lua
@@ -2813,6 +2827,7 @@ Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback.toc
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Events.lua
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_FrameTemplates.xml
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Frames.lua
+Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Gamepad.lua
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Tooltips.lua
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_Reports.lua
 Interface\AddOns\Blizzard_PVPMatch\Blizzard_PVPMatch.toc
@@ -3961,10 +3976,12 @@ Interface\AddOns\Blizzard_UIModes\Blizzard_UIModeManager.lua
 Interface\AddOns\Blizzard_UIModes\Blizzard_UIModeUtil.lua
 Interface\AddOns\Blizzard_UIModes\Blizzard_UIModes.toc
 Interface\AddOns\Blizzard_UIPanelTemplates\Blizzard_UIPanelTemplates.toc
+Interface\AddOns\Blizzard_UIPanelTemplates\Camelot\UIPanelTemplatesOverrides.xml
 Interface\AddOns\Blizzard_UIPanelTemplates\Mainline\AutoCastTemplates.lua
 Interface\AddOns\Blizzard_UIPanelTemplates\Mainline\AutoCastTemplates.xml
 Interface\AddOns\Blizzard_UIPanelTemplates\Mainline\UIPanelTemplates.lua
 Interface\AddOns\Blizzard_UIPanelTemplates\Mainline\UIPanelTemplates.xml
+Interface\AddOns\Blizzard_UIPanelTemplates\Mainline\UIPanelTemplatesOverrides.xml
 Interface\AddOns\Blizzard_UIPanelTemplates\Shared\UIPanelSpellButtonFrame.lua
 Interface\AddOns\Blizzard_UIPanelTemplates\Shared\UIPanelSpellButtonFrame.xml
 Interface\AddOns\Blizzard_UIPanelTemplates\Shared\UIPanelTemplatesShared.lua
@@ -4224,6 +4241,7 @@ Interface\AddOns\Blizzard_UnitFrame\Camelot\PlayerFrameTemplates.xml
 Interface\AddOns\Blizzard_UnitFrame\Camelot\TargetFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Camelot\TargetFrameTemplates.xml
 Interface\AddOns\Blizzard_UnitFrame\Camelot\TargetFrameUtils.lua
+Interface\AddOns\Blizzard_UnitFrame\Camelot\UnitFramePvPIndicatorStyle.lua
 Interface\AddOns\Blizzard_UnitFrame\DemonHunterSoulFragmentsBar.lua
 Interface\AddOns\Blizzard_UnitFrame\DemonHunterSoulFragmentsBar.xml
 Interface\AddOns\Blizzard_UnitFrame\DevourerFuryBar.lua
@@ -4282,7 +4300,7 @@ Interface\AddOns\Blizzard_UnitFrame\Mainline\TargetFrameUtils.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\TotemFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\TotemFrame.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitFrame.lua
-Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitFrameUtil.lua
+Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitFramePvPIndicatorStyle.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitPowerBarAlt.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\UnitPowerBarAlt.xml
 Interface\AddOns\Blizzard_UnitFrame\Shared\CompactPartyFrame.lua
@@ -4312,6 +4330,7 @@ Interface\AddOns\Blizzard_UnitFrame\Shared\TargetFrameAuraContainer.xml
 Interface\AddOns\Blizzard_UnitFrame\Shared\TargetFrameAuraShared.lua
 Interface\AddOns\Blizzard_UnitFrame\Shared\UnitFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Shared\UnitFrame.xml
+Interface\AddOns\Blizzard_UnitFrame\Shared\UnitFrameUtil.lua
 Interface\AddOns\Blizzard_UnitPopupShared\Blizzard_UnitPopupShared.toc
 Interface\AddOns\Blizzard_UnitPopupShared\Mainline\UnitPopupSharedButtonMixins.lua
 Interface\AddOns\Blizzard_UnitPopupShared\UnitPopupShared.lua

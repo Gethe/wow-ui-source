@@ -42,9 +42,10 @@ function LFGListingMixin:OnLoad()
 
 	-- Update UI elements for modern
 	if LFGVANILLA_SETTING_MODERN_STYLE then
-		self:SetPortraitAtlasRaw("groupfinder-eye-frame");
 		self.TitleContainer.TitleText:SetText(LFG_TITLE);
-		self.Inset.Bg:Hide();
+		if self.Inset.Bg then
+			self.Inset.Bg:Hide();
+		end
 	end
 end
 
@@ -792,7 +793,7 @@ function LFGListingActivityView_OnLoad(self)
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	local scrollBoxAnchorsWithBar = {
-		CreateAnchor("TOPLEFT", 0, 0),
+		CreateAnchor("TOPLEFT", 0, self.ScrollBox.TopAnchorY),
 		CreateAnchor("BOTTOMRIGHT", -28, 88);
 	};
 	local scrollBoxAnchorsWithoutBar = {

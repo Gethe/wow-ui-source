@@ -123,46 +123,6 @@
 					<OnMouseWheel function="nop" />
 				</Scripts>
 			</Frame>
-			<Frame parentKey="GamepadFocusLeftDirectionalIcon" inherits="InputIconTextureFrameTemplate" frameStrata="DIALOG" hidden="true">
-				<KeyValues>
-					<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_LEFT" type="global"/>
-					<KeyValue key="useDropShadow" value="true" type="boolean"/>
-				</KeyValues>
-				<Size x="30" y="30"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ScrollContainer" x="-5" y="0" />
-				</Anchors>
-			</Frame>
-			<Frame parentKey="GamepadFocusRightDirectionalIcon" inherits="InputIconTextureFrameTemplate" frameStrata="DIALOG" hidden="true">
-				<KeyValues>
-					<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_RIGHT" type="global"/>
-					<KeyValue key="useDropShadow" value="true" type="boolean"/>
-				</KeyValues>
-				<Size x="30" y="30"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ScrollContainer" x="-5" y="0" />
-				</Anchors>
-			</Frame>
-			<Frame parentKey="GamepadFocusUpDirectionalIcon" inherits="InputIconTextureFrameTemplate" frameStrata="DIALOG" hidden="true">
-				<KeyValues>
-					<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_TOP" type="global"/>
-					<KeyValue key="useDropShadow" value="true" type="boolean"/>
-				</KeyValues>
-				<Size x="30" y="30"/>
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.ScrollContainer" x="0" y="-5" />
-				</Anchors>
-			</Frame>
-			<Frame parentKey="GamepadFocusDownDirectionalIcon" inherits="InputIconTextureFrameTemplate" frameStrata="DIALOG" hidden="true">
-				<KeyValues>
-					<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_BOTTOM" type="global"/>
-					<KeyValue key="useDropShadow" value="true" type="boolean"/>
-				</KeyValues>
-				<Size x="30" y="30"/>
-				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.ScrollContainer" x="0" y="-5" />
-				</Anchors>
-			</Frame>
 		</Frames>
 	</Frame>
 </Ui>

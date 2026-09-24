@@ -3013,6 +3013,7 @@ local Unit =
 		{
 			Name = "UnitResistance",
 			Type = "Function",
+			SecretWhenUnitIdentityRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -3163,6 +3164,7 @@ local Unit =
 		{
 			Name = "UnitSpellTargetName",
 			Type = "Function",
+			MayReturnNothing = true,
 			SecretReturns = true,
 			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "If the unit is currently casting a spell, returns the name of the spell's target unit. Returns nil if the unit is not casting a spell or the spell has no target." },
@@ -3174,7 +3176,7 @@ local Unit =
 
 			Returns =
 			{
-				{ Name = "targetName", Type = "cstring", Nilable = false },
+				{ Name = "targetName", Type = "string", Nilable = false },
 			},
 		},
 		{

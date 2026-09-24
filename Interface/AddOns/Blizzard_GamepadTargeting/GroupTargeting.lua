@@ -215,42 +215,23 @@ function GroupTargeting:IsActive()
 end
 
 function GroupTargeting:SetupFooters()
-	self.footers = {};
+	local navigateDPad = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD, nil, ACTION_LABEL_SELECT);
+	local closeTargeting = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_SHOULDER_LEFT, nil, GROUP_TARGETING_CLOSE);
 
-	local closeAction = InputPromptLegends.CreateFrameAction("Close", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_SHOULDER_LEFT }, GROUP_TARGETING_CLOSE);
-	local navigateActionDPad = InputPromptLegends.CreateFrameAction("Select", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_DPAD }, ACTION_LABEL_SELECT);
-	local navigateActionStick = InputPromptLegends.CreateFrameAction("Select", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_STICK_RIGHT }, ACTION_LABEL_SELECT);
-
-	local targetingInputLegendActiveDPad = InputPromptLegends.CreateInputLegend(self, "targetingInputLegendActiveDPad");
-	targetingInputLegendActiveDPad:SetLegendWidth(165);
-	targetingInputLegendActiveDPad:SetPoint("TOPLEFT", PartyFrame, "BOTTOMLEFT");
-	targetingInputLegendActiveDPad:AddFrameAction(closeAction);
-	targetingInputLegendActiveDPad:AddFrameAction(navigateActionDPad);
-	targetingInputLegendActiveDPad:InitializePrompts();
-	table.insert(self.footers, targetingInputLegendActiveDPad);
-
-	local targetingInputLegendActiveStick = InputPromptLegends.CreateInputLegend(self, "targetingInputLegendActiveStick");
-	targetingInputLegendActiveStick:SetLegendWidth(165);
-	targetingInputLegendActiveStick:SetPoint("TOPLEFT", PartyFrame, "BOTTOMLEFT");
-	targetingInputLegendActiveStick:AddFrameAction(closeAction);
-	targetingInputLegendActiveStick:AddFrameAction(navigateActionStick);
-	targetingInputLegendActiveStick:InitializePrompts();
-	table.insert(self.footers, targetingInputLegendActiveStick);
+	self.targetingActiveDPadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(PartyFrame, "TargetingActiveDPadFooter");
+	self.targetingActiveDPadFooter:AddPromptedBinding(navigateDPad);
+	self.targetingActiveDPadFooter:AddPromptedBinding(closeTargeting);
+	self.targetingActiveDPadFooter:Finalize();
 
 	self:UpdateFooter();
 end
 
 function GroupTargeting:UpdateFooter()
-	for _, footer in ipairs(self.footers) do
-		footer:Hide();
-	end
-
 	if self.currentTargetingContainer then
-		local currentFooter = nil;
-		currentFooter = self.targetingInputLegendActiveDPad;
-		currentFooter:ClearAllPoints();
-		currentFooter:SetPoint("TOPLEFT", self.currentTargetingContainer, "BOTTOMLEFT");
-		currentFooter:Show();
+		self.targetingActiveDPadFooter:SetParentFrame(self.currentTargetingContainer);
+		self.targetingActiveDPadFooter:ShowAndActivateBindings();
+	else
+		self.targetingActiveDPadFooter:HideAndDeactivateBindings();
 	end
 end
 

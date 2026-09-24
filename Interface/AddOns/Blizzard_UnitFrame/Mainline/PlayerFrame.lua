@@ -248,6 +248,16 @@ function PlayerFrame_GetPlayerFrameContentContextual()
 	return PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual;
 end
 
+-- Overridden per game type to point UnitFrameUtil at whichever regions that flavor actually renders.
+function PlayerFrame_GetPvPIndicatorElements()
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	return {
+		pvpIcon = playerFrameTargetContextual.PVPIcon,
+		prestigePortrait = playerFrameTargetContextual.PrestigePortrait,
+		prestigeBadge = playerFrameTargetContextual.PrestigeBadge,
+	};
+end
+
 function PlayerFrame_GetHealthBar()
 	return PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar;
 end
@@ -329,10 +339,7 @@ function PlayerFrame_CanPlayPVPUpdateSound()
 end
 
 function PlayerFrame_UpdatePvPStatus()
-	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
-	local pvpIcon = playerFrameTargetContextual.PVPIcon;
-	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
-	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
+	local elements = PlayerFrame_GetPvPIndicatorElements();
 
 	local displayInfo = UnitFrameUtil.GetUnitPvPIndicatorDisplayInfo("player", true);
 
@@ -340,18 +347,18 @@ function PlayerFrame_UpdatePvPStatus()
 		PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 	end
 
-	UnitFrameUtil.UpdateUnitPvPIndicator({
-		pvpIcon = pvpIcon,
-		prestigePortrait = prestigePortrait,
-		prestigeBadge = prestigeBadge,
-	}, "player", true);
+	UnitFrameUtil.UpdateUnitPvPIndicator(elements, "player", true);
 
+	PlayerFrame_UpdatePvPTimerText(displayInfo, elements);
+end
+
+function PlayerFrame_UpdatePvPTimerText(displayInfo, elements)
 	-- Always reposition to match whichever badge/icon is active, even while hidden below, so a later
 	-- Show() (driven elsewhere by an actual RBG timer value) uses the right anchor.
 	if (displayInfo.showPrestigePortrait) then
-		PlayerPVPTimerText:SetPoint("TOP", prestigePortrait, "BOTTOM", 0, 10);
+		PlayerPVPTimerText:SetPoint("TOP", elements.prestigePortrait, "BOTTOM", 0, 10);
 	elseif (displayInfo.showPvPIcon) then
-		PlayerPVPTimerText:SetPoint("TOP", pvpIcon, "BOTTOM", 0, 2);
+		PlayerPVPTimerText:SetPoint("TOP", elements.pvpIcon, "BOTTOM", 0, 2);
 	end
 
 	-- An RBG queue/match countdown doesn't apply in FFA pits, so force-hide it there even if a real timer was running.

@@ -33,7 +33,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	<Frame name="ComboFrame" frameStrata="MEDIUM" toplevel="true" parent="UIParent" hidden="true" alpha="0">
+	<Frame name="ComboFrame" frameStrata="MEDIUM" toplevel="true" parent="TargetFrame" hidden="true" alpha="0">
 		<Size x="256" y="32"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" relativeTo="TargetFrame" x="-44" y="-9"/>

@@ -107,6 +107,7 @@ local SimpleScriptRegionAPI =
 			Type = "Function",
 			IsProtectedFunction = true,
 			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
 
 			Arguments =
 			{
@@ -118,6 +119,7 @@ local SimpleScriptRegionAPI =
 			Type = "Function",
 			IsProtectedFunction = true,
 			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
 
 			Arguments =
 			{
@@ -595,6 +597,7 @@ local SimpleScriptRegionAPI =
 			Type = "Function",
 			IsProtectedFunction = true,
 			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
 
 			Arguments =
 			{
@@ -606,6 +609,7 @@ local SimpleScriptRegionAPI =
 			Type = "Function",
 			IsProtectedFunction = true,
 			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
 
 			Arguments =
 			{

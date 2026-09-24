@@ -286,7 +286,12 @@ function PTR_IssueReporter.CreateReports()
 	AutoQuestReport:AddDataCollection(collector.RunFunction, IsQuestDisabledFromQuestSync)
 	
 	questReport:RegisterPopEvent(event.Tooltip, tooltips.quest)
-	AutoQuestReport:RegisterFrameAttachedSurvey(QuestFrame, event.QuestRewardFrameShown, {event.QuestFrameClosed, event.QuestTurnedIn}, 0, 0) 
+	local questSurveyPoint, questSurveyRelativePoint
+	if InputUtil.IsGamepadUIEnabled() then
+		questSurveyPoint = "TOPLEFT"
+		questSurveyRelativePoint = "TOPRIGHT"
+	end
+	AutoQuestReport:RegisterFrameAttachedSurvey(QuestFrame, event.QuestRewardFrameShown, {event.QuestFrameClosed, event.QuestTurnedIn}, 0, 0, questSurveyPoint, questSurveyRelativePoint) 
 	
 	------------------------------------- Island Reporting ----------------------------------------------
 	local islandReport = PTR_IssueReporter.CreateSurvey(5, "Issue Report: %s")

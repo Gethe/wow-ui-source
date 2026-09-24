@@ -27,19 +27,19 @@
 							</Anchors>
 						</FontString>
 						<Texture parentKey="Role1" parentArray="Roles">
-							<Size x="20" y="20"/>
+							<Size x="23" y="23"/>
 							<Anchors>
 								<Anchor point="LEFT" relativeKey="$parent.RolesText" relativePoint="RIGHT" x="4" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Role2" parentArray="Roles">
-							<Size x="20" y="20"/>
+							<Size x="23" y="23"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Role1" relativePoint="CENTER" x="24" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Role3" parentArray="Roles">
-							<Size x="20" y="20"/>
+							<Size x="23" y="23"/>
 							<Anchors>
 								<Anchor point="CENTER" relativeKey="$parent.Role2" relativePoint="CENTER" x="24" y="0"/>
 							</Anchors>
@@ -57,33 +57,33 @@
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Icon1" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
-							<Size x="24" y="24"/>
+							<Size x="27" y="27"/>
 							<Anchors>
 								<Anchor point="RIGHT" relativeKey="$parent" relativePoint="RIGHT" x="-40" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Icon2" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
-							<Size x="24" y="24"/>
+							<Size x="27" y="27"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon1" relativePoint="CENTER" x="-24" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.Icon1" relativePoint="CENTER" x="-27" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Icon3" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
-							<Size x="24" y="24"/>
+							<Size x="27" y="27"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon2" relativePoint="CENTER" x="-24" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.Icon2" relativePoint="CENTER" x="-27" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Icon4" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
-							<Size x="24" y="24"/>
+							<Size x="27" y="27"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon3" relativePoint="CENTER" x="-24" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.Icon3" relativePoint="CENTER" x="-27" y="0"/>
 							</Anchors>
 						</Texture>
 						<Texture parentKey="Icon5" parentArray="Icons" atlas="groupfinder-icon-role-large-tank">
-							<Size x="24" y="24"/>
+							<Size x="27" y="27"/>
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon4" relativePoint="CENTER" x="-24" y="0"/>
+								<Anchor point="CENTER" relativeKey="$parent.Icon4" relativePoint="CENTER" x="-27" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -135,30 +135,21 @@
 			</Button>
 		</Frames>
 	</Frame>
-	<Button name="LFGBrowseSearchEntryTemplate" virtual="true">
-		<Size x="312" y="48"/>
+
+	<Button name="LFGBrowseSearchEntryBaseTemplate" virtual="true">
+		<Size x="312" y="52"/>
 		<KeyValues>
-			<KeyValue key="NameSoloOffsetX" value="1" type="number"/>
-			<KeyValue key="NameSoloOffsetY" value="-5" type="number"/>
+			<KeyValue key="NameSoloOffsetX" value="5" type="number"/>
+			<KeyValue key="NameSoloOffsetY" value="0" type="number"/>
 			<KeyValue key="NameGroupOffsetX" value="0" type="number"/>
-			<KeyValue key="NameGroupOffsetY" value="-5" type="number"/>
+			<KeyValue key="NameGroupOffsetY" value="0" type="number"/>
 			<KeyValue key="NameMaxWidth" value="228" type="number"/>
 		</KeyValues>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="ResultBG">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-2"/>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
-					</Anchors>
-					<Color r="1" g="1" b="1" a="0.04"/>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="PartyIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon">
-					<Size x="24" y="24"/>
+				<Texture parentKey="PartyIcon" atlas="groupfinder-icon-leader" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="8" y="-4"/>
+						<Anchor point="TOPLEFT" x="8" y="-14"/>
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Name" inherits="GameFontNormalLarge" justifyH="LEFT" maxLines="1">
@@ -190,25 +181,9 @@
 				<FontString parentKey="ActivityName" inherits="GameFontDisableLeft">
 					<Size x="0" y="15"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="10" y="5"/>
+						<Anchor point="BOTTOMLEFT" x="15" y="7"/>
 					</Anchors>
 				</FontString>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="Selected" atlas="groupfinder-highlightbar-yellow" alphaMode="ADD" hidden="true">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-3"/>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="HIGHLIGHT">
-				<Texture parentKey="Highlight" atlas="groupfinder-highlightbar-blue" alphaMode="ADD">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="3" y="-3"/>
-						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
-					</Anchors>
-				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -226,42 +201,94 @@
 			<OnLeave function="LFGBrowseSearchEntry_OnLeave"/>
 		</Scripts>
 	</Button>
+
+	<Button name="LFGBrowseSearchEntryTemplate" inherits="LFGBrowseSearchEntryBaseTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ResultBG" atlas="groupfinder-highlightbar">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Selected" atlas="groupfinder-highlightbar-yellow" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="Highlight" atlas="groupfinder-highlightbar-blue" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Button name="LFGBrowseNestedSearchEntryTemplate" inherits="LFGBrowseSearchEntryBaseTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="ResultBG" atlas="common-button-list-mid2">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Highlight" atlas="common-button-list-mid2-hover" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>				
+			<Layer level="OVERLAY">
+				<Texture parentKey="Selected" atlas="common-button-list-mid2-selected" alphaMode="ADD" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="3" y="-3"/>
+						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+					
 	<Button name="LFGBrowseSearchEntryGroupingTemplate" virtual="true">
 		<Size x="312" y="36"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="ResultBG">
+				<Texture parentKey="ResultBG" atlas="common-button-list-collapseExpand">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-8"/>
 						<Anchor point="BOTTOMRIGHT" x="-3" y="0"/>
 					</Anchors>
-					<Color r="0.3" g="0.3" b="0.3" a="0.2"/>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="CategoryLabel" inherits="GameFontNormalLarge" justifyH="LEFT">
+				<FontString parentKey="CategoryLabel" inherits="GameFontNormal" justifyH="LEFT">
 					<Size x="200" y="18"/>
 					<Anchors>
-						<Anchor point="LEFT" x="8" y="-4"/>
+						<Anchor point="LEFT" x="12" y="-4"/>
 					</Anchors>
 				</FontString>
-				<Texture parentKey="ExpandIcon" atlas="QuestLog-icon-Expand" hidden="true">
-					<Size x="18" y="18"/>
+				<Texture parentKey="ExpandIcon" atlas="common-button-list-plus" useAtlasSize="true" hidden="true">
 					<Anchors>
-						<Anchor point="RIGHT" x="-8" y="-4"/>
+						<Anchor point="RIGHT" x="-12" y="-5"/>
 					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8" a="1"/>
 				</Texture>
-				<Texture parentKey="CollapseIcon" atlas="QuestLog-icon-shrink">
-					<Size x="18" y="18"/>
+				<Texture parentKey="CollapseIcon" atlas="common-button-list-minus" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="RIGHT" x="-8" y="-4"/>
+						<Anchor point="RIGHT" x="-12" y="-5"/>
 					</Anchors>
-					<Color r="0.8" g="0.8" b="0.8" a="1"/>
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
-				<Texture parentKey="Highlight" atlas="groupfinder-highlightbar-blue" alphaMode="ADD">
+				<Texture parentKey="Highlight" atlas="common-button-list-collapseExpand" alphaMode="ADD">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-7"/>
 						<Anchor point="BOTTOMRIGHT" x="-3" y="-1"/>
@@ -376,16 +403,36 @@
 	</Frame>
 	<!-- Start LFG Browse Frame -->
 	<Frame name="LFGBrowseFrame" parent="LFGParentFrame" inherits="PortraitFrameTemplateNoCloseButton" hidden="false" setAllPoints="true" mixin="LFGBrowseMixin" enableMouse="true">
-		<Layers>
+		<Layers>	
 			<Layer level="BACKGROUND" textureSubLevel="0">
 				<Texture name="$parentBackgroundArt" parentKey="BackgroundArt" atlas="groupfinder-background" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="4" y="-80" />
-						<Anchor point="BOTTOMRIGHT" x="-4" y="37" />
+						<Anchor point="BOTTOMRIGHT" x="-4" y="3" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="-5">
+				<Texture name="$parentBg" atlas="groupfinder-Stat-StoneBG" parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundArt" relativePoint="TOPRIGHT" x="0" y="-7"/>
 					</Anchors>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
+				<Texture name="$parentBarTop" parentKey="BarTop" atlas="groupfinder-ScrollLine" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.BackgroundArt" relativePoint="TOPLEFT" x="0" y="-20"/>
+						<Anchor point="RIGHT" relativeKey="$parent.BackgroundArt" relativePoint="TOPRIGHT" x="0" y="-20"/>
+					</Anchors>
+				</Texture>						
+				<Texture name="$parentBarMiddle" parentKey="BarMiddle" atlas="groupfinder-ScrollLine" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="BOTTOMLEFT" x="0" y="61"/>
+						<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" x="0" y="61"/>
+					</Anchors>
+				</Texture>
 				<FontString parentKey="NoResultsFound" inherits="GameFontDisable" text="LFG_LIST_NO_RESULTS_FOUND">
 					<Size x="240" y="0"/>
 					<Anchors>
@@ -395,7 +442,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
+			<Frame parentKey="Inset" useParentLevel="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundArt" x="0" y="0" />
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundArt" x="0" y="0" />
@@ -406,6 +453,14 @@
 							<Anchors>
 								<Anchor point="TOPLEFT" x="3" y="-3" relativePoint="TOPLEFT"/>
 								<Anchor point="BOTTOMRIGHT" x="-3" y="3" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" atlas="common-insideframe" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -484,13 +539,13 @@
 			<Frame name="$parentScrollBox" parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<KeyValues>
 					<KeyValue key="AnchorOffsetLeft" value="7" type="number"/>
-					<KeyValue key="AnchorOffsetTop" value="-83" type="number"/>
+					<KeyValue key="AnchorOffsetTop" value="-112" type="number"/>
 					<KeyValue key="AnchorOffsetRight" value="-6" type="number"/>
 					<KeyValue key="AnchorOffsetBottom" value="40" type="number"/>
 					<KeyValue key="ScrollBarWidth" value="16" type="number"/>
 				</KeyValues>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundArt" x="0" y="0"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BarTop" x="0" y="10"/>
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundArt" x="0" y="0"/>
 				</Anchors>
 			</Frame>
@@ -525,7 +580,7 @@
 			<Button name="$parentSendMessageButton" parentKey="SendMessageButton" inherits="UIPanelButtonTemplate" text="SEND_MESSAGE" mixin="LFGBrowseSendMessageButtonMixin">
 				<Size x="111" y="28"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="4" y="6"/>
+					<Anchor point="BOTTOMLEFT" x="21" y="16"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>
@@ -534,7 +589,7 @@
 			<Button name="$parentGroupInviteButton" parentKey="GroupInviteButton" inherits="UIPanelButtonTemplate" text="GROUP_INVITE" mixin="LFGBrowseGroupInviteButtonMixin">
 				<Size x="109" y="28"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-4" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="-21" y="16"/>
 				</Anchors>
 				<Scripts>
 					<OnClick method="OnClick"/>

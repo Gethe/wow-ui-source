@@ -1,9 +1,13 @@
 local function SetRemainingTalentPointsYOffSet(newYOffset)
 	local classCurrencyDisplay = PlayerSpellsFrame.TalentsFrame.ClassCurrencyDisplay;
-	classCurrencyDisplay.CurrentAmountContainer:SetPoint("LEFT", classCurrencyDisplay.CurrencyLabel, "RIGHT", 3, newYOffset);
+	if classCurrencyDisplay and classCurrencyDisplay.CurrencyLabel then
+		classCurrencyDisplay.CurrentAmountContainer:SetPoint("LEFT", classCurrencyDisplay.CurrencyLabel, "RIGHT", 3, newYOffset);
+	end
 
 	local specCurrencyDisplay = PlayerSpellsFrame.TalentsFrame.SpecCurrencyDisplay;
-	specCurrencyDisplay.CurrentAmountContainer:SetPoint("LEFT", specCurrencyDisplay.CurrencyLabel, "RIGHT", 3, newYOffset);
+	if specCurrencyDisplay and specCurrencyDisplay.CurrencyLabel then
+		specCurrencyDisplay.CurrentAmountContainer:SetPoint("LEFT", specCurrencyDisplay.CurrencyLabel, "RIGHT", 3, newYOffset);
+	end
 end
 
 local l10nTable = {

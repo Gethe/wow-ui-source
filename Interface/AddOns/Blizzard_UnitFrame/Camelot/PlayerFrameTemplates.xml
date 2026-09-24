@@ -7,8 +7,8 @@
 		</Anchors>
 	</FontString>
 
-	<Texture name="PlayerPvpBackgroundCircleTemplate" atlas="UI-HUD-UnitFrame-SmallCircle" useAtlasSize="true" virtual="true"/>
-	<Texture name="PlayerPvpBackgroundIconTemplate" atlas="UI-HUD-UnitFrame-SmallCircle-Alliance" useAtlasSize="true" virtual="true"/>
+	<Texture name="PlayerPvpBackgroundCircleTemplate" atlas="UI-HUD-UnitFrame-SmallCircle" useAtlasSize="true" scale="0.8" virtual="true"/>
+	<Texture name="PlayerPvpBackgroundIconTemplate" atlas="UI-HUD-UnitFrame-SmallCircle-Alliance" useAtlasSize="true" scale="0.8" virtual="true"/>
 	<Texture name="PlayerLevelBackgroundCircleTemplate" atlas="UI-HUD-UnitFrame-SmallCircle" useAtlasSize="true" virtual="true"/>
 
 </Ui>

@@ -24,6 +24,8 @@ NamePlateConstants =
 	FORCE_SHOW_UNIT_NAME_CVAR = "nameplateForceShowUnitName";
 
 	PREVIEW_UNIT_TOKEN = "preview";
+	SELECTED_BORDER_ATLAS = "UI-HUD-Nameplates-Selected";
+	SELECTED_BORDER_OFFSETS = { topLeftX = -1, topLeftY = 1, bottomRightX = -3, bottomRightY = 3 };
 
 	AURA_ITEM_HEIGHT = 25;
 	CAST_BAR_FONT_HEIGHT = 10;

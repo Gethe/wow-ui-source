@@ -1,9 +1,8 @@
 -- luacheck: ignore 111 (setting non-standard global variable)
 
 local function LocalizeFriendsFrame_zh()
-	for i=1, (FriendsFrame.numTabs or 0) do
-		tabName = "FriendsFrameTab"..i;
-		_G[tabName].Text:SetPoint("CENTER", tabName, "CENTER", 0, 5);
+	for _tabIndex, tab in ipairs(FriendsFrame.Tabs) do
+		tab.Text:SetPoint("CENTER", tab, "CENTER", 0, 5);
 	end
 end
 

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<CheckButton name="SpellFlyoutPopupButtonTemplate" inherits="SmallActionButtonTemplate, FlyoutPopupButtonTemplate, SecureFrameTemplate" mixin="SpellFlyoutPopupButtonMixin" virtual="true" motionScriptsWhileDisabled="true">
-		<!-- This doesn't actually use any of the behavior of an ActionButtonTemplate, just the appearance -->
+
+	<CheckButton name="SpellFlyoutPopupButtonBaseTemplate" virtual="true">
 		<KeyValues>
 			<KeyValue key="buttonContext" value="ButtonContext_SpellButton" type="string"/>
 		</KeyValues>
@@ -31,13 +31,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Scripts>
-			<OnLoad method="OnLoad" inherit="append"/>
-			<OnClick method="OnClick"/>
-			<OnEnter method="SetTooltip"/>
-			<OnLeave method="OnLeave"/>
-			<OnDragStart method="OnDragStart"/>
-		</Scripts>
 		<Animations>
 			<AnimationGroup parentKey="GlyphActivateAnim" setToFinalAlpha="true">
 				<Alpha childKey="GlyphActivate" duration="0.25" order="1" fromAlpha="0" toAlpha="1"/>
@@ -60,6 +53,17 @@
 				<Alpha childKey="AbilityHighlight" startDelay="0.5" duration="0.75" order="1" fromAlpha="1" toAlpha="0.5"/>
 			</AnimationGroup>
 		</Animations>
+	</CheckButton>
+
+	<CheckButton name="SpellFlyoutPopupButtonTemplate" inherits="SmallActionButtonTemplate, FlyoutPopupButtonTemplate, SecureFrameTemplate, SpellFlyoutPopupButtonBaseTemplate" mixin="SpellFlyoutPopupButtonMixin" virtual="true" motionScriptsWhileDisabled="true">
+		<!-- This doesn't actually use any of the behavior of an ActionButtonTemplate, just the appearance -->
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="append"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="SetTooltip"/>
+			<OnLeave method="OnLeave"/>
+			<OnDragStart method="OnDragStart"/>
+		</Scripts>
 	</CheckButton>
 
 	<Frame name="SpellFlyout" toplevel="true" hidden="true" frameStrata="DIALOG" frameLevel="10" inherits="SecureFrameTemplate, ResizeLayoutFrame, FlyoutPopupTemplate" mixin="SpellFlyoutMixin" enableMouse="true">

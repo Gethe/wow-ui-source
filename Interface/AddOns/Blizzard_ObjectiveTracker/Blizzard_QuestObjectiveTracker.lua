@@ -116,13 +116,15 @@ function QuestObjectiveTrackerMixin:OnBlockHeaderClick(block, mouseButton)
 				end);
 			end
 
-			rootDescription:CreateButton(SHARE_IN_CHAT, function()
-				local chatLink = GetQuestLink(questID);
-				if not ChatFrameUtil.InsertLink(chatLink) then
-					ChatFrameUtil.OpenChat(chatLink);
-				end
-				self.restoreGamepadFocusOnMenuClose = false;
-			end);
+			if InputUtil.IsGamepadUIEnabled() then
+				rootDescription:CreateButton(SHARE_IN_CHAT, function()
+					local chatLink = GetQuestLink(questID);
+					if not ChatFrameUtil.InsertLink(chatLink) then
+						ChatFrameUtil.OpenChat(chatLink);
+					end
+					self.restoreGamepadFocusOnMenuClose = false;
+				end);
+			end
 
 			rootDescription:CreateButton(ABANDON_QUEST_ABBREV, function()
 				QuestMapQuestOptions_AbandonQuest(questID);

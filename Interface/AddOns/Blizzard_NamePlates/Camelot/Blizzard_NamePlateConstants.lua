@@ -24,6 +24,8 @@ NamePlateConstants =
 	FORCE_SHOW_UNIT_NAME_CVAR = "nameplateForceShowUnitName";
 
 	PREVIEW_UNIT_TOKEN = "preview";
+	SELECTED_BORDER_ATLAS = "UI-HUD-CoolDownManager-Selected-yellow";
+	SELECTED_BORDER_OFFSETS = { topLeftX = -3, topLeftY = 2, bottomRightX = 0, bottomRightY = 2 };
 
 	TARGET_BORDER_COLOR = CreateColor(1, 1, 1);
 	FOCUS_TARGET_BORDER_COLOR = CreateColor(1.0, 0.49, 0.039);

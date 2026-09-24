@@ -239,6 +239,22 @@ function LegacySystemFrameMixin:SetupGamepadTreeFooter(navigateElements, toggleT
 	addPoint:AddButtonContext("ButtonContext_LegacyTreeTalent");
 	addPoint:AddCondition(CanAddPoint);
 
+	local function UndoChanges()
+		self.TreePage.LegacyTreeTraitPanel.UndoButton:Click();
+	end
+	local function ShouldShowUndo()
+		local LegacyTreeTalentPanel = self.TreePage.LegacyTreeTraitPanel;
+		return LegacyTreeTalentPanel:HasAnyConfigChanges() and not LegacyTreeTalentPanel.isConfigReadyToApply;
+	end
+
+	local function ResetChanges()
+		self.TreePage.LegacyTreeTraitPanel.ResetButton:Click();
+	end
+	local function ShouldShowReset()
+		local resetButton = self.TreePage.LegacyTreeTraitPanel.ResetButton;
+		return resetButton:IsShown() and resetButton:IsEnabled();
+	end
+
 	local function CanRemovePoint()
 		local button = SmartNavigation:GetCurrentButton();
 		return button and button:CanRefundRank();
@@ -254,11 +270,68 @@ function LegacySystemFrameMixin:SetupGamepadTreeFooter(navigateElements, toggleT
 		end
 		return PromptedBindingMixin.VISIBILITY_TYPE.ALWAYS;
 	end
+	local function CannotUndoOrReset()
+		return not (ShouldShowUndo() or ShouldShowReset());
+	end
 
-	local removePoint = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, RemovePoint, GAMEPAD_TALENT_REMOVE_POINT);
-	removePoint:AddButtonContext("ButtonContext_LegacyTreeTalent");
-	removePoint:AddCondition(CanRemovePoint);
-	removePoint:SetVisibilityType(RemovePointVis);
+	local removePoint = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, "LegacyTree_RemovePoint_PromptedBinding");
+	removePoint:AddFooterBinding({
+		label = GAMEPAD_TALENT_REMOVE_POINT,
+		buttonContexts = "ButtonContext_LegacyTreeTalent",
+		visibilityType = RemovePointVis,
+		conditions = { CanRemovePoint, CannotUndoOrReset },
+	})
+	removePoint:AddFooterFunction({
+		buttonUpDown = GAMEPAD_BUTTON_ANY_UP,
+		bindingFunctions = RemovePoint,
+	})
+
+	local undoChanges = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, "LegacyTree_UndoChanges_PromptedBinding");
+	undoChanges:AddFooterBinding({
+		label = GAMEPAD_TALENT_REMOVE_POINT,
+		buttonContexts = "ButtonContext_LegacyTreeTalent",
+		visibilityType = RemovePointVis,
+		conditions = { CanRemovePoint, ShouldShowUndo },
+	})
+	local undoChangesHoldBinding = undoChanges:AddCustomPromptBinding({
+		frame = self.TreePage.LegacyTreeTraitPanel.GamepadUndoButton,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		conditions = ShouldShowUndo,
+	})
+	undoChanges:AddCustomPromptHoldFunction(undoChangesHoldBinding, {
+		holdTime = 0.5,
+		onTap = RemovePoint,
+		onHeld = UndoChanges,
+	})
+
+	local function ResetChangesOnShowPassed()
+		self.TreePage.LegacyTreeTraitPanel.ResetButton:ClearAllPoints();
+		self.TreePage.LegacyTreeTraitPanel.ResetButton:SetPoint("LEFT", self.TreePage.LegacyTreeTraitPanel.GamepadResetButton, "RIGHT");
+	end
+	local function ResetChangesOnShowFailed()
+		self.TreePage.LegacyTreeTraitPanel.ResetButton:ClearAllPoints();
+		self.TreePage.LegacyTreeTraitPanel.ResetButton:SetPoint("LEFT", self.TreePage.LegacyTreeTraitPanel.ApplyButton, "RIGHT", 14, 0);
+	end
+
+	local resetChanges = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, "LegacyTree_ResetChanges_PromptedBinding");
+	resetChanges:AddFooterBinding({
+		label = GAMEPAD_TALENT_REMOVE_POINT,
+		buttonContexts = "ButtonContext_LegacyTreeTalent",
+		visibilityType = RemovePointVis,
+		conditions = { CanRemovePoint, ShouldShowReset },
+	})
+	local resetChangesHoldBinding = resetChanges:AddCustomPromptBinding({
+		frame = self.TreePage.LegacyTreeTraitPanel.GamepadResetButton,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		conditions = ShouldShowReset,
+		onShowPassed = ResetChangesOnShowPassed,
+		onShowFailed = ResetChangesOnShowFailed,
+	})
+	resetChanges:AddCustomPromptHoldFunction(resetChangesHoldBinding, {
+		holdTime = 0.5,
+		onTap = RemovePoint,
+		onHeld = ResetChanges,
+	})
 
 	local function Select()
 		local element = SmartNavigation:GetCurrentButton();
@@ -275,40 +348,6 @@ function LegacySystemFrameMixin:SetupGamepadTreeFooter(navigateElements, toggleT
 	local selectBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, Select, ACTION_LABEL_SELECT);
 	selectBinding:AddCondition(ElementNotTalentButton);
 	selectBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
-
-	local function UndoChanges()
-		self.TreePage.LegacyTreeTraitPanel.UndoButton:Click();
-	end
-	local function ShouldShowUndo()
-		local LegacyTreeTalentPanel = self.TreePage.LegacyTreeTraitPanel;
-		return LegacyTreeTalentPanel:HasAnyConfigChanges() and not LegacyTreeTalentPanel.isConfigReadyToApply;
-	end
-
-	local undoChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_TRIGGER_RIGHT, 0.5, nil, UndoChanges);
-	undoChanges:SetCustomPromptFrame(self.TreePage.LegacyTreeTraitPanel.GamepadUndoButton);
-	undoChanges:AddCondition(ShouldShowUndo);
-	undoChanges:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
-
-	local function ResetChanges()
-		self.TreePage.LegacyTreeTraitPanel.ResetButton:Click();
-	end
-	local function ShouldShowReset()
-		local resetButton = self.TreePage.LegacyTreeTraitPanel.ResetButton;
-		return resetButton:IsShown() and resetButton:IsEnabled();
-	end
-
-	local resetChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_TRIGGER_RIGHT, 0.5, nil, ResetChanges);
-	resetChanges:SetCustomPromptFrame(self.TreePage.LegacyTreeTraitPanel.GamepadResetButton,
-	function(_)
-		self.TreePage.LegacyTreeTraitPanel.ResetButton:ClearAllPoints();
-		self.TreePage.LegacyTreeTraitPanel.ResetButton:SetPoint("LEFT", self.TreePage.LegacyTreeTraitPanel.GamepadResetButton, "RIGHT");
-	end,
-	function(_)
-		self.TreePage.LegacyTreeTraitPanel.ResetButton:ClearAllPoints();
-		self.TreePage.LegacyTreeTraitPanel.ResetButton:SetPoint("LEFT", self.TreePage.LegacyTreeTraitPanel.ApplyButton, "RIGHT", 14, 0);
-	end);
-	resetChanges:AddCondition(ShouldShowReset);
-	resetChanges:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
 
 	local function FocusSearchBox()
 		local searchBox = self.TreePage.LegacyTreeTraitPanel.SearchBox;
@@ -342,12 +381,12 @@ function LegacySystemFrameMixin:SetupGamepadTreeFooter(navigateElements, toggleT
 
 	local treeFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "LegacySystemFooter_Tree");
 	treeFooter:SetAnchorOffsets(0, -5);
+	treeFooter:AddPromptedBinding(removePoint);
 	treeFooter:AddPromptedBinding(undoChanges);
 	treeFooter:AddPromptedBinding(resetChanges);
 	treeFooter:AddPromptedBinding(applyChanges);
 	treeFooter:AddPromptedBinding(addPoint);
 	treeFooter:AddPromptedBinding(selectBinding);
-	treeFooter:AddPromptedBinding(removePoint);
 	treeFooter:AddPromptedBinding(toggleTooltips);
 	treeFooter:AddPromptedBinding(navigateElements);
 	treeFooter:AddPromptedBinding(focusSearchBox);

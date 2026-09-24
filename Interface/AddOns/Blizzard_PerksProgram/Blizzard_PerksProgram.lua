@@ -24,10 +24,10 @@ function PerksProgramMixin:OnLoad()
 	local useNativeForm = true;
 	self:SetUseNativeForm(useNativeForm);
 
-	local hidePlayerForPreview = false;
-	self.hidePlayerForPreview = hidePlayerForPreview;
-
-	self:SetHideArmorSetting(nil);
+	self:SetHidePlayerOnMountSetting(false);
+	self:SetMountSpecialPreviewSetting(true);
+	self:SetHideArmorSetting(nil); -- "nil" indicates the user has not touched this setting, in which case we will use the "autodress" value from the UIModelScene data.
+	self:SetAttackAnimationSetting(true);
 
 	self.sortAscending = false;
 	self.sortField = "price";
@@ -87,58 +87,100 @@ function PerksProgramMixin:GetSortAscending()
 	return self.sortAscending;
 end
 
-function PerksProgramMixin:GetTogglePlayerSetting()
-	return self.hidePlayerForPreview;
-end
-
-function PerksProgramMixin:TogglePlayerPreviewOnClick(hidePlayerForPreview)
-	self.hidePlayerForPreview = hidePlayerForPreview;
+--
+-- Hide Player On Mount Setting
+--
+function PerksProgramMixin:SetHidePlayerOnMountSetting(hidePlayerOnMount)
+	self.hidePlayerOnMountSetting = hidePlayerOnMount;
 	EventRegistry:TriggerEvent("PerksProgram.OnPlayerPreviewToggled");
 end
 
-function PerksProgramMixin:GetMountSpecialPreviewSetting()
-	return self.mountSpecialAnimPlaying;
+function PerksProgramMixin:GetHidePlayerOnMountSetting()
+	return self.hidePlayerOnMountSetting;
 end
 
-function PerksProgramMixin:SetMountSpecialPreviewOnClick(playMountSpecialAnim)
-	self.mountSpecialAnimPlaying = playMountSpecialAnim;
-	EventRegistry:TriggerEvent("PerksProgram.OnMountSpecialPreviewSet", playMountSpecialAnim);
-end
-
-function PerksProgramMixin:SetHideArmorSetting(playerArmorSetting)
-	self.hidePlayerArmorSetting = playerArmorSetting;
-end
-
-function PerksProgramMixin:GetHideArmorSetting()
-	return self.hidePlayerArmorSetting;
-end
-
--- Function when actually clicking the button, which should have sound.
-function PerksProgramMixin:PlayerToggledHideArmorOnClick(hidePlayerArmor)
-	if self:GetHideArmorSetting() ~= hidePlayerArmor then
-		if hidePlayerArmor then
+function PerksProgramMixin:ToggleHidePlayerOnMountOnClick(hidePlayerOnMount)
+	if self:GetHidePlayerOnMountSetting() ~= hidePlayerOnMount then
+		if hidePlayerOnMount then
 			PlaySound(SOUNDKIT.TRADING_POST_UI_HIDE_ARMOR);
 		else
 			PlaySound(SOUNDKIT.TRADING_POST_UI_SHOW_ARMOR);
 		end
-		self:ToggleHideArmorSetting(hidePlayerArmor);
+
+		self:SetHidePlayerOnMountSetting(hidePlayerOnMount);
 	end
 end
 
-function PerksProgramMixin:ToggleHideArmorSetting(playerArmorSetting)
-	if self:GetHideArmorSetting() ~= playerArmorSetting then
-		self:SetHideArmorSetting(playerArmorSetting);
-		EventRegistry:TriggerEvent("PerksProgram.OnPlayerHideArmorToggled");
+--
+-- Mount Special Preview Setting
+--
+function PerksProgramMixin:SetMountSpecialPreviewSetting(mountSpecialPreview)
+	self.mountSpecialPreviewSetting = mountSpecialPreview;
+	EventRegistry:TriggerEvent("PerksProgram.OnMountSpecialPreviewSet", mountSpecialPreview);
+end
+
+function PerksProgramMixin:GetMountSpecialPreviewSetting()
+	return self.mountSpecialPreviewSetting;
+end
+
+function PerksProgramMixin:ToggleMountSpecialPreviewOnClick(mountSpecialPreview)
+	if self:GetMountSpecialPreviewSetting() ~= mountSpecialPreview then
+		if mountSpecialPreview then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		end
+
+		self:SetMountSpecialPreviewSetting(mountSpecialPreview);
 	end
+end
+
+--
+-- Hide Armor Setting
+--
+function PerksProgramMixin:SetHideArmorSetting(hideArmor)
+	self.hideArmorSetting = hideArmor;
+	EventRegistry:TriggerEvent("PerksProgram.OnPlayerHideArmorToggled");
+end
+
+function PerksProgramMixin:GetHideArmorSetting()
+	return self.hideArmorSetting;
+end
+
+function PerksProgramMixin:ToggleHideArmorOnClick(hideArmor)
+	if self:GetHideArmorSetting() ~= hideArmor then
+		if hideArmor then
+			PlaySound(SOUNDKIT.TRADING_POST_UI_HIDE_ARMOR);
+		else
+			PlaySound(SOUNDKIT.TRADING_POST_UI_SHOW_ARMOR);
+		end
+
+		self:SetHideArmorSetting(hideArmor);
+	end
+end
+
+--
+-- Attack Animation Setting
+--
+function PerksProgramMixin:SetAttackAnimationSetting(attackAnimation)
+	self.attackAnimationSetting = attackAnimation;
+	EventRegistry:TriggerEvent("PerksProgram.OnPlayerAttackAnimationSet", attackAnimation);
 end
 
 function PerksProgramMixin:GetAttackAnimationSetting()
-	return self.attackAnimationPlaying;
+	return self.attackAnimationSetting;
 end
 
-function PerksProgramMixin:PlayerSetAttackAnimationOnClick(playAttackAnimation)
-	self.attackAnimationPlaying = playAttackAnimation;
-	EventRegistry:TriggerEvent("PerksProgram.OnPlayerAttackAnimationSet", playAttackAnimation);
+function PerksProgramMixin:ToggleAttackAnimationOnClick(attackAnimation)
+	if self:GetAttackAnimationSetting() ~= attackAnimation then
+		if attackAnimation then
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+		else
+			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+		end
+
+		self:SetAttackAnimationSetting(attackAnimation);
+	end
 end
 
 function PerksProgramMixin:GetUseNativeForm()

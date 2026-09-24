@@ -233,6 +233,8 @@ function NamePlateUnitFrameMixin:ApplyFrameOptions(setupOptions, frameOptions)
 	self.HealthBarsContainer.healthBar.LeftText:SetTextHeight(setupOptions.healthBarFontHeight);
 	self.HealthBarsContainer.healthBar.RightText:SetTextHeight(setupOptions.healthBarFontHeight);
 
+	self.HealthBarsContainer.healthBar.selectedBorder:SetAtlas(NamePlateConstants.SELECTED_BORDER_ATLAS, TextureKitConstants.IgnoreAtlasSize);
+
 	self.ClassificationFrame:SetScale(setupOptions.classificationScale or 1.0);
 	self.PlayerLevelDiffFrame:SetSize(setupOptions.playerLevelDiffWidth, setupOptions.playerLevelDiffHeight);
 	self.PlayerLevelDiffFrame.playerLevelDiffText:SetTextHeight(setupOptions.levelFontHeight);
@@ -679,8 +681,14 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 
 	-- If we are displaying the level frame, we will need to adjust anchoring accordingly
 	local displayLevelFrame = self.PlayerLevelDiffFrame:ShouldDisplay(self.unit);
-	local levelFrameWidth = displayLevelFrame and self.PlayerLevelDiffFrame:GetWidth() or 0;
-	local levelFrameRelativeAnchor = displayLevelFrame and select(3, self.PlayerLevelDiffFrame:GetPoint()) or nil;
+	local levelFrameWidth = 0;
+	local levelFrameRelativeAnchor = nil;
+	if displayLevelFrame then
+		local _point, _relativeTo, relativePoint, offsetX = self.PlayerLevelDiffFrame:GetPoint();
+		levelFrameRelativeAnchor = relativePoint;
+		-- The anchor offset is the gap between the health bar and the level frame, so it has to be reserved alongside the width.
+		levelFrameWidth = self.PlayerLevelDiffFrame:GetWidth() + math.abs(offsetX);
+	end
 
 	-- Anchoring logic starts from bottom of the frame and works its way upwards.
 
@@ -799,8 +807,9 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 		bgTexture:SetSize(setupOptions.healthBarBorderWidth, setupOptions.healthBarBorderHeight);
 
 		local selectedBorder = healthBar.selectedBorder;
-		selectedBorder:SetPoint("TOPLEFT", bgTexture, "TOPLEFT", -1, 1);
-		selectedBorder:SetPoint("BOTTOMRIGHT", bgTexture, "BOTTOMRIGHT", -3, 3);
+		local selectedBorderOffsets = NamePlateConstants.SELECTED_BORDER_OFFSETS;
+		selectedBorder:SetPoint("TOPLEFT", bgTexture, "TOPLEFT", selectedBorderOffsets.topLeftX, selectedBorderOffsets.topLeftY);
+		selectedBorder:SetPoint("BOTTOMRIGHT", bgTexture, "BOTTOMRIGHT", selectedBorderOffsets.bottomRightX, selectedBorderOffsets.bottomRightY);
 
 		-- Aggro Highlight
 		for i, texture in ipairs(self.aggroHighlightTextures) do
@@ -851,7 +860,7 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 		local rightManagedAuraOffset = 0;
 		if (displayLevelFrame and levelFrameRelativeAnchor == "RIGHT") then
 			rightManagedAuraOffset = levelFrameWidth;
-	end
+		end
 
 		self.AurasFrame.CrowdControlListFrame:SetPoint("LEFT", self.HealthBarsContainer, "RIGHT", 5 + rightManagedAuraOffset, 0);
 		self.AurasFrame.LossOfControlFrame:SetPoint("LEFT", self.HealthBarsContainer, "RIGHT", 5 + rightManagedAuraOffset, 0);

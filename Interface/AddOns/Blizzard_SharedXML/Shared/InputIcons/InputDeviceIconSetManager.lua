@@ -51,8 +51,8 @@ function InputDeviceIconSetManager:OnGamepadDeviceConnected()
 	end
 end
 
-function InputDeviceIconSetManager:RegisterActiveInputDeviceIconSetUpdatedCallback(callback, owner)
-	self:RegisterCallback(ACTIVE_INPUT_DEVICE_ICON_SET_UPDATED_EVENT, callback, owner);
+function InputDeviceIconSetManager:RegisterActiveInputDeviceIconSetUpdatedCallback(callback, owner, ...)
+	self:RegisterCallback(ACTIVE_INPUT_DEVICE_ICON_SET_UPDATED_EVENT, callback, owner, ...);
 end
 
 function InputDeviceIconSetManager:GetActiveInputDeviceIconSet()

@@ -6,7 +6,12 @@ end
 
 function QuestLogQuests_ShowQuestCount()
 	QuestLogCount:Show();
-	QuestScrollFrame.SearchBox:SetSize(200, 20);
+
+	if InputUtil.IsMKBUIEnabled() then
+		QuestScrollFrame.SearchBox:SetSize(200, 20);
+	else
+		QuestScrollFrame.SearchBox:SetSize(130, 20);
+	end
 
 	local numEntries, numQuests = C_QuestLog.GetNumQuestLogEntries();
 	-- Update Quest Count

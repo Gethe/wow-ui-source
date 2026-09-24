@@ -34,53 +34,8 @@ local SupportedPromptTemplates =
 	}
 }
 
-InputPromptLegends = { PromptTemplates = SupportedPromptTemplates, InputPromptLegendMixin = {}, FrameActionMixin = {}}
+InputPromptLegends = { PromptTemplates = SupportedPromptTemplates, InputPromptLegendMixin = {} }
 local InputPromptLegendMixin = InputPromptLegends.InputPromptLegendMixin;
-local FrameActionMixin = InputPromptLegends.FrameActionMixin;
-
---[[
-	Creates a frame action prompt object.
-
-	actionID - Unique id/name for the frame action prompt that is used to reference
-			   the frame action in the future within the input prompt legend group the
-			   frame action is added to.
-
-	promptTemplate - The type of prompt this frame action represents. See InputPromptLegendMixin's
-					 PromptTemplates member for supported templates.
-
-	promptInputKeys - A table containing the string ids for the input keys in the order they will
-					  be assigned to the promptTemplate input icons.
-
-	promptText - The text that should be displayed in the promptTemplates text field.
-]]
-function InputPromptLegends.CreateFrameAction(actionID, promptTemplate, promptInputKeys, promptText)
-	local frameAction = CreateFromMixins(FrameActionMixin);
-	frameAction.promptID = actionID;
-	frameAction.template = promptTemplate;
-	frameAction.inputKeys = promptInputKeys;
-	frameAction.text = promptText;
-	frameAction.initializePromptAsInactive = false;
-
-	return frameAction;
-end
-
---[[
-	Assigns a divider type to the frame action which is used by prompt templates that support dividers.
-	See InputPrompts.lua for divider types.
-
-	dividerType - string indicating the type of divider that should be used (GAMEPAD_PROMPT_DIVIDER_PLUS, GAMEPAD_PROMPT_DIVIDER_SLASH, etc.).
-]]
-function FrameActionMixin:SetDividerType(dividerType)
-	self.divider = dividerType;
-end
-
-function FrameActionMixin:InitializePromptAsInactive()
-	self.initializePromptAsInactive = true;
-end
-
-function FrameActionMixin:GetPromptID()
-	return self.promptID;
-end
 
 --[[
 	Creates an input prompt legend object.
@@ -136,17 +91,6 @@ function InputPromptLegendMixin:ApplyWideStyle()
 	self.promptContainerFrame.backgroundBorder:Hide();
 end
 
---[[
-	Adds a frame action to the legend's list of frame actions
-
-	frameAction - A FrameAction object containing information about
-				  a prompt that the legend wil display.
-]]
-function InputPromptLegendMixin:AddFrameAction(frameAction)
-	-- Add error checking against same action ids.
-	table.insert(self.actions, { action = frameAction, isFrameAction = true });
-end
-
 function InputPromptLegendMixin:RefreshWithPromptedBindings(promptedBindings)
 	-- We might be removing a prompt by omitting it from this list, so hide everything first.
 	for _, frame in pairs(self.promptFrames) do
@@ -156,9 +100,9 @@ function InputPromptLegendMixin:RefreshWithPromptedBindings(promptedBindings)
 	-- Attempt to re-use frames that we have previously generated.
 	for _, promptedBinding in ipairs(promptedBindings) do
 		local template = promptedBinding:GetInputIconTemplate();
-		local keys = promptedBinding.customDisplayKey and {promptedBinding.customDisplayKey} or promptedBinding.keys;
-		local label = promptedBinding.labelFunction and promptedBinding.labelFunction() or promptedBinding.label;
-		local showEnabled = promptedBinding:AreConditionsMet();
+		local keys = promptedBinding:GetDisplayKeys();
+		local label = promptedBinding:GetFooterBindingLabel();
+		local showEnabled = promptedBinding:IsFooterConditionMet();
 		local divider = GAMEPAD_PROMPT_DIVIDER_SLASH;
 
 		local promptFrame = self:GetOrCreatePromptFrameUsingTemplateAndInputs(template.name, keys, divider);
@@ -226,79 +170,10 @@ function InputPromptLegendMixin:GetOrCreatePromptFrameUsingTemplateAndInputs(tem
 	return promptFrame;
 end
 
---[[
-	Creates the input prompts displayed in the legend based on the added frame actions.
-	The current implementation intention is that a legend has added all the frame actions the legend will
-	display and then this function is called just once for the legend. There is currently no logic that
-	supports refreshing the legend by adding/removing prompts.
-
-	After the prompt frames have been created the default positioning algorithm will adjust the positions of the prompt frames.
-]]
 function InputPromptLegendMixin:InitializePrompts()
-	for _, actionTable in ipairs(self.actions) do
-		if (actionTable.isFrameAction) then
-			local frameAction = actionTable.action;
-			local promptFrame = self:GetOrCreatePromptFrameUsingTemplateAndInputs(frameAction.template.name, frameAction.inputKeys, frameAction.divider);
-			self.promptMap[frameAction.promptID] = promptFrame;
-			promptFrame:SetPromptText(frameAction.text);
-
-			--[[
-				If this is the first frame action associated with this input prompt its
-				initialization settings will be used to initialize the frame action data
-				and set the initial style and text for the prompt.
-
-				Additional frame actions that use this prompt can be switched to using the
-				ChangePromptTextToFrameAction function, but the prompt data enabled and active
-				settings will remain the same unless changed by calling other functions such as
-				SetFrameActionPromptEnabled or SetFrameActionPromptActiveByID.
-			]]
-			if (not promptFrame.frameActionData) then
-				promptFrame.frameActionData =
-				{
-					isEnabled = true,
-					isActive = not frameAction.initializePromptAsInactive,
-					frameActionDisplayedByPrompt = frameAction.promptID,
-					promptTextMap = {};
-				}
-
-				-- Frame actions are enabled by default
-				if (frameAction.initializePromptAsInactive) then
-					promptFrame:ApplyInactiveEnabledPromptStyling();
-				else
-					promptFrame:EnablePrompt();
-				end
-			end
-
-			--[[
-				Store the text in the prompt text map for this frame action. This provides
-				the ability to reference the frame action text by promptID later.
-			]]
-			promptFrame.frameActionData.promptTextMap[frameAction.promptID] = frameAction.text;
-		end
-	end
-
-	--[[
-		Loop through the created prompts and update the text of the prompt to the first frame action that was added using
-		that input.
-	]]
-	for _, promptFrame in pairs(self.promptMap) do
-		if (promptFrame.frameActionData) then
-			local frameActionPromptDisplayedText = self:GetDisplayedFrameActionText(promptFrame.frameActionData);
-			promptFrame:SetPromptText(frameActionPromptDisplayedText);
-		end
-	end
-
 	self:ApplyDefaultPromptPositioning();
 end
 
-function InputPromptLegendMixin:ChangePromptTextToFrameAction(frameActionID)
-	local promptFrame = self.promptMap[frameActionID];
-	if (promptFrame and promptFrame.frameActionData) then
-		promptFrame.frameActionData.frameActionDisplayedByPrompt = frameActionID;
-		local newPromptTextToDisplay = self:GetDisplayedFrameActionText(promptFrame.frameActionData);
-		promptFrame:SetPromptText(newPromptTextToDisplay);
-	end
-end
 
 --[[
 	Sets the desired width of the input legend. When the width is set
@@ -356,39 +231,6 @@ function InputPromptLegendMixin:AddModifierSection()
 	self.promptContainerFrame:SetPoint("TOPLEFT", modifierFrame, "TOPRIGHT", BORDER_MERGE_OFFSEET, 0);
 end
 
-function InputPromptLegendMixin:SetFrameActionPromptEnabled(frameActionID, enabled)
-	local frameActionPrompt = self.promptMap[frameActionID];
-	if (frameActionPrompt and frameActionPrompt.frameActionData) then
-		frameActionPrompt.frameActionData.isEnabled = enabled;
-		if (enabled) then
-			if (not frameActionPrompt.frameActionData.isActive) then
-				frameActionPrompt:ApplyInactiveEnabledPromptStyling();
-			else
-				frameActionPrompt:EnablePrompt();
-			end
-		else
-			frameActionPrompt:DisablePrompt();
-		end
-	end
-end
-
---[[
-	Using a frame action ID, the prompt associated with the frame action will have the
-	isActive flag in the frame action data updated to true or false depending on the
-	activeState value.
-
-	frameActionID - The id of the frame action that is used to get the linked prompt frame.
-
-	activeState - Boolean indicating if the linked prompt should be marked as active (true) or inactive (false).
-]]
-function InputPromptLegendMixin:SetFrameActionPromptActiveByID(frameActionID, activeState)
-	local frameActionPrompt = self.promptMap[frameActionID];
-	if (frameActionPrompt and frameActionPrompt.frameActionData) then
-		frameActionPrompt.frameActionData.isActive = activeState;
-		self:SetFrameActionPromptEnabled(frameActionID, frameActionPrompt.frameActionData.isEnabled);
-	end
-end
-
 --[[
 	Using the frames generated by the InputPromptLegendMixin:InitializePrompts function, this function
 	applies formatting that either places the prompts in a horizontal line or wraps around the legend
@@ -407,12 +249,15 @@ function InputPromptLegendMixin:ApplyDefaultPromptPositioning()
 	end
 	self.promptContainerFrame:SetWidth(promptContainerWidth);
 	local rowHeightOffset = -LEGEND_BACKGROUND_PADDING;
+	local isFirstPrompt = true;
 
 	for index, value in ipairs(self.promptFramesAddOrder) do
 		local promptFrame = self.promptFrames[value];
 
 		if promptFrame:IsShown() then
-			if (index == 1) then
+			if isFirstPrompt then
+				isFirstPrompt = false;
+
 				-- Position the prompt so that the whole prompt is inside of the container bounds instead of sticking out slightly
 				promptFrame:SetPoint("TOPLEFT", self.promptContainerFrame, LEGEND_BACKGROUND_PADDING, rowHeightOffset);
 
@@ -451,10 +296,6 @@ function InputPromptLegendMixin:ApplyDefaultPromptPositioning()
 	if (self.modifierFrame) then
 		self.modifierFrame:SetHeight(legendHeight);
 	end
-end
-
-function InputPromptLegendMixin:GetDisplayedFrameActionText(promptFrameActionData)
-	return promptFrameActionData.promptTextMap[promptFrameActionData.frameActionDisplayedByPrompt];
 end
 
 function InputPromptLegendMixin:ApplyFocusedStyleToModifierSection()
@@ -504,17 +345,3 @@ function InputPromptLegendMixin:OnBackgroundAlphaChanged()
 		self.promptContainerFrame.backgroundBorder:SetAlpha(1);
 	end
 end
-
---[[
-	This table contains resuable non-specific frame actions that are reused across multiple different
-	input legends so we don't need to create duplicates across the various files that use input legends.
-]]
-InputPromptLegends.CommonReusableFrameActions =
-{
-	PAD2_EXIT = InputPromptLegends.CreateFrameAction("Exit", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_FACE_RIGHT }, FRAME_ACTION_EXIT),
-	PAD2_CLOSE = InputPromptLegends.CreateFrameAction("Close", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_FACE_RIGHT }, FRAME_ACTION_CLOSE),
-	PAD2_BACK = InputPromptLegends.CreateFrameAction("Back", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_FACE_RIGHT }, FRAME_ACTION_BACK),
-	PAD2_CANCEL = InputPromptLegends.CreateFrameAction("Cancel", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_FACE_RIGHT }, FRAME_ACTION_CANCEL),
-	PADBACK_BLANK = InputPromptLegends.CreateFrameAction("Focus", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_MENU_LEFT }, ""),
-	TRIGGERS_ROTATE_CHARACTER = InputPromptLegends.CreateFrameAction("RotateCharacter", InputPromptLegends.PromptTemplates.StandardTwoIcon, { GAMEPAD_TRIGGER_LEFT, GAMEPAD_TRIGGER_RIGHT }, FRAME_ACTION_ROTATE_CHARACTER);
-}

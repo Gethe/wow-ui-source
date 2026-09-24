@@ -17,7 +17,9 @@
 [Family]\UnitPowerBarAlt.lua
 [Family]\UnitPowerBarAlt.xml
 [Family]\PowerBarColorUtil.lua			[AllowLoadGameType mainline]
-[Family]\UnitFrameUtil.lua				[AllowLoadGameType mainline]
+[Family]\UnitFramePvPIndicatorStyle.lua	[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\UnitFramePvPIndicatorStyle.lua	[AllowLoadGameType camelot]
+Shared\UnitFrameUtil.lua
 Shared\StatusBarOverlaySegment.lua
 Shared\StatusBarOverlaySegment.xml
 Shared\UnitFrame.lua

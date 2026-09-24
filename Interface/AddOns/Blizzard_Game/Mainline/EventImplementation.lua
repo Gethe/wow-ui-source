@@ -515,11 +515,20 @@ end
 
 function GameEvent.HandleEnchantSpellSelected(dispatcher, _event)
 	PlaySound(SOUNDKIT.ENCHANTMENT_SELECTED);
-	ItemButtonUtil.OpenAndFilterBags(dispatcher);
-	ItemButtonUtil.OpenAndFilterCharacterFrame();
+	if ItemButtonUtil.ShouldOpenBagsForEnchantSelection() then
+		ItemButtonUtil.OpenAndFilterBags(dispatcher);
+	end
+	if ItemButtonUtil.ShouldOpenCharacterFrameForEnchantSelection() then
+		ItemButtonUtil.OpenAndFilterCharacterFrame();
+		ItemButtonUtil.ConsumePendingItemSelectionSource();
+	end
 end
 
 function GameEvent.HandleUpdateSpellTargetItemContext(_dispatcher, _event)
+	if not C_Spell.TargetSpellIsEnchanting() then
+		ItemButtonUtil.ClearPendingItemSelectionSource();
+	end
+
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
 

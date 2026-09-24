@@ -705,6 +705,7 @@
 			<xs:extension base="LayoutFrameRefType">
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element ref="LayoutField"/>
+					<xs:element name="Color" type="ColorType"/>
 				</xs:choice>
 				<xs:attributeGroup ref="LayoutFrameAttributes"/>
 				<xs:attribute name="file" type="xs:string"/>
@@ -1733,6 +1734,8 @@
 		<xs:attribute name="parentKey" type="xs:string"/>
 		<xs:attribute name="parentArray" type="xs:string"/>
 		<xs:attribute name="looping" type="ANIMLOOPTYPE" default="NONE"/>
+		<xs:attribute name="paused" type="xs:boolean" default="false"/>
+		<xs:attribute name="autoplay" type="xs:boolean" default="false"/>
 		<xs:attribute name="setToFinalAlpha" type="xs:boolean" default="false"/>
 		<xs:attribute name="parentPartition" type="SCRIPTOBJECTPARTITION" use="optional"/>
 	</xs:complexType>

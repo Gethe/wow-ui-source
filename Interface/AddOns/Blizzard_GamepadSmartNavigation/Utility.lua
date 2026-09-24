@@ -48,6 +48,11 @@ function SmartNavigation_IsFrameFocusable(inFrame)
 	return inFrame and inFrame.smartNavigationCanFocus == true;
 end
 
+-- Make attempts to focus `inFrame` focus `forFrame` instead.
+function SmartNavigation_SetButtonFrame(inFrame, forFrame)
+	inFrame.smartNavigationProxyTarget = forFrame;
+end
+
 --[[
 	Unlike the Ignored mark, this mark indicates that the frame being
 	marked should be ignored, but not the frame's children (unless

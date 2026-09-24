@@ -6,6 +6,7 @@
 
 ..\Blizzard_PTRFeedback\Blizzard_PTRFeedback.lua
 ..\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Frames.lua
+..\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Gamepad.lua
 ..\Blizzard_PTRFeedback\Blizzard_Reports.lua
 
 Blizzard_Reports_Glue.lua

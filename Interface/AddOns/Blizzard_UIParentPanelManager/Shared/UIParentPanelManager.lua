@@ -870,7 +870,9 @@ end
 
 function ShowUIPanel(frame, force, contextKey)
 	local function BroadcastShowUIPanelEvent()
-		EventRegistry:TriggerEvent("UIParentPanelManager.ShowUIPanel", frame, force, contextKey);
+		if frame:IsShown() then
+			EventRegistry:TriggerEvent("UIParentPanelManager.ShowUIPanel", frame, force, contextKey);
+		end
 	end
 
 	if ( CanAutoSetGamePadCursorControl(true) ) then
@@ -902,7 +904,9 @@ end
 
 function HideUIPanel(frame, skipSetPoint, skipShownCheck)
 	local function BroadcastHideUIPanelEvent()
-		EventRegistry:TriggerEvent("UIParentPanelManager.HideUIPanel", frame, skipSetPoint);
+		if not frame:IsShown() then
+			EventRegistry:TriggerEvent("UIParentPanelManager.HideUIPanel", frame, skipSetPoint);
+		end
 	end
 
 	if ( not frame ) then
@@ -945,7 +949,7 @@ end
 
 function GetUIPanelWidthUnscaled(frame, extraWidth)
 	extraWidth = extraWidth or 0;
-	
+
 	local panelAttrExtraWidth = GetUIPanelAttribute(frame, "extraWidth");
 	if not panelAttrExtraWidth then
 		local panelAttrExtraWidthFunc = GetUIPanelAttribute(frame, "extraWidthFunc");

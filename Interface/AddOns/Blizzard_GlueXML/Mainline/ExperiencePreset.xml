@@ -19,7 +19,7 @@
 	</Frame>
 
 	<CheckButton name="ExperienceButtonTemplate" toplevel="true" mixin="ExperiencePresetButtonMixin" virtual="true">
-		<Size x="450" y="500"/>
+		<Size x="450" y="550"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="Preset-Selection-Card-Regular" useAtlasSize="true"/>
@@ -30,16 +30,22 @@
 						<Anchor point="TOP" x="0" y="-69"/>
 					</Anchors>
 				</FontString>
+				<Texture name="$parentIcon" parentKey="Icon">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="-3" y="-25" />
+					</Anchors>
+				</Texture>
 				<FontString parentKey="Description" inherits="GlueFontHighlight" justifyV="TOP" justifyH="CENTER">
 					<Size x="320" y="100"/>
 					<Anchors>
-						<Anchor point="TOP" relativeKey="$parent.Title" relativePoint="BOTTOM" x="3" y="-40" />
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM" x="3" y="-25" />
 					</Anchors>
 				</FontString>
 				<FontString parentKey="StartingSettings" inherits="GlueFontHighlight" justifyV="MIDDLE" justifyH="LEFT" text="EXPERIENCE_PRESET_STARTING_SETTINGS">
 					<Size x="180" y="30"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-30"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
 					</Anchors>
 				</FontString>
 			</Layer>

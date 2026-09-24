@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
 
-	<Button name="LFGWhoListButtonTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" mixin="LFGWhoListButtonMixin">
+	<Button name="LFGWhoListButtonTemplate" registerForClicks="RightButtonUp" virtual="true" mixin="LFGWhoListButtonMixin">
 		<Size x="269" y="69" />
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -11,7 +11,7 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" inherits="GameFontNormalMed1" maxLines="1" justifyH="LEFT" parentArray="FontStrings">					
 					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-6"/>
+						<Anchor point="TOPLEFT" x="10" y="-8"/>
 						<Anchor point="RIGHT"/>
 					</Anchors>
 				</FontString>
@@ -52,6 +52,30 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<Frames>
+			<Button parentKey="InviteButton" registerForClicks="LeftButtonUp" mixin="WhoInviteButtonMixin">
+				<Size x="36" y="36"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-20" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Icon" atlas="friends-icon-friendsInGroup">
+							<Size x="20" y="20"/>
+							<Anchors>
+								<Anchor point="CENTER" y="1"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<NormalTexture parentKey="NormalTexture" atlas="common-button-tertiary-square-normal"/>
+				<PushedTexture parentKey="PushedTexture" atlas="common-button-tertiary-square-pressed"/>
+				<HighlightTexture parentKey="HighlightTexture" atlas="common-button-tertiary-square-normal" alphaMode="ADD"/>
+				<Scripts>
+					<OnClick method="OnClick" />
+				</Scripts>
+			</Button>
+		</Frames>
 		<Scripts>
 			<OnEnter method="OnEnter"/>
 			<OnLeave function="GameTooltip_Hide"/>
@@ -60,9 +84,7 @@
 	</Button>
 
 
-	<!--groupfinder-Stat-StoneBG-->
-
-	<Frame name="LFGWhoListFrame" parent="LFGParentFrame" inherits="PortraitFrameTemplateNoCloseButton" mixin="LFGWhoListMixin" setAllPoints="true" hidden="true" enableMouse="true">
+		<Frame name="LFGWhoListFrame" parent="LFGParentFrame" inherits="PortraitFrameTemplateNoCloseButton" mixin="LFGWhoListMixin" setAllPoints="true" hidden="true" enableMouse="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="WhoFrameTotals" inherits="UserScaledFontGameNormalSmall, UserScaledFontStringTemplate" justifyH="CENTER" >
@@ -76,18 +98,39 @@
 				</FontString>
 			</Layer>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="headerBackground" atlas="groupfinder-Stat-StoneBG" >
-					<Size y="56"/>
+				<Texture parentKey="BackgroundArt" atlas="groupfinder-background">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="4" y="-24" />
-						<Anchor point="TOPRIGHT" x="-4" y="-24" />
+						<Anchor point="TOPLEFT" x="4" y="-80" />
+						<Anchor point="BOTTOMRIGHT" x="-4" y="3" />
+					</Anchors>
+				</Texture>				
+				<Texture parentKey="headerBackground" atlas="groupfinder-Stat-StoneBG" >
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundArt" relativePoint="TOPRIGHT" x="0" y="-7"/>
 					</Anchors>
 				</Texture>
+			</Layer>
+			<Layer level="BORDER">
 				<Texture parentKey="insideFrame" atlas="common-insideframe" >
 					<Anchors>
 						<Anchor point="TOPLEFT" x="3" y="-78" />
-						<Anchor point="BOTTOMRIGHT" x="-3" y="3" />
-					</Anchors>					
+						<Anchor point="BOTTOMRIGHT" x="-4" y="3" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="$parentBarTop" parentKey="BarTop" atlas="groupfinder-ScrollLine" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.BackgroundArt" relativePoint="TOPLEFT" x="0" y="-20"/>
+						<Anchor point="RIGHT" relativeKey="$parent.BackgroundArt" relativePoint="TOPRIGHT" x="0" y="-20"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBarMiddle" parentKey="BarMiddle" atlas="groupfinder-ScrollLine" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="BOTTOMLEFT" x="0" y="42"/>
+						<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" x="0" y="42"/>
+					</Anchors>
 				</Texture>
 			</Layer>
 		</Layers>
@@ -98,20 +141,10 @@
 					<KeyValue key="instructionText" value="WHO_LIST_SEARCH_INSTRUCTIONS" type="global"/>
 					<KeyValue key="instructionsFontObject" value="UserScaledFontGameDisableSmall" type="global"/>
 				</KeyValues>
-				<Size x="280" y="20"/>
+				<Size x="255" y="20"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="61" y="-37"/>
+					<Anchor point="TOPLEFT" x="56" y="-40"/>
 				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Backdrop" atlas="glues-characterSelect-searchbar" useAtlasSize="false">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="-5"/>
-								<Anchor point="BOTTOMRIGHT"/>
-							</Anchors>
-						</Texture>
-					</Layer>			
-				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad" inherit="append"/>
 					<OnShow method="OnShow"/>
@@ -123,17 +156,17 @@
 				<FontString inherits="UserScaledFontGameHighlight" justifyH="LEFT"/>
 			</EditBox>
 
-			<Button parentKey="WhoSearch" mixin="WhoSearchMixin" >
+			<Button parentKey="WhoSearch" mixin="WhoSearchMixin" frameStrata="HIGH" >
 				<Size x="36" y="36"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.EditBox" relativePoint="RIGHT" x="2" y="0"/>
+					<Anchor point="LEFT" relativeKey="$parent.EditBox" relativePoint="RIGHT" x="-6" y="-1"/>
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Icon" atlas="common-icon-undo">
-							<Size x="18" y="18"/>
+						<Texture parentKey="Icon" atlas="common-icon-search">
+							<Size x="20" y="20"/>
 							<Anchors>
-								<Anchor point="CENTER"/>
+								<Anchor point="CENTER" y="1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -145,18 +178,24 @@
 					<OnClick method="OnClick" />
 				</Scripts>				
 			</Button>
-			
+
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.WhoSearch" relativePoint="RIGHT" x="5" y="0"/>
+				</Anchors>
+			</DropdownButton>
+
 			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 				<Size x="302" y="302"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="16" y="-90"/>
-					<Anchor point="BOTTOMRIGHT" x="-32" y="42"/>
+					<Anchor point="TOPLEFT" x="16" y="-106"/>
+					<Anchor point="BOTTOMRIGHT" x="-32" y="48"/>
 				</Anchors>
 			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-4"/>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="-10"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="-1"/>
 				</Anchors>
 			</EventFrame>	
 		</Frames>

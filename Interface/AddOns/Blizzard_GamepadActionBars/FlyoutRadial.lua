@@ -19,6 +19,9 @@ local CIRCLE_STYLE_PROPERTIES = {
 	overOverlayAtlas = "gamepad-flyout-circular-slot-over-border",
 	selectedAtlas = "gamepad-flyout-circular-slot-selected",
 	selectedOverlayAtlas = "gamepad-flyout-circular-slot-highlight",
+	autoCastCornersAtlas = "gamepad-actionbar-circleslot-petautocastcorners",
+	autoCastMaskAtlas = "gamepad-actionbar-circleslot-petautocast-mask",
+	autoCastCornersOffset = 1,
 	iconSize = 36,
 	pushedIconOffset = -2,
 	pushedIconSize = 33,
@@ -39,6 +42,9 @@ local SQUARE_STYLE_PROPERTIES = {
 	overOverlayAtlas = "gamepad-flyout-square-slot-over-border",
 	selectedAtlas = "gamepad-flyout-square-slot-selected",
 	selectedOverlayAtlas = "gamepad-flyout-square-slot-highlight",
+	autoCastCornersAtlas = "gamepad-actionbar-squareslot-petautocastcorners",
+	autoCastMaskAtlas = "gamepad-actionbar-squareslot-petautocast-mask",
+	autoCastCornersOffset = 2,
 	iconSize = 36,
 	pushedIconOffset = -2,
 	pushedIconSize = 33,
@@ -48,13 +54,13 @@ local SQUARE_STYLE_PROPERTIES = {
 };
 
 --------------------------------------------------------------------------------
--- GamepadSpellFlyoutPopupButtonMixin
+-- GamepadFlyoutPopupButtonMixin
 --------------------------------------------------------------------------------
 
-GamepadSpellFlyoutPopupButtonMixin = CreateFromMixins(SpellFlyoutPopupButtonMixin);
+GamepadFlyoutPopupButtonMixin = {};
 
 -- Overrides BaseActionButtonMixin:UpdateButtonArt
-function GamepadSpellFlyoutPopupButtonMixin:UpdateButtonArt()
+function GamepadFlyoutPopupButtonMixin:UpdateButtonArt()
 	-- The style may not have been determined yet at the point this is first called
 	if not self.style then
 		return;
@@ -69,6 +75,8 @@ function GamepadSpellFlyoutPopupButtonMixin:UpdateButtonArt()
 		{ self.HighlightTexture, self.style.overOverlayAtlas, "ARTWORK" },
 		{ self.NormalTexture, self.style.normalAtlas, "BACKGROUND" },
 		{ self.PushedTexture, self.style.downAtlas, "BACKGROUND" },
+		{ self.AutoCastOverlay.Corners, self.style.autoCastCornersAtlas, nil },
+		{ self.AutoCastOverlay.Mask, self.style.autoCastMaskAtlas, nil },
 	};
 
 	for _, texture in ipairs(textures) do
@@ -88,6 +96,17 @@ function GamepadSpellFlyoutPopupButtonMixin:UpdateButtonArt()
 	self.cooldown:SetSwipeTexture(self.style.cooldownSwipeTexture);
 	self.icon:SetSize(self.style.iconSize, self.style.iconSize);
 
+	local cornersOffset = self.style.autoCastCornersOffset;
+	local maskOffset = -2;
+	self.AutoCastOverlay:SetAllPoints();
+	self.AutoCastOverlay.Corners:ClearAllPoints();
+	self.AutoCastOverlay.Corners:SetPoint("TOPLEFT", cornersOffset, -cornersOffset);
+	self.AutoCastOverlay.Corners:SetPoint("BOTTOMRIGHT", -cornersOffset, cornersOffset);
+	self.AutoCastOverlay.Mask:ClearAllPoints();
+	self.AutoCastOverlay.Mask:SetPoint("TOPLEFT", maskOffset, -maskOffset);
+	self.AutoCastOverlay.Mask:SetPoint("BOTTOMRIGHT", -maskOffset, maskOffset);
+	self.AutoCastOverlay.Shine:SetAllPoints();
+
 	self:UpdateState();
 
 	-- Unused textures
@@ -95,26 +114,12 @@ function GamepadSpellFlyoutPopupButtonMixin:UpdateButtonArt()
 	self.SlotBackground:Hide();
 end
 
-function GamepadSpellFlyoutPopupButtonMixin:OnShow()
-	self:RegisterUnitEvent("UNIT_AURA", "player");
-end
-
-function GamepadSpellFlyoutPopupButtonMixin:OnHide()
-	self:UnregisterEvent("UNIT_AURA");
-end
-
-function GamepadSpellFlyoutPopupButtonMixin:OnEvent(event, ...)
-	if event == "UNIT_AURA" then
-		self:UpdateState();
-	end
-end
-
-function GamepadSpellFlyoutPopupButtonMixin:OnEnter()
+function GamepadFlyoutPopupButtonMixin:OnEnter()
 	self.isMouseOver = true;
 	self:UpdateMouseState();
 end
 
-function GamepadSpellFlyoutPopupButtonMixin:OnLeave()
+function GamepadFlyoutPopupButtonMixin:OnLeave()
 	-- Once the mouse has left the element, it is no longer considered pushed with our native
 	-- button behavior, so match that here.
 	self.isMouseDown = false;
@@ -122,21 +127,21 @@ function GamepadSpellFlyoutPopupButtonMixin:OnLeave()
 	self:UpdateMouseState();
 end
 
-function GamepadSpellFlyoutPopupButtonMixin:OnMouseDown(button)
+function GamepadFlyoutPopupButtonMixin:OnMouseDown(button)
 	if button == "LeftButton" then
 		self.isMouseDown = true;
 		self:UpdateMouseState();
 	end
 end
 
-function GamepadSpellFlyoutPopupButtonMixin:OnMouseUp(button)
+function GamepadFlyoutPopupButtonMixin:OnMouseUp(button)
 	if button == "LeftButton" then
 		self.isMouseDown = false;
 		self:UpdateMouseState();
 	end
 end
 
-function GamepadSpellFlyoutPopupButtonMixin:UpdateMouseState()
+function GamepadFlyoutPopupButtonMixin:UpdateMouseState()
 	-- Hiding/showing HighlightTexture manually instead of using the HIGHLIGHT layer since the
 	-- HIGHLIGHT layer is the highest, and the selection arrow should appear on top of it
 	if self.isMouseOver and self.isMouseDown then
@@ -150,7 +155,7 @@ function GamepadSpellFlyoutPopupButtonMixin:UpdateMouseState()
 	end
 end
 
-function GamepadSpellFlyoutPopupButtonMixin:GetStateTexture()
+function GamepadFlyoutPopupButtonMixin:GetStateTexture()
 	local state = self:GetButtonState();
 
 	if state == "NORMAL" then
@@ -163,30 +168,40 @@ function GamepadSpellFlyoutPopupButtonMixin:GetStateTexture()
 end
 
 -- Overrides ActionBarActionButtonMixin:UpdateState
-function GamepadSpellFlyoutPopupButtonMixin:UpdateState()
+function GamepadFlyoutPopupButtonMixin:UpdateState()
 	local isChecked = self.spellID and C_Spell.IsActiveSpell(self.spellID);
 	self:SetChecked(isChecked);
 	self.CheckedOverlayTexture:SetShown(isChecked);
 end
 
--- Overrides SpellFlyoutPopupButtonMixin:OnClick
-function GamepadSpellFlyoutPopupButtonMixin:OnClick()
-	if C_Spell.IsActiveSpell(self.spellID) then
+function GamepadFlyoutPopupButtonMixin:HandleClick()
+	if self.spellID and C_Spell.IsActiveSpell(self.spellID) then
 		C_Spell.CancelSpellByID(self.spellID);
-		return;
+		return true;
 	end
 
-	return SpellFlyoutPopupButtonMixin.OnClick(self);
+	return false;
+end
+
+-- Overrides SpellFlyoutPopupButtonMixin:OnClick
+function GamepadFlyoutPopupButtonMixin:OnClick()
+	if not self:HandleClick() then
+		FlyoutPopupButtonMixin.OnClick(self);
+	end
 end
 
 --------------------------------------------------------------------------------
--- GamepadSpellFlyoutMixin
+-- GamepadFlyoutMixin
 --------------------------------------------------------------------------------
 
-GamepadSpellFlyoutMixin = CreateFromMixins(LayoutMixin, SpellFlyoutMixin);
+GamepadFlyoutMixin = CreateFromMixins(LayoutMixin, FlyoutPopupMixin);
 
 -- Overrides FlyoutPopupMixin:AttachToButton
-function GamepadSpellFlyoutMixin:AttachToButton(button)
+function GamepadFlyoutMixin:AttachToButton(button)
+	-- Changing parent resets frame strata to that of the parent...
+	local prevFrameStrata = self:GetFrameStrata();
+	local prevFrameLevel = self:GetFrameLevel();
+
 	FlyoutPopupMixin.AttachToButton(self, button);
 
 	button.Arrow:Hide();
@@ -195,6 +210,9 @@ function GamepadSpellFlyoutMixin:AttachToButton(button)
 	-- displayed on top of the flyout background.
 	self.prevButtonParent = button:GetParent();
 	self:SetParent(UIParent);
+	self:SetFrameStrata(prevFrameStrata);
+	self:SetFrameLevel(prevFrameLevel);
+
 	button:SetParent(self);
 
 	self.SelectionArrow:Hide();
@@ -202,45 +220,36 @@ function GamepadSpellFlyoutMixin:AttachToButton(button)
 end
 
 -- Overrides FlyoutPopupMixin:DetachFromButton
-function GamepadSpellFlyoutMixin:DetatchFromButton()
+function GamepadFlyoutMixin:DetatchFromButton()
 	self.flyoutButton.Arrow:Show();
 	self.flyoutButton:SetParent(self.prevButtonParent);
 
 	FlyoutPopupMixin.DetatchFromButton(self);
 end
 
--- Overrides SpellFlyoutMixin:OnLoad
-function GamepadSpellFlyoutMixin:OnLoad()
-	SpellFlyoutMixin.OnLoad(self);
-
+function GamepadFlyoutMixin:OnLoad()
 	self.bindings = GamepadMode.CreateBindingGroup("GamepadFlyoutPopupBindings");
 	self.bindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.UpdateSelection, self));
 	self.bindings:TreatAsCore();
 end
 
--- Overrides SpellFlyoutMixin:OnShow
-function GamepadSpellFlyoutMixin:OnShow()
-	SpellFlyoutMixin.OnShow(self);
-
+function GamepadFlyoutMixin:OnShow()
 	GamepadMode.ActivateBindingGroup(self.bindings);
 
 	self:SetScript("OnGamePadButtonDown", self.OnGamePadButtonDown);
 end
 
--- Overrides SpellFlyoutMixin:OnHide
-function GamepadSpellFlyoutMixin:OnHide()
+function GamepadFlyoutMixin:OnHide()
 	self:SetScript("OnGamePadButtonDown", nil);
 
 	GamepadMode.DeactivateBindingGroup(self.bindings);
-
-	SpellFlyoutMixin.OnHide(self);
 
 	if self.selection then
 		self:SetSelection(nil);
 	end
 end
 
-function GamepadSpellFlyoutMixin:OnGamePadButtonDown(gamepadKey)
+function GamepadFlyoutMixin:OnGamePadButtonDown(gamepadKey)
 	if self:IsShown() then
 		-- Defer this until next frame. Since we indiscriminately close this on any button press
 		-- but still let any bound actions for that press go through, pressing the flyout button
@@ -261,11 +270,6 @@ function GamepadSpellFlyoutMixin:OnGamePadButtonDown(gamepadKey)
 	return propagateInput;
 end
 
--- Overrides SpellFlyoutMixin:ShowAllRanks
-function GamepadSpellFlyoutMixin:ShowAllRanks()
-	return false;
-end
-
 local function GetSegmentOffset(radius, segmentIndex)
 	local angle = RADIAN_HALF_QUARTER_CIRCLE * (segmentIndex - 1);
 	local x = math.floor(radius * math.sin(angle) + 0.5);
@@ -273,8 +277,7 @@ local function GetSegmentOffset(radius, segmentIndex)
 	return x, y;
 end
 
--- Overrides SpellFlyoutMixin:UpdateLayout
-function GamepadSpellFlyoutMixin:UpdateLayout(flyoutButton)
+function GamepadFlyoutMixin:UpdateLayout(flyoutButton)
 	self.style = flyoutButton.activeButtonShape == "Square"
 		and SQUARE_STYLE_PROPERTIES
 		or CIRCLE_STYLE_PROPERTIES;
@@ -303,17 +306,17 @@ function GamepadSpellFlyoutMixin:UpdateLayout(flyoutButton)
 end
 
 -- Overrides FlyoutPopupMixin:UpdatePosition
-function GamepadSpellFlyoutMixin:UpdatePosition()
+function GamepadFlyoutMixin:UpdatePosition()
 	self:ClearAllPoints();
 	self:SetPoint("CENTER", 0, 0);
 end
 
 -- Overrides FlyoutPopupMixin:UpdateBackground
-function GamepadSpellFlyoutMixin:UpdateBackground()
+function GamepadFlyoutMixin:UpdateBackground()
 	self.Background:SetAtlas(self.style.backgroundAtlas, true);
 end
 
-function GamepadSpellFlyoutMixin:UpdateSelection(inX, inY)
+function GamepadFlyoutMixin:UpdateSelection(inX, inY)
 	local magnitudeSq = (inX * inX) + (inY * inY);
 	local deadzoneSq = TRIGGER_SENSITIVITY * TRIGGER_SENSITIVITY;
 
@@ -351,7 +354,7 @@ function GamepadSpellFlyoutMixin:UpdateSelection(inX, inY)
 	self:SetSelection(newSelection);
 end
 
-function GamepadSpellFlyoutMixin:UpdateSelectionIndicators(segmentIndex)
+function GamepadFlyoutMixin:UpdateSelectionIndicators(segmentIndex)
 	local isCardinal = bit.band(segmentIndex, 1) == 1;
 	local offset = isCardinal and self.style.cardinalArrowOffset or self.style.diagonalArrowOffset;
 	local angle = RADIAN_HALF_QUARTER_CIRCLE * (segmentIndex - 1);
@@ -364,7 +367,7 @@ function GamepadSpellFlyoutMixin:UpdateSelectionIndicators(segmentIndex)
 	self.SelectionIndicator:SetRotation(RADIAN_HALF_CIRCLE - angle);
 end
 
-function GamepadSpellFlyoutMixin:SetSelection(button)
+function GamepadFlyoutMixin:SetSelection(button)
 	if self.selection == button then
 		return;
 	end
@@ -388,7 +391,13 @@ function GamepadSpellFlyoutMixin:SetSelection(button)
 
 		button.isSelected = true;
 		button:UpdateMouseState();
-		GameTooltip:SetSpellByID(button.spellID, false, true);
+
+		if button.SetTooltip then
+			button:SetTooltip(GameTooltip);
+		else
+			GameTooltip:SetSpellByID(button.spellID, false, true);
+		end
+
 		self.SelectionArrow:Show();
 		self.SelectionIndicator:SetDesaturated(false);
 	end
@@ -397,7 +406,7 @@ function GamepadSpellFlyoutMixin:SetSelection(button)
 end
 
 -- Called by LayoutMixin
-function GamepadSpellFlyoutMixin:LayoutChildren(children)
+function GamepadFlyoutMixin:LayoutChildren(children)
 	if #children == 0 then
 		return 0, 0, false;
 	end
@@ -435,7 +444,7 @@ function GamepadSpellFlyoutMixin:LayoutChildren(children)
 end
 
 -- Overrides LayoutMixin:CalculateFrameSize
-function GamepadSpellFlyoutMixin:CalculateFrameSize()
+function GamepadFlyoutMixin:CalculateFrameSize()
 	-- Keep the size static
 	return self:GetSize();
 end

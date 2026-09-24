@@ -264,6 +264,14 @@ function GamepadMode.DeactivateBindingGroup(bindingGroup)
 	GamepadSharedUtility.InputBindingManager:RemoveSet(bindingSets[bindingGroup.name]);
 end
 
+function GamepadMode.IsBindingGroupActive(bindingGroup)
+	local bindingSet = bindingSets[bindingGroup.name];
+	if not bindingSet then
+		return false;
+	end
+	return GamepadSharedUtility.InputBindingManager:Contains(bindingSet);
+end
+
 if (not InGlue()) then
 	CreateCoreBindingSet();
 end

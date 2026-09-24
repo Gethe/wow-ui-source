@@ -1143,9 +1143,13 @@ function Professions.AreAllSourcesUnfiltered()
 	return true;
 end
 
+function Professions.GetDefaultShowUnlearned()
+	return true;
+end
+
 function Professions.SetDefaultFilters(ignoreSkillLine)
 	C_TradeSkillUI.SetShowLearned(true);
-	C_TradeSkillUI.SetShowUnlearned(true);
+	C_TradeSkillUI.SetShowUnlearned(Professions.GetDefaultShowUnlearned());
 	C_TradeSkillUI.SetOnlyShowMakeableRecipes(false);
 	C_TradeSkillUI.SetOnlyShowSkillUpRecipes(false);
 	C_TradeSkillUI.SetOnlyShowFirstCraftRecipes(false);

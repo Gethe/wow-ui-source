@@ -35,6 +35,7 @@ local RaidMarkers =
 		{
 			Name = "GetNextAvailableRaidTargetMarkerIndex",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -69,6 +70,7 @@ local RaidMarkers =
 		{
 			Name = "IsRaidMarkerActive",
 			Type = "Function",
+			SecretInChatMessagingLockdown = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

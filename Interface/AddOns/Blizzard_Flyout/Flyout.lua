@@ -46,7 +46,7 @@ function FlyoutButtonMixin:OnDragStart()
 end
 
 function FlyoutButtonMixin:SetPopup(popup)
-	assertsafe(popup.AttachToButton, "Popup should inherit from FlyoutPopupTemplate.");
+	assertsafe(not popup or popup.AttachToButton, "Popup should inherit from FlyoutPopupTemplate.");
 
 	if popup == self.popup then
 		return;

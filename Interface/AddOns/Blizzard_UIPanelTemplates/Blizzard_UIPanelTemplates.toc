@@ -8,3 +8,5 @@ Shared\UIPanelSpellButtonFrame.xml
 Shared\UIPanelTemplatesShared.lua
 [Family]\UIPanelTemplates.lua
 [Family]\UIPanelTemplates.xml
+[Family]\UIPanelTemplatesOverrides.xml [ExcludeLoadGameType classic, camelot]
+[Game]\UIPanelTemplatesOverrides.xml [AllowLoadGameType camelot]

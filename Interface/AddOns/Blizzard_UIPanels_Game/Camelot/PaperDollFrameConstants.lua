@@ -40,11 +40,11 @@ PAPERDOLL_STATCATEGORIES= {
 	{
 		categoryName = STAT_CATEGORY_PRIMARY_ATTRIBUTES,
 		unit = "player",
-		stats = {
+		stats = { -- must match UNITSTAT order
 			{ stat = "STRENGTH" },
 			{ stat = "AGILITY" },
-			{ stat = "INTELLECT" },
 			{ stat = "STAMINA" },
+			{ stat = "INTELLECT" },
 			{ stat = "SPIRIT" },
 		},
 	},

@@ -4,6 +4,9 @@
 		<Size x="48" y="48"/>
 		<Frames>
 			<CheckButton parentKey="checkButton">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Size x="24" y="24"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
@@ -43,7 +46,10 @@
 		</Scripts>
 		<NormalTexture atlas="UI-LFG-RoleIcon-Generic"/>
 	</Button>
-	<Frame name="RolePollPopup" parent="UIParent" hidden="true">
+	<Frame name="RolePollPopup" mixin="FocusFramesInterfaceMixin" parent="UIParent" hidden="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="DialogFrameTemplate" type="string"/>
+		</KeyValues>
 		<Size x="306" y="160"/>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -56,7 +62,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButtonNoScripts">
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonNoScripts">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-2" y="-2"/>
 				</Anchors>
@@ -118,10 +124,15 @@
 					<OnClick function="RolePollPopupAccept_OnClick"/>
 				</Scripts>
 			</Button>
+			<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameLevel="505"/>
+			<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameLevel="515"/>
 		</Frames>
 		<Scripts>
 			<OnLoad function="RolePollPopup_OnLoad"/>
 			<OnEvent function="RolePollPopup_OnEvent"/>
+			<OnHide function="RolePollPopup_OnHide"/>
 		</Scripts>
 	</Frame>
 	<Frame name="RoleChangedFrame" parent="UIParent">

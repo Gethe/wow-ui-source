@@ -363,6 +363,11 @@ end
 MainMenuBarMicroButtonMixin = CreateFromMixins(CallbackRegistryMixin);
 
 function MainMenuBarMicroButtonMixin:MainMenuBarMicroButton_OnLoad()
+	-- may get called multiple times.
+	if self.isLoaded then
+		return;
+	end
+	self.isLoaded = true;
 	CallbackRegistryMixin.OnLoad(self);
 
 	self:GenerateCallbackEvents({
@@ -503,12 +508,16 @@ function MainMenuBarMicroButtonMixin:OnMouseUp()
 end
 
 function MainMenuBarMicroButtonMixin:OnEnable()
+	-- its possible to call OnEnable before OnLoad so we need to make sure OnLoad is called first.
+	self:MainMenuBarMicroButton_OnLoad();
 	self:SetAlpha(1);
 	self:EvaluateTooltipVisibility();
 	self:TriggerEvent("OnEnable", self);
 end
 
 function MainMenuBarMicroButtonMixin:OnDisable()
+	-- its possible to call OnDisable before OnLoad so we need to make sure OnLoad is called first.
+	self:MainMenuBarMicroButton_OnLoad();
 	self:SetAlpha(0.5);
 	self:EvaluateTooltipVisibility();
 	self:TriggerEvent("OnDisable", self);
@@ -1935,6 +1944,7 @@ function MainMenuMicroButtonMixin:OnLoad()
 
 	self.updateInterval = 0;
 	self:RegisterForClicks("AnyUp");
+	EventRegistry:RegisterCallback("NewSettingSeen", self.UpdateNotificationIcon, self);
 end
 
 function MainMenuMicroButtonMixin:OnUpdate(elapsed)

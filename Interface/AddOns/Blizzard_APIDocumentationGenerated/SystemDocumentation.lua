@@ -81,6 +81,28 @@ local System =
 			},
 		},
 		{
+			Name = "GlobalRegionMouseDown",
+			Type = "Event",
+			LiteralName = "GLOBAL_REGION_MOUSE_DOWN",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "region", Type = "ScriptRegion", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GlobalRegionMouseUp",
+			Type = "Event",
+			LiteralName = "GLOBAL_REGION_MOUSE_UP",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "region", Type = "ScriptRegion", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "InitialHotfixesApplied",
 			Type = "Event",
 			LiteralName = "INITIAL_HOTFIXES_APPLIED",

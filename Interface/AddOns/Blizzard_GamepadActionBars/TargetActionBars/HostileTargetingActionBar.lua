@@ -158,11 +158,15 @@ function GamepadHostileTargetingActionBarMixin:ResetFaceLeft()
 	self.faceLeftButton:SetAttribute("type", "action");
 	self.faceLeftButton:SetAttribute("spell", nil);
 	self.faceLeftButton.spellID = nil;
-	self.faceLeftButton.ClearFlash = self.prevClearFlash;
-	self.faceLeftButton.SetChecked = self.prevSetChecked;
-	self.faceLeftButton.SetTooltip = self.prevSetTooltip;
-	self.faceLeftButton.UpdateFlash = self.prevUpdateFlash;
-	self.faceLeftButton.UpdateState = self.prevUpdateState;
+
+	-- This may be called before SetUpFaceLeft
+	if self.prevClearFlash then
+		self.faceLeftButton.ClearFlash = self.prevClearFlash;
+		self.faceLeftButton.SetChecked = self.prevSetChecked;
+		self.faceLeftButton.SetTooltip = self.prevSetTooltip;
+		self.faceLeftButton.UpdateFlash = self.prevUpdateFlash;
+		self.faceLeftButton.UpdateState = self.prevUpdateState;
+	end
 end
 
 function GamepadHostileTargetingActionBarMixin:SetUpFaceLeft()

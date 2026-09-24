@@ -15,16 +15,11 @@
 	<Frame name="SmartNavigationPointerTemplate" virtual="true">
 		<Size x="10" y="10" />
 		<Animations>
-			<AnimationGroup looping="REPEAT">
+			<AnimationGroup looping="REPEAT" autoplay="true">
 				<Translation childKey="Icon" duration="1" order="1" smoothing="IN_OUT" offsetX="4" offsetY="0"/>
 				<Translation childKey="Icon" duration="1" order="2" smoothing="IN_OUT" offsetX="-4" offsetY="0"/>
-				<Scripts>
-					<OnLoad>
-						self:Play();
-					</OnLoad>
-				</Scripts>
 			</AnimationGroup>
-			<AnimationGroup parentKey="IntroAnim">
+			<AnimationGroup parentKey="IntroAnim" paused="true">
 				<Alpha childKey="Icon" fromAlpha="0" toAlpha="1" duration="0.25" smoothing="IN"/>
 				<Scale childKey="Icon" duration="0.25" smoothing="IN" fromScaleX="1.5" fromScaleY="1.5" toScaleX="1" toScaleY="1"/>
 			</AnimationGroup>

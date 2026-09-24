@@ -51,6 +51,8 @@ function LFGParentFrameMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	self:UpdateTabs();
 
+	LFGParentFramePortrait:Show();
+
 	local currentTabIndex = self.selectedTab or 1;
 	LFGParentFrame_SetActiveTab(currentTabIndex)
 end
@@ -89,8 +91,10 @@ function LFGParentFrameMixin:UpdateTabs()
 end
 
 function LFGParentFrameMixin:UpdateEyePortrait()
+	LFGParentFramePortrait:SetStaticMode(not C_LFGList.HasActiveEntryInfo());
+
 	if (C_LFGList.HasActiveEntryInfo()) then
-		LFGParentFramePortrait:StartAnimating();
+		LFGParentFramePortrait:StartInitialAnimation();
 	else
 		LFGParentFramePortrait:StopAnimating();
 	end
@@ -111,8 +115,6 @@ function LFGParentFrameRightTabMixin:OnLoad()
 		end
 	end);
 end
-
-
 
 function LFGVanilla_ShowFrame(tab)
 	ShowUIPanel(LFGParentFrame);

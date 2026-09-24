@@ -208,7 +208,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ColorPickerSoftCursor" parent="UIParent" inherits="SoftCursorPointerTemplate" mixin="SoftCursorMixin" toplevel="true" frameStrata="FULLSCREEN_DIALOG" hidden="true">
+	<Frame name="ColorPickerSoftCursor" parent="UIParent" inherits="YellowSoftCursorPointerTemplate" mixin="SoftCursorMixin" toplevel="true" frameStrata="FULLSCREEN_DIALOG" hidden="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

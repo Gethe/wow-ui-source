@@ -24,9 +24,19 @@ PageUnit.lua
 PossessBar.lua
 StanceBar.lua
 ActionBarTemplates.xml
+FlyoutRadial.lua
+FlyoutRadial.xml
+SpellFlyoutRadial.lua
+SpellFlyoutRadial.xml
+ClassActionFlyout.lua
+ClassActionFlyout.xml
 MainActionBarFrame.lua
 MainActionBarFrame.xml
 ActionBarEditFrame.lua
 ActionBarEditFrame.xml
-FlyoutRadial.lua
-FlyoutRadial.xml
+
+[Game]/ClassSpellFlyout.lua			[AllowLoadGameType camelot]
+[Game]/PetActionFlyoutButton.lua	[AllowLoadGameType camelot]
+[Game]/PetActionFlyout.lua			[AllowLoadGameType camelot]
+[Game]/PetSpellFlyout.lua			[AllowLoadGameType camelot]
+[Game]/PetClassFlyouts.xml			[AllowLoadGameType camelot]

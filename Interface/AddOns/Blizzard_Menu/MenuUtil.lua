@@ -236,6 +236,11 @@ function MenuUtil.CreateHighlightButton(text, data, onEnter)
 	return ConfigureTextButton(text, elementDescription);
 end
 
+function MenuUtil.CreateRedHighlightButton(text, callback, data)
+	local elementDescription = MenuTemplates.CreateRedHighlightButton(text, callback, data);
+	return ConfigureTextButton(text, elementDescription);
+end
+
 -- looks good with WowStyle2DropdownTemplate, immitates the Settings menu
 function MenuUtil.CreateHighlightRadio(text, isSelected, setSelected, data, onEnter)
 	--assert(type(text) == "string");
@@ -274,6 +279,7 @@ MenuUtilPrivate.Inserters =
 	CreateCheckbox = MenuUtil.CreateCheckbox,
 	CreateRadio = MenuUtil.CreateRadio,
 	CreateHighlightButton = MenuUtil.CreateHighlightButton,
+	CreateRedHighlightButton = MenuUtil.CreateRedHighlightButton,
 	CreateHighlightRadio = MenuUtil.CreateHighlightRadio,
 	CreateDivider = MenuUtil.CreateDivider,
 	CreateSpacer = MenuUtil.CreateSpacer,

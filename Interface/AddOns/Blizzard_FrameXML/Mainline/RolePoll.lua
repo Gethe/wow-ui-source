@@ -1,5 +1,7 @@
 function RolePollPopup_OnLoad(self)
 	self:RegisterEvent("ROLE_POLL_BEGIN");
+
+	RolePollPopup_RegisterForTransitions(self);
 end
 
 function RolePollPopup_OnEvent(self, event, ...)
@@ -36,6 +38,10 @@ function RolePollPopup_Show(self)
 	RolePollPopup_UpdateChecked(self);
 	
 	StaticPopupSpecial_Show(RolePollPopup);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupShown(self);
+	end
 end
 
 function RolePollPopup_UpdateChecked(self)
@@ -48,6 +54,44 @@ function RolePollPopup_UpdateChecked(self)
 	else
 		self.acceptButton:Disable();
 	end
+end
+
+function RolePollPopup_SetupGamepad(self)
+	local function Accept()
+		RolePollPopupAcceptButton:Click();
+	end
+
+	local accept = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, Accept, ACCEPT);
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "RollPollFooter");
+	self.footer:AddStandardSelectPrompt();
+	self.footer:AddPromptedBinding(accept);
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+
+	function RolePollPopup.UnfocusGamepad(self)
+		self.footer:HideAndDeactivateBindings();
+	end
+
+	function RolePollPopup.FocusGamepad(self)
+		self.footer:ShowAndActivateBindings();
+	end
+
+	self.skipGamepadAutoFocus = true;
+end
+
+function RolePollPopup_InitializeGamepad(self)
+	RolePollPopupCloseButton:Hide();
+	RolePollPopupAcceptButton:Hide();
+
+	-- Size down to account for missing 'Accept' button
+	RolePollPopup:SetHeight(138);
+end
+
+function RolePollPopup_RegisterForTransitions(self)
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(RolePollPopup_SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(RolePollPopup_InitializeGamepad, self));
 end
 
 function RolePollPopupRoleButton_Enable(button, isRecommended)
@@ -88,6 +132,12 @@ function RolePollPopupAccept_OnClick(self, button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	UnitSetRoleEnum("player", self:GetParent().role);
 	StaticPopupSpecial_Hide(self:GetParent());
+end
+
+function RolePollPopup_OnHide(self)
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupHide(self);
+	end
 end
 
 function RoleChangedFrame_OnLoad(self)

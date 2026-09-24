@@ -820,6 +820,7 @@ local LFGListInfo =
 			Payload =
 			{
 				{ Name = "activityIDsFilter", Type = "table", InnerType = "number", Nilable = true },
+				{ Name = "showAllLevelRanges", Type = "bool", Nilable = false },
 			},
 		},
 		{

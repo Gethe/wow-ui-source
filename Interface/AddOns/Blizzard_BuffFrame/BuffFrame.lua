@@ -1072,28 +1072,8 @@ function DebuffFrameMixin:GetIconLimitSettingEnum()
 	return Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame;
 end
 
-function DebuffFrameMixin:SetupGamepad()
-	-- Setup input legend footer.
-	local inputLegend = InputPromptLegends.CreateInputLegend(self, "inputLegend");
-	inputLegend:SetLegendWidth(75);
-	--TODO: Handle issues with anchoring to GameTooltip and the tooltip moving while navigating the BuffFrame.
-	self.inputLegend:SetPoint("TOPLEFT", GameTooltip, "BOTTOMLEFT");
-	inputLegend:AddFrameAction(InputPromptLegends.CommonReusableFrameActions.PAD2_EXIT);
-	inputLegend:InitializePrompts();
-	inputLegend:Hide();
-
-	function DebuffFrame.UnfocusGamepad()
-		self.inputLegend:Hide();
-	end
-
-	function DebuffFrame.FocusGamepad()
-		self.inputLegend:Show();
-	end
-end
-
 function DebuffFrameMixin:RegisterForTransitions()
 	InputUtil.RegisterForInterfaceTransitions(self, nil);
-	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
 end
 
 -- If you make changes to this, consider making the same changes to PrivateAuraMixin

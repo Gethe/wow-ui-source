@@ -5,22 +5,12 @@
 ## AllowLoadGameType: camelot
 
 ###############################################
-# Utility
-###############################################
-
-Utility\Utility.lua
-
-###############################################
 # Root Directory & UI (depends on Utility)
 ###############################################
 
 Core.lua
 
-Gameplay\SpecialInputStates.lua
-
 Utility\Bindings\HoldBindings.lua
-
-UI\FrameReforms\StackSplitFrame.lua
 
 UI\ConsoleHUD\ConsoleTemplates.lua
 UI\ConsoleHUD\ConsoleTemplates.xml

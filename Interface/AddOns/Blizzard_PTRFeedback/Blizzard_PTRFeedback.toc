@@ -9,4 +9,5 @@ Blizzard_PTRFeedback.lua
 Blizzard_PTRFeedback_Tooltips.lua
 Blizzard_PTRFeedback_Frames.lua
 Blizzard_PTRFeedback_Events.lua
+Blizzard_PTRFeedback_Gamepad.lua
 Blizzard_Reports.lua

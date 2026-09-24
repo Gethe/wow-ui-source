@@ -348,6 +348,17 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "SetBlocked",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "bnetAccountID", Type = "number", Nilable = false },
+				{ Name = "block", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetCustomMessage",
 			Type = "Function",
 			HasRestrictions = true,

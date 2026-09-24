@@ -189,7 +189,13 @@ function NavBar_ButtonOnLeave(self)
 	end
 end
 
+function NavBar_GetButton(self, index)
+	return self.navList[index];
+end
 
+function NavBar_GetNumButtons(self)
+	return #self.navList;
+end
 
 function NavBar_CheckLength(self)
 	local width = 0;

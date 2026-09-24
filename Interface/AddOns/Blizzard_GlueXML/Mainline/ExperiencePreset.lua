@@ -41,6 +41,7 @@ function ExperiencePresetButtonMixin:OnLoad()
 		self.BulletPoint4.BulletText:SetText(EXPERIENCE_PRESET_CLASSIC_TRANSMOG);
 		self.BulletPoint5.BulletText:SetText(EXPERIENCE_PRESET_CLASSIC_KEYBOARD_BINDS);
 		self.BulletPoint6.BulletText:SetText(EXPERIENCE_PRESET_CLASSIC_UI_LAYOUT);
+		self.Icon:SetAtlas('Achievement_Character_Human_Male');
 	else
 		self.Title:SetText(EXPERIENCE_PRESET_ENHANCED);
 		self.Description:SetText(EXPERIENCE_PRESET_ENHANCED_DESCRIPTION);
@@ -50,6 +51,7 @@ function ExperiencePresetButtonMixin:OnLoad()
 		self.BulletPoint4.BulletText:SetText(EXPERIENCE_PRESET_ENHANCED_TRANSMOG);
 		self.BulletPoint5.BulletText:SetText(EXPERIENCE_PRESET_ENHANCED_KEYBOARD_BINDS);
 		self.BulletPoint6.BulletText:SetText(EXPERIENCE_PRESET_ENHANCED_UI_LAYOUT);
+		self.Icon:SetAtlas('raceicon-human-male');
 	end
 
 	self:SetNarrationName(self.Title:GetText());
@@ -86,10 +88,9 @@ end
 
 function ExperiencePresetSelectButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.UI_EXPERIENCE_PRESET_SELECT_CLICK);
-	if (ClassicExperienceButton:GetChecked()) then
-		C_GameRules.SelectClassicExperiencePreset();
-	elseif (ModernExperienceButton:GetChecked()) then
-		C_GameRules.SelectModernExperiencePreset();
+	if (ClassicExperienceButton:GetChecked() or ModernExperienceButton:GetChecked()) then
+		local selectedPreset = ClassicExperienceButton:GetChecked() and Enum.ForeverExperiencePreset.Classic or Enum.ForeverExperiencePreset.Modern;
+		C_GameRules.SetForeverExperiencePreset(selectedPreset);
 	end
 end
 

@@ -60,9 +60,7 @@ end
 UnitPopupBnetFriendTagsButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupBnetFriendTagsButtonMixin:GetText(contextData)
-	local accountInfo = contextData.accountInfo;
-	local tagCount = accountInfo and accountInfo.friendTags and #accountInfo.friendTags or 0;
-	return SOCIAL_UI_BATTLE_NET_FRIEND_TAGS_LABEL:format(tagCount);
+	return SOCIAL_UI_BATTLE_NET_FRIEND_TAGS_LABEL;
 end
 
 function UnitPopupBnetFriendTagsButtonMixin:CanShow(contextData)
@@ -201,6 +199,31 @@ end
 
 function UnitPopupSetCustomTitleFriendNameButtonMixin:OnClick(contextData)
 	StaticPopup_Show("SET_CUSTOM_TITLE_FRIEND_NAME", nil, nil, { bnetIDAccount = contextData.bnetIDAccount });
+end
+
+UnitPopupUpgradeTitleFriendToBattleTagButtonMixin = CreateFromMixins(UnitPopupAddBtagFriendButtonMixin);
+
+function UnitPopupUpgradeTitleFriendToBattleTagButtonMixin:CanShow(contextData)
+	if not contextData.friendsList or not contextData.bnetIDAccount or not C_BattleNet.AreTitleFriendsEnabled() then
+		return false;
+	end
+
+	local accountInfo = contextData.accountInfo;
+	if not accountInfo then
+		return false;
+	end
+
+	return accountInfo.friendLevel == Enum.BattleNetFriendLevel.Title;
+end
+
+function UnitPopupUpgradeTitleFriendToBattleTagButtonMixin:OnClick(contextData)
+	local accountInfo = contextData.accountInfo;
+	if not accountInfo then
+		return;
+	end
+
+	EventRegistry:TriggerEvent("BattleNetInviteFrame.BattleTagFriendInviteByIDRequested", contextData.bnetIDAccount, accountInfo.accountName);
+	return MenuResponse.Close;
 end
 
 UnitPopupDungeonDifficulty3ButtonMixin = CreateFromMixins(UnitPopupDungeonDifficulty1ButtonMixin);

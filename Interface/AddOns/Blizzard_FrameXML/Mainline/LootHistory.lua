@@ -626,21 +626,17 @@ function LootHistoryFrameMixin:OnHide()
 end
 
 function LootHistoryFrameMixin:UnfocusGamepad()
-	self.InputLegend:Hide();
+	self.lootHistoryFooter:HideAndDeactivateBindings();
 end
 
 function LootHistoryFrameMixin:FocusGamepad()
-	self.InputLegend:Show();
+	self.lootHistoryFooter:ShowAndActivateBindings();
 end
 
 function LootHistoryFrameMixin:SetupGamepad()
-	-- Setup input legend footer.
-	self.InputLegend = InputPromptLegends.CreateInputLegend(self, "inputLegend");
-	self.InputLegend:SetLegendWidth(self:GetWidth());
-	self.InputLegend:SetPoint("TOPLEFT", self, "BOTTOMLEFT");
-	self.InputLegend:AddFrameAction(InputPromptLegends.CommonReusableFrameActions.PAD2_CLOSE);
-	self.InputLegend:InitializePrompts();
-	self.InputLegend:Hide();
+	self.lootHistoryFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "LootHistoryFooter");
+	self.lootHistoryFooter:AddStandardBackPrompt();
+	self.lootHistoryFooter:Finalize();
 
 	local function CloseLootHistory()
 		self.ClosePanelButton:Click();

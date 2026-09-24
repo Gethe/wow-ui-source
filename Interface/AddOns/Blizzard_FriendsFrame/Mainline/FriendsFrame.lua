@@ -1396,7 +1396,7 @@ function FriendsFrameUnsquelchButton_OnClick(self)
 		C_FriendList.DelIgnoreByIndex(C_FriendList.GetSelectedIgnore());
 	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_INVITE ) then
 		local blockID = BNGetBlockedInfo(BNGetSelectedBlock());
-		BNSetBlocked(blockID, false);
+		C_BattleNet.SetBlocked(blockID, false);
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
@@ -1422,7 +1422,7 @@ function FriendsFrame_UnIgnore(button, name)
 end
 
 function FriendsFrame_UnBlock(button, blockID)
-	BNSetBlocked(blockID, false);
+	C_BattleNet.SetBlocked(blockID, false);
 end
 
 function FriendsFrame_RemoveFriend()

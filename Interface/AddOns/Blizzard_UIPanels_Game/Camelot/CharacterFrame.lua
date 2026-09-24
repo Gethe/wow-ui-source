@@ -479,6 +479,14 @@ function CharacterFrameMixin:SwapToLeftSide()
 	self.currentFrameFocus = FRAME_FOCUS_LEFT;
 end
 
+function CharacterFrameMixin:RefreshFooters()
+	if (self.currentFrameFocus == FRAME_FOCUS_LEFT) and self.leftFooter then
+		self.leftFooter:Refresh();
+	elseif (self.currentFrameFocus == FRAME_FOCUS_RIGHT) and self.rightFooter then
+		self.rightFooter:Refresh();
+	end
+end
+
 function CharacterFrameMixin:FocusCharacterView()
 	self.TabIndicators:Hide();
 	self.leftFooter:HideAndDeactivateBindings();
@@ -490,7 +498,7 @@ function CharacterFrameMixin:FocusCharacterView()
 end
 
 function CharacterFrameMixin:UnfocusCharacterView()
-	if PaperDollFrame.CharacterViewerLegend:IsShown() then
+	if PaperDollFrame.CharacterViewerFooter.inputLegend:IsShown() then
 		PaperDollFrame:HideCharacterViewLegend();
 		SmartNavigation:SuspendCursor(false);
 		SmartNavigation:ShowCursor(false);

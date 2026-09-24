@@ -1,5 +1,9 @@
 NameplatesOverrides = {}
 
+function NameplatesOverrides.GetNPCNamesOptionDefault()
+	return C_GameRules.GetForeverExperiencePreset() == Enum.ForeverExperiencePreset.Classic and 5 or 3;
+end
+
 function NameplatesOverrides.GetNameplateStyleOptions()
 	local container = Settings.CreateControlTextContainer();
 	container:Add(Enum.NamePlateStyle.Thin, UNIT_NAMEPLATES_STYLE_THIN); -- Default
@@ -20,6 +24,10 @@ end
 
 function NameplatesOverrides.ShowClassColorSetting()
 	return true;
+end
+
+function NameplatesOverrides.ShowRealmOption()
+	return false;
 end
 
 function NameplatesOverrides.AdjustNameplateSettings(category)

@@ -5,7 +5,7 @@
 		<Size x="64" y="64"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture name="$parentBackground" file="Interface\LFGFrame\UI-LFG-ICONS-ROLEBACKGROUNDS" alpha="0.3" parentKey="Background">
+				<Texture name="$parentBackground" file="Interface\LFGFrame\UI-LFG-ICONS-ROLEBACKGROUNDS" parentKey="Background">
 					<Size x="80" y="80"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
@@ -36,6 +36,7 @@
 		</Scripts>
 		<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
 	</Button>
+	
 	<Button name="LFGListingRoleButtonTemplate" inherits="LFGListingRoleTemplate" virtual="true" motionScriptsWhileDisabled="true">
 		<Frames>
 			<CheckButton parentKey="CheckButton">
@@ -91,8 +92,8 @@
 			</OnLeave>
 		</Scripts>
 	</Button>
-	<Button name="LFGListingCategoryTemplate" virtual="true">
-		<Size x="380" y="60"/>
+	
+	<Button name="LFGListingCategoryTemplate" inherits="ResizeLayoutFrame" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Icon" atlas="groupfinder-button-battlegrounds">
@@ -103,27 +104,17 @@
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Cover" atlas="groupfinder-button-cover" setAllPoints="true"/>
-			</Layer>
-			<Layer level="OVERLAY">
-				<Texture parentKey="SelectedTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD" hidden="true">
-					<Size x="366" y="48"/>
-					<Anchors>
-						<Anchor point="CENTER"/>
-					</Anchors>
-					<TexCoords left="0.00195313" right="0.63867188" top="0.76953125" bottom="0.83007813"/>
-				</Texture>
+				<Texture parentKey="Cover" atlas="groupfinder-button-cover" useAtlasSize="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnClick function="LFGListingCategorySelectionButton_OnClick"/>
 		</Scripts>
-		<HighlightTexture parentKey="HighlightTexture" file="Interface\PVPFrame\PvPMegaQueue" alphaMode="ADD">
-			<Size x="366" y="48"/>
+		<PushedTexture atlas="groupfinder-button-cover-down" useAtlasSize="true"/>
+		<HighlightTexture parentKey="HighlightTexture" atlas="groupfinder-button-cover-hover" useAtlasSize="true">
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>
-			<TexCoords left="0.00195313" right="0.63867188" top="0.70703125" bottom="0.76757813"/>
 		</HighlightTexture>
 		<ButtonText parentKey="Label" inherits="GameFontNormalLarge" justifyH="LEFT">
 			<Anchors>
@@ -131,6 +122,7 @@
 			</Anchors>
 		</ButtonText>
 	</Button>
+	
 	<Frame name="LFGListingActivityRowTemplate" virtual="true">
 		<Size x="295" y="22"/>
 		<Layers>
@@ -256,6 +248,32 @@
 			</OnLeave>
 		</Scripts>
 	</Frame>
+	
+	<Frame name="LFGListingInsetTemplate" useParentLevel="false" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" x="4" y="-118" />
+			<Anchor point="BOTTOMRIGHT" x="-4" y="3" />
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="CustomBG" atlas="groupfinder-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="2" y="-3" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" x="-1" y="3" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Border" atlas="common-insideframe" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-1"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<!-- Start LFG Listing Frame -->
 	<Frame name="LFGListingFrame" parent="LFGParentFrame" inherits="PortraitFrameTemplateNoCloseButton" setAllPoints="true" hidden="true" mixin="LFGListingMixin" enableMouse="true">
 		<Frames>
@@ -266,36 +284,31 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture name="$parentRoleBackground" file="Interface\LFGFrame\UI-LFG-BlueBG">
-							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
-								<Anchor point="BOTTOMRIGHT" x="250" y="-42"/>
-							</Anchors>
-						</Texture>
+						<Texture name="$parentRoleBackground" atlas="groupfinder-roles-background" setAllPoints="true"/>
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="Inset" useParentLevel="false" inherits="InsetFrameTemplate">
+			<Frame parentKey="Inset" inherits="LFGListingInsetTemplate"/>
+			<Frame parentKey="DividerFrame" frameLevel="501">
+				<Size x="11" y ="454"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="4" y="-118" />
-					<Anchor point="BOTTOMRIGHT" x="-4" y="37" />
+					<Anchor point="TOP" relativeKey="$parent.Inset" relativePoint="TOP"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="CustomBG" atlas="groupfinder-background">
+					<Layer level="OVERLAY">
+						<Texture parentKey="Divider" atlas="common-framedivider" rotation="90" setAllPoints="true">
+							<Size x="11" y ="454"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="3" y="-3" relativePoint="TOPLEFT"/>
-								<Anchor point="BOTTOMRIGHT" x="-3" y="3" relativePoint="BOTTOMRIGHT"/>
+								<Anchor point="CENTER" x="0" relativePoint="TOP"/>
 							</Anchors>
-							<TexCoords left="0.0" right="1.0" top="0.093" bottom="1.0"/>
 						</Texture>
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button name="$parentBackButton" parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK">
+			<Button name="$parentBackButton" parentKey="BackButton" inherits="UIPanelButtonTemplate" text="BACK" frameLevel="4">
 				<Size x="111" y="28"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" x="4" y="6"/>
+					<Anchor point="BOTTOMLEFT" x="21" y="16"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad  function="LFGListingBackButton_OnLoad"/>
@@ -303,10 +316,10 @@
 					<OnClick function="LFGListingBackButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<Button name="$parentPostButton" parentKey="PostButton" inherits="UIPanelButtonTemplate" text="LFG_POST_GROUP" motionScriptsWhileDisabled="true">
+			<Button name="$parentPostButton" parentKey="PostButton" inherits="UIPanelButtonTemplate" text="LFG_POST_GROUP" motionScriptsWhileDisabled="true" frameLevel="4">
 				<Size x="109" y="28"/>
 				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-4" y="6"/>
+					<Anchor point="BOTTOMRIGHT" x="-21" y="16"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad  function="LFGListingPostButton_OnLoad"/>
@@ -322,6 +335,7 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
+
 			<Frame name="$parentSoloRoleButtons" parentKey="SoloRoleButtons">
 				<Size x="230" y="48"/>
 				<Anchors>
@@ -332,12 +346,15 @@
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
+						<NormalTexture atlas="UI-LFG-RoleIcon-Tank" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</NormalTexture>
 						<Scripts>
 							<OnLoad inherit="append">
 								self.roleID = "TANK";
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("TANK"));
-								self.Background:SetTexCoord(GetBackgroundTexCoordsForRole("TANK"));
-								self.Background:SetAlpha(0.6);
+								self.Background:SetAtlas("UI-LFG-RoleIcon-Tank-Background", true);
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -345,12 +362,15 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonTank" relativePoint="RIGHT" x="40" y="0"/>
 						</Anchors>
+						<NormalTexture atlas="UI-LFG-RoleIcon-Healer" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</NormalTexture>
 						<Scripts>
 							<OnLoad inherit="append">
 								self.roleID = "HEALER";
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("HEALER"));
-								self.Background:SetTexCoord(GetBackgroundTexCoordsForRole("HEALER"));
-								self.Background:SetAlpha(0.4);
+								self.Background:SetAtlas("UI-LFG-RoleIcon-Healer-Background", true);
 							</OnLoad>
 						</Scripts>
 					</Button>
@@ -358,17 +378,21 @@
 						<Anchors>
 							<Anchor point="LEFT" relativeTo="$parentRoleButtonHealer" relativePoint="RIGHT" x="40" y="0"/>
 						</Anchors>
+						<NormalTexture atlas="UI-LFG-RoleIcon-DPS" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</NormalTexture>
 						<Scripts>
 							<OnLoad inherit="append">
 								self.roleID = "DAMAGER";
-								self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("DAMAGER"));
-								self.Background:SetTexCoord(GetBackgroundTexCoordsForRole("DAMAGER"));
-								self.Background:SetAlpha(0.6);
+								self.Background:SetAtlas("UI-LFG-RoleIcon-DPS-Background", true);
 							</OnLoad>
 						</Scripts>
 					</Button>
 				</Frames>
-			</Frame>
+			</Frame>			
+			
 			<Frame name="$parentGroupRoleButtons" parentKey="GroupRoleButtons" hidden="true">
 				<Size x="192" y="48"/>
 				<Anchors>
@@ -424,22 +448,20 @@
 					</DropdownButton>
 				</Frames>
 			</Frame>
+
 			<Button name="$parentNewPlayerFriendlyButton" parentKey="NewPlayerFriendlyButton" motionScriptsWhileDisabled="true">
-				<Size x="64" y="64"/>
+				<Size x="84" y="84"/>
 				<Anchors>
-					<Anchor point="TOPRIGHT" x="-20" y="-41"/>
+					<Anchor point="TOPRIGHT" x="-3" y="-30"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
-						<Texture file="Interface\LFGFrame\UI-LFG-ICON-ROLES" setAllPoints="true" parentKey="cover" alpha="0.5" hidden="true">
-							<TexCoords left="0" right="0.2617" top="0.5234" bottom="0.7851"/>
-						</Texture>
 					</Layer>
 					<Layer level="OVERLAY">
 						<Texture atlas="newplayerchat-chaticon-newcomer">
 							<Size x="20" y="20"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+								<Anchor point="TOPRIGHT" x="-8" y="-7"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -448,7 +470,7 @@
 					<CheckButton parentKey="CheckButton">
 						<Size x="24" y="24"/>
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="-5" y="-5"/>
+							<Anchor point="BOTTOMLEFT" x="6" y="5"/>
 						</Anchors>
 						<Scripts>
 							<OnShow function="LFGListingNewPlayerFriendlyButtonCheckButton_OnShow"/>
@@ -462,9 +484,6 @@
 					</CheckButton>
 				</Frames>
 				<Scripts>
-					<OnLoad>
-						self:GetNormalTexture():SetTexCoord(GetTexCoordsForRole("GUIDE"));
-					</OnLoad>
 					<OnEnter>
 						if ( self.CheckButton:IsEnabled() ) then
 							self.CheckButton:LockHighlight();
@@ -484,16 +503,9 @@
 						GameTooltip:Hide();
 					</OnLeave>
 				</Scripts>
-				<NormalTexture file="Interface\LFGFrame\UI-LFG-ICON-ROLES"/>
+				<NormalTexture atlas="UI-LFG-RoleIcon-Leader" useAtlasSize="true"/>
 			</Button>
-			<DropdownButton name="$parentOptionsButton" parentKey="OptionsButton" inherits="LFGOptionsButton" mixin="LFGListingOptionsButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="-12" y="-32"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-				</Scripts>
-			</DropdownButton>
+
 			<Frame name="$parentCategoryView" parentKey="CategoryView">
 				<Anchors>
 					<Anchor point="TOPLEFT" x="8" y="-124"/>
@@ -515,6 +527,7 @@
 					<OnShow function="LFGListingCategorySelection_OnShow"/>
 				</Scripts>
 			</Frame>
+			
 			<Frame name="$parentActivityView" parentKey="ActivityView" hidden="true">
 				<Size x="324" y="282"/>
 				<KeyValues>
@@ -526,7 +539,13 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture name="$parentBarMiddle" parentKey="BarMiddle" parentArray="BarComponents" atlas="shop-list-rule" useAtlasSize="true" >
+						<Texture name="$parentBarTop" parentKey="BarTop" atlas="groupfinder-ScrollLine" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="LEFT" relativePoint="TOPLEFT" x="0" y="-42"/>
+								<Anchor point="RIGHT" relativePoint="TOPRIGHT" x="0" y="-42"/>
+							</Anchors>
+						</Texture>						
+						<Texture name="$parentBarMiddle" parentKey="BarMiddle" parentArray="BarComponents" atlas="groupfinder-ScrollLine" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="LEFT" relativePoint="BOTTOMLEFT" x="0" y="80"/>
 								<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" x="0" y="80"/>
@@ -535,7 +554,33 @@
 					</Layer>
 				</Layers>
 				<Frames>
+					<Frame parentKey="LevelRangesCheckbox" inherits="ResizeLayoutFrame">
+						<Anchors>
+							<Anchor point="TOPRIGHT"  x="-42" y="-10"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Text" inherits="GameFontNormalSmall" text="LFG_LIST_IGNORE_SUGGESTED_LEVEL">
+									<Size x="0" y="0"/>
+									<Anchors>
+										<Anchor point="RIGHT"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<CheckButton parentKey="Checkbox" inherits="UICheckButtonTemplate">
+								<Size x="26" y="26"/>
+								<Anchors>
+									<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="2" y="-1"/>
+								</Anchors>
+							</CheckButton>
+						</Frames>
+					</Frame>					
 					<Frame name="$parentScrollBox" parentKey="ScrollBox" inherits="WowScrollBoxList">
+						<KeyValues>
+							<KeyValue key="TopAnchorY" value="-45" type="number"/>
+						</KeyValues>
 						<Size x="324" y="194"/>
 					</Frame>
 					<EventFrame name="$parentScrollBar" parentKey="ScrollBar" inherits="MinimalScrollBar">

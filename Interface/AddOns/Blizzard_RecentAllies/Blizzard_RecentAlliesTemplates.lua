@@ -498,7 +498,7 @@ function RecentAlliesSocialViewMixin:GenerateSearchFilterMenu(rootDescription)
 	AddSearchFilterOptionsToDescription(self, statusSubmenu, RecentAlliesStatusFilterOptions);
 
 	if TableHasAnyEntries(RecentAlliesInteractionCategoryFilterOptions) then
-		local interactionCategoryFiltersSubmenu = rootDescription:CreateButton(SOCIAL_FILTER_DROPDOWN_TAGS);
+		local interactionCategoryFiltersSubmenu = rootDescription:CreateButton(RECENT_ALLIES_CATEGORIES_FILTER_LABEL);
 		interactionCategoryFiltersSubmenu:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
 		AddSearchFilterOptionsToDescription(self, interactionCategoryFiltersSubmenu, RecentAlliesInteractionCategoryFilterOptions);
 	end

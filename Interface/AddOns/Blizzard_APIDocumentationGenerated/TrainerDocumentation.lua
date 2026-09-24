@@ -8,12 +8,31 @@ local Trainer =
 	Functions =
 	{
 		{
+			Name = "GetCategorizeTrainerUI",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "value", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTrainerType",
 			Type = "Function",
 
 			Returns =
 			{
 				{ Name = "trainerType", Type = "TrainerType", Nilable = false },
+			},
+		},
+		{
+			Name = "SetCategorizeTrainerUI",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "value", Type = "bool", Nilable = false },
 			},
 		},
 	},

@@ -179,6 +179,9 @@
 		</Layers>
 	</Frame>
 	<Button name="QuestLogTitleTemplate" mixin="QuestLogTitleMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="leftPadding" value="QuestMapFrameOverrides.titleFrameLeftPadding" type="global"/>
+		</KeyValues>
 		<Size x="290" y="16"/>
 		<Frames>
 			<Frame parentKey="Checkbox" inherits="QuestLogTrackCheckBoxTemplate">
@@ -608,11 +611,31 @@
 									<OnTextChanged method="OnTextChanged"/>
 								</Scripts>
 							</EditBox>
+							<Frame parentKey="GamepadSearchFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+								<Size x="22" y="22"/>
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_LEFT" type="global"/>
+									<KeyValue key="useDropShadow" value="true" type="boolean"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="RIGHT" relativeKey="$parent.SearchBox" relativePoint="LEFT" x="-7" y="1"/>
+								</Anchors>
+							</Frame>
 							<DropdownButton parentKey="SettingsDropdown" inherits="UIPanelIconDropdownButtonTemplate">
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="19" y="25"/>
 								</Anchors>
 							</DropdownButton>
+							<Frame parentKey="GamepadSettingsFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+								<Size x="22" y="22"/>
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+									<KeyValue key="useDropShadow" value="true" type="boolean"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-5" y="1"/>
+								</Anchors>
+							</Frame>
 							<Frame parentKey="BorderFrame" inherits="QuestLogBorderFrameTemplate">
 								<Layers>
 									<Layer level="BACKGROUND">

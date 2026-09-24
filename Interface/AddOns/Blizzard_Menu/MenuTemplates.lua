@@ -148,7 +148,7 @@ local function OnButtonEnter(button, description)
 	ShowHighlight(button, description);
 end
 
-local function OnButtonLeave(button)
+local function OnButtonLeave(button, description)
 	button.highlight:Hide();
 end
 
@@ -312,6 +312,34 @@ function MenuTemplates.CreateButton(text, callback, data)
 	local elementDescription = CreateButtonDescription(data);
 	elementDescription:SetSoundKit(GetButtonSoundKit);
 	elementDescription:AddInitializer(Initializer);
+	elementDescription:SetResponder(callback);
+	return elementDescription;
+end
+
+function MenuTemplates.CreateRedHighlightButton(text, callback, data)
+	local function Initializer(button, description, menu)
+		local fontString = MenuVariants.CreateFontString(button);
+		button.fontString = fontString;
+		fontString:SetTextColor(RED_FONT_COLOR:GetRGB());
+		fontString:SetTextToFit(text);
+
+		button.highlight:SetTexture("Interface\\QuestFrame\\UI-QuestLogTitleHighlight");
+		button.highlight:SetVertexColor(RED_FONT_COLOR:GetRGB());
+	end
+
+	local function OnEnter(button)
+		button.fontString:SetTextColor(WHITE_FONT_COLOR:GetRGB());
+	end
+
+	local function OnLeave(button)
+		button.fontString:SetTextColor(RED_FONT_COLOR:GetRGB());
+	end
+
+	local elementDescription = CreateButtonDescription(data);
+	elementDescription:SetSoundKit(GetButtonSoundKit);
+	elementDescription:AddInitializer(Initializer);
+	elementDescription:SetOnEnter(OnEnter);
+	elementDescription:SetOnLeave(OnLeave);
 	elementDescription:SetResponder(callback);
 	return elementDescription;
 end

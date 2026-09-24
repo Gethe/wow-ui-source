@@ -20,10 +20,95 @@ function StackSplitMixin:OpenStackSplitFrame(maxStack, parent, anchor, anchorTo,
 	self.LeftButton:Disable();
 	self.RightButton:Enable();
 
+	self:ChooseFrameType(self.minSplit);
+
 	self:ClearAllPoints();
 	self:SetPoint(anchor, parent, anchorTo, 0, 0);
 	self:Show();
-	self:ChooseFrameType(self.minSplit);
+end
+
+function StackSplitMixin:OnLoad()
+	self:RegisterForTransitions();
+end
+
+function StackSplitMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+end
+
+function StackSplitMixin:SetupGamepad()
+	local amountBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_HORIZONTAL, "StackSplitFooter_AmountBinding");
+	amountBinding:AddFooterBinding({
+		label = FRAME_ACTION_AMOUNT,
+	});
+
+	local okayBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, "StackSplitFooter_OkayBinding");
+	okayBinding:AddFooterBinding({
+		label = OKAY,
+	})
+	okayBinding:AddFooterFunction({
+		bindingFunctions = StackSplitOkayButton_OnClick,
+	})
+
+	local cancelBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, "StackSplitFooter_CancelBinding");
+	cancelBinding:AddFooterBinding({
+		label = CANCEL,
+	})
+	cancelBinding:AddFooterFunction({
+		bindingFunctions = StackSplitCancelButton_OnClick,
+	})
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "StackSplitFooter");
+	self.footer:AddPromptedBinding(amountBinding);
+	self.footer:AddPromptedBinding(okayBinding);
+	self.footer:AddPromptedBinding(cancelBinding);
+	self.footer:Finalize();
+
+	self.splitBindings = GamepadMode.CreateBindingGroup("StackSplitBindings");
+	self.splitBindings:AddFunctionBinding(GAMEPAD_DPAD_LEFT, StackSplitLeftButton_OnClick);
+	self.splitBindings:AddFunctionBinding(GAMEPAD_DPAD_RIGHT, StackSplitRightButton_OnClick);
+
+	GamepadMode.FrameControlsManager:DismissOnUnfocus(self);
+	GamepadMode.FrameControlsManager:UseCustomNavigation(self);
+	GamepadMode.FrameControlsManager:DisableFrameFocusPagingWhenFocused(self);
+end
+
+function StackSplitMixin:InitializeGamepad()
+	self.OkayButton:Hide();
+	self.CancelButton:Hide();
+end
+
+function StackSplitMixin:FocusGamepad()
+	if self.isMultiStack then
+		self.footer:SetAnchorOffsets(12, 19);
+	else
+		self.footer:SetAnchorOffsets(12, 8);
+	end
+	self.footer:ShowAndActivateBindings();
+	GamepadMode.ActivateBindingGroup(self.splitBindings);
+end
+
+function StackSplitMixin:StartFocus()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+	local frameGlow = self.FrameGlow;
+
+	if self.isMultiStack then
+		frameGlow:SetPoint("TOPLEFT", self, "TOPLEFT", 2, 3);
+		frameGlow:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 2, 13);
+	else
+		frameGlow:SetPoint("TOPLEFT", self, "TOPLEFT", 2, 1);
+		frameGlow:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 2, 4);
+	end
+
+	FocusFramesInterfaceMixin.StartFocus(self);
+end
+
+function StackSplitMixin:UnfocusGamepad()
+	self.footer:HideAndDeactivateBindings();
+	GamepadMode.DeactivateBindingGroup(self.splitBindings);
 end
 
 function StackSplitMixin:ChooseFrameType(splitAmount)
@@ -190,7 +275,13 @@ function StackSplitMixin:OnKeyUp(key)
 	end
 end
 
-function StackSplitMixin:OnHide ()	
+function StackSplitMixin:OnShow()
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
+end
+
+function StackSplitMixin:OnHide()
 	for key in next, (self.down or {}) do
 		if ( GetBindingAction(key) ) then
 			RunBinding(GetBindingAction(key), "up");
@@ -200,6 +291,10 @@ function StackSplitMixin:OnHide ()
 	
 	if ( self.owner ) then
 		self.owner.hasStackSplit = 0;
+	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
 	end
 end
 

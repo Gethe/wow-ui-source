@@ -74,13 +74,8 @@ function AreaLabelFrameMixin:OnUpdate()
 	if map:IsCanvasMouseFocus() then
 		local name, description;
 		local mapID = map:GetMapID();
-		local normalizedCursorX, normalizedCursorY;
-		if InputUtil.IsGamepadUIEnabled() then
-			normalizedCursorX, normalizedCursorY = map:GetNormalizedGamepadCursorPosition();
-		else
-			normalizedCursorX, normalizedCursorY = map:GetNormalizedCursorPosition();
-		end
-		local positionMapInfo = C_Map.GetMapInfoAtPosition(mapID, normalizedCursorX, normalizedCursorY);		
+		local normalizedCursorX, normalizedCursorY = map:GetNormalizedCursorPosition();
+		local positionMapInfo = C_Map.GetMapInfoAtPosition(mapID, normalizedCursorX, normalizedCursorY);
 		if positionMapInfo and positionMapInfo.mapID ~= mapID then
 			name = positionMapInfo.name;
 			local playerMinLevel, playerMaxLevel, petMinLevel, petMaxLevel = C_Map.GetMapLevels(positionMapInfo.mapID);

@@ -21,7 +21,6 @@ local TITLE_CANVAS_SPACER_FRAME_HEIGHT = 67;
 local MAP_FOCUS = "Map";
 local QUEST_FOCUS = "Quest";
 local DETAILS_FOCUS = "Details";
-local NAVIGATION_FOCUS = "Navigation";
 
 function WorldMapMixin:SetupTitle()
 	self.BorderFrame:SetTitle(MAP_AND_QUEST_LOG);
@@ -46,6 +45,7 @@ function WorldMapMixin:SynchronizeDisplayState()
 	if InputUtil.IsGamepadUIEnabled() then
 		-- Reposition gamepad footer and input callouts.
 		self:UpdateStateChangeIndicators();
+		self.ScrollContainer:RefreshGamepadScrollSpeed();
 	end
 end
 
@@ -369,6 +369,10 @@ function WorldMapMixin:OnMapChanged()
 	self:RefreshOverlayFrames();
 	self:RefreshQuestLog();
 
+	if InputUtil.IsGamepadUIEnabled() then
+		self.worldMapFooter:Refresh();
+	end
+
 	if C_MapInternal then
 		C_MapInternal.SetDebugMap(self:GetMapID());
 	end
@@ -426,9 +430,8 @@ function WorldMapMixin:OnHide()
 	UpdateMicroButtons();
 
 	if InputUtil.IsGamepadUIEnabled() then
-		self:ClearBindings();
 		self.currentFocus = nil;
-		self.autofocusQuest = false;
+		self:ClearBindings();
 	end
 end
 
@@ -532,15 +535,6 @@ function WorldMapMixin:IsQuestLogEmpty()
 	return (C_QuestLog.GetNumQuestLogEntries() == 0);
 end
 
-function WorldMapMixin:OnQuestLogShow()
-	if InputUtil.IsGamepadUIEnabled() then
-		if self.autofocusQuest then
-			self:FocusQuests();
-			self.autofocusQuest = false;
-		end
-	end
-end
-
 function WorldMapMixin:OnOpenQuestDetails()
 	if InputUtil.IsGamepadUIEnabled() then
 		self.refocusQuestButton = SmartNavigation:GetCurrentButton();
@@ -634,22 +628,11 @@ end
 
 function WorldMapMixin:FocusMap()
 	self:ClearBindings();
+	self.ScrollContainer:SetGamepadFocus(true);
 	SmartNavigation:EnterFocusGroup(MAP_FOCUS);
 	self.currentFocus = MAP_FOCUS;
 	SmartNavigation:HideCursor();
 	SmartNavigation:DeactivateBinding();
-	self.ScrollContainer:SetGamepadFocus(true);
-
-	self:UpdateStateChangeIndicators();
-end
-
-function WorldMapMixin:FocusNavigation()
-	self:ClearBindings();
-	SmartNavigation:EnterFocusGroup(NAVIGATION_FOCUS);
-	self.currentFocus = NAVIGATION_FOCUS;
-	SmartNavigation:ShowCursor(true);
-	SmartNavigation:ActivateBinding();
-	SmartNavigation:SuspendCursor(false);
 
 	self:UpdateStateChangeIndicators();
 end
@@ -664,10 +647,6 @@ end
 
 function WorldMapMixin:IsMapFocused()
 	return self.currentFocus == MAP_FOCUS;
-end
-
-function WorldMapMixin:IsNavigationFocused()
-	return self.currentFocus == NAVIGATION_FOCUS;
 end
 
 function WorldMapMixin:ToggleFullMap()
@@ -699,20 +678,20 @@ function WorldMapMixin:ShowQuests()
 	end
 end
 
-function WorldMapMixin:GamepadZoomIn(down)
-	if down then
-		self.ScrollContainer:GamepadZoom(1);
-	else
-		self.ScrollContainer:GamepadZoom(0);
-	end
+function WorldMapMixin:GamepadPanSpeed(x, y)
+	local magnitude = math.min(math.sqrt(x * x + y * y), 1.0);
+	self.ScrollContainer:SetGamepadPanMagnitude(magnitude);
 end
 
-function WorldMapMixin:GamepadZoomOut(down)
-	if down then
-		self.ScrollContainer:GamepadZoom(-1);
-	else
-		self.ScrollContainer:GamepadZoom(0);
-	end
+function WorldMapMixin:GetZoomVelocityFromMagnitude(magnitude)
+	return magnitude ^ 1.8;
+end
+
+function WorldMapMixin:GamepadZoom(x, y)
+	local magnitude = math.abs(y);
+	local velocity = self:GetZoomVelocityFromMagnitude(magnitude);
+
+	self.ScrollContainer:SetGamepadZoom(y >= 0 and velocity or -velocity);
 end
 
 function WorldMapMixin:GamepadMapClick()
@@ -720,20 +699,41 @@ function WorldMapMixin:GamepadMapClick()
 	self:NavigateToGamepadCursor();
 end
 
+function WorldMapMixin:GamepadBack()
+	if self:IsMaximized() then
+		self:Minimize();
+		return;
+	elseif QuestMapFrame.DetailsFrame:IsShown() then
+		self:CloseQuestDetails();
+		return;
+	end
+
+	SmartNavigation:AttemptClose();
+end
+
 function WorldMapMixin:GamepadMapUp()
 	local poiPin = self:GetHoveredPin();
 	local shouldGoUp = true;
+	local detailsShown = QuestMapFrame.DetailsFrame:IsShown();
+
+	if detailsShown then
+		self:CloseQuestDetails();
+	end
 
 	if poiPin then
 		if poiPin.pinTemplate == "QuestPinTemplate" then
-			SmartNavigation:SuspendCursor(false);
-			self:ClearBindings();
-			QuestMapLogTitleButton_CreateContextMenu(poiPin, self);
+			if not detailsShown then
+				QuestMapFrame_ShowQuestDetails(poiPin:GetQuestID())
+				self:FocusMap();
+			end
 			shouldGoUp = false;
 		elseif poiPin.pinTemplate == "WaypointLocationPinTemplate" then
-			SmartNavigation:SuspendCursor(false);
-			self:ClearBindings();
-			QuestMapWaypoint_CreateContextMenu(poiPin, self);
+			local activeChatFrame = FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK);
+			if activeChatFrame and activeChatFrame:IsShown() then
+				activeChatFrame:SetGamepadFocus();
+			end
+			ChatFrameUtil.InsertLink(C_Map.GetUserWaypointHyperlink());
+			PlaySound(SOUNDKIT.UI_MAP_WAYPOINT_CHAT_SHARE);
 			shouldGoUp = false;
 		end
 	end
@@ -788,18 +788,6 @@ function WorldMapMixin:OnHitLeftEdge()
 	end
 end
 
-function WorldMapMixin:OnHitRightEdge()
-	if self.currentFocus == NAVIGATION_FOCUS and not IsSubMenuFocused() then
-		SmartNavigation:SelectButton(self.WorldMapTrackingOptionsButton);
-	end
-end
-
-function WorldMapMixin:OnHitBottomEdge()
-	if self.currentFocus == NAVIGATION_FOCUS and not IsSubMenuFocused() then
-		self:FocusMap();
-	end
-end
-
 function WorldMapMixin:ActivateRewardsCursor()
 	local rewardsFrame = MapQuestInfoRewardsFrame;
 	if rewardsFrame:IsShown() and rewardsFrame.RewardButtons then
@@ -820,14 +808,15 @@ function WorldMapMixin:DeactivateRewardsCursor()
 end
 
 function WorldMapMixin:HideStateChangeIndicators()
-	-- "Up" and "Right" are driven by bindings in the World Map and don't need to be updated here.
-	self.GamepadFocusDownDirectionalIcon:Hide();
-	self.GamepadFocusLeftDirectionalIcon:Hide();
-
 	self.questLogFooter:HideAndDeactivateBindings();
 	self.questDetailsFooter:HideAndDeactivateBindings();
 	self.worldMapFooter:HideAndDeactivateBindings();
-	self.navigationFooter:HideAndDeactivateBindings();
+	GamepadMode.DeactivateBindingGroup(self.worldMapCursorBindings);
+	GamepadMode.DeactivateBindingGroup(self.questLogTooltipBindings);
+
+	self.currentNavBarIndex = nil;
+	self.NavBar.GamepadPreviousAreaIcon:Hide();
+	self.NavBar.GamepadNextAreaIcon:Hide();
 
 	if self.SidePanelToggle then
 		self.SidePanelToggle:Hide();
@@ -849,15 +838,12 @@ function WorldMapMixin:UpdateStateChangeIndicators()
 
 	if (focus == QUEST_FOCUS) then
 		activeFooter = self.questLogFooter;
-		self.GamepadFocusLeftDirectionalIcon:Show();
+		GamepadMode.ActivateBindingGroup(self.questLogTooltipBindings);
 	elseif (focus == DETAILS_FOCUS) then
 		activeFooter = self.questDetailsFooter;
-		self.GamepadFocusLeftDirectionalIcon:Show();
 	elseif (focus == MAP_FOCUS) then
 		activeFooter = self.worldMapFooter;
-	elseif (focus == NAVIGATION_FOCUS) then
-		activeFooter = self.navigationFooter;
-		self.GamepadFocusDownDirectionalIcon:Show();
+		GamepadMode.ActivateBindingGroup(self.worldMapCursorBindings);
 	end
 
 	if activeFooter then
@@ -951,35 +937,114 @@ function WorldMapMixin:SelectFilters()
 	end
 end
 
-function WorldMapMixin:OpenAreaDropdownList()
-	local focusedButton = SmartNavigation:GetCurrentButton();
-	if focusedButton and focusedButton.MenuArrowButton and focusedButton.MenuArrowButton.OpenMenu then
-		focusedButton.MenuArrowButton:OpenMenu();
+function WorldMapMixin:UpdateNavBarGamepadIconAnchors()
+	local numButtons = NavBar_GetNumButtons(self.NavBar);
+	if numButtons == 0 then
+		return;
+	end
+
+	local firstButton = NavBar_GetButton(self.NavBar, 1);
+	local lastButton = NavBar_GetButton(self.NavBar, numButtons);
+
+	self.NavBar.GamepadPreviousAreaIcon:ClearAllPoints();
+	self.NavBar.GamepadPreviousAreaIcon:SetPoint("RIGHT", firstButton, "LEFT", 0, -9);
+
+	self.NavBar.GamepadNextAreaIcon:ClearAllPoints();
+	self.NavBar.GamepadNextAreaIcon:SetPoint("LEFT", lastButton, "RIGHT", 15, -9);
+end
+
+function WorldMapMixin:UpdateNavBarGamepadIconState()
+	local numButtons = NavBar_GetNumButtons(self.NavBar);
+	local index = self.currentNavBarIndex;
+
+	self.NavBar.GamepadPreviousAreaIcon:Show();
+	self.NavBar.GamepadNextAreaIcon:Show();
+
+	-- First nav bar button does not have dropdown
+	self.NavBar.GamepadPreviousAreaIcon:SetEnabled(index > 2);
+	self.NavBar.GamepadNextAreaIcon:SetEnabled(index < numButtons);
+end
+
+function WorldMapMixin:OpenAreaDropdownList(index)
+	local areaButton = NavBar_GetButton(self.NavBar, index);
+
+	if areaButton and areaButton.MenuArrowButton and areaButton.MenuArrowButton.OpenMenu then
+		if not areaButton.gamepadCloseCallbackRegistered then
+			areaButton.MenuArrowButton:RegisterCallback(
+				areaButton.MenuArrowButton.Event.OnMenuClose,
+				self.OnAreaDropdownClosed,
+				self
+			);
+
+			areaButton.gamepadCloseCallbackRegistered = true;
+		end
+
+		areaButton.MenuArrowButton:OpenMenu();
+
+		self.currentNavBarIndex = index;
+		GamepadMode.ActivateBindingGroup(self.navBarBindings);
+		self:UpdateNavBarGamepadIconState();
 	end
 end
 
-function WorldMapMixin:IsAreaSelectContextValid()
-	local button = SmartNavigation:GetCurrentButton();
-	return button.MenuArrowButton and not button.selected:IsVisible();
+function WorldMapMixin:OpenCurrentAreaDropdownList()
+	self:UpdateNavBarGamepadIconAnchors();
+
+	local currentMapIndex = NavBar_GetNumButtons(self.NavBar);
+	self:OpenAreaDropdownList(currentMapIndex);
 end
 
-function WorldMapMixin:IsAreaDropdownContextValid()
-	local button = SmartNavigation:GetCurrentButton();
-	return button.MenuArrowButton and button.MenuArrowButton:IsVisible();
+function WorldMapMixin:OpenPreviousDropdownList()
+	if not self.currentNavBarIndex then
+		return;
+	end
+
+	local previousIndex = self.currentNavBarIndex - 1;
+	if previousIndex >= 1 then
+		self:OpenAreaDropdownList(previousIndex);
+	end
 end
 
-function WorldMapMixin:CanNavigateToQuestLog()
-	return self.QuestLog:IsShown() and self:IsMinimized();
+function WorldMapMixin:OpenNextDropdownList()
+	if not self.currentNavBarIndex then
+		return;
+	end
+
+	local nextIndex = self.currentNavBarIndex + 1;
+	if nextIndex <= NavBar_GetNumButtons(self.NavBar) then
+		self:OpenAreaDropdownList(nextIndex);
+	end
 end
 
-function WorldMapMixin:CanShowQuestLog()
-	return not self.QuestLog:IsShown() and self:IsMinimized();
+function WorldMapMixin:OnAreaDropdownClosed()
+	self.currentNavBarIndex = nil;
+	GamepadMode.DeactivateBindingGroup(self.navBarBindings);
+
+	self.NavBar.GamepadPreviousAreaIcon:Hide();
+	self.NavBar.GamepadNextAreaIcon:Hide();
+end
+
+function WorldMapMixin:IsCurrentAreaDropdownContextValid()
+	local currentMapIndex = NavBar_GetNumButtons(self.NavBar);
+	local currentAreaButton = NavBar_GetButton(self.NavBar, currentMapIndex);
+
+	return currentAreaButton and currentAreaButton.MenuArrowButton;
 end
 
 function WorldMapMixin:ResetMapFilters()
 	local focusedButton = SmartNavigation:GetCurrentButton();
 	if focusedButton and focusedButton.ResetButton then
 		focusedButton.ResetButton:Click();
+	end
+end
+
+function WorldMapMixin:FocusSearchBox()
+	local searchBox = QuestScrollFrame.SearchBox;
+	if not searchBox:HasFocus() then
+		SmartNavigation:SelectButton(searchBox);
+		searchBox:SetFocus();
+	else
+		searchBox:ClearFocus();
 	end
 end
 
@@ -991,7 +1056,26 @@ function WorldMapMixin:HandleUnfocus()
 	RunBinding("TOGGLEUIFOCUS");
 end
 
+function WorldMapMixin:TryOpenFilter()
+	local filter;
+	if self.currentFocus == MAP_FOCUS then
+		filter = self.WorldMapTrackingOptionsButton;
+	elseif self.currentFocus == QUEST_FOCUS then
+		filter = QuestScrollFrame.SettingsDropdown;
+	end
+
+	if filter and not filter:IsMenuOpen() then
+		filter:MouseDown();
+		filter:MouseUp();
+		return true;
+	end
+end
+
 function WorldMapMixin:HandleMainMenu()
+	if self:TryOpenFilter() then
+		return;
+	end
+
 	if self:IsMaximized() then
 		self:ToggleFullMap();
 	end
@@ -1001,106 +1085,98 @@ end
 function WorldMapMixin:SetupGamepad()
 	self.SmartNavigationOnSelect = self.OnButtonSelected;
 	self.CloseButton = self.BorderFrame.CloseButton;
-	self.autofocusQuest = false;
 	self.currentFocus = nil;
 
 	SmartNavigation_MarkFrameSubSection(self.QuestLog, QUEST_FOCUS);
 	SmartNavigation_MarkFrameSubSection(self.ScrollContainer, MAP_FOCUS);
-	SmartNavigation_MarkFrameSubSection(self.NavBar, NAVIGATION_FOCUS);
 
 	-- Quest Log actions.
-	local focusQuest = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.FocusSelectedQuest, self), CONTEXT_ACTION_LABEL_FOCUS);
-	focusQuest:AddButtonContext("ButtonContext_QuestLogButton");
-	focusQuest:AddCondition(GenerateClosure(self.IsTrackFocusContextActionValid, self));
+	local questOptions = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.OpenQuestOptions, self), CONTEXT_ACTION_LABEL_MORE_ACTIONS);
+	questOptions:AddButtonContext("ButtonContext_QuestLogHeader");
+	questOptions:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
 
-	local questOptions = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.OpenQuestOptions, self), CONTEXT_ACTION_LABEL_OPTIONS);
-	questOptions:AddButtonContext("ButtonContext_QuestLogButton");
+	local focusMap = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_LEFT, GenerateClosure(self.FocusMap, self), WORLD_MAP);
+	focusMap:AddCondition(GenerateClosure(self.IsMinimized, self));
+	focusMap:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local focusSearch = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, GenerateClosure(self.FocusSearchBox, self));
+	focusSearch:SetCustomPromptFrame(QuestScrollFrame.GamepadSearchFocusIcon);
+
+	local settingsDropdown = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, GenerateClosure(self.HandleMainMenu, self));
+	settingsDropdown:SetCustomPromptFrame(QuestScrollFrame.GamepadSettingsFocusIcon);
 
 	self.questLogFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "QuestLogFooter");
 	self.questLogFooter:AddStandardSelectPrompt();
-	self.questLogFooter:AddStandardBackPrompt(FRAME_ACTION_EXIT);
-	self.questLogFooter:AddPromptedBinding(focusQuest);
+	self.questLogFooter:AddStandardBackPrompt();
 	self.questLogFooter:AddPromptedBinding(questOptions);
+	self.questLogFooter:AddPromptedBinding(focusMap);
+	self.questLogFooter:AddPromptedBinding(focusSearch);
+	self.questLogFooter:AddPromptedBinding(settingsDropdown);
 	self.questLogFooter:AddStandardFrameControlManagerBindings(self);
 	self.questLogFooter:Finalize();
+	
+	self.questLogTooltipBindings = GamepadMode.CreateBindingGroup("questLogTooltipBindings");
+	self.questLogTooltipBindings:AddFunctionBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.FocusSelectedQuest, self));
+	self.questLogTooltipBindings:AddFunctionBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.OpenQuestOptions, self));
 
 	-- Quest Details actions.
 	local questDetailsFocusPage = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.FocusSelectedQuest, self), CONTEXT_ACTION_LABEL_FOCUS);
 	local questDetailsOptionsPage = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.OpenQuestOptions, self), CONTEXT_ACTION_LABEL_OPTIONS);
+	local questDetailsFocusMap = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_LEFT, GenerateClosure(self.FocusMap, self), WORLD_MAP);
 	local questDetailsBackPage = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.CloseQuestDetails, self), FRAME_ACTION_BACK);
 
 	self.questDetailsFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "QuestDetailsFooter");
 	self.questDetailsFooter:AddPromptedBinding(questDetailsFocusPage);
 	self.questDetailsFooter:AddPromptedBinding(questDetailsOptionsPage);
+	self.questDetailsFooter:AddPromptedBinding(questDetailsFocusMap);
 	self.questDetailsFooter:AddPromptedBinding(questDetailsBackPage);
 	self.questDetailsFooter:Finalize();
 
 	-- World Map actions.
-	local selectWorldMap = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.GamepadMapClick, self), ACTION_LABEL_SELECT);
-	local closeWorldMap = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(SmartNavigation.AttemptClose, SmartNavigation), FRAME_ACTION_EXIT);
+	local changeMap = GamepadSharedUtility.CreateDoublePromptedBinding(GAMEPAD_FACE_BOTTOM, GAMEPAD_FACE_LEFT, GenerateClosure(self.GamepadMapClick, self), GenerateClosure(self.GamepadMapUp, self), FRAME_ACTION_CHANGE_MAP)
+	local closeWorldMap = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.GamepadBack, self), FRAME_ACTION_BACK);
 
-	local focusNavigation = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_TOP, GenerateClosure(self.FocusNavigation, self), nil);
-	focusNavigation:SetCustomPromptFrame(self.GamepadFocusUpDirectionalIcon);
-
-	local focusQuests = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_RIGHT, GenerateClosure(self.FocusQuestLogFromMap, self), nil);
-	focusQuests:AddCondition(GenerateClosure(self.CanNavigateToQuestLog, self));
-	focusQuests:SetCustomPromptFrame(self.GamepadFocusRightDirectionalIcon);
+	local focusQuests = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_RIGHT, GenerateClosure(self.FocusQuestLogFromMap, self), QUESTS_LABEL);
+	focusQuests:AddCondition(GenerateClosure(self.IsMinimized, self));
 	focusQuests:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
 
-	local hideQuests = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_LEFT, GenerateClosure(self.HideQuests, self), FRAME_ACTION_HIDE_QUESTS);
-	hideQuests:AddCondition(GenerateClosure(self.CanNavigateToQuestLog, self));
-	hideQuests:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
-
-	local showQuests = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_RIGHT, GenerateClosure(self.ShowQuests, self), FRAME_ACTION_SHOW_QUESTS);
-	showQuests:AddCondition(GenerateClosure(self.CanShowQuestLog, self));
-	showQuests:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	self.navBarBindings = GamepadMode.CreateBindingGroup("WorldMapNavBarBindings");
+	self.navBarBindings:AddFunctionBinding(GAMEPAD_SHOULDER_LEFT, GenerateClosure(self.OpenPreviousDropdownList, self));
+	self.navBarBindings:AddFunctionBinding(GAMEPAD_SHOULDER_RIGHT, GenerateClosure(self.OpenNextDropdownList, self));
 
 	local showFullMap = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_BOTTOM, GenerateClosure(self.ToggleFullMap, self), FRAME_ACTION_OPEN_FULLMAP);
-	local showSmallMap = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_BOTTOM, GenerateClosure(self.ToggleFullMap, self), FRAME_ACTION_OPEN_FULLMAP);
-	local mapMarker = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.GamepadTryPlaceWaypoint, self), FRAME_ACTION_MAP_MARKER);
-	local mapLevelUp = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.GamepadMapUp, self), FRAME_ACTION_MAP_LEVEL_CONTINENT);
-	local mapZoom = GamepadSharedUtility.CreateDoublePromptedBinding(GAMEPAD_SHOULDER_LEFT, GAMEPAD_SHOULDER_RIGHT,
-					GenerateClosure(self.GamepadZoomOut, self), GenerateClosure(self.GamepadZoomIn, self), FRAME_ACTION_ZOOM);
-	mapZoom:SetButtonEventsHandled(GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
+	showFullMap:AddCondition(GenerateClosure(self.IsMinimized, self));
+	showFullMap:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local showSmallMap = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_TOP, GenerateClosure(self.ToggleFullMap, self), FRAME_ACTION_OPEN_MAP);
+	showSmallMap:AddCondition(GenerateClosure(self.IsMaximized, self));
+	showSmallMap:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	
+	local mapMarker = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_LEFT_PRESS, GenerateClosure(self.GamepadTryPlaceWaypoint, self), FRAME_ACTION_MAP_MARKER);
+	local mapZoom = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_VERTICAL, nil, FRAME_ACTION_ZOOM);
+
+	local areaDropdown = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.OpenCurrentAreaDropdownList, self), CONTEXT_ACTION_LABEL_MORE_ACTIONS);
+	areaDropdown:AddCondition(GenerateClosure(self.IsCurrentAreaDropdownContextValid, self));
+
+	local filterDropdown = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, GenerateClosure(self.HandleMainMenu, self));
+	filterDropdown:SetCustomPromptFrame(self.WorldMapTrackingOptionsButton.GamepadFocusIcon);
 
 	self.worldMapFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "WorldMapFooter");
-	self.worldMapFooter:AddPromptedBinding(selectWorldMap);
+	self.worldMapFooter:AddPromptedBinding(changeMap);
 	self.worldMapFooter:AddPromptedBinding(closeWorldMap);
-	self.worldMapFooter:AddPromptedBinding(focusNavigation);
 	self.worldMapFooter:AddPromptedBinding(focusQuests);
-	self.worldMapFooter:AddPromptedBinding(hideQuests);
-	self.worldMapFooter:AddPromptedBinding(showQuests);
 	self.worldMapFooter:AddPromptedBinding(showFullMap);
 	self.worldMapFooter:AddPromptedBinding(showSmallMap);
 	self.worldMapFooter:AddPromptedBinding(mapMarker);
-	self.worldMapFooter:AddPromptedBinding(mapLevelUp);
 	self.worldMapFooter:AddPromptedBinding(mapZoom);
+	self.worldMapFooter:AddPromptedBinding(areaDropdown);
+	self.worldMapFooter:AddPromptedBinding(filterDropdown);
 	self.worldMapFooter:AddFunctionBinding(GAMEPAD_MENU_LEFT,GenerateClosure(self.HandleUnfocus, self));
-	self.worldMapFooter:AddFunctionBinding(GAMEPAD_MENU_RIGHT, GenerateClosure(self.HandleMainMenu, self));
 	self.worldMapFooter:Finalize();
 
-	-- Navigation actions.
-	local navigationAreaSelect = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.SelectArea, self), ACTION_LABEL_SELECT);
-	navigationAreaSelect:AddButtonContext("ButtonContext_NavButton");
-	navigationAreaSelect:AddCondition(GenerateClosure(self.IsAreaSelectContextValid, self));
-
-	local navigationAreaDropdownSelect = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.OpenAreaDropdownList, self), CONTEXT_ACTION_LABEL_OPTIONS);
-	navigationAreaDropdownSelect:AddButtonContext("ButtonContext_NavButton");
-	navigationAreaDropdownSelect:AddCondition(GenerateClosure(self.IsAreaDropdownContextValid, self));
-
-	local navigationFilterSelect = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.SelectFilters, self), ACTION_LABEL_SELECT);
-	navigationFilterSelect:AddButtonContext("ButtonContext_WorldMapTrackingButton");
-
-	local navigationFilterReset = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.ResetMapFilters, self), CONTEXT_ACTION_LABEL_RESET_FILTERS);
-	navigationFilterReset:AddButtonContext("ButtonContext_WorldMapTrackingButton");
-
-	self.navigationFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "NavigationFooter");
-	self.navigationFooter:AddStandardBackPrompt(FRAME_ACTION_EXIT);
-	self.navigationFooter:AddPromptedBinding(navigationAreaSelect);
-	self.navigationFooter:AddPromptedBinding(navigationAreaDropdownSelect);
-	self.navigationFooter:AddPromptedBinding(navigationFilterSelect);
-	self.navigationFooter:AddPromptedBinding(navigationFilterReset);
-	self.navigationFooter:Finalize();
+	self.worldMapCursorBindings = GamepadMode.CreateBindingGroup("WorldMapCursorBindings");
+	self.worldMapCursorBindings:AddAxisBinding(GAMEPAD_STICK_LEFT, GenerateClosure(self.GamepadPanSpeed, self));
+	self.worldMapCursorBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.GamepadZoom, self));
 
 	local activateRewardsFunction = GenerateClosure(self.ActivateRewardsCursor, self)
 	self.questDetailCursorBindings = GamepadMode.CreateBindingGroup("WorldMapQuestDetailCursorBindings");
@@ -1125,19 +1201,14 @@ end
 
 function WorldMapMixin:FocusGamepad()
 	SmartNavigation:RegisterCallback("HitLeftEdge", self.OnHitLeftEdge, self);
-	SmartNavigation:RegisterCallback("HitBottomEdge", self.OnHitBottomEdge, self);
-	SmartNavigation:RegisterCallback("HitRightEdge", self.OnHitRightEdge, self);
 
-	if self.currentFocus == NAVIGATION_FOCUS then
-		self:FocusNavigation();
-	elseif self.currentFocus == MAP_FOCUS then
+	if self.currentFocus == MAP_FOCUS then
 		self:FocusMap();
-	elseif self.QuestLog:IsShown() and not QuestMapFrame.DetailsFrame:IsShown() then
-		self:FocusQuests();
 	elseif self.currentFocus == DETAILS_FOCUS or QuestMapFrame.DetailsFrame:IsShown() then
 		self:FocusDetails();
+	elseif self.currentFocus == QUEST_FOCUS then
+		self:FocusQuests();
 	else
-		self.autofocusQuest = true;
 		self:FocusMap();
 	end
 
@@ -1158,8 +1229,6 @@ function WorldMapMixin:InitializeGamepad()
 	self.GamepadMapTrimTexture:Show();
 
 	-- Hide unnecessary Map/Quest elements for gamepad.
-	QuestMapFrame.QuestsTab:Hide();
-	QuestMapFrame.MapLegendTab:Hide();
 	self.CloseButton:Hide();
 	self.BorderFrame.MaximizeMinimizeFrame:Hide();
 	self.BorderFrame.Tutorial:Hide();
@@ -1173,8 +1242,10 @@ function WorldMapMixin:InitializeGamepad()
 	QuestMapFrame.QuestsFrame.DetailsFrame.ShareButton:Hide();
 	QuestMapFrame.QuestsFrame.DetailsFrame.TrackButton:Hide();
 
-	-- Reposition this button to align with the Navigation banner so that it can be intuitively selected within that focus group.
-	self.WorldMapTrackingOptionsButton:SetPoint("TOPRIGHT", self.WorldMapTrackingOptionsButton.relativeFrame, -4, 42);
+	QuestScrollFrame.SearchBox:ClearAllPoints();
+	QuestScrollFrame.SearchBox:SetPoint("BOTTOMRIGHT", QuestScrollFrame.Contents, "TOP", 25, 7);
+
+	self.WorldMapTrackingOptionsButton:SetPoint("LEFT", self.NavBar, "RIGHT", 19, -2);
 
 	QuestMapDetailsScrollFrame:RegisterCallback("OnVerticalScroll", GenerateClosure(self.DeactivateRewardsCursor, self));
 end

@@ -205,7 +205,11 @@ function PerksProgramProductsFrameMixin:OnProductSelected(productItemInfo)
 	end
 end
 
-function PerksProgramProductsFrameMixin:OnProductSelectedAfterModel(data)
+function PerksProgramProductsFrameMixin:OnProductSelectedAfterModel(data, skipTelemetry)
+	if skipTelemetry then
+		return;
+	end
+
 	if data.isCartData then
 		-- Cart items can show as selections event though they aren't
 		return;

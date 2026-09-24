@@ -24,13 +24,11 @@ Shared\Blizzard_CollectionsTabs.xml [ExcludeLoadGameType camelot]
 Shared\Blizzard_Collections.xml
 [Family]\Blizzard_MountCollection.lua
 [Family]\Blizzard_MountCollection.xml
-[Family]\Blizzard_PetCollection.lua [AllowLoadGameType wrath, cata]
-[Family]\Blizzard_PetCollection.xml [AllowLoadGameType wrath, cata]
-Shared\Blizzard_PetCollection.lua [AllowLoadGameType mists, mainline]
+[Game]\Blizzard_PetCollectionScrollBar.xml [AllowLoadGameType camelot]
+Classic\Blizzard_PetCollection.lua [AllowLoadGameType wrath, cata, camelot]
+Classic\Blizzard_PetCollection.xml [AllowLoadGameType wrath, cata, camelot]
+Shared\Blizzard_PetCollection.lua [AllowLoadGameType mists, mainline] [ExcludeLoadGameType camelot]
 Shared\Blizzard_PetCollection.xml [AllowLoadGameType mists, mainline] [ExcludeLoadGameType camelot]
-Camelot\Blizzard_PetCollectionScrollBar.xml [AllowLoadGameType camelot]
-Classic\Blizzard_PetCollection.lua [AllowLoadGameType camelot]
-Classic\Blizzard_PetCollection.xml [AllowLoadGameType camelot]
 [Family]\Blizzard_ToyBoxProgressTracker.xml [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
 [Game]\Blizzard_ToyBoxProgressTracker.xml [AllowLoadGameType camelot]
 [Family]\Blizzard_ToyBox.lua

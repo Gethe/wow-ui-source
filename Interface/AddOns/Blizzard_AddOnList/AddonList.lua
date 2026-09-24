@@ -657,7 +657,7 @@ function AddonListMixin:OnShow()
 
 				-- Check each entry if it's an empty character.
 				if characterInfo then
-					rootDescription:CreateRadio(characterInfo.name, IsSelected, SetSelected, characterInfo.guid);
+					rootDescription:CreateRadio(characterInfo.fullName or characterInfo.characterName, IsSelected, SetSelected, characterInfo.guid);
 				end
 			end
 		else

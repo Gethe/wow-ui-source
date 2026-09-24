@@ -314,10 +314,9 @@ function SmartNavigationMixin:ShowCursor(shouldSelectButton)
 	self:SetAlpha(1);
 
 	local introAnim = self.Pointer.IntroAnim;
-	if introAnim:IsPlaying() then
-		introAnim:Stop();
+	if introAnim:IsPaused() then
+		introAnim:Play();
 	end
-	introAnim:Play();
 
 	if (shouldSelectButton and self.currentButton == nil) then
 		self:SelectFirstButton();
@@ -327,6 +326,9 @@ end
 function SmartNavigationMixin:HideCursor(maintainPreviousButton)
 	self:ClearNavigationInput();
 	self:SetAlpha(0);
+
+	self.Pointer.IntroAnim:Restart();
+	self.Pointer.IntroAnim:Pause();
 
 	if (not maintainPreviousButton) then
 		self:SelectButton(nil);
@@ -498,40 +500,132 @@ function SmartNavigationMixin:OnUpdate(delta)
 	end
 end
 
-function SmartNavigationMixin:SelectButton(inButton, forceReselect)
-	if ((self.currentButton ~= inButton or forceReselect) and not self.isCursorSuspended) then
-		if self.currentButton then
-			self:RunCurrentButtonLeaveScript();
-			self.currentButton:SetHighlightLocked(false);
+function SmartNavigationMixin:TrySelectButton(inButton)
+	while inButton and inButton.smartNavigationProxyTarget do
+		inButton = inButton.smartNavigationProxyTarget;
+	end
 
-			if (self.currentButton.OnSmartNavDeselect) then
-				self.currentButton:OnSmartNavDeselect();
+	if self.currentButton == inButton
+		or not inButton
+		or not self.activeInfo
+		or not self:IsButtonValid(inButton)
+	then
+		return;
+	end
+
+	local function FindButtonInGroup(buttonGroup)
+		if buttonGroup.buttons and table.contains(buttonGroup.buttons, inButton) then
+			return true;
+		end
+		if buttonGroup.scrollFrames then
+			for _, scrollInfo in ipairs(buttonGroup.scrollFrames) do
+				if scrollInfo.buttons and table.contains(scrollInfo.buttons, inButton) then
+					return true, scrollInfo.scrollFrame;
+				end
 			end
+		end
+	end
 
-			self.currentButton = nil;
+	local activeGroup = self:GetActiveGroup(self.activeInfo);
+	if activeGroup then
+		local found, scrollFrame = FindButtonInGroup(activeGroup);
+		if found then
+			self:SelectButton(inButton, scrollFrame);
+			return;
+		end
+	end
+
+	local buttonGroups = self.activeInfo.buttonGroups;
+	if not buttonGroups then
+		return;
+	end
+
+	if buttonGroups.mainGroup and buttonGroups.mainGroup ~= activeGroup then
+		local found, scrollFrame = FindButtonInGroup(buttonGroups.mainGroup);
+		if found then
+			self:LeaveFocusGroup(inButton, scrollFrame);
+			return;
+		end
+	end
+
+	if buttonGroups.subGroups then
+		local function TryEnterGroupAndSelectButton(buttonGroup, focusKey)
+			local found, scrollFrame = FindButtonInGroup(buttonGroup);
+			if found then
+				self:EnterFocusGroup(focusKey, nil, inButton, scrollFrame);
+				return true;
+			end
 		end
 
-		if inButton then
-			self.currentButton = inButton;
-			self:TrackButtonEnabledState(inButton);
-			self:RunCurrentButtonEnterScript();
-			self.currentButton:SetHighlightLocked(true);
+		for key, buttonGroup in pairs(buttonGroups.subGroups) do
+			if TryEnterGroupAndSelectButton(buttonGroup, key) then
+				return;
+			end
+		end
+	end
+end
 
+function SmartNavigationMixin:SelectButton(inButton, forceReselect)
+	if self.isCursorSuspended or (self.currentButton == inButton and not forceReselect) then
+		return;
+	end
+
+	-- This _shouldn't_ be called recursively, but try to act sensibly if it does since it calls so
+	-- many user-provided callbacks that it inevitably _will_ be called recursively.
+	local sequence = (self.selectButtonSequence or 0) + 1;
+	self.selectButtonSequence = sequence;
+	local function IsCurrent()
+		return self.selectButtonSequence == sequence;
+	end
+
+	local prevButton = self.currentButton;
+	if prevButton then
+		prevButton:SetHighlightLocked(false);
+
+		self:RunCurrentButtonLeaveScript();
+
+		-- RunCurrentButtonLeaveScript may have re-selected this button, in which case we need to
+		-- leave it selected.
+		if prevButton.OnSmartNavDeselect and (IsCurrent() or self.currentButton ~= prevButton) then
+			prevButton:OnSmartNavDeselect();
+		end
+
+		-- OnSmartNavDeselect may also have changed the current button, in which case none of the
+		-- remaining work applies anymore.
+		if not IsCurrent() then
+			return;
+		end
+
+		self.currentButton = nil;
+	end
+
+	if inButton then
+		self.currentButton = inButton;
+		self.currentButton:SetHighlightLocked(true);
+		self:TrackButtonEnabledState(inButton);
+
+		self:RunCurrentButtonEnterScript();
+
+		-- RunCurrentButtonEnterScript may have called SelectButton
+		if IsCurrent() then
 			local activeFrame = self.activeInfo.frame;
 			if activeFrame and activeFrame.SmartNavigationOnSelect then
 				activeFrame:SmartNavigationOnSelect(inButton);
 			end
-
-			-- If button specified a function to be called when selected by smart nav
-			if inButton.OnSmartNavSelect then
-				inButton:OnSmartNavSelect();
-			end
-
-			self:UpdateCursorPosition();
 		end
 
-		self:TriggerEvent("SelectedButtonUpdated");
+		-- OnSmartNavSelect will have already been called if there was a recursive call with the
+		-- same button. Or if another button was selected instead it's no longer relevant.
+		if inButton.OnSmartNavSelect and IsCurrent() then
+			inButton:OnSmartNavSelect();
+		end
+
+		if IsCurrent() then
+			self:UpdateCursorPosition();
+		end
 	end
+
+	self:TriggerEvent("SelectedButtonUpdated");
 end
 
 function SmartNavigationMixin:TrackButtonEnabledState(button)
@@ -1640,7 +1734,7 @@ function SmartNavigationMixin:SetIsHandlingInputEvents(handleInputEvents)
 end
 
 -- Specifying a focus group owner will set the active frame to the focus group owner and then enter the focus group.
-function SmartNavigationMixin:EnterFocusGroup(inFocusKey, optionalFocusGroupOwner)
+function SmartNavigationMixin:EnterFocusGroup(inFocusKey, optionalFocusGroupOwner, button, scrollFrame)
 	if (optionalFocusGroupOwner) then
 		local focusGroupOwnerPanelInfo = self:GetPanelInfo(optionalFocusGroupOwner);
 		self:SetActiveFrame(focusGroupOwnerPanelInfo);
@@ -1660,19 +1754,23 @@ function SmartNavigationMixin:EnterFocusGroup(inFocusKey, optionalFocusGroupOwne
 		self.activeInfo.focusedKey = inFocusKey;
 		self.activeInfo.lastButton = nil;
 		if buttonGroups.focusedGroup then
-			self:SelectButton(self:FindTopLeftButton(self.activeInfo));
+			if button then
+				self:SelectButton(button, scrollFrame);
+			else
+				self:SelectButton(self:FindTopLeftButton(self.activeInfo));
+			end
 			self:ShowCursor(true);
 		end
 	end
 end
 
-function SmartNavigationMixin:LeaveFocusGroup(button)
+function SmartNavigationMixin:LeaveFocusGroup(button, scrollFrame)
 	if self.activeInfo then
 		self.activeInfo.buttonGroups.focusedGroup = nil;
 		self.activeInfo.focusedKey = nil;
 
 		if button then
-			self:SelectButton(button);
+			self:SelectButton(button, scrollFrame);
 		else
 			self:SelectFirstButton();
 		end

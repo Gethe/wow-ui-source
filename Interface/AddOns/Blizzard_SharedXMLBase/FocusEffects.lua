@@ -11,7 +11,9 @@ local FrameGlowTable = {
 	ButtonFrameTemplateNoPortrait = { atlas = "gamepad-uiframemetal-focus", x = -10, y = 14, x1 = 14, y1 = -14, },
 	Default = { atlas = "", x = 0, y = 0, x1 = 0, y1 = 0,},
 	MenuProxyTemplate = { atlas = "gamepad-menuproxy-focus-prototype", x = -18, y = 13, x1 = 17, y1 = -7, },
-	StackSplitTemplate = { atlas = "gamepad-menuproxy-focus-prototype", x = -7, y = 13, x1 = 10, y1 = -6, },
+	StackSplitTemplate = { atlas = "gamepad-uiframemetal-focus", x = 0, y = 0, x1 = 0, y1 = 0, },
+	CompactRaidFrameTemplate = { atlas = "gamepad-uiframemetal-focus", x = -18, y = 9, x1 = 10, y1 = -9, },
+	DialogFrameTemplate = { atlas = "gamepad-uiframediamondmetal-focus-large", x =-6, y = 6, x1 = 6, y1 = -6, },
 };
 
 -- Following the implementation of the function of the same name from NineSlicePanelMixin

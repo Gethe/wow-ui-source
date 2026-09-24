@@ -966,6 +966,10 @@ function MapCanvasMixin:DenormalizeVerticalSize(size)
 end
 
 function MapCanvasMixin:GetNormalizedCursorPosition()
+	if InputUtil.IsGamepadUIEnabled() then
+		return self.ScrollContainer:GetNormalizedGamepadCursorPosition();
+	end
+
 	return self.ScrollContainer:GetNormalizedCursorPosition()
 end
 
@@ -974,10 +978,18 @@ function MapCanvasMixin:GetNormalizedGamepadCursorPosition()
 end
 
 function MapCanvasMixin:IsCanvasMouseFocus()
+	if InputUtil.IsGamepadUIEnabled() then
+		return self:IsMapFocused();
+	end
+
 	return self.ScrollContainer:IsMouseMotionFocus();
 end
 
 function MapCanvasMixin:IsCanvasMouseFocusOrPinFocus()
+	if InputUtil.IsGamepadUIEnabled() then
+		return self:IsMapFocused();
+	end
+
 	if self.ScrollContainer:IsMouseMotionFocus() then
 		return true;
 	end
@@ -1232,22 +1244,23 @@ function MapCanvasMixin:HandleUIAction(actionType)
 	end
 end
 
-local MIN_PIN_DISTANCE_SQUARED = 10 * 10;
+local MIN_PIN_DISTANCE_SQUARED = 12 * 12;
 
 function MapCanvasMixin:UpdateGamepadCursor()
 	local cursorX, cursorY = self.ScrollContainer:GetGamepadCursorPosition();
 
 	local possiblePoIPins = {};
 
-	local function CheckPinDistance(inPin)
-		local pinLeft, pinBottom, pinWidth, pinHeight = inPin:GetScaledRect();
-		local pinX = pinLeft + (pinWidth/2);
-		local pinY = pinBottom + (pinHeight/2);
+	local function CheckPinDistance(pin)
+		local pinX, pinY = pin:GetCenter();
+		if not pinX then
+			return;
+		end
 
-		local distanceFromCursorSquared = SquaredDistanceBetweenPoints(cursorX, cursorY, pinX, pinY);
-		
-		if distanceFromCursorSquared <= MIN_PIN_DISTANCE_SQUARED then
-			table.insert(possiblePoIPins, inPin);
+		local distanceSquared = SquaredDistanceBetweenPoints(cursorX, cursorY, pinX, pinY);
+
+		if distanceSquared <= MIN_PIN_DISTANCE_SQUARED then
+			table.insert(possiblePoIPins, pin);
 		end
 	end
 

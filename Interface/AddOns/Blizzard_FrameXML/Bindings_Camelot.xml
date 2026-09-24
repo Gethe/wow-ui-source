@@ -1223,7 +1223,9 @@
 	<Binding name="TOGGLETALENTS" category="BINDING_HEADER_INTERFACE">
 		PlayerSpellsUtil.ToggleClassTalentOrSpecFrame();
 	</Binding>
-
+	<Binding name="TOGGLECOOLDOWNVIEWERSETTINGS" category="BINDING_HEADER_INTERFACE">
+		CooldownViewerSettings:TogglePanel();
+	</Binding>
 	<Binding name="TOGGLEQUESTLOG" header="BLANK11" category="BINDING_HEADER_INTERFACE">
 		ToggleQuestLog();
 	</Binding>

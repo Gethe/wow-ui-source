@@ -91,6 +91,10 @@ function LFGBrowseMixin:OnLoad()
 					end
 				end);
 			end);
+		elseif data.category then
+			factory("LFGBrowseNestedSearchEntryTemplate", function(frame, elementNode)
+				LFGBrowseSearchEntry_Init(frame, elementNode.data);
+			end);
 		else
 			factory("LFGBrowseSearchEntryTemplate", function(frame, elementNode)
 				LFGBrowseSearchEntry_Init(frame, elementNode.data);
@@ -127,9 +131,7 @@ function LFGBrowseMixin:OnLoad()
 
 	-- Update UI elements for modern
 	if LFGVANILLA_SETTING_MODERN_STYLE then
-		self:SetPortraitAtlasRaw("groupfinder-eye-frame");
 		self.TitleContainer.TitleText:SetText(LFG_TITLE);
-		self.Inset.Bg:Hide();
 	end
 end
 
@@ -150,7 +152,10 @@ function LFGBrowseMixin:OnEvent(event, ...)
 		self.searchFailed = true;
 		self:UpdateResultList();
 	elseif ( event == "LFG_LIST_SHOW_SEARCH") then
-		local activityIDs = ...;
+		local activityIDs, showAllLevelRanges = ...;
+		if (showAllLevelRanges) then
+			SetCVar("disableSuggestedLevelActivityFilter", true);
+		end
 		self:ShowSearchForActivities(activityIDs);
 	elseif ( event == "REPORT_PLAYER_RESULT") then
 		local success, reportType = ...;
@@ -212,7 +217,7 @@ function LFGBrowseMixin:UpdateResults()
 					currentSubtree = dataProvider:Insert({index=nil, dividerType=dividerCategory});
 				end
 				if currentSubtree then
-					currentSubtree:Insert({index=index, resultID=resultID});
+					currentSubtree:Insert({index=index, resultID=resultID, category=dividerCategory});
 				else
 					dataProvider:Insert({index=index, resultID=resultID});
 				end

@@ -48,12 +48,7 @@ end
 
 function MapHighlightPinMixin:Refresh()
 	local mapID = self:GetMap():GetMapID();
-	local normalizedCursorX, normalizedCursorY;
-	if InputUtil.IsGamepadUIEnabled() then
-		normalizedCursorX, normalizedCursorY = self:GetMap():GetNormalizedGamepadCursorPosition();
-	else
-		normalizedCursorX, normalizedCursorY = self:GetMap():GetNormalizedCursorPosition();
-	end
+	local normalizedCursorX, normalizedCursorY = self:GetMap():GetNormalizedCursorPosition();
 	local fileDataID, atlasID, texPercentageX, texPercentageY, textureX, textureY, scrollChildX, scrollChildY = C_Map.GetMapHighlightInfoAtPosition(mapID, normalizedCursorX, normalizedCursorY);
 	if (fileDataID and fileDataID > 0) or (atlasID) then
 		self.HighlightTexture:SetTexCoord(0, texPercentageX, 0, texPercentageY);

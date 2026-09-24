@@ -169,7 +169,7 @@
 			</Button>
 			<Frame parentKey="GamepadResetButton" inherits="InputIconTextureFrameTemplate" hidden="true">
 				<KeyValues>
-					<KeyValue key="mappedButtonKey" value="GAMEPAD_TRIGGER_RIGHT" type="global"/>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_TOP" type="global"/>
 					<KeyValue key="useDropShadow" value="true" type="boolean"/>
 				</KeyValues>
 				<Size x="30" y="30"/>
@@ -193,7 +193,7 @@
 			</Button>
 			<Frame parentKey="GamepadUndoButton" inherits="InputIconTextureFrameTemplate" hidden="true">
 				<KeyValues>
-					<KeyValue key="mappedButtonKey" value="GAMEPAD_TRIGGER_RIGHT" type="global"/>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_TOP" type="global"/>
 					<KeyValue key="useDropShadow" value="true" type="boolean"/>
 				</KeyValues>
 				<Size x="30" y="30"/>
@@ -294,8 +294,8 @@
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="Legacy-Tree-Frame-background">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="-10"/>
-						<Anchor point="BOTTOMRIGHT" x="-2" y="-2"/>
+						<Anchor point="TOPLEFT" x="1" y="-10"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="4"/>
 					</Anchors>
 				</Texture>
 			</Layer>

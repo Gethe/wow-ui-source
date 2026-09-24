@@ -1147,25 +1147,31 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.REMOVEFRIEND, SLASH_COMMAND_
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.IGNORE, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
-	if ( msg ~= "" or UnitIsHumanPlayer("target") ) then
+	if ( msg ~= "" ) then
 		local bNetIDAccount = BNet_GetBNetIDAccount(msg);
 		if ( bNetIDAccount ) then
 			if ( BNIsFriend(bNetIDAccount) ) then
 				SendSystemMessage(ERR_CANNOT_IGNORE_BN_FRIEND);
 			else
-				BNSetBlocked(bNetIDAccount, not BNIsBlocked(bNetIDAccount));
+				C_BattleNet.SetBlocked(bNetIDAccount, not BNIsBlocked(bNetIDAccount));
 			end
 		else
 			C_FriendList.AddOrDelIgnore(msg);
 		end
+	elseif ( UnitIsHumanPlayer("target") ) then
+		local targetName = NameUtil.GetUnmodifiedUnitFullName("target");
+		C_FriendList.AddOrDelIgnore(targetName);
 	else
 		ToggleIgnorePanel();
 	end
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.UNIGNORE, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
-	if ( msg ~= "" or UnitIsHumanPlayer("target") ) then
+	if ( msg ~= "" ) then
 		C_FriendList.DelIgnore(msg);
+	elseif ( UnitIsHumanPlayer("target") ) then
+		local targetName = NameUtil.GetUnmodifiedUnitFullName("target");
+		C_FriendList.DelIgnore(targetName);
 	else
 		ToggleIgnorePanel();
 	end

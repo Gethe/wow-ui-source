@@ -89,16 +89,17 @@
 							<Layer level="OVERLAY" textureSubLevel="3">
 								<Texture parentKey="PvpBackgroundCircle" inherits="PlayerPvpBackgroundCircleTemplate" hidden="true">
 									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent" relativePoint="TOPLEFT" x="24" y="-30"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="PvpBackgroundIcon" inherits="PlayerPvpBackgroundIconTemplate" hidden="true">
-									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.PvpBackgroundCircle" relativePoint="CENTER" x="-1" y="0"/>
+										<Anchor point="TOP" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-50"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="4">
+								<!-- PvpBackgroundIcon must outrank PvpBackgroundCircle; the circle art is opaque and would hide it. -->
+								<Texture parentKey="PvpBackgroundIcon" inherits="PlayerPvpBackgroundIconTemplate" hidden="true">
+									<Anchors>
+										<Anchor point="CENTER" relativeKey="$parent.PvpBackgroundCircle" relativePoint="CENTER" x="0" y="0"/>
+									</Anchors>
+								</Texture>
 								<Texture parentKey="LevelBackgroundCircle" inherits="PlayerLevelBackgroundCircleTemplate" hidden="true">
 									<Anchors>
 										<Anchor point="BOTTOMLEFT" x="13" y="7"/>

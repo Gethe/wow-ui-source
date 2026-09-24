@@ -1348,7 +1348,6 @@ local ChatInfo =
 			Name = "ChatMsgCollectedAppearance",
 			Type = "Event",
 			LiteralName = "CHAT_MSG_COLLECTED_APPEARANCE",
-			SecretInChatMessagingLockdown = true,
 			SynchronousEvent = true,
 			Payload =
 			{

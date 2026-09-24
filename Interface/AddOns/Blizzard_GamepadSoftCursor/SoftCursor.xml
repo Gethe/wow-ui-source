@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Frame name="SoftCursorPointerTemplate" virtual="true">
+	<Frame name="YellowSoftCursorPointerTemplate" virtual="true">
 		<Size x="100" y="100"/>
 		<Animations>
 			<AnimationGroup parentKey="IntroAnim">
@@ -31,7 +31,40 @@
 		</Frames>
 	</Frame>
 
-	<Frame name="SoftCursor" parent="UIParent" inherits="SoftCursorPointerTemplate" mixin="SoftCursorMixin" hidden="true">
+	<Frame name="MetallicSoftCursorPointerTemplate" virtual="true">
+		<Size x="100" y="100"/>
+		<Animations>
+			<AnimationGroup parentKey="IntroAnim">
+				<Alpha childKey="Icon" fromAlpha="0" toAlpha="1" duration="0.25" smoothing="IN"/>
+				<Scale childKey="Icon" duration="0.25" smoothing="IN" fromScaleX="1.5" fromScaleY="1.5" toScaleX="1" toScaleY="1"/>
+			</AnimationGroup>
+		</Animations>
+		<Frames>
+			<Frame parentKey="Icon" setAllPoints="true" frameStrata="HIGH">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture atlas="gamepad-reticletargeting-indicator-x1">
+							<TexCoords left="0.08" right="0.95" top="0.08" bottom="0.95"/>
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER" x="1"/>
+							</Anchors>
+							<Color color="BLACK_COLOR"/>
+						</Texture>
+						<Texture parentKey="Texture" atlas="gamepad-reticletargeting-indicator-x1">
+							<TexCoords left="0.08" right="0.95" top="0.08" bottom="0.95"/>
+							<Size x="30" y="30"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="SoftCursor" parent="UIParent" inherits="MetallicSoftCursorPointerTemplate" mixin="SoftCursorMixin" hidden="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

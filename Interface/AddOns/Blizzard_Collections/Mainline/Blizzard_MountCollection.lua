@@ -593,7 +593,7 @@ function MountJournal_OnShow(self)
 
 	self.ToggleDynamicFlightFlyoutButton:UpdateVisibility();
 	self.SummonRandomFavoriteSpellFrame:UpdateVisibility();
-	self.MountCount:UpdateDisplayStyle(BLIZZARD_COLLECTIONS_MOUNT_COUNT_DISPLAY_STYLE);
+	self.MountCount:UpdateDisplayStyle(BLIZZARD_COLLECTIONS_COUNT_DISPLAY_STYLE);
 
 	MountJournal_UpdateEquipment(self);
 	CollectionsJournal:SetPortraitToAsset("Interface\\Icons\\MountJournalPortrait");
@@ -899,17 +899,6 @@ function MountListItem_OnClick(self, button)
 		end
 	elseif ( self.spellID ~= MountJournal.selectedSpellID ) then
 		MountJournal_Select(self.index);
-	end
-end
-
-function MountJournal_OnSearchLoad(self)
-	self:ClearAllPoints();
-	if not C_CVar.GetCVarBool("onlyShowCollectedItemsInJournal") then
-		self:SetPoint("TOPLEFT", self:GetParent().LeftInset, 15, -9);
-	else
-		-- If the FilterDropdown is hidden, take up the whole leftInset space
-		self:SetPoint("TOPLEFT", self:GetParent().LeftInset, 15, -9);
-		self:SetPoint("TOPRIGHT", self:GetParent().LeftInset, -10, -9);
 	end
 end
 

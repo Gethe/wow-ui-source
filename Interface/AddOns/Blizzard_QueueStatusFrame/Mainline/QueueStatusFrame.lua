@@ -1,192 +1,15 @@
-local LFG_EYE_NONE_ANIM			= "NONE";
-local LFG_EYE_INIT_ANIM			= "INITIAL";
-local LFG_EYE_SEARCHING_ANIM	= "SEARCHING_LOOP";
-local LFG_EYE_HOVER_ANIM		= "HOVER_ANIM";
-local LFG_EYE_FOUND_INIT_ANIM	= "FOUND_INIT";
-local LFG_EYE_FOUND_LOOP_ANIM	= "FOUND_LOOP";
-local LFG_EYE_POKE_INIT_ANIM	= "POKE_INIT";
-local LFG_EYE_POKE_LOOP_ANIM	= "POKE_LOOP";
-local LFG_EYE_POKE_END_ANIM		= "POKE_END";
-
-EyeTemplateMixin = {};
-
-function EyeTemplateMixin:OnLoad()
-	self.currActiveAnims = {};
-	self.activeAnim = LFG_EYE_NONE_ANIM;
-	self.isStatic = false;
-end
-
-function EyeTemplateMixin:StartInitialAnimation()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyeInitial, self.EyeInitial.EyeInitialAnim);
-
-	self.currAnim = LFG_EYE_INIT_ANIM;
-end
-
-function EyeTemplateMixin:StartSearchingAnimation()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyeSearchingLoop, self.EyeSearchingLoop.EyeSearchingLoopAnim);
-
-	self.currAnim = LFG_EYE_SEARCHING_ANIM;
-end
-
-function EyeTemplateMixin:StartHoverAnimation()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyeMouseOver, self.EyeMouseOver.EyeMouseOverAnim);
-
-	self.currAnim = LFG_EYE_HOVER_ANIM;
-end
-
-function EyeTemplateMixin:StartFoundAnimationInit()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyeFoundInitial, self.EyeFoundInitial.EyeFoundInitialAnim);
-
-	self.currAnim = LFG_EYE_FOUND_INIT_ANIM;
-end
-
-function EyeTemplateMixin:StartFoundAnimationLoop()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyeFoundLoop, self.EyeFoundLoop.EyeFoundLoopAnim);
-	self:PlayAnim(self.EyeFoundLoop, self.GlowBackLoop.GlowBackLoopAnim);
-
-	self.currAnim = LFG_EYE_FOUND_LOOP_ANIM;
-end
-
-function EyeTemplateMixin:StartPokeAnimationInitial()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyePokeInitial, self.EyePokeInitial.EyePokeInitialAnim);
-
-	self.currAnim = LFG_EYE_POKE_INIT_ANIM;
-end
-
-function EyeTemplateMixin:StartPokeAnimationLoop()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyePokeLoop, self.EyePokeLoop.EyePokeLoopAnim);
-
-	self.currAnim = LFG_EYE_POKE_LOOP_ANIM;
-end
-
-function EyeTemplateMixin:StartPokeAnimationEnd()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyePokeEnd, self.EyePokeEnd.EyePokeEndAnim);
-
-	self.currAnim = LFG_EYE_POKE_END_ANIM;
-end
-
-function EyeTemplateMixin:SetStaticMode(set)
-	self.isStatic = set;
-
-	for _, currAnim in ipairs(self.currActiveAnims) do
-		if (self.isStatic) then
-			currAnim[1]:Hide();
-			currAnim[2]:Pause();
-		else
-			currAnim[1]:Show();
-			currAnim[2]:Play();
-		end
-	end
-end
-
-function EyeTemplateMixin:IsStaticMode()
-	return self.isStatic;
-end
-
-function EyeTemplateMixin:PlayAnim(parentFrame, anim)
-	parentFrame:Show();
-	anim:Play();
-
-	tinsert(self.currActiveAnims, #(self.currActiveAnims) + 1, { parentFrame, anim });
-end
-
-function EyeTemplateMixin:StopAnimating()
-	if self.currAnim == LFG_EYE_NONE_ANIM then
-		return;
-	end
-	self.currAnim = LFG_EYE_NONE_ANIM;
-
-	for _, currAnim in ipairs(self.currActiveAnims) do
-		currAnim[1]:Hide();
-		currAnim[2]:Stop();
-	end
-
-	self.currActiveAnims = {};
-end
-
 ----------------------------------------------
 -------------QueueStatusButton----------------
 ----------------------------------------------
 
 QueueStatusButtonMixin = {};
 
-local LFG_ANGER_INC_VAL = 30;
-local LFG_ANGER_DEC_VAL = 1;
-local LFG_ANGER_INIT_VAL = 60;
-local LFG_ANGER_END_VAL = 75;
-local LFG_ANGER_CAP_VAL = 90;
 function QueueStatusButtonMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self.glowLocks = {};
-	self.angerVal = 0;
 
 	-- For Camelot, we need to call UpdateDefaultAnchor when the Minimap scale changes.
 	EventRegistry:RegisterCallback("Minimap.OnScaleUpdated", self.UpdateDefaultAnchor, self);
-end
-
-function QueueStatusButtonMixin:IsInitialEyeAnimFinished()
-	return self.Eye.currAnim == LFG_EYE_INIT_ANIM and not self.Eye.EyeInitial.EyeInitialAnim:IsPlaying();
-end
-function QueueStatusButtonMixin:IsFoundInitialAnimFinished()
-	return self.Eye.currAnim == LFG_EYE_FOUND_INIT_ANIM and not self.Eye.EyeFoundInitial.EyeFoundInitialAnim:IsPlaying();
-end
-function QueueStatusButtonMixin:ShouldStartHoverAnim()
-	return self.cursorOnButton and self.Eye.currAnim == LFG_EYE_SEARCHING_ANIM;
-end
-function QueueStatusButtonMixin:ShouldStartPokeInitAnim()
-	return self.angerVal >= LFG_ANGER_INIT_VAL and (self.Eye.currAnim == LFG_EYE_HOVER_ANIM or self.Eye.currAnim == LFG_EYE_SEARCHING_ANIM);
-end
-function QueueStatusButtonMixin:IsPokeInitAnimFinished()
-	return self.Eye.currAnim == LFG_EYE_POKE_INIT_ANIM and not self.Eye.EyePokeInitial.EyePokeInitialAnim:IsPlaying();
-end
-function QueueStatusButtonMixin:ShouldStartPokeEndAnim()
-	return self.angerVal < LFG_ANGER_END_VAL and (self.Eye.currAnim == LFG_EYE_POKE_LOOP_ANIM or self:IsPokeInitAnimFinished());
-end
-function QueueStatusButtonMixin:IsPokeEndAnimFinished()
-	return self.Eye.currAnim == LFG_EYE_POKE_END_ANIM and not self.Eye.EyePokeEnd.EyePokeEndAnim:IsPlaying();
-end
-
-function QueueStatusButtonMixin:OnUpdate()
-	if ( self.Eye:IsStaticMode() ) then
-		self.Eye.texture:Show();
-		return;
-	end
-
-	self.Eye.texture:Hide();
-
-	--Animation state machine
-	if ( self:IsInitialEyeAnimFinished() or self:IsPokeEndAnimFinished()) then
-		self.Eye:StartSearchingAnimation();
-	elseif ( self:IsFoundInitialAnimFinished() ) then
-		self.Eye:StartFoundAnimationLoop();
-	elseif ( self:ShouldStartPokeInitAnim() ) then
-		self.Eye:StartPokeAnimationInitial();
-	elseif ( self:IsPokeInitAnimFinished() ) then
-		self.Eye:StartPokeAnimationLoop();
-	elseif ( self:ShouldStartPokeEndAnim() ) then
-		self.Eye:StartPokeAnimationEnd();
-	elseif ( self:ShouldStartHoverAnim() ) then
-		self.Eye:StartHoverAnimation();
-	end
-
-	self.angerVal = self.angerVal - LFG_ANGER_DEC_VAL;
-	self.angerVal = Clamp(self.angerVal, 0, LFG_ANGER_CAP_VAL);
 end
 
 function QueueStatusButtonMixin:OnEnter()
@@ -197,26 +20,14 @@ function QueueStatusButtonMixin:OnEnter()
 
 	self.cursorOnButton = true;
 
-	if ( self.Eye:IsStaticMode() ) then
-		return;
-	end
-
-	if ( self.Eye.currAnim == LFG_EYE_SEARCHING_ANIM or self.Eye.currAnim == LFG_EYE_NONE_ANIM ) then
-		self.Eye:StartHoverAnimation();
-	end
+	self.Eye:OnEnter();
 end
 
 function QueueStatusButtonMixin:OnLeave()
 	QueueStatusFrame:Hide();
 	self.cursorOnButton = false;
 
-	if ( self.Eye:IsStaticMode() ) then
-		return;
-	end
-
-	if ( self.Eye.currAnim == LFG_EYE_HOVER_ANIM ) then
-		self.Eye:StartSearchingAnimation();
-	end
+	self.Eye:OnLeave();
 end
 
 function QueueStatusButtonMixin:ShowContextMenu()
@@ -297,8 +108,7 @@ function QueueStatusButtonMixin:OnClick(button)
 	if ( button == "RightButton" ) then
 		self:ShowContextMenu();
 	else
-		--Angry Eye
-		self.angerVal = self.angerVal + LFG_ANGER_INC_VAL;
+		self.Eye:OnClick();
 
 		local inBattlefield, showScoreboard = QueueStatus_InActiveBattlefield();
 		if ( IsInLFDBattlefield() ) then
@@ -464,9 +274,10 @@ function QueueStatusFrameMixin:OnEvent(event, ...)
 
 end
 
-function QueueStatusFrameMixin:SetOwner(parent)
+function QueueStatusFrameMixin:SetOwner(_parent, _anchor)
 	-- This function only exists so this frame can be treated more or less as a tooltip
-	self:SetParent(parent);
+	-- Don't actually change the parent, just allow the anchoring that follows this call
+	-- to position the QueueStatusFrame and leave it in the tooltip strata.
 end
 
 function QueueStatusFrameMixin:GetEntry(entryIndex)
@@ -541,14 +352,7 @@ function QueueStatusFrameMixin:Update()
 		if (queueSearching) then
 			makeEyeStatic = false;
 
-			--Gates the animation from playing from anything that isn't a static eye -> queued eye
-			if ( QueueStatusButton.Eye.currAnim
-			and	QueueStatusButton.Eye.currAnim ~= LFG_EYE_SEARCHING_ANIM
-			and QueueStatusButton.Eye.currAnim ~= LFG_EYE_INIT_ANIM
-			and QueueStatusButton.Eye.currAnim ~= LFG_EYE_HOVER_ANIM
-			and QueueStatusButton.Eye.currAnim ~= LFG_EYE_NONE_ANIM ) then
-				QueueStatusButton.Eye:StartSearchingAnimation();
-			end
+			QueueStatusButton.Eye:CheckStartSearchingAnimation();
 		end
 	end
 
@@ -568,14 +372,7 @@ function QueueStatusFrameMixin:Update()
 			if ( mode == "queued" or mode == "abandonedInDungeon" or mode == "rolecheck" or mode == "proposal") then
 				makeEyeStatic = false;
 
-				--Gates the animation from playing from anything that isn't a static eye -> queued eye
-				if ( QueueStatusButton.Eye.currAnim
-				and	QueueStatusButton.Eye.currAnim ~= LFG_EYE_SEARCHING_ANIM
-				and QueueStatusButton.Eye.currAnim ~= LFG_EYE_INIT_ANIM
-				and QueueStatusButton.Eye.currAnim ~= LFG_EYE_HOVER_ANIM
-				and QueueStatusButton.Eye.currAnim ~= LFG_EYE_NONE_ANIM ) then
-					QueueStatusButton.Eye:StartSearchingAnimation();
-				end
+				QueueStatusButton.Eye:CheckStartSearchingAnimation();
 			end
 		end
 	end

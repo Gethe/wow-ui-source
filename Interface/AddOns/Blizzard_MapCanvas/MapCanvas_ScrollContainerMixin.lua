@@ -417,6 +417,10 @@ function MapCanvasScrollControllerMixin:OnUpdate(elapsed)
 		local viewRect = self:GetViewRect();
 		self:GetMap():UpdateAreaTriggers(viewRect);
 	end
+
+	if self.gamepadCursorLinesActive then
+		self:UpdateGamepadCursorLines();
+	end
 end
 
 function MapCanvasScrollControllerMixin:MarkAreaTriggersDirty()
@@ -875,20 +879,111 @@ function MapCanvasScrollControllerMixin:SetGamepadFocus(inFocus)
 	self.edgePanDistance = GetCVarNumberOrDefault("GamepadMapEdgePanDistance");
 
 	if inFocus then
-		local boundsFunc = function()
-			local width, height = self:GetSize();
-			local centerX, centerY = self:GetCenter();
-			return SoftCursor_CreateRectBounds(centerX, centerY, width, height);
+		local map = self:GetMap();
+
+		-- Only initialize the cursor when entering the map UI, we want to retain cursor position on sub frame focus change.
+		if not map.currentFocus then
+			local boundsFunc = function()
+				local width, height = self:GetSize();
+				local centerX, centerY = self:GetCenter();
+				return SoftCursor_CreateRectBounds(centerX, centerY, width, height);
+			end
+
+			SmartNavigation:SuspendCursor(true);
+			SoftCursor:SetMaxSpeed(self:GetGamepadMaxScrollSpeed());
+			SoftCursor:SetBounds(boundsFunc);
+			SoftCursor:SetInputStick("Left");
+			SoftCursor:SetActive(true);
 		end
 
-		SmartNavigation:SuspendCursor(true);
-		SoftCursor:SetMaxSpeed(self:GetGamepadMaxScrollSpeed());
-		SoftCursor:SetBounds(boundsFunc);
-		SoftCursor:SetActive(true);
+		self:CreateGamepadCursorLines();
+		self.gamepadCursorLinesActive = true;
+		self:SetGamepadCursorLinesShown(true);
+		self:UpdateGamepadCursorLines();
+		SoftCursor:SetParent(self.gamepadOverlayFrame);
 	else
-		SmartNavigation:SuspendCursor(false);
-		SoftCursor:SetActive(false);
+		self.gamepadCursorLinesActive = false;
+
+		if self.gamepadCursorLines then
+			self:SetGamepadCursorLinesShown(false);
+		end
+
+		-- Only disable the cursor when leaving the map UI entirely
+		local map = self:GetMap();
+		if not map.currentFocus then
+			SmartNavigation:SuspendCursor(false);
+			SoftCursor:SetActive(false);
+			SoftCursor:SetParent(UIParent);
+		end
 	end
+end
+
+function MapCanvasScrollControllerMixin:SetGamepadCursorLinesShown(shown)
+	self.gamepadOverlayFrame:SetShown(shown);
+end
+
+function MapCanvasScrollControllerMixin:CreateGamepadCursorLines()
+	if self.gamepadCursorLines then
+		return;
+	end
+
+	local overlay = CreateFrame("Frame", nil, self);
+	overlay:SetAllPoints(self);
+	overlay:SetFrameLevel(self.Child:GetFrameLevel() + 1);
+	overlay:SetClipsChildren(true);
+
+	local color = NORMAL_FONT_COLOR;
+	local function CreateLine()
+		local line = overlay:CreateTexture(nil, "OVERLAY");
+		line:SetColorTexture(color:GetRGBA());
+		return line;
+	end
+
+	self.gamepadOverlayFrame = overlay;
+	self.gamepadCursorLines = {
+		left = CreateLine(),
+		right = CreateLine(),
+		top = CreateLine(),
+		bottom = CreateLine(),
+	};
+end
+
+function MapCanvasScrollControllerMixin:UpdateGamepadCursorLines()
+	if not SoftCursor:IsShown() then
+		self:SetGamepadCursorLinesShown(false);
+		return;
+	end
+
+	local overlay = self.gamepadOverlayFrame;
+	local overlayX, overlayY = overlay:GetCenter();
+
+	local x, y = SoftCursor:GetCenter();
+	x = x - overlayX;
+	y = y - overlayY;
+
+	local iconTexture = SoftCursor.Icon.Texture;
+	local offset = iconTexture:GetWidth() * 0.5 - 1;
+
+	local left = self.gamepadCursorLines.left;
+	local right = self.gamepadCursorLines.right;
+	local top = self.gamepadCursorLines.top;
+	local bottom = self.gamepadCursorLines.bottom;
+
+	left:ClearAllPoints();
+	left:SetSize(self:GetWidth(), 2);
+	left:SetPoint("RIGHT", overlay, "CENTER", x - offset, y);
+
+	right:ClearAllPoints();
+	right:SetSize(self:GetWidth(), 2);
+	right:SetPoint("LEFT", overlay, "CENTER", x + offset, y);
+
+	top:ClearAllPoints();
+	top:SetSize(2, self:GetHeight());
+	top:SetPoint("BOTTOM", overlay, "CENTER", x, y + offset);
+
+	bottom:ClearAllPoints();
+	bottom:SetSize(2, self:GetHeight());
+	bottom:SetPoint("TOP", overlay, "CENTER", x, y - offset);
 end
 
 function MapCanvasScrollControllerMixin:GetGamepadMaxScrollSpeed()
@@ -900,38 +995,54 @@ function MapCanvasScrollControllerMixin:GetGamepadMaxScrollSpeed()
 	end
 end
 
-function MapCanvasScrollControllerMixin:CheckForEdgePan()
+function MapCanvasScrollControllerMixin:RefreshGamepadScrollSpeed()
 	if SoftCursor:IsShown() then
-		local left, bottom, width, height = self:GetRect();
-		local top = bottom + height;
-		local right = left + width;
-
-		local cursorX, cursorY = self:GetGamepadCursorPosition();
-
-		local panVector = CreateVector2D(0, 0);
-
-		if cursorX <= left + self.edgePanDistance then
-			panVector.x = -1;
-		elseif cursorX >= right - self.edgePanDistance then
-			panVector.x = 1;
-		end
-
-		if cursorY >= top - self.edgePanDistance then
-			panVector.y = 1;
-		elseif cursorY <= bottom + self.edgePanDistance then
-			panVector.y = -1;
-		end
-
-		if panVector:IsZero() or not SoftCursor:IsMoving() then
-			self:SetGamepadScrollSpeed(0, 0);
-		else
-			panVector:Normalize();
-
-			local scrollSpeed = self:GetGamepadMaxScrollSpeed();
-
-			self:SetGamepadScrollSpeed(panVector.x * scrollSpeed, panVector.y * scrollSpeed);
-		end
+		SoftCursor:SetMaxSpeed(self:GetGamepadMaxScrollSpeed());
 	end
+end
+
+function MapCanvasScrollControllerMixin:CheckForEdgePan()
+	if not SoftCursor:IsShown() then
+		return;
+	end
+
+	local left, bottom, width, height = self:GetRect();
+	local top = bottom + height;
+	local right = left + width;
+
+	local cursorX, cursorY = self:GetGamepadCursorPosition();
+	local panVector = CreateVector2D(0, 0);
+
+	if cursorX <= left + self.edgePanDistance then
+		panVector.x = -1;
+	elseif cursorX >= right - self.edgePanDistance then
+		panVector.x = 1;
+	end
+
+	if cursorY >= top - self.edgePanDistance then
+		panVector.y = 1;
+	elseif cursorY <= bottom + self.edgePanDistance then
+		panVector.y = -1;
+	end
+
+	if panVector:IsZero() or not SoftCursor:IsMoving() then
+		self:SetGamepadScrollSpeed(0, 0);
+		return;
+	end
+
+	panVector:Normalize();
+
+	local scrollSpeed = self:GetGamepadMaxScrollSpeed() * self:GetTraversalSpeedMultiplier();
+
+	self:SetGamepadScrollSpeed(panVector.x * scrollSpeed, panVector.y * scrollSpeed);
+end
+
+function MapCanvasScrollControllerMixin:GetTraversalSpeedMultiplier()
+	return 0.50 + 0.50 * (self.gamepadPanMagnitude^1.5);
+end
+
+function MapCanvasScrollControllerMixin:SetGamepadPanMagnitude(magnitude)
+	self.gamepadPanMagnitude = Clamp(magnitude, 0, 1);
 end
 
 function MapCanvasScrollControllerMixin:IsGamepadZooming()
@@ -944,4 +1055,8 @@ end
 
 function MapCanvasScrollControllerMixin:GamepadZoom(inZoomDirection)
 	self.gamepadZoom = inZoomDirection * self.gamepadZoomSpeed;
+end
+
+function MapCanvasScrollControllerMixin:SetGamepadZoom(magnitude)
+	self.gamepadZoom = magnitude * self.gamepadZoomSpeed;
 end

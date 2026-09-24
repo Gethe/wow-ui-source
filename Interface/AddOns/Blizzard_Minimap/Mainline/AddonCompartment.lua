@@ -75,7 +75,7 @@ function AddonCompartmentMixin:OnEvent(event, ...)
 end
 
 function AddonCompartmentMixin:RegisterAddons()
-	local character = UnitName("player");
+	local character = UnitGUID("player");
 	for addonIndex = 1, C_AddOns.GetNumAddOns() do
 		local addonEnabled = C_AddOns.GetAddOnEnableState(addonIndex, character) == Enum.AddOnEnableState.All;
 		local addonCompartmentFunc = C_AddOns.GetAddOnMetadata(addonIndex, "AddonCompartmentFunc");

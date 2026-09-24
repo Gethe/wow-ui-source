@@ -2,6 +2,14 @@ local function IsInputIcon(object)
 	return object and object.SetPressable and object.SetTextureState;
 end
 
+local function IsActionBarHighlightEnabled(alwaysShowHighlightAnims)
+	if alwaysShowHighlightAnims then
+		return true;
+	end
+	local shouldShowHighlight = CVarCallbackRegistry:GetCVarValueBool("GamepadShowActionBarHighlight");
+	return shouldShowHighlight;
+end
+
 --[[
 	Factory mixin for creating dynamic components used in focus animations.
 
@@ -16,8 +24,22 @@ local AnimStyleFactory = {
 			Size = { X=62, Y=62 },
 			-- TODO for post-BlizzCon: BlizzCon assets are Xbox only (PS will be broken).
 			Atlas = {
-				[GAMEPAD_TRIGGER_LEFT] = "gamepad-actionbar-fx-triggerL-top",
-				[GAMEPAD_TRIGGER_RIGHT] = "gamepad-actionbar-fx-triggerR-top",
+				Generic = {
+					[GAMEPAD_TRIGGER_LEFT] = "gamepad-actionbar-fx-triggerL-top",
+					[GAMEPAD_TRIGGER_RIGHT] = "gamepad-actionbar-fx-triggerR-top",
+				},
+				Letters = {
+					[GAMEPAD_TRIGGER_LEFT] = "gamepad-actionbar-fx-triggerL-top",
+					[GAMEPAD_TRIGGER_RIGHT] = "gamepad-actionbar-fx-triggerR-top",
+				},
+				Shapes = {
+					[GAMEPAD_TRIGGER_LEFT] = "gamepad-actionbar-fx-triggerL-top-ps",
+					[GAMEPAD_TRIGGER_RIGHT] = "gamepad-actionbar-fx-triggerR-top-ps",
+				},
+				Reverse = {
+					[GAMEPAD_TRIGGER_LEFT] = "gamepad-actionbar-fx-triggerL-top-switch",
+					[GAMEPAD_TRIGGER_RIGHT] = "gamepad-actionbar-fx-triggerR-top-switch",
+				},
 			},
 			FrameLevel = 6,
 		},
@@ -33,18 +55,30 @@ local AnimStyleFactory = {
 	}
 }
 
+local function RefreshGlowTopTexture(glowTop)
+	local inputIconParent = glowTop:GetParent();
+	local activeInputDeviceIconSet = InputDeviceIconSetManager:GetActiveInputDeviceIconSet();
+	local atlas = AnimStyleFactory.StyleData.GlowTop.Atlas[activeInputDeviceIconSet][inputIconParent.mappedButtonKey];
+	glowTop.GlowTopTexture:SetAtlas(atlas);
+end
+
 -- Creates a frame of animated components that sit above core InputIconTexture components.
 function AnimStyleFactory:CreateModifierGlowTop(inputIconParent)
-	local atlas = self.StyleData.GlowTop.Atlas[inputIconParent.mappedButtonKey];
+	local activeInputDeviceIconSet = InputDeviceIconSetManager:GetActiveInputDeviceIconSet();
+	local atlas = self.StyleData.GlowTop.Atlas[activeInputDeviceIconSet][inputIconParent.mappedButtonKey];
 	if not atlas then
 		return nil;
 	end
+
 	local glowTop = CreateFrame("Frame", nil, inputIconParent, "GamepadActionBarModifierGlowTop");
 	glowTop.GlowTopTexture:SetAtlas(atlas);
 	glowTop:SetPoint("CENTER", inputIconParent, "CENTER", self.StyleData.GlowTop.Offset.X, self.StyleData.GlowTop.Offset.Y);
 	glowTop:SetSize(self.StyleData.GlowTop.Size.X, self.StyleData.GlowTop.Size.Y);
 	glowTop:SetFrameLevel(self.StyleData.GlowTop.FrameLevel);
 	glowTop:Hide();
+
+	InputDeviceIconSetManager:RegisterActiveInputDeviceIconSetUpdatedCallback(RefreshGlowTopTexture, glowTop);
+
 	return glowTop;
 end
 
@@ -207,8 +241,10 @@ function GamepadActionBarSequenceCollapseMixin:GetSequenceDebugName()
 	return "CollapseSequenceStandard";
 end
 
-function GamepadActionBarSequenceCollapseMixin:InitAnimations()
+function GamepadActionBarSequenceCollapseMixin:InitAnimations(alwaysShowHighlightAnims)
 	GamepadActionBarSequenceMixin.InitAnimations(self);
+
+	local showHighlightClosure = GenerateFlatClosure(IsActionBarHighlightEnabled, alwaysShowHighlightAnims);
 
 	self:ForEachModifierIcon(function(inputIcon)
 		if not inputIcon.animatedGlowBottom then
@@ -217,8 +253,8 @@ function GamepadActionBarSequenceCollapseMixin:InitAnimations()
 
 		if inputIcon.animatedGlowBottom then
 			table.insert(self.animationsData, {
-				Animation = inputIcon.animatedGlowBottom.FocusEndAnim;
-				Condition = nil,
+				Animation = inputIcon.animatedGlowBottom.FocusEndAnim,
+				Condition = showHighlightClosure,
 				OnStart = GenerateClosure(inputIcon.animatedGlowBottom.Show, inputIcon.animatedGlowBottom),
 				OnStop = GenerateClosure(inputIcon.animatedGlowBottom.Hide, inputIcon.animatedGlowBottom),
 			});
@@ -250,6 +286,10 @@ function GamepadActionBarSequenceEditModeCollapseMixin:Start()
 	GamepadActionBarSequenceCollapseMixin.Start(self);
 end
 
+function GamepadActionBarSequenceEditModeCollapseMixin:InitAnimations()
+	GamepadActionBarSequenceCollapseMixin.InitAnimations(self, true);
+end
+
 -- Base / abstract class for "expand" animation sequences.
 local GamepadActionBarSequenceExpandMixin = CreateFromMixins(GamepadActionBarSequenceMixin);
 
@@ -257,8 +297,11 @@ function GamepadActionBarSequenceExpandMixin:GetSequenceDebugName()
 	return "ExpandSequence";
 end
 
-function GamepadActionBarSequenceExpandMixin:InitAnimations()
+function GamepadActionBarSequenceExpandMixin:InitAnimations(alwaysShowHighlightAnims)
 	GamepadActionBarSequenceMixin.InitAnimations(self);
+
+	local showHighlightClosure = GenerateFlatClosure(IsActionBarHighlightEnabled, alwaysShowHighlightAnims);
+
 	self:ForEachModifierIcon(function(inputIcon)
 		if not inputIcon.animatedGlowTop then
 			inputIcon.animatedGlowTop = AnimStyleFactory:CreateModifierGlowTop(inputIcon);
@@ -266,8 +309,8 @@ function GamepadActionBarSequenceExpandMixin:InitAnimations()
 
 		if inputIcon.animatedGlowTop then
 			table.insert(self.animationsData, {
-				Animation = inputIcon.animatedGlowTop.FocusStartAnim;
-				Condition = nil,
+				Animation = inputIcon.animatedGlowTop.FocusStartAnim,
+				Condition = showHighlightClosure,
 				OnStart = GenerateClosure(inputIcon.animatedGlowTop.Show, inputIcon.animatedGlowTop),
 				OnStop = GenerateClosure(inputIcon.animatedGlowTop.Hide, inputIcon.animatedGlowTop),
 			});
@@ -279,8 +322,8 @@ function GamepadActionBarSequenceExpandMixin:InitAnimations()
 
 		if inputIcon.animatedGlowBottom then
 			table.insert(self.animationsData, {
-				Animation = inputIcon.animatedGlowBottom.FocusStartAnim;
-				Condition = nil,
+				Animation = inputIcon.animatedGlowBottom.FocusStartAnim,
+				Condition = showHighlightClosure,
 				OnStart = GenerateClosure(inputIcon.animatedGlowBottom.Show, inputIcon.animatedGlowBottom),
 				OnStop = function(continueLooping)
 					if not continueLooping then
@@ -308,7 +351,7 @@ function GamepadActionBarSequenceGameplayExpandMixin:InitAnimations()
 		function(squareSlot)
 			table.insert(self.animationsData, {
 				Animation = squareSlot.GameplayModeSquareFocusStartAnim;
-				Condition = nil,
+				Condition = IsActionBarHighlightEnabled,
 				OnStart = nil,
 				OnStop = nil,
 			});
@@ -316,7 +359,7 @@ function GamepadActionBarSequenceGameplayExpandMixin:InitAnimations()
 		function(circleSlot)
 			table.insert(self.animationsData, {
 				Animation = circleSlot.GameplayModeCircleFocusStartAnim;
-				Condition = nil,
+				Condition = IsActionBarHighlightEnabled,
 				OnStart = nil,
 				OnStop = nil,
 			});
@@ -332,7 +375,7 @@ function GamepadActionBarSequenceEditModeExpandMixin:GetSequenceDebugName()
 end
 
 function GamepadActionBarSequenceEditModeExpandMixin:InitAnimations()
-	GamepadActionBarSequenceExpandMixin.InitAnimations(self);
+	GamepadActionBarSequenceExpandMixin.InitAnimations(self, true);
 
 	local SlotIsNotPermabound = function(slot)
 		return not (slot.PermaboundOverlay and slot.PermaboundOverlay:IsShown());
@@ -341,7 +384,7 @@ function GamepadActionBarSequenceEditModeExpandMixin:InitAnimations()
 	self:ForEachActionBarSlot(
 		function(squareSlot)
 			table.insert(self.animationsData, {
-				Animation = squareSlot.EditModeSquareFocusStartAnim;
+				Animation = squareSlot.EditModeSquareFocusStartAnim,
 				Condition = GenerateClosure(SlotIsNotPermabound, squareSlot),
 				OnStart = GenerateClosure(squareSlot.SquareGlowFocus.Show, squareSlot.SquareGlowFocus),
 				OnStop = GenerateClosure(squareSlot.SquareGlowFocus.Hide, squareSlot.SquareGlowFocus),
@@ -349,7 +392,7 @@ function GamepadActionBarSequenceEditModeExpandMixin:InitAnimations()
 		end,
 		function(circleSlot)
 			table.insert(self.animationsData, {
-				Animation = circleSlot.EditModeCircleFocusStartAnim;
+				Animation = circleSlot.EditModeCircleFocusStartAnim,
 				Condition = GenerateClosure(SlotIsNotPermabound, circleSlot),
 				OnStart = GenerateClosure(circleSlot.CircleGlowFocus.Show, circleSlot.CircleGlowFocus),
 				OnStop = GenerateClosure(circleSlot.CircleGlowFocus.Hide, circleSlot.CircleGlowFocus),

@@ -261,6 +261,7 @@ function CompactRaidFrameManager_OnLoad(self)
 	end
 
 	CompactRaidFrameManager_UpdateLabel();
+	CompactRaidFrameManager_RegisterForTransitions(self);
 end
 
 function CompactRaidFrameManager_OnEvent(self, event, ...)
@@ -270,6 +271,7 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 		CompactRaidFrameManager_UpdateShown();
 		CompactRaidFrameManager_UpdateDisplayCounts();
 		CompactRaidFrameManager_UpdateLabel();
+		CompactRaidFrameManager_RefreshSmartNavJumps();
 	elseif ( event == "UNIT_FLAGS" or event == "PLAYER_FLAGS_CHANGED" ) then
 		CompactRaidFrameManager_UpdateDisplayCounts();
 	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
@@ -288,6 +290,8 @@ function CompactRaidFrameManager_OnEvent(self, event, ...)
 	elseif ( event == "PLAYER_ROLES_ASSIGNED") then
 		self.displayFrame.ModeControlDropdown:GenerateMenu();
 		self.displayFrame.RestrictPingsDropdown:GenerateMenu();
+	elseif ( event == "CURRENT_SPELL_CAST_CHANGED") then
+		CompactRaidFrameManager_RefreshGroundTargetingBinding(self);
 	end
 end
 
@@ -303,6 +307,7 @@ function CompactRaidFrameManager_UpdateShown()
 
 	CompactRaidFrameManager_UpdateOptionsFlowContainer();
 	CompactRaidFrameManager_UpdateContainerVisibility();
+	CompactRaidFrameManager_RefreshOpenBinding(CompactRaidFrameManager);
 end
 
 function CompactRaidFrameManager_UpdateLabel()
@@ -328,6 +333,12 @@ function CompactRaidFrameManager_Expand()
 	CompactRaidFrameManager.toggleButtonBack:Show();
 	CompactRaidFrameManager.toggleButtonForward:Hide();
 	CompactRaidFrameManager.BottomButtons:Show();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		CompactRaidFrameManager.toggleButtonBack:Hide();
+		CompactRaidFrameManager.GamepadInputIcon:Hide();
+		GamepadMode.FrameControlsManager:FrameShown(CompactRaidFrameManager);
+	end
 end
 
 function CompactRaidFrameManager_Collapse()
@@ -337,6 +348,174 @@ function CompactRaidFrameManager_Collapse()
 	CompactRaidFrameManager.toggleButtonBack:Hide();
 	CompactRaidFrameManager.toggleButtonForward:Show();
 	CompactRaidFrameManager.BottomButtons:Hide();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		CompactRaidFrameManager.toggleButtonForward:Hide();
+		CompactRaidFrameManager.GamepadInputIcon:Show();
+		GamepadMode.FrameControlsManager:FrameHidden(CompactRaidFrameManager);
+	end
+end
+
+function CompactRaidFrameManager_RefreshOpenBinding(self)
+	if not InputUtil.IsGamepadUIEnabled() or not self.expandFrame then
+		return;
+	end
+
+	local shouldBeActive = self:IsShown()
+		and GamepadMode.FrameControlsManager:GetShownFrameCount() == 0;
+
+	if shouldBeActive then
+		if not GamepadMode.IsBindingGroupActive(self.expandFrame) then
+			GamepadMode.ActivateBindingGroup(self.expandFrame);
+		end
+		CompactRaidFrameManager.GamepadInputIcon:Show();
+	else
+		GamepadMode.DeactivateBindingGroup(self.expandFrame);
+		CompactRaidFrameManager.GamepadInputIcon:Hide();
+	end
+end
+
+function CompactRaidFrameManager_RefreshGroundTargetingBinding(self)
+	if not InputUtil.IsGamepadUIEnabled() or not self.AoEPlaceBinding then
+		return;
+	end
+
+	local isFocused = GamepadMode.FrameControlsManager:GetActiveFrame() == self;
+	local shouldBeActive = isFocused and SpellIsTargeting();
+
+	if shouldBeActive then
+		GamepadMode.ActivateBindingGroup(self.AoEPlaceBinding);
+	else
+		GamepadMode.DeactivateBindingGroup(self.AoEPlaceBinding);
+	end
+
+	if self.footer then
+		self.footer:Refresh();
+	end
+end
+
+function CompactRaidFrameManager_RefreshSmartNavJumps()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	local partyFrameTopmost = { CompactRaidFrameManagerDisplayFrameInitiateRolePoll, CompactRaidFrameManagerDisplayFrameCountdown };
+	local raidFrameTopmost = { CompactRaidFrameManagerDisplayFrameFilterOptionsFilterRoleHealer, CompactRaidFrameManagerDisplayFrameFilterOptionsFilterRoleDamager };
+
+	if IsInRaid() then
+		SmartNavigation_ClearJumpNavigationOverrides(CompactRaidFrameManagerDisplayFrameModeControlDropdown);
+
+		-- Clear party frame jumps since they are present in both UI's'
+		for _, frame in ipairs(partyFrameTopmost) do
+			SmartNavigation_ClearJumpNavigationOverrides(frame);
+		end
+
+		-- Set Raid frame jumps
+		for _, frame in ipairs(raidFrameTopmost) do
+			SmartNavigation_AddJumpNavigationOverride(frame, SMART_NAV_INPUT_DIRECTION.UP, CompactRaidFrameManagerDisplayFrameModeControlDropdown);
+		end
+	else
+		SmartNavigation_AddJumpNavigationOverride(CompactRaidFrameManagerDisplayFrameModeControlDropdown, SMART_NAV_INPUT_DIRECTION.DOWN, CompactRaidFrameManagerDisplayFrameEditMode);
+
+		-- Set party frame jumps
+		for _, frame in ipairs(partyFrameTopmost) do
+			SmartNavigation_AddJumpNavigationOverride(frame, SMART_NAV_INPUT_DIRECTION.UP, CompactRaidFrameManagerDisplayFrameModeControlDropdown);
+		end
+	end
+
+	-- Jumps shared by both frames
+	SmartNavigation_AddJumpNavigationOverride(CompactRaidFrameManagerDisplayFrameRaidMarkersRaidMarkerUnitTab, SMART_NAV_INPUT_DIRECTION.RIGHT, CompactRaidFrameManagerDisplayFrameRaidMarkersRaidMarkerGroundTab);
+	SmartNavigation_AddJumpNavigationOverride(CompactRaidFrameManagerDisplayFrameRaidMarkers.raidMarker5, SMART_NAV_INPUT_DIRECTION.DOWN, CompactRaidFrameManagerDisplayFrameRestrictPingsDropdown);
+	SmartNavigation_AddJumpNavigationOverride(CompactRaidFrameManagerDisplayFrameRaidMarkers.raidMarkerReset, SMART_NAV_INPUT_DIRECTION.DOWN, CompactRaidFrameManagerDisplayFrameRestrictPingsDropdown);
+end
+
+function CompactRaidFrameManager_SetupFrameFooter(self)
+	local function LeaveParty()
+		CompactRaidFrameManagerLeavePartyButton:Click();
+	end
+
+	local function LeaveInstance()
+		CompactRaidFrameManagerLeaveInstanceGroupButton:Click();
+	end
+
+	local back = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, CompactRaidFrameManager_Collapse, FRAME_ACTION_BACK);
+
+	local moreOptions = GamepadSharedUtility.CreateMoreActionsPromptedBinding(GAMEPAD_FACE_TOP);
+	moreOptions:AddMoreActionsEntry(PARTY_LEAVE, LeaveParty, IsInGroup);
+	moreOptions:AddMoreActionsEntry(INSTANCE_PARTY_LEAVE, LeaveInstance, PartyUtil.CanLeaveInstance);
+	moreOptions:SetMoreActionsMenuOwnerRegion(CompactRaidFrameManager);
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CompactRaidFrameManager");
+
+	local selectPrompt = self.footer:AddStandardSelectPrompt();
+	selectPrompt:SetLabelFunction(function()
+		if SpellIsTargeting() then
+			return CONTEXT_ACTION_LABEL_PLACE;
+		end
+		return ACTION_LABEL_SELECT;
+	end);
+
+	self.footer:AddPromptedBinding(moreOptions);
+	self.footer:AddPromptedBinding(back);
+	self.footer:AddStandardFrameControlManagerBindings(self);
+	self.footer:Finalize();
+end
+
+-- Activates a dedicated GAMEPAD_MENU_LEFT override that opens CompactRaidFrameManager instead of falling
+-- through to the Core TOGGLEUIFOCUS binding
+function CompactRaidFrameManager_SetupExpandBinding(self)
+	self.expandFrame = GamepadMode.CreateBindingGroup("CompactRaidFrameManagerExpand");
+	self.expandFrame:AddFunctionBinding(GAMEPAD_MENU_LEFT, CompactRaidFrameManager_Expand);
+	self.expandFrame:TreatAsCore();
+	EventRegistry:RegisterCallback("Gamepad.RefreshFrameFocus", CompactRaidFrameManager_RefreshOpenBinding, self);
+	CompactRaidFrameManager_RefreshOpenBinding(self);
+end
+
+function CompactRaidFrameManager_SetupGroundTargetingBinding(self)
+	local function PlaceAoE(isDown)
+		if isDown then
+			CameraOrSelectOrMoveStart();
+		else
+			CameraOrSelectOrMoveStop(false);
+		end
+	end
+
+	self.AoEPlaceBinding = GamepadMode.CreateBindingGroup("CompactRaidFrameManagerAoEPlace");
+	self.AoEPlaceBinding:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, PlaceAoE, GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
+end
+
+function CompactRaidFrameManager_SetupGamepad(self)
+	CompactRaidFrameManager_SetupExpandBinding(self);
+	CompactRaidFrameManager_SetupFrameFooter(self);
+	CompactRaidFrameManager_SetupGroundTargetingBinding(self);
+	
+	function CompactRaidFrameManager.UnfocusGamepad(self)
+		self.footer:HideAndDeactivateBindings();
+	end
+
+	function CompactRaidFrameManager.FocusGamepad(self)
+		self.footer:ShowAndActivateBindings();
+	end
+
+	CompactRaidFrameManager_RefreshSmartNavJumps();
+end
+
+function CompactRaidFrameManager_InitializeGamepad(self)
+	CompactRaidFrameManager.toggleButtonBack:Hide();
+	CompactRaidFrameManager.toggleButtonForward:Hide();
+	CompactRaidFrameManagerLeavePartyButton:Hide();
+	CompactRaidFrameManagerLeaveInstanceGroupButton:Hide();
+	CompactRaidFrameManagerDisplayFrameOptionsButton:Hide();
+
+	CompactRaidFrameManager.GamepadInputIcon:Show();
+
+	self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED");
+end
+
+function CompactRaidFrameManager_RegisterForTransitions(self)
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(CompactRaidFrameManager_SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(CompactRaidFrameManager_InitializeGamepad, self));
 end
 
 RaidFrameToggleButtonMixin = {}
@@ -540,10 +719,14 @@ function CompactRaidFrameManager_UpdateOptionsFlowContainer()
 		displayFrame.RestrictPingsDropdown:Hide();
 	end
 
-	FlowContainer_AddLineBreak(container);
-	VerticalSpace(5);
-	Space(27);
-	AddAndShow(CompactRaidFrameManager.BottomButtons);
+	if CompactRaidFrameManagerLeavePartyButton:IsShown() or CompactRaidFrameManagerLeaveInstanceGroupButton:IsShown() then
+		FlowContainer_AddLineBreak(container);
+		VerticalSpace(5);
+		Space(27);
+		AddAndShow(CompactRaidFrameManager.BottomButtons);
+	else
+		CompactRaidFrameManager.BottomButtons:Hide();
+	end
 
 	FlowContainer_ResumeUpdates(container);
 

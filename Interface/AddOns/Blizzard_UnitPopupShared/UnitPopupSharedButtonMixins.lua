@@ -458,6 +458,22 @@ function UnitPopupWhisperButtonMixin:IsEnabled(contextData)
 	return not unit or (UnitIsConnected(unit) and UnitIsHumanPlayer(unit));
 end
 
+function UnitPopupWhisperButtonMixin:IsDisabled(contextData)
+	return C_SocialRestrictions.IsAgeVerificationRestricted();
+end
+
+function UnitPopupWhisperButtonMixin:TooltipWhileDisabled()
+	return true;
+end
+
+function UnitPopupWhisperButtonMixin:TooltipWarning(contextData)
+	if C_SocialRestrictions.IsAgeVerificationRestricted() then
+		return C_SocialRestrictions.IsAgeVerificationRestrictedMinor() and AGE_RESTRICTED_CHAT_MINOR_TOOLTIP or AGE_RESTRICTED_CHAT_UNVERIFIED_TOOLTIP;
+	end
+
+	return nil;
+end
+
 UnitPopupInviteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupInviteButtonMixin:GetInviteName()
@@ -673,7 +689,7 @@ end
 function UnitPopupBnetUnblockButtonMixin:OnClick(contextData)
 	local bnetAccountID = contextData.accountInfo and contextData.accountInfo.bnetAccountID;
 	if bnetAccountID then
-		BNSetBlocked(bnetAccountID, false);
+		C_BattleNet.SetBlocked(bnetAccountID, false);
 	end
 end
 
@@ -3733,7 +3749,7 @@ end
 
 function UnitPopupRecentAllyNoteButtonMixin:OnClick(contextData)
 	local recentAllyData = contextData.recentAllyData;
-	local textArg1, textArg2 = recentAllyData.characterData.name, nil;
+	local textArg1, textArg2 = RegionalUniqueNamesEnabled() and recentAllyData.characterData.fullName or recentAllyData.characterData.name, nil;
 	StaticPopup_Show("SET_RECENT_ALLY_NOTE", textArg1, textArg2, recentAllyData);
 end
 

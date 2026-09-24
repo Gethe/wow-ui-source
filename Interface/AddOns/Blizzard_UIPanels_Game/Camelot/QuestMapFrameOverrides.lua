@@ -4,6 +4,7 @@ QuestMapFrameOverrides = {};
 QuestMapFrameOverrides.questTabHidden = true;
 QuestMapFrameOverrides.eventsTabHidden = true;
 QuestMapFrameOverrides.mapLegendTabHidden = true;
+QuestMapFrameOverrides.titleFrameLeftPadding = 4;
 
 function QuestMapFrameOverrides.GetQuestsTabAnchorOffset()
 	return 5, -28;

@@ -62,9 +62,6 @@ end
 
 function ForceRenameFullNameDialogMixin:OnTextChanged(editBox)
 	editBox:OnTextChanged();
-
-	local characterName, surname = self:GetNames();
-	self.RenameFrame.Buttons.ConfirmButton:SetEnabled(#characterName >= 3 and #surname >= 3);
 end
 
 --------------------------------------------------------------------------------

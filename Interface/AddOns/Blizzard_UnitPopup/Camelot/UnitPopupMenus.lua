@@ -93,6 +93,7 @@ function UnitPopupMenuBnFriend:GetEntries()
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupBnetAddFavoriteButtonMixin,
 		UnitPopupBnetRemoveFavoriteButtonMixin,
+		UnitPopupUpgradeTitleFriendToBattleTagButtonMixin,
 		UnitPopupRemoveBnetFriendButtonMixin,
 		UnitPopupReportFriendButtonMixin,
 		UnitPopupReportChatButtonMixin,
@@ -110,6 +111,7 @@ function UnitPopupMenuBnFriendOffline:GetEntries()
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupBnetAddFavoriteButtonMixin,
 		UnitPopupBnetRemoveFavoriteButtonMixin,
+		UnitPopupUpgradeTitleFriendToBattleTagButtonMixin,
 		UnitPopupRemoveBnetFriendButtonMixin,
 		UnitPopupReportFriendButtonMixin,
 	}

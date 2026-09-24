@@ -211,6 +211,7 @@
 			<OnLeave function="LFGBrowseSearchEntry_OnLeave"/>
 		</Scripts>
 	</Button>
+	<Button name="LFGBrowseNestedSearchEntryTemplate" inherits="LFGBrowseSearchEntryTemplate" virtual="true"/>
 	<Button name="LFGBrowseSearchEntryGroupingTemplate" virtual="true">
 		<Size x="312" y="24"/>
 		<Layers>

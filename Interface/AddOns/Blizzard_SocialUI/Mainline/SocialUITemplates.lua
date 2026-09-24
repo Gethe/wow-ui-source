@@ -802,13 +802,8 @@ function SocialUIIgnoreListMixin:BlockPlayer()
 		return;
 	end
 
-	local name, server = UnitName("target");
-	local finalName = name;
-	local isDifferentRealm = server and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME;
-	if isDifferentRealm then
-		finalName = name .. "-" .. server;
-	end
-	C_FriendList.AddIgnore(finalName);
+	local fullName = NameUtil.GetUnmodifiedUnitFullName("target");
+	C_FriendList.AddIgnore(fullName);
 
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
@@ -823,7 +818,7 @@ function SocialUIIgnoreListMixin:UnblockSelected()
 		C_FriendList.DelIgnoreByIndex(C_FriendList.GetSelectedIgnore());
 	elseif selectedElementData.blockType == Enum.SocialUIBlockType.BattleNetInviteBlock then
 		local blockID, _blockedName = BNGetBlockedInfo(BNGetSelectedBlock());
-		BNSetBlocked(blockID, false);
+		C_BattleNet.SetBlocked(blockID, false);
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

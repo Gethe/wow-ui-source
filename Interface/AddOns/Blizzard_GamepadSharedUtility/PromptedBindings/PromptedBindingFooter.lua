@@ -56,7 +56,6 @@ function PromptedBindingFooterMixin:Init(parentFrame, debugName)
 	self.promptedBindingsByKey = {};
 	self.promptedBindingsActive = {};
 
-	self.bindings = GamepadMode.CreateBindingGroup(self.debugName);
 	self.inputLegend = nil;
 	self.isShown = false;
 
@@ -77,50 +76,74 @@ end
 
 -- Utility wrapper for cases where we only care about a simple key-function handler with no visuals but want it managed by the footer.
 function PromptedBindingFooterMixin:AddFunctionBinding(key, func)
-	local functionAsPromptedBinding = GamepadSharedUtility.CreatePromptedBinding(key, func, nil);
-	functionAsPromptedBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.NEVER);
-	table.insert(self.promptedBindings, functionAsPromptedBinding);
+	local promptedBinding = GamepadSharedUtility.CreatePromptedBinding(key, "FunctionPromptedBinding");
+	promptedBinding:AddFooterBinding({ visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.NEVER });
+	promptedBinding:AddFooterFunction({ bindingFunctions = func });
+	self:AddPromptedBinding(promptedBinding);
+	return promptedBinding;
 end
 
 function PromptedBindingFooterMixin:AddStandardSelectPrompt(optionalLabel)
 	local label = optionalLabel and optionalLabel or ACTION_LABEL_SELECT;
 
 	-- The default "select" behavior is handled by Smart Navigation so this only adds a prompt, not a binding.
-	local binding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, nil, label);
-	binding:AddCondition(SmartNavigation_IsCurrentButtonClickable);
-	self:AddPromptedBinding(binding);
+	local promptedBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, "StandardSelectPromptedBinding");
+	promptedBinding:AddFooterBinding({
+		label = label,
+		conditions = SmartNavigation_IsCurrentButtonClickable
+	});
+	self:AddPromptedBinding(promptedBinding);
+	return promptedBinding;
 end
 
 function PromptedBindingFooterMixin:AddNonFallbackSelectPrompt(optionalLabel)
 	local label = optionalLabel and optionalLabel or ACTION_LABEL_SELECT;
 
-	local binding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, nil, label);
-	binding:DisallowButtonContexts(); -- This variant will not be used as a fallback if we failed a more specific check on the same key.
-	binding:AddCondition(SmartNavigation_IsCurrentButtonClickable);
-	self:AddPromptedBinding(binding);
+	local function NoButtonContext()
+		-- This variant will not be used as a fallback if we failed a more specific check on the same key.
+		return SmartNavigation:GetCurrentButtonContext() == nil;
+	end
+
+	local promptedBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, "NonFallbackSelectPromptedBinding");
+	promptedBinding:AddFooterBinding({
+		label = label,
+		conditions = { SmartNavigation_IsCurrentButtonClickable, NoButtonContext },
+	})
+	self:AddPromptedBinding(promptedBinding);
+	return promptedBinding;
 end
 
 function PromptedBindingFooterMixin:AddStandardFrameControlManagerBindings(focusedFrame)
 	-- Next handling is managed by FrameControlsManager. Only prompt the user.
-	local nextBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_TRIGGER_RIGHT);
+	local nextBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_TRIGGER_RIGHT, "FCMRTPromptedBinding");
 	GamepadMode.FrameControlsManager:RegisterJumpHintRightBinding(focusedFrame, nextBinding);
 	self:AddPromptedBinding(nextBinding);
 
 	-- Previous handling is managed by FrameControlsManager. Only prompt the user.
-	local prevBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_TRIGGER_LEFT);
+	local prevBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_TRIGGER_LEFT, "FCMLTPromptBinding");
 	GamepadMode.FrameControlsManager:RegisterJumpHintLeftBinding(focusedFrame, prevBinding);
 	self:AddPromptedBinding(prevBinding);
+
+	return nextBinding, prevBinding;
 end
 
 function PromptedBindingFooterMixin:AddStandardBackPrompt(optionalLabel)
 	local label = optionalLabel and optionalLabel or FRAME_ACTION_BACK;
 
 	-- The default "back" behavior is handled by Smart Navigation so this only adds a prompt, not a binding.
-	local binding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, nil, label);
-	self:AddPromptedBinding(binding);
+	local promptedBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, "StandardBackPromptedBinding");
+	promptedBinding:AddFooterBinding({
+		label = label,
+	})
+	self:AddPromptedBinding(promptedBinding);
+	return promptedBinding;
 end
 
 function PromptedBindingFooterMixin:SetParentFrame(parentFrame)
+	if self.parentFrame == parentFrame then
+		return;
+	end
+
 	self.parentFrame = parentFrame;
 
 	if self.inputLegend then
@@ -152,6 +175,7 @@ end
 -- Call this after adding all required prompted bindings to the footer. This generates the visual data and begins listening for refresh events.
 function PromptedBindingFooterMixin:Finalize()
 	self:GeneratePromptedBindingsByKey();
+	self.requiresBindingGroup = self:IsBindingGroupRequired();
 	self:Refresh();
 end
 
@@ -165,26 +189,12 @@ end
 function PromptedBindingFooterMixin:RefreshCustomFrameVisibility()
 	-- Hide everything first to guarantee our state is reset correctly.
 	for _, promptedBinding in ipairs(self.promptedBindings) do
-		if promptedBinding.customPromptFrame then
-			promptedBinding.customPromptFrame:Hide();
-		end
+		promptedBinding:SetCustomPromptFrameShown(false);
 	end
 
 	if self.isShown then
 		for _, promptedBinding in ipairs(self.promptedBindingsActive) do
-			if promptedBinding.customPromptFrame then
-				promptedBinding.customPromptFrame:Show();
-
-				if (promptedBinding:AreConditionsMet()) then
-					if (promptedBinding.customPromptFrameOnShowPassedConditionsCallback) then
-						promptedBinding.customPromptFrameOnShowPassedConditionsCallback(promptedBinding.customPromptFrame);
-					end
-				else
-					if (promptedBinding.customPromptFrameOnShowFailedConditionsCallback) then
-						promptedBinding.customPromptFrameOnShowFailedConditionsCallback(promptedBinding.customPromptFrame);
-					end
-				end
-			end
+			promptedBinding:SetCustomPromptFrameShown(true);
 		end
 	end
 end
@@ -194,7 +204,7 @@ function PromptedBindingFooterMixin:GeneratePromptedBindingsByKey()
 	local sortedBindings = {};
 	for _, key in ipairs(KEYS_IN_SORT_ORDER) do
 		for _, promptedBinding in ipairs(self.promptedBindings) do
-			if promptedBinding.keys[1] == key then
+			if promptedBinding:GetKeyForIndex(1) == key then
 				table.insert(sortedBindings, promptedBinding);
 			end
 		end
@@ -203,7 +213,7 @@ function PromptedBindingFooterMixin:GeneratePromptedBindingsByKey()
 	-- Then in priority order, add the bindings to a group of others with the same key.
 	self.promptedBindingsByKey = {};
 	for _, promptedBinding in ipairs(sortedBindings) do
-		local mainKey = promptedBinding.keys[1];
+		local mainKey = promptedBinding:GetKeyForIndex(1);
 		if not self.promptedBindingsByKey[mainKey] then
 			self.promptedBindingsByKey[mainKey] = {};
 		end
@@ -211,12 +221,16 @@ function PromptedBindingFooterMixin:GeneratePromptedBindingsByKey()
 	end
 end
 
-local function GetPromptedBindingVisibility(promptedBinding)
-	local vis = promptedBinding.visibilityType;
-	if type(vis) == "function" then
-		vis = vis();
+function PromptedBindingFooterMixin:IsBindingGroupRequired()
+	for _, promptedBinding in ipairs(self.promptedBindings) do
+		for index = 1, 2 do
+			local key = promptedBinding:GetKeyForIndex(index);
+			if key and promptedBinding:RequireTriggerBinding() then
+				return true;
+			end
+		end
 	end
-	return vis;
+	return false;
 end
 
 function PromptedBindingFooterMixin:GetPromptedBindingToDisplayForKey(key)
@@ -225,14 +239,14 @@ function PromptedBindingFooterMixin:GetPromptedBindingToDisplayForKey(key)
 		-- Iterate through the list of binds using this key, which is already sorted by highest priority.
 		for _, promptedBinding in ipairs(bindingsForKey) do
 			-- The first one that is valid will always be what we want to show.
-			if promptedBinding:AreConditionsMet() then
+			if promptedBinding:IsAnyConditionMet() then
 				return promptedBinding;
 			end
 		end
 
 		-- If none are available, again going by priority find the first one that should show while unavailable.
 		for _, promptedBinding in ipairs(bindingsForKey) do
-			if GetPromptedBindingVisibility(promptedBinding) == PromptedBindingMixin.VISIBILITY_TYPE.ALWAYS then
+			if promptedBinding:IsAnyBindingAlwaysVisible() then
 				return promptedBinding;
 			end
 		end
@@ -281,33 +295,28 @@ function PromptedBindingFooterMixin:RefreshInputLegend()
 		self.inputLegend = InputPromptLegends.CreateInputLegend(self.parentFrame, self.debugName .. "inputLegend", self.useWideBackground);
 		self:ApplyInputLegendAttachment();
 
-		-- When initializing, add a frame action for each possible key; it doesn't matter which one, the slot will be updated dynamically afterward.
+		-- TODO(mwinkler):
+		-- This is only needed so that the `InputLegend` uses the order that we desire since it orders items based on frame creation and
+		-- frames get reused if they already exist inside the `InputLegend` map.
+		-- Find a better way to provide a sort order to the `InputLegend` when it applies the frame positioning.
 		for _, key in ipairs(KEYS_IN_SORT_ORDER) do
 			local promptedBindings = self.promptedBindingsByKey[key]; -- Use a lookup because values in this table will not be iterated in sort order.
 			if promptedBindings then
 				local promptedBinding = promptedBindings[1];
 				local template = promptedBinding:GetInputIconTemplate();
 				if template then
-					local id = self.debugName .. key;
-					local keys = promptedBinding.customDisplayKey and {promptedBinding.customDisplayKey} or promptedBinding.keys;
-					local label = promptedBinding.labelFunction and promptedBinding.labelFunction() or promptedBinding.label;
-					local frameAction = InputPromptLegends.CreateFrameAction(id, template, keys, label);
-					frameAction:SetDividerType(GAMEPAD_PROMPT_DIVIDER_SLASH);
-					self.inputLegend:AddFrameAction(frameAction);
+					self.inputLegend:GetOrCreatePromptFrameUsingTemplateAndInputs(template.name,
+																				  promptedBinding:GetDisplayKeys(),
+																				  GAMEPAD_PROMPT_DIVIDER_SLASH);
 				end
 			end
 		end
-		self.inputLegend:InitializePrompts();
 	end
 
-	-- Generate the data we need to 1) find each frame action we need to update and 2) replace content on that frame action.
 	local promptedBindingsInFooter = {};
 	for _, promptedBinding in ipairs(self.promptedBindingsActive) do
-		local inFooter = not promptedBinding.customPromptFrame;
-		local vis = GetPromptedBindingVisibility(promptedBinding);
-		local shown = (promptedBinding:AreConditionsMet() and vis ~= PromptedBindingMixin.VISIBILITY_TYPE.NEVER) or
-					  (vis == PromptedBindingMixin.VISIBILITY_TYPE.ALWAYS);
-		if inFooter and shown then
+		local showInFooter = promptedBinding:ShouldShowFooterBinding();
+		if showInFooter then
 			table.insert(promptedBindingsInFooter, promptedBinding);
 		end
 	end
@@ -321,37 +330,42 @@ function PromptedBindingFooterMixin:RefreshInputLegend()
 end
 
 function PromptedBindingFooterMixin:RefreshBindingGroup()
-	local needsToReactivateBindings = self.isShown;
-	if needsToReactivateBindings then
-		GamepadMode.DeactivateBindingGroup(self.bindings);
+	if not self.requiresBindingGroup then
+		return;
 	end
 
-	GamepadMode.UncacheBindingGroup(self.bindings);
+	if self.bindings then
+		if self.isShown then
+			GamepadMode.DeactivateBindingGroup(self.bindings);
+		end
+		GamepadMode.UncacheBindingGroup(self.bindings);
+	end
+
 	self.bindings = GamepadMode.CreateBindingGroup(self.debugName);
 
 	for _, promptedBinding in ipairs(self.promptedBindingsActive) do
 		-- A single prompt can visualize two different actions at the same time, e.g. LB/RB callouts, but they need to be bound separately.
 		for index = 1, 2 do
-			local key = promptedBinding.keys[index];
-			if key and promptedBinding.functions[index] then
-				local buttonEvents = promptedBinding.buttonEventsHandled;
-				local overboundCallback = promptedBinding.overboundCallbacks[index];
-
+			local key = promptedBinding:GetKeyForIndex(index);
+			if key and promptedBinding:RequireTriggerBinding() then
 				--[[
-					TODO for future us: Prompted bindings need to wrap TriggerBinding, 
+					TODO for future us: Prompted bindings need to wrap TriggerBinding,
 					and handle button up _and_ down events regardless of trigger conditions, so that
 					the prompts can react to the appropriate up and down.
 
-					TriggerBinding should only be called based on binding configuration (i.e. not 
+					TriggerBinding should only be called based on binding configuration (i.e. not
 					necessarily all buttonEvents, but the input prompt must be notified of all
 					up and down events).
 				]]
-				self.bindings:AddFunctionBinding(key, GenerateClosure(PromptedBindingMixin.TriggerBinding, promptedBinding, index), buttonEvents, overboundCallback);
+				self.bindings:AddFunctionBinding(key,
+												 GenerateClosure(promptedBinding.TriggerBinding, promptedBinding, index),
+												 GAMEPAD_BUTTON_ANY_DOWN_OR_UP,
+												 GenerateFlatClosure(promptedBinding.OnOverbound, promptedBinding, index));
 			end
 		end
 	end
 
-	if needsToReactivateBindings then
+	if self.isShown then
 		GamepadMode.ActivateBindingGroup(self.bindings);
 	end
 end
@@ -366,7 +380,6 @@ end
 function PromptedBindingFooterMixin:ShowAndActivateBindings()
 	if not self.isShown then
 		self.isShown = true;
-		GamepadMode.ActivateBindingGroup(self.bindings);
 		EventRegistry:RegisterCallback("Gamepad.RefreshFrameFocus", self.Refresh, self);
 		SmartNavigation:RegisterCallback("SelectedButtonUpdated", GenerateClosure(self.Refresh, self), self);
 		SmartNavigation:RegisterCallback("SelectedButtonEnabledStateChanged", GenerateClosure(self.Refresh, self), self);
@@ -377,7 +390,9 @@ end
 function PromptedBindingFooterMixin:HideAndDeactivateBindings()
 	if self.isShown then
 		self.isShown = false;
-		GamepadMode.DeactivateBindingGroup(self.bindings);
+		if self.bindings then
+			GamepadMode.DeactivateBindingGroup(self.bindings);
+		end
 		EventRegistry:UnregisterCallback("Gamepad.RefreshFrameFocus", self);
 		SmartNavigation:UnregisterCallback("SelectedButtonUpdated", self);
 		SmartNavigation:UnregisterCallback("SelectedButtonEnabledStateChanged", self);

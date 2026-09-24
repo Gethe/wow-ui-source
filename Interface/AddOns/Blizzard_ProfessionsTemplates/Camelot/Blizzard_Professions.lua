@@ -13,6 +13,17 @@ function Professions.SetupFilterMenu(dropdown, rootDescription)
 	end
 end
 
+local originalGenerateCraftingDataProvider = Professions.GenerateCraftingDataProvider;
+function Professions.GenerateCraftingDataProvider(professionID, searching, noStripCategories, collapses)
+	local dataProvider = originalGenerateCraftingDataProvider(professionID, searching, noStripCategories, collapses);
+	C_TradeSkillUI.SetShowUnlearned(Professions.GetDefaultShowUnlearned());
+	return dataProvider;
+end
+
+function Professions.GetDefaultShowUnlearned()
+	return false;
+end
+
 function Professions.GetNewestKnownProfessionInfo()
 	return C_TradeSkillUI.GetBaseProfessionInfo();
 end

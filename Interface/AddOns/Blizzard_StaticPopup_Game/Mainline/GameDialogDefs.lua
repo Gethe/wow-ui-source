@@ -1230,7 +1230,7 @@ StaticPopupDialogs["CONFIRM_BLOCK_FRIEND"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(dialog, accountID)
-		BNSetBlocked(accountID, false);
+		C_BattleNet.SetBlocked(accountID, true);
 	end,
 	timeout = 0,
 	whileDead = 1,

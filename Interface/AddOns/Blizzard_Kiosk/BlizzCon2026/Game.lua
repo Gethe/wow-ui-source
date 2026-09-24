@@ -30,6 +30,7 @@ function GameKioskFrameMixin:OnEvent(event, ...)
 	if event == "KIOSK_SESSION_EXPIRED" then
 		KioskModeTimer:Hide();
 	elseif event == "KIOSK_SESSION_EXPIRATION_CHANGED" then
+		KioskModeTimer:SetScript("OnUpdate", nil);
 		KioskModeTimer:Hide();
 	elseif event == "KIOSK_SESSION_RESTART" then
 		ForceLogout();

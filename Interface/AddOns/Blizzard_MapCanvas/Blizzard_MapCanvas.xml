@@ -25,6 +25,9 @@
 		</Anchors>
 		<ScrollChild>
 			<Frame parentKey="Child" >
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" type="boolean" value="true"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>

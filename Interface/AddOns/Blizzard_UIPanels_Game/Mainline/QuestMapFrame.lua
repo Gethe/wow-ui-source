@@ -1842,7 +1842,6 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local isTracked = C_QuestLog.GetQuestWatchType(questID) ~= nil;
 	button.Checkbox.CheckMark:SetShown(isTracked);
 	button.Checkbox.smartNavigationIgnored = true;
-	button.buttonContext = "ButtonContext_QuestLogButton";
 
 	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
 	local tagAtlas;
@@ -1988,7 +1987,7 @@ local function QuestLogQuests_SetupStandardHeaderButton(button, displayState, in
 	button:UpdateCollapsedState(displayState, info);
 	button.questLogIndex = info.questLogIndex;
 	QuestMapFrame:SetFrameLayoutIndex(button);
-	button.buttonContext = "ButtonContext_QuestLogButton";
+	button.buttonContext = "ButtonContext_QuestLogHeader";
 
 	return button;
 end
@@ -2287,7 +2286,13 @@ function QuestMapLogTitleButton_OnEnter(self)
 		end
 	end
 
-	GameTooltip:AddLine(CLICK_QUEST_DETAILS, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+	if InputUtil.IsMKBUIEnabled() then
+		GameTooltip:AddLine(CLICK_QUEST_DETAILS, GREEN_FONT_COLOR.r, GREEN_FONT_COLOR.g, GREEN_FONT_COLOR.b);
+	else
+		GameTooltip_AddLineWithInputIcon(GameTooltip, MAP_PIN_TOGGLE_QUEST_FOCUS, GREEN_FONT_COLOR, GAMEPAD_FACE_LEFT);
+		GameTooltip_AddLineWithInputIcon(GameTooltip, OBJECTIVES_VIEW_IN_QUESTLOG, GREEN_FONT_COLOR, GAMEPAD_FACE_BOTTOM);
+		GameTooltip_AddLineWithInputIcon(GameTooltip, CONTEXT_ACTION_LABEL_MORE_ACTIONS, GREEN_FONT_COLOR, GAMEPAD_FACE_TOP);
+	end
 
 	if QuestUtils_GetNumPartyMembersOnQuest(questID) > 0 then
 		GameTooltip:AddLine(" ");
@@ -2396,12 +2401,14 @@ function QuestMapLogTitleButton_CreateContextMenu(self, parent)
 			button:SetEnabled(false);
 		end
 
-		rootDescription:CreateButton(SHARE_IN_CHAT, function()
-			local chatLink = GetQuestLink(self.questID);
-			if not ChatFrameUtil.InsertLink(chatLink) then
-				ChatFrameUtil.OpenChat(chatLink);
-			end
-		end);
+		if InputUtil.IsGamepadUIEnabled() then
+			rootDescription:CreateButton(SHARE_IN_CHAT, function()
+				local chatLink = GetQuestLink(self.questID);
+				if not ChatFrameUtil.InsertLink(chatLink) then
+					ChatFrameUtil.OpenChat(chatLink);
+				end
+			end);
+		end
 
 		if C_QuestLog.CanAbandonQuest(self.questID) then
 			rootDescription:CreateButton(ABANDON_QUEST, function()
@@ -2668,12 +2675,14 @@ function QuestLogPopupDetailMixin:OpenQuestOptions()
 			button:SetEnabled(false);
 		end
 
-		rootDescription:CreateButton(SHARE_IN_CHAT, function()
-			local chatLink = GetQuestLink(self.questID);
-			if not ChatFrameUtil.InsertLink(chatLink) then
-				ChatFrameUtil.OpenChat(chatLink);
-			end
-		end);
+		if InputUtil.IsGamepadUIEnabled() then
+			rootDescription:CreateButton(SHARE_IN_CHAT, function()
+				local chatLink = GetQuestLink(self.questID);
+				if not ChatFrameUtil.InsertLink(chatLink) then
+					ChatFrameUtil.OpenChat(chatLink);
+				end
+			end);
+		end
 
 		if C_QuestLog.CanAbandonQuest(self.questID) then
 			rootDescription:CreateButton(ABANDON_QUEST, function()

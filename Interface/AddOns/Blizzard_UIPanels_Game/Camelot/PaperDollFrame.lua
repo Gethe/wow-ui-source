@@ -1632,14 +1632,14 @@ function PaperDollFrameMixin:FocusCharacterView()
 end
 
 function PaperDollFrameMixin:ShowCharacterViewLegend()
-	self.CharacterViewerLegend:Show();
+	self.CharacterViewerFooter:ShowAndActivateBindings();
 	GamepadMode.ActivateBindingGroup(self.characterViewerBindings);
 	self.stickUpdateFrame:SetScript("OnUpdate", self.stickUpdateFrame.Update);
 	self.CharacterModelScene.GamepadFocusIndicator:Show();
 end
 
 function PaperDollFrameMixin:HideCharacterViewLegend()
-	self.CharacterViewerLegend:Hide();
+	self.CharacterViewerFooter:HideAndDeactivateBindings();
 	GamepadMode.DeactivateBindingGroup(self.characterViewerBindings);
 	self.stickUpdateFrame:SetScript("OnUpdate", nil);
 	self.CharacterModelScene.GamepadFocusIndicator:Hide();
@@ -1699,19 +1699,17 @@ function PaperDollFrameMixin:SetupGamepad()
 	self.characterViewerBindings:AddFunctionBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.ResetCharacterView, self));
 	self.characterViewerBindings:AddFunctionBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.ExitCharacterView, self));
 
-	local panCharacterViewerAction = InputPromptLegends.CreateFrameAction("PanCharacterViewerAction", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_STICK_LEFT }, "Pan");
-	local zoomTurnCharacterViewerAction = InputPromptLegends.CreateFrameAction("ZoomTurnCharacterViewerAction", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_STICK_RIGHT }, "Zoom/Turn");
-	local resetCharacterViewerAction = InputPromptLegends.CreateFrameAction("ResetCharacterViewerAction", InputPromptLegends.PromptTemplates.StandardOneIcon, { GAMEPAD_FACE_TOP }, "Reset View");
+	local panCharacterViewer = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_LEFT, nil, FRAME_ACTION_PAN);
+	local zoomTurnCharacterViewer = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT, nil, ACTION_LABEL_ZOOM_SLASH_ROTATE);
+	local resetCharacterViewer = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, nil, ACTION_LABEL_RESET_VIEW);
 
-	local legendOffset = -40;
-	InputPromptLegends.CreateInputLegend(self, "CharacterViewerLegend");
-	self.CharacterViewerLegend:SetPoint("TOPLEFT", CharacterFrame, "BOTTOMLEFT", 0, legendOffset);
-	self.CharacterViewerLegend:AddFrameAction(panCharacterViewerAction);
-	self.CharacterViewerLegend:AddFrameAction(zoomTurnCharacterViewerAction);
-	self.CharacterViewerLegend:AddFrameAction(resetCharacterViewerAction);
-	self.CharacterViewerLegend:AddFrameAction(InputPromptLegends.CommonReusableFrameActions.PAD2_EXIT);
-	self.CharacterViewerLegend:InitializePrompts();
-	self.CharacterViewerLegend:Hide();
+	self.CharacterViewerFooter = GamepadSharedUtility.CreatePromptedBindingFooter(CharacterFrame, "CharacterViewerFooter");
+	self.CharacterViewerFooter:SetAnchorOffsets(0, -40);
+	self.CharacterViewerFooter:AddPromptedBinding(panCharacterViewer);
+	self.CharacterViewerFooter:AddPromptedBinding(zoomTurnCharacterViewer);
+	self.CharacterViewerFooter:AddPromptedBinding(resetCharacterViewer);
+	self.CharacterViewerFooter:AddStandardBackPrompt();
+	self.CharacterViewerFooter:Finalize();
 end
 
 function PaperDollFrameMixin:InitializeGamepad()
@@ -1727,6 +1725,39 @@ function PaperDollFrameMixin:RegisterForInterfaceTransitions()
 	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
 	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
 	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function PaperDollFrameMixin:GetFirstRepairableItem()
+	if not InRepairMode() then
+		return nil;
+	end
+
+	local function IsRepairable(button)
+		local itemID = button:GetID();
+		local durability, maxDurability = GetInventoryItemDurability(itemID);
+		return durability and maxDurability and durability < maxDurability;
+	end
+
+	for _, v in ipairs(self.ItemsFrame.EquipmentSlots) do
+		if IsRepairable(v) then
+			return v;
+		end
+	end
+
+	for _, v in ipairs(self.ItemsFrame.WeaponSlots) do
+		if IsRepairable(v) then
+			return v;
+		end
+	end
+
+	return nil;
+end
+
+function PaperDollFrameMixin:OnSubframeFocus()
+	local repairableItemButton = self:GetFirstRepairableItem();
+	if repairableItemButton then
+		SmartNavigation:SelectButton(repairableItemButton);
+	end
 end
 
 function PaperDollFrameMixin:CreateGamepadPromptedBindings()
@@ -1906,7 +1937,7 @@ function PaperDollItemSlotButton_OnLoad(self)
 	texture:SetTexture(textureName);
 	self.backgroundTextureName = textureName;
 	self.checkRelic = checkRelic;
-	self.UpdateTooltip = PaperDollItemSlotButton_OnEnter;
+	self.UpdateTooltip = PaperDollItemSlotButton_OnUpdate;
 	itemSlotButtons[id] = self;
 	self.verticalFlyout = VERTICAL_FLYOUTS[id];
 
@@ -2176,6 +2207,14 @@ end
 
 function PaperDollItemSlotButton_UpdateLock(self)
 	SetItemButtonDesaturated(self, IsInventoryItemLocked(self:GetID()));
+end
+
+function PaperDollItemSlotButton_OnUpdate(self)
+	PaperDollItemSlotButton_OnEnter(self);
+
+	if InRepairMode() then
+		CharacterFrame:RefreshFooters();
+	end
 end
 
 function PaperDollItemSlotButton_OnEnter(self)

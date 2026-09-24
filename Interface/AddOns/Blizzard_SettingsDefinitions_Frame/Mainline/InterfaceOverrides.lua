@@ -251,7 +251,9 @@ function InterfaceOverrides.CreateHousingSettings(category, layout)
 end
 
 function InterfaceOverrides.CreateCoordinatesSettings(category, layout)
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(SETTINGS_MAP_COORDS_SECTION));
+	local sectionTooltip = nil;
+	local sectionNewTagID = "SETTINGS_MAP_COORDS_SECTION";
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(SETTINGS_MAP_COORDS_SECTION, sectionTooltip, sectionNewTagID));
 
 	Settings.SetupCVarCheckbox(category, "worldMapShowPlayerCoords", SETTINGS_PLAYER_MAP_COORDS, SETTINGS_PLAYER_MAP_COORDS_TOOLTIP);
 	Settings.SetupCVarCheckbox(category, "worldMapShowCursorCoords", SETTINGS_CURSOR_MAP_COORDS, SETTINGS_CURSOR_MAP_COORDS_TOOLTIP);

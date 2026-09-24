@@ -105,14 +105,24 @@ function GraphicsOverrides.CreateHDSDToggleOptions(category, layout)
 		end
 	end
 
+	local function GetDefaultValue()
+		-- If we want Classic as the default, then we should return true.
+		-- If we want Modern as the default, return false.
+		return C_GameRules.GetForeverExperiencePreset() == Enum.ForeverExperiencePreset.Classic;
+	end
+
 	local setting = Settings.RegisterProxySetting(category, "PROXY_CHARACTER_MODELS_TOGGLE", 
-	Settings.VarType.Boolean, CHARACTER_MODELS, Settings.Default.False, GetValue, SetValue);
+		Settings.VarType.Boolean, CHARACTER_MODELS, GetDefaultValue, GetValue, SetValue);
 
 	setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.UIReload);
 
 	local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_CHARACTER_MODELS);
 	initializer:AddShownPredicate(C_GameRules.IsSDHDToggleEnabled);
 	initializer:AddModifyPredicate(C_GameRules.IsSDHDToggleEnabled);
+	initializer:AddSearchTags(SD_SEARCH_TAG);
+	initializer:AddSearchTags(HD_SEARCH_TAG);
+	initializer:AddSearchTags(STANDARD_DEFINITION);
+	initializer:AddSearchTags(HIGH_DEFINITION);
 end
 
 function GraphicsOverrides.CreateHiResOptions(category, layout)

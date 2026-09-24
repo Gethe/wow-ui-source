@@ -507,7 +507,7 @@
 							<KeyValue key="narrationLabel" value="NARRATION_ACCOUNT_DROPDOWN_NAME" type="global"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="-2"/>
+							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="0" y="-2"/>
 						</Anchors>
 					</DropdownButton>
 					<Frame parentKey="BlackBars" setAllPoints="true">
@@ -561,3 +561,4 @@
 		</Scripts>
 	</Frame>
 </Ui>
+

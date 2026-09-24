@@ -149,9 +149,20 @@ end
 
 function CollectionsCountTemplateMixin:UpdateDisplayStyle(displayStyle)
 	self:ClearAllPoints();
-	if displayStyle == BLIZZARD_COLLECTIONS_MOUNT_COUNT_DISPLAY_STYLE_LEFT then
+	if displayStyle == BLIZZARD_COLLECTIONS_COUNT_DISPLAY_STYLE_LEFT then
 		self:SetPoint("TOPLEFT", 70, -35);
-	elseif displayStyle == BLIZZARD_COLLECTIONS_MOUNT_COUNT_DISPLAY_STYLE_CENTER then
+	elseif displayStyle == BLIZZARD_COLLECTIONS_COUNT_DISPLAY_STYLE_CENTER then
 		self:SetPoint("TOP", 16, -35);
+	end
+end
+
+function CollectionsJournal_SearchBox_OnLoad(self)
+	self:ClearAllPoints();
+	if not C_CVar.GetCVarBool("onlyShowCollectedItemsInJournal") then
+		self:SetPoint("TOPLEFT", self:GetParent().LeftInset, 15, -9);
+	else
+		-- If the FilterDropdown is hidden, take up the whole leftInset space
+		self:SetPoint("TOPLEFT", self:GetParent().LeftInset, 15, -9);
+		self:SetPoint("TOPRIGHT", self:GetParent().LeftInset, -10, -9);
 	end
 end

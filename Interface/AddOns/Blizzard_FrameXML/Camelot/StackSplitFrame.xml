@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="StackSplitFrame" frameStrata="HIGH" parent="UIParent" toplevel="true" enableMouse="true" enableKeyboard="true" hidden="true" clampedToScreen="true" mixin="StackSplitMixin, FocusFramesInterfaceMixin">
+	<Frame name="StackSplitFrame" frameStrata="HIGH" parent="UIParent" toplevel="true" enableMouse="true" enableKeyboard="true" hidden="true" clampedToScreen="true" mixin="FocusFramesInterfaceMixin, StackSplitMixin">
 		<Size x="172" y="96"/>
 		<KeyValues>
 			<KeyValue key="layoutType" value="StackSplitTemplate" type="string"/>
@@ -73,6 +73,8 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnChar method="OnChar"/>
 			<OnKeyDown method="OnKeyDown"/>

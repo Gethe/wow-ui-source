@@ -7,6 +7,8 @@ local CRUSHING_BLOW_MIN_SKILL_DIFF = 15;
 local SKILL_RANKS_PER_SKILL_LEVEL = 5;
 ATTACK_POWER_MAGIC_NUMBER = 14;
 
+PRIMARY_ATTRIBUTE_CATEGORY = 2;
+
 BASE_ENEMY_DODGE_CHANCE = {
 	[0] = 5.0;
 	[1] = 5.5;
@@ -238,10 +240,11 @@ end
 function PaperDollFrame_SetStatTooltip2(statFrame, statName, statIndex, effectiveStat, unit)
 	-- Get class specific tooltip for that stat
 	local _, classFileName = UnitClass("player");
-	local classStatText = _G[strupper(classFileName).."_"..strupper(statName).."_".."TOOLTIP"];
+	local primaryStat = PAPERDOLL_STATCATEGORIES[PRIMARY_ATTRIBUTE_CATEGORY].stats[statIndex].stat;
+	local classStatText = _G[strupper(classFileName).."_"..strupper(primaryStat).."_".."TOOLTIP"];
 	-- If can't find one use the default
 	if ( not classStatText ) then
-		classStatText = _G["DEFAULT".."_"..strupper(statName).."_".."TOOLTIP"];
+		classStatText = _G["DEFAULT".."_"..strupper(primaryStat).."_".."TOOLTIP"];
 	end
 
 	statFrame.lineWrap = false;

@@ -352,6 +352,9 @@ function SettingsListElementMixin:Init(initializer)
 		initializer:MarkSettingAsSeen();
 	end
 
+	-- Despite marking Tooltip as ignored, we still set a button frame for it as there are some
+	-- cases (e.g clicks) that we still want SmartNav to consider.
+	SmartNavigation_SetButtonFrame(self.Tooltip, self);
 	SmartNavigation_MarkFrameIgnored(self.Tooltip);
 end
 
@@ -614,6 +617,7 @@ function SettingsCheckboxControlMixin:Init(initializer)
 	self:SetSmartNavCursorAnchor(self.Checkbox);
 
 	SmartNavigation_AddIgnoreInputNavigationOverride(self.Checkbox, SMART_NAV_INPUT_DIRECTION.RIGHT);
+	SmartNavigation_SetButtonFrame(self.Tooltip, self.Checkbox);
 end
 
 function SettingsCheckboxControlMixin:OnSettingValueChanged(setting, value)
@@ -979,6 +983,7 @@ function SettingsButtonControlMixin:Init(initializer)
 	self:EvaluateState();
 	self:SetSmartNavCursorAnchor(self.Button);
 
+	SmartNavigation_SetButtonFrame(self.Tooltip, self.Button);
 	SmartNavigation_AddIgnoreInputNavigationOverride(self.Button, SMART_NAV_INPUT_DIRECTION.RIGHT);
 end
 
@@ -1191,6 +1196,7 @@ function SettingsCheckboxWithButtonControlMixin:Init(initializer)
 	self:EvaluateState();
 	self:SetSmartNavCursorAnchor(self.Checkbox);
 
+	SmartNavigation_SetButtonFrame(self.Tooltip, self.Checkbox);
 	SmartNavigation_AddBidirectionalJumpNavigationOverride(self.Checkbox, SMART_NAV_INPUT_DIRECTION.RIGHT, self.Button);
 	SmartNavigation_AddIgnoreInputNavigationOverride(self.Button, SMART_NAV_INPUT_DIRECTION.RIGHT);
 

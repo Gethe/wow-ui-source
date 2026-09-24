@@ -22,8 +22,8 @@ Blizzard_LFGVanilla_ParentFrame.lua
 Blizzard_LFGVanilla_Listing.lua
 [Family]\Blizzard_LFGVanilla_Listing.xml
 
-Blizzard_LFGVanilla_Browse.lua
-[Family]\Blizzard_LFGVanilla_Browse.xml
-
 [Family]\WhoList.lua							[ExcludeLoadGameType classic]
 [Family]\WhoList.xml							[ExcludeLoadGameType classic]
+
+Blizzard_LFGVanilla_Browse.lua
+[Family]\Blizzard_LFGVanilla_Browse.xml

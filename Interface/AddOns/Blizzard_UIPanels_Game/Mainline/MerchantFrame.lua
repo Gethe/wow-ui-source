@@ -1140,6 +1140,7 @@ function MerchantRepairItemButton_OnClick()
 		if InputUtil.IsGamepadUIEnabled() then
 			SmartNavigation:ClearOverrideIconAtlas();
 			MerchantFrame.footer:Refresh();
+			CharacterFrame:RefreshFooters();
 		end
 	else
 		MerchantFrame:RegisterEvent("PLAYER_MONEY");
@@ -1149,7 +1150,6 @@ function MerchantRepairItemButton_OnClick()
 			SmartNavigation:SetOverrideIconAtlas("gamepad-repairhammercursor-vendor");
 			ToggleCharacter("PaperDollFrame", true);
 			GamepadMode.FrameControlsManager:FocusFrame(CharacterFrame);
-			SmartNavigation:SelectTopLeftButton(); -- Make sure a PaperDoll button is selected if enabling while another sub-frame is active.
 		end
 	end
 end
@@ -1213,6 +1213,7 @@ function MerchantFrame_SetupGamepad(self)
 	multibuyItem:AddButtonContext("ButtonContext_MerchantItemButton");
 	multibuyItem:AddCondition(CanMultiBuyItem);
 	multibuyItem:AddCondition(IsValidItem);
+	multibuyItem:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
 
 	local function InspectItem()
 		local button = SmartNavigation:GetCurrentButton();
@@ -1238,6 +1239,7 @@ function MerchantFrame_SetupGamepad(self)
 	inspectItem:AddButtonContext("ButtonContext_MerchantItemButton");
 	inspectItem:AddCondition(CanInspectItem);
 	inspectItem:AddCondition(IsValidItem);
+	inspectItem:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
 
 	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "MerchantFrameFooter");
 	self.footer:SetAnchorOffsets(-5, -35);
@@ -1245,6 +1247,7 @@ function MerchantFrame_SetupGamepad(self)
 	self.footer:AddStandardSelectPrompt();
 	self.footer:AddPromptedBinding(multibuyItem);
 	self.footer:AddPromptedBinding(inspectItem);
+	self.footer:AddStandardFrameControlManagerBindings(self);
 	self.footer:AddStandardBackPrompt();
 	self.footer:Finalize();
 

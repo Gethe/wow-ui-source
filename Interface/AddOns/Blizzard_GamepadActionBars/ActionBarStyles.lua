@@ -5,67 +5,82 @@ local gamepadActionBarStyleInfo = {};
 local GamepadActionBarStyleInfoMixin = {};
 local ACTION_BAR_GROUPS = { LEFT = "leftGroup", RIGHT = "rightGroup" };
 local ACTION_BUTTONS = { LEFT = 1, TOP = 2, RIGHT = 3, BOTTOM = 4 };
-local ACTION_STATES = { NORMAL = "NORMAL", PUSHED = "PUSHED"};
+local ACTION_STATES = { NORMAL = "NORMAL", PUSHED = "PUSHED" };
+local FOCUS_STATES = { COLLAPSED = 1, EXPANDED = 2 };
 local LEFTSQUARE_RIGHTCIRCLE_STYLE = 0;
-local ACTION_BAR_BUTTON_PRESSED_SIZE_OFFSET = 4;
+local ACTION_BAR_BUTTON_PRESSED_SIZE_OFFSET = -4;
+local ACTION_BAR_BUTTON_PRESSED_ANCHOR_OFFSET = { x=0, y=math.round(ACTION_BAR_BUTTON_PRESSED_SIZE_OFFSET * 0.5) };
 local FocusFX = require('.ActionBarFocusFX');
 
 GamepadActionBarStyleUtil = {};
 
+GamepadActionBarStyleUtil.ACTION_STATES = ACTION_STATES;
+GamepadActionBarStyleUtil.FOCUS_STATES = FOCUS_STATES;
+GamepadActionBarStyleUtil.CIRCULAR_BUTTON_COLLAPSED_SIZE = 30;
+GamepadActionBarStyleUtil.CIRCULAR_BUTTON_EXPANDED_SIZE = 38;
+GamepadActionBarStyleUtil.SQUARE_BUTTON_COLLAPSED_SIZE = 32;
+GamepadActionBarStyleUtil.SQUARE_BUTTON_EXPANDED_SIZE = 40;
+GamepadActionBarStyleUtil.PUSHED_BUTTON_ANCHOR_OFFSET = ACTION_BAR_BUTTON_PRESSED_ANCHOR_OFFSET;
+GamepadActionBarStyleUtil.PUSHED_BUTTON_SIZE_OFFSET = ACTION_BAR_BUTTON_PRESSED_SIZE_OFFSET
+
 local function CreateGroupInfoTable(styleObj, groupKey)
 	styleObj[groupKey] = {};
 
-	for _, state in pairs(ACTION_STATES) do
-		styleObj[groupKey][state] = {};
-		for _, value in pairs(ACTION_BUTTONS) do
-			styleObj[groupKey][state][value] = { collapsedButtonInfo = {}, expandedButtonInfo = {} };
-		end
+	for _, value in pairs(ACTION_BUTTONS) do
+		styleObj[groupKey][value] = {
+			[FOCUS_STATES.COLLAPSED] = { anchorInfo={} },
+			[FOCUS_STATES.EXPANDED] = { anchorInfo={} },
+		};
 	end
 end
 
 function GamepadActionBarStyleInfoMixin:Init(style)
 	gamepadActionBarStyleInfo[style] = self;
 
-	CreateGroupInfoTable(self, "leftGroup");
-	CreateGroupInfoTable(self, "rightGroup");
+	CreateGroupInfoTable(self, ACTION_BAR_GROUPS.LEFT);
+	CreateGroupInfoTable(self, ACTION_BAR_GROUPS.RIGHT);
 
-	local emptyFunc = function() end;
-
-	self.applyCollapsedButtonStyle = emptyFunc;
-	self.applyExpandedButtonStyle = emptyFunc;
-	self.applyExpandedButtonIconStyle = emptyFunc;
+	self.applyCollapsedButtonStyle = nop;
+	self.applyExpandedButtonStyle = nop;
+	self.applyExpandedButtonIconStyle = nop;
+	self.actionBarSizes = {};
+	self.focusSequenceMixins = {};
+	self.shadowDistances = {};
 end
 
 function GamepadActionBarStyleInfoMixin:GetLeftGroupInfo()
-	return self.leftGroup;
+	return self[ACTION_BAR_GROUPS.LEFT];
 end
 
 function GamepadActionBarStyleInfoMixin:GetRightGroupInfo()
-	return self.rightGroup;
+	return self[ACTION_BAR_GROUPS.RIGHT];
 end
 
 function GamepadActionBarStyleInfoMixin:GetGroupInfo(group)
 	return self[group];
 end
 
-function GamepadActionBarStyleInfoMixin:SetCollapsedButtonAnchorInfo(group, state, buttonIndex, point, relativePoint, xOffset, yOffset)
+function GamepadActionBarStyleInfoMixin:SetButtonAnchorInfo(focusState, group, buttonIndex, xOffset, yOffset)
 	local groupInfo = self:GetGroupInfo(group);
-	local groupButtonCollapsedInfo = groupInfo[state][buttonIndex].collapsedButtonInfo;
-
-	groupButtonCollapsedInfo.point = point;
-	groupButtonCollapsedInfo.relativePoint = relativePoint;
-	groupButtonCollapsedInfo.xOffset = xOffset;
-	groupButtonCollapsedInfo.yOffset = yOffset;
+	local anchorInfo = groupInfo[buttonIndex][focusState].anchorInfo;
+	anchorInfo.x = xOffset;
+	anchorInfo.y = yOffset;
 end
 
-function GamepadActionBarStyleInfoMixin:SetExpandedButtonAnchorInfo(group, state, buttonIndex, point, relativePoint, xOffset, yOffset)
-	local groupInfo = self:GetGroupInfo(group);
-	local groupButtonExpandedInfo = groupInfo[state][buttonIndex].expandedButtonInfo;
+function GamepadActionBarStyleInfoMixin:SetShadowDistance(focusState, value)
+	self.shadowDistances[focusState] = value;
+end
 
-	groupButtonExpandedInfo.point = point;
-	groupButtonExpandedInfo.relativePoint = relativePoint;
-	groupButtonExpandedInfo.xOffset = xOffset;
-	groupButtonExpandedInfo.yOffset = yOffset;
+function GamepadActionBarStyleInfoMixin:SetCheckedDistance(value)
+	self.checkedDistance = value;
+end
+
+function GamepadActionBarStyleInfoMixin:SetSequenceMixin(focusState, mixin)
+	self.focusSequenceMixins[focusState] = mixin;
+end
+
+function GamepadActionBarStyleInfoMixin:SetActionBarSize(focusState, width, height)
+	self.actionBarSizes[focusState] = { width, height };
 end
 
 function GamepadActionBarStyleInfoMixin:SetFunc_ApplyExpandedButtonIconStyle(func)
@@ -78,54 +93,6 @@ end
 
 function GamepadActionBarStyleInfoMixin:SetFunc_ApplyExpandedButtonStyle(func)
 	self.applyExpandedButtonStyle = func;
-end
-
-function GamepadActionBarStyleInfoMixin:SetCollapsedButtonStyleSizing(group, state, width, height)
-	self[group][state].collapsedButtonWidth = width;
-	self[group][state].collapsedButtonHeight = height;
-end
-
-function GamepadActionBarStyleInfoMixin:SetExpandedButtonStyleSizing(group, state, width, height)
-	self[group][state].expandedButtonWidth = width;
-	self[group][state].expandedButtonHeight = height;
-end
-
-function GamepadActionBarStyleInfoMixin:SetCollapsedActionBarSize(width, height)
-	self.collapsedActionBarWidth = width;
-	self.collapsedActionBarHeight = height;
-end
-
-function GamepadActionBarStyleInfoMixin:SetExpandedActionBarSize(width, height)
-	self.expandedActionBarWidth = width;
-	self.expandedActionBarHeight = height;
-end
-
-function GamepadActionBarStyleInfoMixin:SetCollapsedButtonScale(scale)
-	self.collapsedButtonScale = scale;
-end
-
-function GamepadActionBarStyleInfoMixin:SetExpandedButtonScale(scale)
-	self.expandedButtonScale = scale;
-end
-
-function GamepadActionBarStyleInfoMixin:SetCollapsedShadowDistance(value)
-	self.collapsedShadowDistance = value;
-end
-
-function GamepadActionBarStyleInfoMixin:SetExpandedShadowDistance(value)
-	self.expandedShadowDistance = value;
-end
-
-function GamepadActionBarStyleInfoMixin:SetCheckedDistance(value)
-	self.checkedDistance = value;
-end
-
-function GamepadActionBarStyleInfoMixin:SetExpandSequenceMixin(mixin)
-	self.expandSequenceMixin = mixin;
-end
-
-function GamepadActionBarStyleInfoMixin:SetCollapseSequenceMixin(mixin)
-	self.collapseSequenceMixin = mixin;
 end
 
 function GamepadActionBarStyleUtil.ApplyCollapsedActionBarStyle(actionBar, style)
@@ -143,65 +110,80 @@ function GamepadActionBarStyleUtil.ApplyExpandedActionBarStyle(actionBar, style)
 	styleInfo:applyExpandedButtonIconStyle(actionBar);
 end
 
+function GamepadActionBarStyleUtil.ApplyExtraButtonStyles(
+	button,
+	actionState,	-- ACTION_STATES
+	focusState,		-- FOCUS_STATES
+	styleParams,	-- { expandedSize=?, collapsedSize=?, shapeMethod=? }
+	anchorInfo		-- { relativeTo=?, x=?, y=? }
+)
+	local buttonSize = styleParams.collapsedSize;
+	local expandOrCollapseMethod = "Collapse";
+	local anchorParent = anchorInfo.relativeTo or button:GetParent();
+	local anchorOffsetX = anchorInfo.x or 0;
+	local anchorOffsetY = anchorInfo.y or 0;
+
+	if actionState == ACTION_STATES.PUSHED then
+		anchorOffsetX = anchorOffsetX + GamepadActionBarStyleUtil.PUSHED_BUTTON_ANCHOR_OFFSET.x;
+		anchorOffsetY = anchorOffsetY + GamepadActionBarStyleUtil.PUSHED_BUTTON_ANCHOR_OFFSET.y;
+		buttonSize = buttonSize + GamepadActionBarStyleUtil.PUSHED_BUTTON_SIZE_OFFSET;
+	end
+
+	if focusState == FOCUS_STATES.EXPANDED then
+		buttonSize = styleParams.expandedSize;
+		expandOrCollapseMethod = "Expand";
+	end
+
+	button[styleParams.shapeMethod](button);
+	button:SetSize(buttonSize, buttonSize);
+	button:ClearAllPoints();
+	button:SetPoint("CENTER", anchorParent, "CENTER", anchorOffsetX, anchorOffsetY);
+	button[expandOrCollapseMethod](button);
+end
+
+GamepadActionBarStyleUtil.circleStyleParams = {
+	shapeMethod = "SetShapeToCircle",
+	collapsedSize = 30,
+	expandedSize = 38,
+};
+
+GamepadActionBarStyleUtil.squareStyleParams = {
+	shapeMethod = "SetShapeToSquare",
+	collapsedSize = 32,
+	expandedSize = 40,
+};
+
 local leftSquareRightCircleStyleInfo = CreateAndInitFromMixin(GamepadActionBarStyleInfoMixin, LEFTSQUARE_RIGHTCIRCLE_STYLE);
 
-local pushOffset = ACTION_BAR_BUTTON_PRESSED_SIZE_OFFSET;
-local pushOffsetHalf = Round(ACTION_BAR_BUTTON_PRESSED_SIZE_OFFSET * 0.5);
-leftSquareRightCircleStyleInfo:SetCollapsedActionBarSize(208, 68);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonScale(1);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonStyleSizing(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.NORMAL, 30, 30);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonStyleSizing(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.PUSHED, 30 - pushOffset, 30 - pushOffset);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonStyleSizing(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.NORMAL, 32, 32);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonStyleSizing(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.PUSHED, 32 - pushOffset, 32 - pushOffset);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.NORMAL, ACTION_BUTTONS.TOP, "CENTER", "CENTER", -58, 17);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.PUSHED, ACTION_BUTTONS.TOP, "CENTER", "CENTER", -58, 17 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.NORMAL, ACTION_BUTTONS.BOTTOM, "CENTER", "CENTER", -58, -17);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.PUSHED, ACTION_BUTTONS.BOTTOM, "CENTER", "CENTER", -58, -17 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.NORMAL, ACTION_BUTTONS.LEFT, "CENTER", "CENTER", -92, 0);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.PUSHED, ACTION_BUTTONS.LEFT, "CENTER", "CENTER", -92, 0 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.NORMAL, ACTION_BUTTONS.RIGHT, "CENTER", "CENTER", -24, 0);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.PUSHED, ACTION_BUTTONS.RIGHT, "CENTER", "CENTER", -24, 0 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.NORMAL, ACTION_BUTTONS.TOP, "CENTER", "CENTER", 55, 18);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.PUSHED, ACTION_BUTTONS.TOP, "CENTER", "CENTER", 55, 18 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.NORMAL, ACTION_BUTTONS.BOTTOM, "CENTER", "CENTER", 55, -18);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.PUSHED, ACTION_BUTTONS.BOTTOM, "CENTER", "CENTER", 55, -18 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.NORMAL, ACTION_BUTTONS.LEFT, "CENTER", "CENTER", 25, 0);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.PUSHED, ACTION_BUTTONS.LEFT, "CENTER", "CENTER", 25, 0 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.NORMAL, ACTION_BUTTONS.RIGHT, "CENTER", "CENTER", 85, 0);
-leftSquareRightCircleStyleInfo:SetCollapsedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.PUSHED, ACTION_BUTTONS.RIGHT, "CENTER", "CENTER", 85, 0 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetCollapsedShadowDistance(4);
-
-leftSquareRightCircleStyleInfo:SetExpandedActionBarSize(266, 86);
-leftSquareRightCircleStyleInfo:SetExpandedButtonScale(1);
-leftSquareRightCircleStyleInfo:SetExpandedButtonStyleSizing(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.NORMAL, 38, 38);
-leftSquareRightCircleStyleInfo:SetExpandedButtonStyleSizing(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.PUSHED, 38 - pushOffset, 38 - pushOffset);
-leftSquareRightCircleStyleInfo:SetExpandedButtonStyleSizing(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.NORMAL, 40, 40);
-leftSquareRightCircleStyleInfo:SetExpandedButtonStyleSizing(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.PUSHED, 40 - pushOffset, 40 - pushOffset);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.NORMAL, ACTION_BUTTONS.TOP, "CENTER", "CENTER", -75, 23);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.PUSHED, ACTION_BUTTONS.TOP, "CENTER", "CENTER", -75, 23 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.NORMAL, ACTION_BUTTONS.BOTTOM, "CENTER", "CENTER", -75, -23);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.PUSHED, ACTION_BUTTONS.BOTTOM, "CENTER", "CENTER", -75, -23 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.NORMAL, ACTION_BUTTONS.LEFT, "CENTER", "CENTER", -119, 0);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.PUSHED, ACTION_BUTTONS.LEFT, "CENTER", "CENTER", -119, 0 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.NORMAL, ACTION_BUTTONS.RIGHT, "CENTER", "CENTER", -31, 0);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.LEFT, ACTION_STATES.PUSHED, ACTION_BUTTONS.RIGHT, "CENTER", "CENTER", -31, 0 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.NORMAL, ACTION_BUTTONS.TOP, "CENTER", "CENTER", 70, 23);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.PUSHED, ACTION_BUTTONS.TOP, "CENTER", "CENTER", 70, 23 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.NORMAL, ACTION_BUTTONS.BOTTOM, "CENTER", "CENTER", 70, -23);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.PUSHED, ACTION_BUTTONS.BOTTOM, "CENTER", "CENTER", 70, -23 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.NORMAL, ACTION_BUTTONS.LEFT, "CENTER", "CENTER", 32, 0);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.PUSHED, ACTION_BUTTONS.LEFT, "CENTER", "CENTER", 32, 0 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.NORMAL, ACTION_BUTTONS.RIGHT, "CENTER", "CENTER", 108, 0);
-leftSquareRightCircleStyleInfo:SetExpandedButtonAnchorInfo(ACTION_BAR_GROUPS.RIGHT, ACTION_STATES.PUSHED, ACTION_BUTTONS.RIGHT, "CENTER", "CENTER", 108, 0 - pushOffsetHalf);
-leftSquareRightCircleStyleInfo:SetExpandedShadowDistance(13);
+leftSquareRightCircleStyleInfo:SetActionBarSize(FOCUS_STATES.COLLAPSED, 208, 68);
+leftSquareRightCircleStyleInfo:SetActionBarSize(FOCUS_STATES.EXPANDED, 266, 86);
+leftSquareRightCircleStyleInfo:SetShadowDistance(FOCUS_STATES.COLLAPSED, 4);
+leftSquareRightCircleStyleInfo:SetShadowDistance(FOCUS_STATES.EXPANDED, 13);
+leftSquareRightCircleStyleInfo:SetSequenceMixin(FOCUS_STATES.COLLAPSED, FocusFX.GamepadActionBarSequenceGameplayCollapseMixin);
+leftSquareRightCircleStyleInfo:SetSequenceMixin(FOCUS_STATES.EXPANDED, FocusFX.GamepadActionBarSequenceGameplayExpandMixin);
 leftSquareRightCircleStyleInfo:SetCheckedDistance(4);
 
-leftSquareRightCircleStyleInfo:SetExpandSequenceMixin(FocusFX.GamepadActionBarSequenceGameplayExpandMixin);
-leftSquareRightCircleStyleInfo:SetCollapseSequenceMixin(FocusFX.GamepadActionBarSequenceGameplayCollapseMixin);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.COLLAPSED, ACTION_BAR_GROUPS.LEFT, ACTION_BUTTONS.TOP, -58, 17);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.COLLAPSED, ACTION_BAR_GROUPS.LEFT, ACTION_BUTTONS.BOTTOM, -58, -17);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.COLLAPSED, ACTION_BAR_GROUPS.LEFT, ACTION_BUTTONS.LEFT, -92, 0);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.COLLAPSED, ACTION_BAR_GROUPS.LEFT, ACTION_BUTTONS.RIGHT, -24, 0);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.COLLAPSED, ACTION_BAR_GROUPS.RIGHT, ACTION_BUTTONS.TOP, 55, 18);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.COLLAPSED, ACTION_BAR_GROUPS.RIGHT, ACTION_BUTTONS.BOTTOM, 55, -18);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.COLLAPSED, ACTION_BAR_GROUPS.RIGHT, ACTION_BUTTONS.LEFT, 25, 0);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.COLLAPSED, ACTION_BAR_GROUPS.RIGHT, ACTION_BUTTONS.RIGHT, 85, 0);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.EXPANDED, ACTION_BAR_GROUPS.LEFT, ACTION_BUTTONS.TOP, -75, 23);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.EXPANDED, ACTION_BAR_GROUPS.LEFT, ACTION_BUTTONS.BOTTOM, -75, -23);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.EXPANDED, ACTION_BAR_GROUPS.LEFT, ACTION_BUTTONS.LEFT, -119, 0);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.EXPANDED, ACTION_BAR_GROUPS.LEFT, ACTION_BUTTONS.RIGHT, -31, 0);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.EXPANDED, ACTION_BAR_GROUPS.RIGHT, ACTION_BUTTONS.TOP, 70, 23);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.EXPANDED, ACTION_BAR_GROUPS.RIGHT, ACTION_BUTTONS.BOTTOM, 70, -23);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.EXPANDED, ACTION_BAR_GROUPS.RIGHT, ACTION_BUTTONS.LEFT, 32, 0);
+leftSquareRightCircleStyleInfo:SetButtonAnchorInfo(FOCUS_STATES.EXPANDED, ACTION_BAR_GROUPS.RIGHT, ACTION_BUTTONS.RIGHT, 108, 0);
 
 leftSquareRightCircleStyleInfo:SetFunc_ApplyExpandedButtonStyle(
 	function(self, actionBar)
-		actionBar:SetSize(self.expandedActionBarWidth, self.expandedActionBarHeight);
+		local actionBarSize = self.actionBarSizes[FOCUS_STATES.EXPANDED];
+		actionBar:SetSize(unpack(actionBarSize));
 		actionBar.LeftButtonFrame:Hide();
 		actionBar.RightButtonFrame:Hide();
 
@@ -216,28 +198,26 @@ leftSquareRightCircleStyleInfo:SetFunc_ApplyExpandedButtonStyle(
 
 			-- Left group
 			leftButton.ApplyExtraButtonStylesForState = function(button, state)
-				local groupStateInfo = leftGroupInfo[state] or leftGroupInfo[ACTION_STATES.NORMAL];
-				local expandedButtonInfo = groupStateInfo[buttonIndex].expandedButtonInfo;
-				button:SetScale(self.expandedButtonScale);
-				button:SetShapeToSquare();
-				button:SetSize(groupStateInfo.expandedButtonWidth, groupStateInfo.expandedButtonHeight);
-				button:ClearAllPoints();
-				button:SetPoint(expandedButtonInfo.point, actionBar, expandedButtonInfo.relativePoint, expandedButtonInfo.xOffset, expandedButtonInfo.yOffset);
-				button:Expand();
+				local anchorInfo = leftGroupInfo[buttonIndex][FOCUS_STATES.EXPANDED].anchorInfo;
+				GamepadActionBarStyleUtil.ApplyExtraButtonStyles(
+					button,
+					state,
+					FOCUS_STATES.EXPANDED,
+					GamepadActionBarStyleUtil.squareStyleParams,
+					{ relativeTo=actionBar, x=anchorInfo.x, y=anchorInfo.y });
 			end
 
 			leftButton:ApplyExtraButtonStylesForState(leftButton:GetButtonState());
 
 			-- Right group
 			rightButton.ApplyExtraButtonStylesForState = function(button, state)
-				local groupStateInfo = rightGroupInfo[state] or rightGroupInfo[ACTION_STATES.NORMAL];
-				local expandedButtonInfo = groupStateInfo[buttonIndex].expandedButtonInfo;
-				button:SetScale(self.expandedButtonScale);
-				button:SetShapeToCircle();
-				button:SetSize(groupStateInfo.expandedButtonWidth, groupStateInfo.expandedButtonHeight);
-				button:ClearAllPoints();
-				button:SetPoint(expandedButtonInfo.point, actionBar, expandedButtonInfo.relativePoint, expandedButtonInfo.xOffset, expandedButtonInfo.yOffset);
-				button:Expand();
+				local anchorInfo = rightGroupInfo[buttonIndex][FOCUS_STATES.EXPANDED].anchorInfo;
+				GamepadActionBarStyleUtil.ApplyExtraButtonStyles(
+					button,
+					state,
+					FOCUS_STATES.EXPANDED,
+					GamepadActionBarStyleUtil.circleStyleParams,
+					{ relativeTo=actionBar, x=anchorInfo.x, y=anchorInfo.y });
 			end
 
 			rightButton:ApplyExtraButtonStylesForState(rightButton:GetButtonState());
@@ -261,7 +241,8 @@ leftSquareRightCircleStyleInfo:SetFunc_ApplyExpandedButtonStyle(
 		end
 
 		if not actionBar.expandSequence then
-			actionBar:SetExpandSequence(CreateAndInitFromMixin(self.expandSequenceMixin, actionBar));
+			local sequence = self.focusSequenceMixins[FOCUS_STATES.EXPANDED];
+			actionBar:SetExpandSequence(CreateAndInitFromMixin(sequence, actionBar));
 		end
 
 		if not actionBar.expandSequence:IsPlaying() then
@@ -272,7 +253,8 @@ leftSquareRightCircleStyleInfo:SetFunc_ApplyExpandedButtonStyle(
 
 leftSquareRightCircleStyleInfo:SetFunc_ApplyCollapsedButtonStyle(
 	function(self, actionBar)
-		actionBar:SetSize(self.collapsedActionBarWidth, self.collapsedActionBarHeight);
+		local actionBarSize = self.actionBarSizes[FOCUS_STATES.COLLAPSED];
+		actionBar:SetSize(unpack(actionBarSize));
 		actionBar.LeftButtonFrame:Hide();
 		actionBar.RightButtonFrame:Hide();
 
@@ -287,32 +269,29 @@ leftSquareRightCircleStyleInfo:SetFunc_ApplyCollapsedButtonStyle(
 
 			-- Left group
 			leftButton.ApplyExtraButtonStylesForState = function(button, state)
-				local groupStateInfo = leftGroupInfo[state] or leftGroupInfo[ACTION_STATES.NORMAL];
-				local collapsedButtonInfo = groupStateInfo[buttonIndex].collapsedButtonInfo;
-				button:SetScale(self.collapsedButtonScale);
-				button:SetShapeToSquare();
-				button:SetSize(groupStateInfo.collapsedButtonWidth, groupStateInfo.collapsedButtonHeight);
-				button:ClearAllPoints();
-				button:SetPoint(collapsedButtonInfo.point, actionBar, collapsedButtonInfo.relativePoint, collapsedButtonInfo.xOffset, collapsedButtonInfo.yOffset);
-				button:Collapse();
+				local anchorInfo = leftGroupInfo[buttonIndex][FOCUS_STATES.COLLAPSED].anchorInfo;
+				GamepadActionBarStyleUtil.ApplyExtraButtonStyles(
+					button,
+					state,
+					FOCUS_STATES.COLLAPSED,
+					GamepadActionBarStyleUtil.squareStyleParams,
+					{ relativeTo=actionBar, x=anchorInfo.x, y=anchorInfo.y });
 			end
 
 			leftButton:ApplyExtraButtonStylesForState(leftButton:GetButtonState());
 
 			-- Right group
 			rightButton.ApplyExtraButtonStylesForState = function(button, state)
-				local groupStateInfo = rightGroupInfo[state] or rightGroupInfo[ACTION_STATES.NORMAL];
-				local collapsedButtonInfo = groupStateInfo[buttonIndex].collapsedButtonInfo;
-				button:SetScale(self.collapsedButtonScale);
-				button:SetShapeToCircle();
-				button:SetSize(groupStateInfo.collapsedButtonWidth, groupStateInfo.collapsedButtonHeight);
-				button:ClearAllPoints();
-				button:SetPoint(collapsedButtonInfo.point, actionBar, collapsedButtonInfo.relativePoint, collapsedButtonInfo.xOffset, collapsedButtonInfo.yOffset);
-				button:Collapse();
+				local anchorInfo = rightGroupInfo[buttonIndex][FOCUS_STATES.COLLAPSED].anchorInfo;
+				GamepadActionBarStyleUtil.ApplyExtraButtonStyles(
+					button,
+					state,
+					FOCUS_STATES.COLLAPSED,
+					GamepadActionBarStyleUtil.circleStyleParams,
+					{ relativeTo=actionBar, x=anchorInfo.x, y=anchorInfo.y });
 			end
 
 			rightButton:ApplyExtraButtonStylesForState(rightButton:GetButtonState());
-
 
 			rightButton.CircleShadow:Show();
 			rightButton.CircleShadowFocus:Hide();
@@ -320,7 +299,7 @@ leftSquareRightCircleStyleInfo:SetFunc_ApplyCollapsedButtonStyle(
 			leftButton.SquareShadowFocus:Hide();
 
 			-- Right only needs to update circle, left only needs to update square.
-			local shadowDistance = self.collapsedShadowDistance;
+			local shadowDistance = self.shadowDistances[FOCUS_STATES.COLLAPSED];
 			rightButton.CircleShadow:SetPoint("TOPLEFT", -shadowDistance, shadowDistance);
 			rightButton.CircleShadow:SetPoint("BOTTOMRIGHT", shadowDistance, -shadowDistance);
 			leftButton.SquareShadow:SetPoint("TOPLEFT", -shadowDistance, shadowDistance);
@@ -349,7 +328,8 @@ leftSquareRightCircleStyleInfo:SetFunc_ApplyCollapsedButtonStyle(
 		end
 
 		if not actionBar.collapseSequence then
-			actionBar:SetCollapseSequence(CreateAndInitFromMixin(self.collapseSequenceMixin, actionBar));
+			local sequence = self.focusSequenceMixins[FOCUS_STATES.COLLAPSED];
+			actionBar:SetCollapseSequence(CreateAndInitFromMixin(sequence, actionBar));
 		end
 		if not actionBar.collapseSequence:IsPlaying() then
 			actionBar.collapseSequence:Start();
@@ -387,14 +367,14 @@ leftSquareRightCircleStyleInfo:SetFunc_ApplyExpandedButtonIconStyle(
 			rightButton.CircleShadowFocus:Show();
 			leftButton.SquareShadow:Hide();
 			leftButton.SquareShadowFocus:Show();
-			
+
 			-- Right only needs to update circle, left only needs to update square.
-			local shadowDistance = self.expandedShadowDistance;
+			local shadowDistance = self.shadowDistances[FOCUS_STATES.EXPANDED];
 			rightButton.CircleShadowFocus:SetPoint("TOPLEFT", -shadowDistance, shadowDistance);
 			rightButton.CircleShadowFocus:SetPoint("BOTTOMRIGHT", shadowDistance, -shadowDistance);
 			leftButton.SquareShadowFocus:SetPoint("TOPLEFT", -shadowDistance, shadowDistance);
 			leftButton.SquareShadowFocus:SetPoint("BOTTOMRIGHT", shadowDistance, -shadowDistance);
-			
+
 			if actionBar.showCheckedStateOnOnExpand then
 				local highestPriorityDisplay = not (leftButton.PermaboundOverlay and leftButton.PermaboundOverlay:IsShown());
 				leftButton.CheckedTexture:SetShown(highestPriorityDisplay);

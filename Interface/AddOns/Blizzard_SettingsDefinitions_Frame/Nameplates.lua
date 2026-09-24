@@ -424,7 +424,7 @@ local function Register()
 		end
 
 		local setting = Settings.RegisterProxySetting(category, "PROXY_NPC_NAMES",
-			Settings.VarType.Number, SHOW_NPC_NAMES, NameplatesOverrides.NPCNamesDefaultValue, GetValue, SetValue);
+			Settings.VarType.Number, SHOW_NPC_NAMES, NameplatesOverrides.GetNPCNamesOptionDefault, GetValue, SetValue);
 		Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_NPC_NAMES_DROPDOWN);
 	end);
 
@@ -507,7 +507,7 @@ local function Register()
 			initializer:SetParentInitializer(friendUnitInitializer);
 		end
 
-		do
+		if NameplatesOverrides.ShowRealmOption() then
 			-- Show Realm Name
 			local setting, initializer = Settings.SetupCVarCheckbox(category, "nameplateShowFriendlyRealmName", UNIT_NAMEPLATES_SHOW_FRIENDLY_REALM_NAME, OPTION_TOOLTIP_UNIT_NAMEPLATES_SHOW_FRIENDLY_REALM_NAME);
 			initializer:Indent();

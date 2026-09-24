@@ -1,6 +1,9 @@
 NameplatesOverrides = {}
 
-NameplatesOverrides.NPCNamesDefaultValue = 3; -- This is the NPC_NAMES_DROPDOWN_INTERACTIVE setting.
+function NameplatesOverrides.GetNPCNamesOptionDefault()
+	-- "3" is the NPC_NAMES_DROPDOWN_INTERACTIVE setting.
+	return 3;
+end
 
 function NameplatesOverrides.GetNameplateStyleOptions()
 	local container = Settings.CreateControlTextContainer();
@@ -23,6 +26,10 @@ end
 
 function NameplatesOverrides.ShowClassColorSetting()
 	return false;
+end
+
+function NameplatesOverrides.ShowRealmOption()
+	return true;
 end
 
 function NameplatesOverrides.AdjustNameplateSettings(category)

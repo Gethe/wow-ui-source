@@ -21,6 +21,16 @@ function NameUtil.FormatUnitNameForDisplay(unit, showSurname)
 	end
 end
 
+function NameUtil.GetUnmodifiedUnitFullName(unit)
+	local name, realmName = UnitNameUnmodified(unit);
+	local shouldIncludeRealmName = realmName and (UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) or false;
+	if shouldIncludeRealmName then
+		return name .. Constants.CharacterNameSeparatorConsts.CHARACTERNAME_REALMNAME_SEPARATOR .. realmName;
+	end
+
+	return name;
+end
+
 function NameUtil.GetFullNameWithoutRealm(firstName, surname)
 	return firstName;
 end

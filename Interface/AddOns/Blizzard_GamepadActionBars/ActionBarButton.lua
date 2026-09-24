@@ -532,11 +532,13 @@ end
 
 -- Updates the range indicator art state.
 function GamepadActionBarButtonMixin:RefreshRange(checksRange, inRange)
-	local inputIconTexture = self.ButtonIcon
+	local inputIconTexture = self.ButtonIcon;
 
 	if (self.isGamepadPossessBarButton and not UnitExists("target")) then
 		self.RangeIndicator:Hide();
-		inputIconTexture:SetDisabled();
+		if inputIconTexture then
+			inputIconTexture:SetDisabled();
+		end
 		return;
 	end
 
@@ -544,14 +546,20 @@ function GamepadActionBarButtonMixin:RefreshRange(checksRange, inRange)
 		self.RangeIndicator:Show();
 		if inRange then
 			self.RangeIndicator:SetVertexColor(ACTIONBAR_HOTKEY_FONT_COLOR:GetRGB());
-			inputIconTexture:SetPressable();
+			if inputIconTexture then
+				inputIconTexture:SetPressable();
+			end
 		else
 			self.RangeIndicator:SetVertexColor(RED_FONT_COLOR:GetRGB());
-			inputIconTexture:SetDisabled();
+			if inputIconTexture then
+				inputIconTexture:SetDisabled();
+			end
 		end
 	else
 		self.RangeIndicator:Hide();
-		inputIconTexture:SetDisabled();
+		if inputIconTexture then
+			inputIconTexture:SetDisabled();
+		end
 	end
 end
 
@@ -704,12 +712,20 @@ function GamepadActionBarButtonFlyoutMixin:OnPopupToggled()
 end
 
 function GamepadActionBarButtonFlyoutMixin:OnFlyoutOpened()
-	self.parentActionBar.pagingUnitOwner:OnFlyoutOpened(self);
+	local actionBar = self.parentActionBar;
+	local pageUnit = actionBar and actionBar.pagingUnitOwner;
+	if pageUnit then
+		pageUnit:OnFlyoutOpened(self);
+	end
 	self:UpdateArrowPosition();
 end
 
 function GamepadActionBarButtonFlyoutMixin:OnFlyoutClosed()
-	self.parentActionBar.pagingUnitOwner:OnFlyoutClosed();
+	local actionBar = self.parentActionBar;
+	local pageUnit = actionBar and actionBar.pagingUnitOwner;
+	if pageUnit then
+		pageUnit:OnFlyoutClosed();
+	end
 	self:SetArrowRotationRadians(0);
 end
 
@@ -856,38 +872,47 @@ function GamepadActionBarButtonFlyoutMixin:UpdateAction(force)
 	local action = self:CalculateAction();
 
 	if force or self.action ~= action then
-		local wasFlyoutAction = self.isFlyoutAction;
-		self.isFlyoutAction = false;
-		self.flyoutID = nil;
+		local isFlyoutAction = false;
+		local flyoutID = nil;
 
 		if action then
 			local actionType, id = GetActionInfo(action);
 			if actionType == "flyout" then
-				self.isFlyoutAction = true;
-				self.flyoutID = id;
+				isFlyoutAction = true;
+				flyoutID = id;
 			end
 		end
 
-		if self.isFlyoutAction ~= wasFlyoutAction then
-			if wasFlyoutAction then
-				self:UnregisterEvent("BAG_UPDATE");
-				self:UnregisterEvent("SPELL_FLYOUT_UPDATE");
-				self:UnregisterEvent("UNIT_AURA");
-				self:UnregisterEvent("UNIT_POWER_UPDATE");
-			else
-				self:RegisterEvent("BAG_UPDATE");
-				self:RegisterEvent("SPELL_FLYOUT_UPDATE");
-				self:RegisterUnitEvent("UNIT_AURA", "player");
-				self:RegisterUnitEvent("UNIT_POWER_UPDATE", "player");
-			end
-		end
+		self:UpdateFlyoutActionInfo(isFlyoutAction, flyoutID);
 
-		self:CacheFlyoutSpellInfo();
-		self:SetActionAttributes();
 		ActionBarActionButtonMixin.UpdateAction(self, force);
 	end
 
 	self.isUpdatingAction = false;
+end
+
+function GamepadActionBarButtonFlyoutMixin:UpdateFlyoutActionInfo(isFlyoutAction, flyoutID)
+	if self.isFlyoutAction ~= isFlyoutAction then
+		if self.isFlyoutAction then
+			self:UnregisterEvent("BAG_UPDATE");
+			self:UnregisterEvent("SPELL_FLYOUT_UPDATE");
+			self:UnregisterEvent("SPELL_UPDATE_COOLDOWN");
+			self:UnregisterEvent("UNIT_AURA");
+			self:UnregisterEvent("UNIT_POWER_UPDATE");
+		else
+			self:RegisterEvent("BAG_UPDATE");
+			self:RegisterEvent("SPELL_FLYOUT_UPDATE");
+			self:RegisterEvent("SPELL_UPDATE_COOLDOWN");
+			self:RegisterUnitEvent("UNIT_AURA", "player");
+			self:RegisterUnitEvent("UNIT_POWER_UPDATE", "player");
+		end
+	end
+
+	self.isFlyoutAction = isFlyoutAction;
+	self.flyoutID = flyoutID;
+
+	self:CacheFlyoutSpellInfo();
+	self:SetActionAttributes();
 end
 
 function GamepadActionBarButtonFlyoutMixin:CacheFlyoutSpellInfo()
@@ -971,7 +996,12 @@ function GamepadActionBarButtonFlyoutMixin:OnEvent(event, ...)
 	elseif event == "UNIT_POWER_UPDATE" then
 		self:UpdateUsable();
 	elseif event == "SPELL_FLYOUT_UPDATE" then
-		self:UpdateAction(true);
+		local flyoutID = ...;
+		if self.isFlyoutAction and self.flyoutID == flyoutID then
+			self:UpdateAction(true);
+		end
+	elseif event == "SPELL_UPDATE_COOLDOWN" then
+		self:UpdateCooldown(...);
 	elseif event == "BAG_UPDATE" then
 		self:UpdateCount();
 		self:UpdateUsable();
@@ -984,6 +1014,16 @@ end
 function GamepadActionBarButtonFlyoutMixin:Update(...)
 	ActionBarActionButtonMixin.Update(self, ...);
 	self:UpdateFlyoutActionIcon();
+end
+
+function GamepadActionBarButtonFlyoutMixin:UpdateCooldown(spellID)
+	local singleSpellID = self:GetSingleSpellID();
+
+	-- Also update the cooldown if it's not a single spell flyout, since the button may be showing a
+	-- cooldown from when it _was_ a single spell flyout, and it should no longer be showing that.
+	if not singleSpellID or singleSpellID == spellID then
+		ActionButton_UpdateCooldown(self);
+	end
 end
 
 -- ActionBarActionButtonMixin:SetTooltip
@@ -1005,7 +1045,7 @@ function GamepadActionBarButtonFlyoutMixin:UpdateFlyoutActionIcon()
 	end
 
 	local spellID = self:GetSingleSpellID() or self:GetActiveSpellID();
-	local texture = spellID and C_Spell.GetSpellTexture(spellID) or C_ActionBar.GetActionTexture(self.action);
+	local texture = spellID and C_Spell.GetSpellTexture(spellID) or C_Flyout.GetFlyoutTexture(self.flyoutID);
 	self.icon:SetTexture(texture);
 end
 

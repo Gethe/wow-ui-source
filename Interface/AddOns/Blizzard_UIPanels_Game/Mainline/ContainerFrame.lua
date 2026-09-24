@@ -1599,7 +1599,13 @@ function ContainerFrameItemButton_OnClick(self, button)
 			StaticPopup_Show("ACCOUNT_BANK_DEPOSIT_NO_REFUND_CONFIRM", nil, nil, { itemToDeposit = Item:CreateFromItemGUID(C_Item.GetItemGUID(itemLocation)), targetItemLocation = nil });
 		else
 			local isReagentBankOpen = false;
+			ItemButtonUtil.MarkItemSelectionFromBag();
 			C_Container.UseContainerItem(self:GetBagID(), self:GetID(), nil, BankFrame:GetActiveBankType(), isReagentBankOpen);
+			if C_Spell.TargetSpellIsEnchanting() then
+				ItemButtonUtil.MarkItemSelectionFromBag();
+			else
+				ItemButtonUtil.ClearPendingItemSelectionSource();
+			end
 		end
 		StackSplitFrame:Hide();
 	end
@@ -3205,19 +3211,13 @@ local function Gamepad_FeedToPet(button)
 	end
 end
 
-local function Gamepad_BindItemToGamepadActionBar()
-	GamepadMode.FrameControlsManager:UnsuspendAllFrames();
-
-	local focusedButton = SmartNavigation:GetCurrentButton();
-	local containerItemInfo = C_Container.GetContainerItemInfo(focusedButton:GetBagID(), focusedButton:GetID());
+local function Gamepad_BindItemToGamepadActionBar(button)
+	local containerItemInfo = C_Container.GetContainerItemInfo(button:GetBagID(), button:GetID());
 	GamepadActionBarEditFrame:BindItem(containerItemInfo.itemID);
 end
 
-local function Gamepad_DestroyFocusedButtonItem()
-	GamepadMode.FrameControlsManager:UnsuspendAllFrames();
-
-	local currentButton = SmartNavigation:GetCurrentButton();
-	local item = Item:CreateFromBagAndSlot(currentButton:GetBagID(), currentButton:GetID());
+local function Gamepad_DestroyFocusedButtonItem(button)
+	local item = Item:CreateFromBagAndSlot(button:GetBagID(), button:GetID());
 	local itemGUID = item:GetItemGUID();
 
 	C_Item.ConfirmDeleteItem(itemGUID);

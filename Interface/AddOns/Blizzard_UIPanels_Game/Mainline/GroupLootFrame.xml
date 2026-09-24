@@ -682,26 +682,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnEnter>
-				self.Highlight:Show();
-				if (self.tooltip) then
-					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(self.tooltip, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-				end
-			</OnEnter>
-			<OnLeave>
-				self.Highlight:Hide();
-				if GameTooltip:IsOwned(self) then
-					GameTooltip_Hide();
-				end
-			</OnLeave>
-			<OnMouseDown>
-				self.Name:SetPoint("LEFT", 11, -1);
-			</OnMouseDown>
-			<OnMouseUp>
-				self.Name:SetPoint("LEFT", 10, 0);
-			</OnMouseUp>
-			<OnClick function="MasterLooterPlayerFrame_OnClick"/>
+			<OnEnter function="MasterLooterPlayerButton_OnEnter"/>
+			<OnLeave function="MasterLooterPlayerButton_OnLeave"/>
+			<OnMouseDown function="MasterLooterPlayerButton_OnMouseDown"/>
+			<OnMouseUp function="MasterLooterPlayerButton_OnMouseUp"/>
+			<OnClick function="MasterLooterPlayerButton_OnClick"/>
 		</Scripts>
 	</Button>
 	<Frame name="MasterLooterFrame" clampedToScreen="true" parent="LootFrame" inherits="DefaultPanelTemplate" hidden="true" frameStrata="DIALOG" enableMouse="true">

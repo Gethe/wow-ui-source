@@ -80,7 +80,7 @@ end
 
 function HousingBlueprintRenameFrameMixin:UpdateErrorText(errorText)
 	self.ErrorText:SetText(errorText);
-	self.ErrorText:SetShown(errorText and erroText ~= "");
+	self.ErrorText:SetShown(errorText and errorText ~= "");
 	self:MarkDirty();
 end
 

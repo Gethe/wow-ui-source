@@ -8,10 +8,6 @@
 			<KeyValue key="mouseDownAtlas" value="common-dropdown-a-button-pressed" type="string"/>
 		</KeyValues>
 		<Size x="32" y="32"/>
-		<KeyValues>
-			<!-- Place the indicator farther left to avoid overlapping the filter counter banner -->
-			<KeyValue key="customSmartNavOffsetX" value="-20" type="number"/> 
-		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" atlas="common-dropdown-a-button" useAtlasSize="true">
@@ -27,6 +23,16 @@
 					<Anchor point="CENTER" relativePoint="TOPRIGHT" x="-5" y="-7"/>
 				</Anchors>
 			</Button>
+			<Frame parentKey="GamepadFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<Size x="22" y="22"/>
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="LEFT" x="5" y="1"/>
+				</Anchors>
+			</Frame>
 		</Frames>
 		<HighlightTexture alphaMode="ADD" atlas="common-dropdown-a-button" alpha="0.4" useAtlasSize="true">
 		<Anchors>

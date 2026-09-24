@@ -72,6 +72,10 @@ Vanilla\CharacterSelectConstants.lua [AllowLoadGameType cata]
 Shared\GameLogoDarkBackdrop.lua
 Shared\GameLogoDarkBackdrop.xml
 [Family]\CharacterSelect.lua
+[Family]\CharacterCopy.lua [ExcludeLoadGameType camelot, classic]
+[Game]\CharacterCopy.lua [AllowLoadGameType camelot]
+[Family]\CharacterCopy.xml [ExcludeLoadGameType camelot, classic]
+[Game]\CharacterCopy.xml [AllowLoadGameType camelot]
 [Family]\CharacterSelect.xml
 [Family]\CharacterSelect\CharacterSelectRPE.lua [AllowLoadGameType mainline]
 [Family]\CharacterSelect\CharacterSelectRPE.xml [AllowLoadGameType mainline]

@@ -892,6 +892,15 @@ function CooldownViewerSettingsMixin:SetupTabs()
 	end
 end
 
+function CooldownViewerSettingsMixin:MarkTabsSeen()
+	for i, tabButton in ipairs(self.TabButtons) do
+		-- Only tabs that can display a new tag implement MarkSeen.
+		if tabButton.MarkSeen then
+			tabButton:MarkSeen();
+		end
+	end
+end
+
 function CooldownViewerSettingsMixin:UpdateGroupBuffsTabState()
 	local groupBuffItems = C_CooldownViewer.GetGroupBuffItems();
 	local isDisabled = #groupBuffItems < GROUP_BUFFS_TAB_MIN_ITEMS;
@@ -1485,6 +1494,8 @@ function CooldownViewerSettingsMixin:OnShow()
 end
 
 function CooldownViewerSettingsMixin:OnHide()
+	self:MarkTabsSeen();
+
 	self:CheckSaveCurrentLayout();
 	self:GetLayoutManager():DestroyRestorePoint();
 

@@ -210,6 +210,9 @@ local function RegisterGamepadSettings(category, layout)
 		-- Show action bars even when empty.
 		Settings.SetupCVarCheckbox(category, "GamepadShowEmptyActionbars", GAMEPAD_SHOW_EMPTY_ACTIONBARS, OPTION_TOOLTIP_GAMEPAD_SHOW_EMPTY_ACTIONBARS);
 
+		-- Compact action bar layout
+		Settings.SetupCVarCheckbox(category, "GamepadUseCompactActionBar", GAMEPAD_TOGGLE_COMPACT_ACTION_BAR, GAMEPAD_TOGGLE_COMPACT_ACTION_BAR_TOOLTIP);
+
 		local function GetGamepadPossessBarOverrideOptions()
 			local container = Settings.CreateControlTextContainer();
 
@@ -267,6 +270,14 @@ local function RegisterGamepadSettings(category, layout)
 			GAMEPAD_STANCE_BAR_OVERRIDE,
 			OPTIONS_TOOLTIP_GAMEPAD_STANCE_BAR_OVERRIDE
 		);
+	end
+
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(TARGETING_HEADER));
+	do
+		Settings.SetupCVarCheckbox(category, "GamepadUsePartyTargeting", GAMEPAD_PARTY_TARGETING_TOGGLE, GAMEPAD_PARTY_TARGETING_TOGGLE_TOOLTIP);
+		Settings.SetupCVarCheckbox(category, "GamepadSwapTargetModifiers", GAMEPAD_SWAP_TARGET_MODIFIERS, GAMEPAD_SWAP_TARGET_MODIFIERS_TOOLTIP);
+		Settings.SetupCVarCheckbox(category, "GamepadSwapFriendlyTargetActions", GAMEPAD_SWAP_FRIENDLY_TARGET_ACTIONS, GAMEPAD_SWAP_FRIENDLY_TARGET_ACTIONS_TOOLTIP);
+		Settings.SetupCVarCheckbox(category, "GamepadSwapHostileTargetActions", GAMEPAD_SWAP_HOSTILE_TARGET_ACTIONS, GAMEPAD_SWAP_HOSTILE_TARGET_ACTIONS_TOOLTIP);
 	end
 end
 

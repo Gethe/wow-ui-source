@@ -72,6 +72,7 @@ function PTR_IssueReporter.Init()
 	PTR_IssueReporter.CreateReports()
 	PTR_IssueReporter.RunPreviousSetupCommands()
 	PTR_IssueReporter.CreateMainView()
+	PTR_IssueReporter:RegisterForInterfaceTransitions()
 	if not(C_Glue.IsOnGlueScreen()) then
 		C_Timer.NewTicker(5, PTR_IssueReporter.CheckSurveyQueue)
 	end
@@ -659,8 +660,14 @@ function PTR_IssueReporter.PopFrameAttachedSurvey(framePopData, dataPackage)
 	end
 	
 	if (framePopData) and (framePopData.endEvent) and (framePopData.survey) and (framePopData.frame) and (framePopData.frame.IsShown) and (framePopData.frame:IsShown()) then
-		if not (PTR_IssueReporter.Data.FrameAttachedSurveyFrames[framePopData.frame]) then
-			PTR_IssueReporter.Data.FrameAttachedSurveyFrames[framePopData.frame] = PTR_IssueReporter.CreateSurveyFrame()           
+		local surveyFrame = PTR_IssueReporter.Data.FrameAttachedSurveyFrames[framePopData.frame]
+
+		if not (surveyFrame) then
+			surveyFrame = PTR_IssueReporter.CreateSurveyFrame()
+			-- Make sure OnShow fires after we've hooked gamepad (if necessary)
+			surveyFrame:Hide()
+			PTR_IssueReporter.SetupAttachedSurveyGamepad(surveyFrame, framePopData.frame)
+			PTR_IssueReporter.Data.FrameAttachedSurveyFrames[framePopData.frame] = surveyFrame
 			if (type(framePopData.endEvent) == "table") then
 				for key, endEvent in pairs (framePopData.endEvent) do
 					RegisterAttachedFrameEndEvent(endEvent)
@@ -670,10 +677,10 @@ function PTR_IssueReporter.PopFrameAttachedSurvey(framePopData, dataPackage)
 			end            
 		end
 		
-		local surveyFrame = PTR_IssueReporter.Data.FrameAttachedSurveyFrames[framePopData.frame]
-		surveyFrame:Show()
 		PTR_IssueReporter.BuildSurveyFrameFromSurveyData(surveyFrame, framePopData.survey, dataPackage)
+		surveyFrame:ClearAllPoints()
 		surveyFrame:SetPoint(framePopData.point, framePopData.frame, framePopData.relativePoint, framePopData.xOffset, framePopData.yOffset)
+		surveyFrame:Show()
 	end
 end
 ----------------------------------------------------------------------------------------------------
@@ -687,6 +694,8 @@ function PTR_IssueReporter.PopStandaloneSurvey(survey, dataPackage)
 	standaloneSurveyFrame:SetClampRectInsets(-sideInset, sideInset, additionalInset, -(standaloneSurveyFrame.SurveyFrame.FrameHeight + PTR_IssueReporter.Data.SubmitButtonHeight + additionalInset))
 	
 	standaloneSurveyFrame:SetLabelText(PTR_IssueReporter.GetTitleFromSurvey(survey, dataPackage))
+
+	PTR_IssueReporter.RefreshStandaloneSurveyGamepad()
 end
 ----------------------------------------------------------------------------------------------------
 local function PlayerEnteringWorldHandler()

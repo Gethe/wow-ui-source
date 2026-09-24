@@ -35,7 +35,7 @@ local function HandlePlayerLink(link, text, linkData, contextData)
 			if ( ChatFrameUtil.GetActiveWindow() ) then
 				ChatFrameUtil.InsertLink(name);
 			else
-				C_FriendList.SendWho(WHO_TAG_EXACT..name, Enum.SocialWhoOrigin.Item);
+				C_FriendList.SendWho(WHO_TAG_EXACT..C_NameUtil.ReplaceSurnameSeparatorWithLinkSeparator(name), Enum.SocialWhoOrigin.Item);
 			end
 
 		elseif ( contextData.button == "RightButton" and (linkData.type ~= LinkTypes.PlayerGM) and FriendsFrame_ShowDropdown) then

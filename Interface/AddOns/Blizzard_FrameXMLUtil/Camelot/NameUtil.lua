@@ -11,6 +11,15 @@ function NameUtil.FormatUnitNameForDisplay(unit)
 	return name;
 end
 
+function NameUtil.GetUnmodifiedUnitFullName(unit)
+	local name, surname = UnitNameUnmodified(unit);
+	if surname then
+		return name .. Constants.CharacterNameSeparatorConsts.CHARACTERNAME_SURNAME_SEPARATOR .. surname;
+	end
+
+	return name;
+end
+
 function NameUtil.GetFullNameWithoutRealm(firstName, surname)
 	if (firstName and firstName ~= "") and (surname and surname ~= "") then
 		return firstName..Constants.CharacterNameSeparatorConsts.CHARACTERNAME_SURNAME_SEPARATOR..surname;

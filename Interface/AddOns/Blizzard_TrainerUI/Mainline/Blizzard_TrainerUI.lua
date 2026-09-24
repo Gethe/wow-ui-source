@@ -14,24 +14,35 @@ UIPanelWindows["ClassTrainerFrame"] = { area = "left", pushable = 0, allowOtherP
 
 local TrainDisableReason = EnumUtil.MakeEnum("NoProfessionSlot", "CannotAfford");
 
+local TRADE_SKILL_STEP_DISPLAY_INDEX = 0;
+
+local function ClassTrainer_GetSkillIndexForDisplayIndex(displayIndex)
+	return (displayIndex and ClassTrainerFrame.displayIndexToSkillIndex and ClassTrainerFrame.displayIndexToSkillIndex[displayIndex]) or displayIndex;
+end
+
+local function ClassTrainer_GetDisplayIndexForSkillIndex(skillIndex)
+	return (skillIndex and ClassTrainerFrame.skillIndexToDisplayIndex and ClassTrainerFrame.skillIndexToDisplayIndex[skillIndex]) or skillIndex;
+end
+
 StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 	text = format(PROFESSION_CONFIRMATION1, "XXX"),
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(dialog, data)
-		BuyTrainerService(ClassTrainerFrame.selectedService);
+		BuyTrainerService(ClassTrainer_GetSkillIndexForDisplayIndex(ClassTrainerFrame.selectedService));
 		ClassTrainerFrame.showSkillDetails = 1;
 		ClassTrainerFrame.showDialog = nil;
-		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
+		ClassTrainer_SetSelection(ClassTrainer_GetDisplayIndexForSkillIndex(GetTrainerSelectionIndex()));
 		local retainScrollPosition = true;
 		ClassTrainerFrame_Update(retainScrollPosition);
 	end,
 	OnShow = function(dialog, data)
 		local prof1, prof2 = GetProfessions();
+		local skillIndex = ClassTrainer_GetSkillIndexForDisplayIndex(ClassTrainerFrame.selectedService);
 		if ( prof1 and not prof2 ) then
-			dialog:SetFormattedText(PROFESSION_CONFIRMATION2, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
+			dialog:SetFormattedText(PROFESSION_CONFIRMATION2, GetTrainerServiceSkillLine(skillIndex));
 		elseif ( not prof1 ) then
-			dialog:SetFormattedText(PROFESSION_CONFIRMATION1, GetTrainerServiceSkillLine(ClassTrainerFrame.selectedService));
+			dialog:SetFormattedText(PROFESSION_CONFIRMATION1, GetTrainerServiceSkillLine(skillIndex));
 		end
 	end,
 	showAlert = 1,
@@ -214,6 +225,20 @@ function ClassTrainerFrame_InitCategoryButton(categoryButton, node)
 	end);
 end
 
+local function AreCategoriesEnabled()
+	return C_Trainer.GetCategorizeTrainerUI();
+end
+
+local function ToggleCategoriesEnabled()
+	if not TrainerUI_UseCategories() then
+		return;
+	end
+
+	C_Trainer.SetCategorizeTrainerUI(not C_Trainer.GetCategorizeTrainerUI());
+
+	ClassTrainerFrame_Update(true);
+end
+
 local function IsSelected(filter)
 	return GetTrainerServiceTypeFilter(filter);
 end
@@ -224,15 +249,6 @@ local function SetSelected(filter)
 end
 
 function ClassTrainerFrame_OnShow(self)
-
-	local unit = "npc";
-
-	if C_Trainer.GetTrainerType() == Enum.TrainerType.Pet then
-		unit = "pet";
-	end
-
-	SetPortraitTexture(ClassTrainerFramePortrait, unit);
-	self:SetTitle(UnitName(unit));
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 
 	ClassTrainerTrainButton.disableReason = nil;
@@ -249,9 +265,18 @@ function ClassTrainerFrame_OnShow(self)
 	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_TRAINER_FILTER");
 
-		rootDescription:CreateCheckbox(GREEN_FONT_COLOR:WrapTextInColorCode(AVAILABLE), IsSelected, SetSelected, "available");
-		rootDescription:CreateCheckbox(RED_FONT_COLOR:WrapTextInColorCode(UNAVAILABLE), IsSelected, SetSelected, "unavailable");
-		rootDescription:CreateCheckbox(GRAY_FONT_COLOR:WrapTextInColorCode(USED), IsSelected, SetSelected, "used");
+		if TrainerUI_UseCategories() then
+			local filtersSubmenu = rootDescription:CreateButton(FILTERS);
+			filtersSubmenu:CreateCheckbox(GREEN_FONT_COLOR:WrapTextInColorCode(AVAILABLE), IsSelected, SetSelected, "available");
+			filtersSubmenu:CreateCheckbox(RED_FONT_COLOR:WrapTextInColorCode(UNAVAILABLE), IsSelected, SetSelected, "unavailable");
+			filtersSubmenu:CreateCheckbox(GRAY_FONT_COLOR:WrapTextInColorCode(USED), IsSelected, SetSelected, "used");
+
+			rootDescription:CreateCheckbox(CATEGORIZE, AreCategoriesEnabled, ToggleCategoriesEnabled, "categorize");
+		else
+			rootDescription:CreateCheckbox(GREEN_FONT_COLOR:WrapTextInColorCode(AVAILABLE), IsSelected, SetSelected, "available");
+			rootDescription:CreateCheckbox(RED_FONT_COLOR:WrapTextInColorCode(UNAVAILABLE), IsSelected, SetSelected, "unavailable");
+			rootDescription:CreateCheckbox(GRAY_FONT_COLOR:WrapTextInColorCode(USED), IsSelected, SetSelected, "used");
+		end
 	end);
 end
 
@@ -274,7 +299,7 @@ function ClassTrainerFrame_OnEvent(self, event, ...)
 
 		ClassTrainerFrame_Update(retainScrollPosition);
 	elseif ( event == "TRAINER_DESCRIPTION_UPDATE" ) then
-		ClassTrainer_SetSelection(GetTrainerSelectionIndex());
+		ClassTrainer_SetSelection(ClassTrainer_GetDisplayIndexForSkillIndex(GetTrainerSelectionIndex()));
 	elseif ( event == "TRAINER_SERVICE_INFO_NAME_UPDATE" ) then
 		-- It would be really cool if I could uniquely identify the button associated
 		-- with a particular spell here, and only update the name on that button.
@@ -337,7 +362,7 @@ local function GetGamepadSelection()
 	-- If not focused, use the selected service
 	if self.selectedService then
 		local dataIndex = self.ScrollBox:FindByPredicate(function(elementData)
-			return elementData.data.skillIndex == self.selectedService;
+			return elementData.data.displayIndex == self.selectedService;
 		end);
 
 		if dataIndex then
@@ -406,7 +431,38 @@ local function UpdateGamepadFocus(previousSelection)
 	SmartNavigation:SetTargetButtonForFrame(self, newSelection);
 end
 
+local function EntrySortComparator(lhs, rhs)
+	local lhsCategory = lhs.data.categoryInfo;
+	local rhsCategory = rhs.data.categoryInfo;
+
+	if lhsCategory and rhsCategory then
+		return lhsCategory.name < rhsCategory.name;
+	end
+
+	if lhsCategory and not rhsCategory then
+		return true;
+	end
+
+	if not lhsCategory and rhsCategory then
+		return false;
+	end
+
+	return lhs.data.skillIndex < rhs.data.skillIndex;
+end
+
 function ClassTrainerFrame_Update(retainScrollPosition)
+
+	local unit = "npc";
+
+	if C_Trainer.GetTrainerType() == Enum.TrainerType.Pet then
+		unit = "pet";
+	end
+
+	SetPortraitTexture(ClassTrainerFramePortrait, unit);
+	ClassTrainerFrame:SetTitle(UnitName(unit));
+
+	ClassTrainerFrame.FilterDropdown:SetText(TrainerUI_UseCategories() and SETTINGS or FILTERS);
+
 	local scrollBox = ClassTrainerFrame.ScrollBox;
 
 	--[[
@@ -418,7 +474,10 @@ function ClassTrainerFrame_Update(retainScrollPosition)
 	local playerMoney = GetMoney();
 	local tradeSkillStepIndex = GetTrainerServiceStepIndex();
 
+	local empty = true;
+
 	local dataProvider = CreateTreeDataProvider();
+	dataProvider:SetSortComparator(EntrySortComparator);
 	local categoryNodes = {};
 	for index = 1, numTrainerServices do
 		if index ~= tradeSkillStepIndex then
@@ -429,7 +488,7 @@ function ClassTrainerFrame_Update(retainScrollPosition)
 				trainerType=C_Trainer.GetTrainerType(),
 			};
 
-			if TrainerUI_UseCategories() and category and category ~= "" then
+			if TrainerUI_UseCategories() and AreCategoriesEnabled() and category and category ~= "" then
 				local categoryNode = categoryNodes[category];
 				if not categoryNode then
 					categoryNode = dataProvider:Insert({
@@ -445,9 +504,11 @@ function ClassTrainerFrame_Update(retainScrollPosition)
 				end
 
 				categoryNode:Insert(elementData);
+				elementData.categoryNode = categoryNode;
 			else
 				dataProvider:Insert(elementData);
 			end
+			empty = false;
 		end
 	end
 
@@ -460,6 +521,7 @@ function ClassTrainerFrame_Update(retainScrollPosition)
 
 		local elementData = {
 			skillIndex=tradeSkillStepIndex,
+			displayIndex=TRADE_SKILL_STEP_DISPLAY_INDEX,
 			playerMoney=playerMoney,
 			trainerType=C_Trainer.GetTrainerType(),
 		}
@@ -471,6 +533,38 @@ function ClassTrainerFrame_Update(retainScrollPosition)
 		ClassTrainerFrame.Inset:SetPoint("BOTTOMRIGHT", ClassTrainerFrame, "BOTTOMRIGHT", PANEL_INSET_RIGHT_OFFSET, PANEL_INSET_BOTTOM_BUTTON_OFFSET);
 		ClassTrainerFrame.skillStepButton:Hide();
 	end
+
+	-- Assign a display index to each skill since by this point the data provider will have sorted them
+	local displayIndex = 1;
+	local displayIndexToSkillIndex = {};
+	local skillIndexToDisplayIndex = {};
+	local selectedElementData;
+	for _, node in dataProvider:EnumerateEntireRange() do
+		local elementData = node.data;
+		if elementData.skillIndex then
+			elementData.displayIndex = displayIndex;
+			displayIndexToSkillIndex[displayIndex] = elementData.skillIndex;
+			skillIndexToDisplayIndex[elementData.skillIndex] = displayIndex;
+			if displayIndex == ClassTrainerFrame.selectedService then
+				selectedElementData = elementData;
+			end
+			displayIndex = displayIndex + 1;
+		end
+	end
+
+	-- If you train all the skills in a category and the next category is collapsed we need to expand it
+	if selectedElementData and selectedElementData.categoryNode and selectedElementData.categoryNode:IsCollapsed() then
+		selectedElementData.categoryNode:SetCollapsed(false);
+		ClassTrainerFrame.collapsedCategories[selectedElementData.categoryNode:GetData().categoryInfo.name] = false;
+	end
+
+	if tradeSkillStepIndex then
+		displayIndexToSkillIndex[TRADE_SKILL_STEP_DISPLAY_INDEX] = tradeSkillStepIndex;
+		skillIndexToDisplayIndex[tradeSkillStepIndex] = TRADE_SKILL_STEP_DISPLAY_INDEX;
+	end
+
+	ClassTrainerFrame.displayIndexToSkillIndex = displayIndexToSkillIndex;
+	ClassTrainerFrame.skillIndexToDisplayIndex = skillIndexToDisplayIndex;
 
 	scrollBox:SetDataProvider(dataProvider, retainScrollPosition, false);
 
@@ -499,6 +593,10 @@ function ClassTrainerFrame_Update(retainScrollPosition)
 		ClassTrainerFrame.trainingPoints:Hide();
 	end
 
+	if empty then
+		ClassTrainerFrame.TrainButton:SetEnabled(false);
+	end
+
 	UpdateGamepadFocus(previousSelection);
 end
 
@@ -524,6 +622,7 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 	end
 
 	local skillIndex = elementData.skillIndex;
+	local displayIndex = elementData.displayIndex;
 	local playerMoney = elementData.playerMoney;
 	local isPetSkill = elementData.trainerType == Enum.TrainerType.Pet;
 
@@ -656,7 +755,7 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 		end
 	end
 
-	if ( ClassTrainerFrame.selectedService == skillIndex ) then
+	if ( ClassTrainerFrame.selectedService == displayIndex ) then
 		ClassTrainerFrame.showDialog = isProfession;
 		skillButton.selectedTex:Show();
 
@@ -677,30 +776,31 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 	end
 
 	skillButton.isAvailable = serviceType == "available" and available;
+	skillButton.displayIndex = displayIndex;
 	skillButton:SetID(skillIndex);
 	skillButton:Hide(); -- Forces the anchors in the button to update (Hack)
 	skillButton:Show();
 end
 
 function ClassTrainer_SelectNearestLearnableSkill()
-	local numServices = GetNumTrainerServices();
-	local startIndex = ClassTrainerFrame.selectedService;
-	if not startIndex or startIndex > numServices then
-		 startIndex = 1;
-	else
-		local _, serviceType = GetTrainerServiceInfo(startIndex);
-		if ( serviceType == "unavailable" ) then
-			startIndex = 1;
+	local scrollBox = ClassTrainerFrame.ScrollBox;
+
+	local startDisplayIndex = 1;
+	if ClassTrainerFrame.selectedService then
+		local skillIndex = ClassTrainer_GetSkillIndexForDisplayIndex(ClassTrainerFrame.selectedService);
+		local _, serviceType = GetTrainerServiceInfo(skillIndex);
+		if serviceType ~= "unavailable" then
+			startDisplayIndex = ClassTrainerFrame.selectedService;
 		end
 	end
 
 	local newSelection = nil;
-	local tradeSkillStepIndex = GetTrainerServiceStepIndex();
-	if ( numServices > 0 ) then
-		for i=startIndex, numServices do
-			local _, serviceType = GetTrainerServiceInfo(i);
-			if ( serviceType == "available" and i ~= tradeSkillStepIndex ) then
-				newSelection = i;
+	for _, node in scrollBox:EnumerateDataProviderEntireRange() do
+		local elementData = node.data;
+		if elementData.skillIndex and elementData.displayIndex >= startDisplayIndex then
+			local _, serviceType = GetTrainerServiceInfo(elementData.skillIndex);
+			if ( serviceType == "available" ) then
+				newSelection = elementData.displayIndex;
 				break;
 			end
 		end
@@ -711,26 +811,27 @@ function ClassTrainer_SelectNearestLearnableSkill()
 
 		ClassTrainerFrame.ScrollBox:ScrollToElementDataByPredicate(function(elementData)
 			elementData = elementData and (elementData.data or elementData);
-			return elementData and elementData.skillIndex and elementData.skillIndex == ClassTrainerFrame.selectedService;
+			return elementData and elementData.displayIndex and elementData.displayIndex == ClassTrainerFrame.selectedService;
 		end, ScrollBoxConstants.AlignNearest);
 	end
 end
 
-function ClassTrainer_SetSelection(id)
+function ClassTrainer_SetSelection(displayIndex)
 	local oldSelectedService = ClassTrainerFrame.selectedService;
-	ClassTrainerFrame.selectedService = id;
+	ClassTrainerFrame.selectedService = displayIndex;
 
 	-- Setting it to > count effectively resets it
-	SelectTrainerService(id or (GetNumTrainerServices() + 1));
+	local skillIndex = ClassTrainer_GetSkillIndexForDisplayIndex(displayIndex);
+	SelectTrainerService(skillIndex or (GetNumTrainerServices() + 1));
 
-	local function ReinitializeButton(skillIndex)
-		if not skillIndex then
+	local function ReinitializeButton(displayIndexToFind)
+		if not displayIndexToFind then
 			return;
 		end
 
 		local button = ClassTrainerFrame.ScrollBox:FindFrameByPredicate(function(frame, elementData)
 			elementData = elementData and (elementData.data or elementData);
-			return elementData and elementData.skillIndex and elementData.skillIndex == skillIndex;
+			return elementData and elementData.displayIndex and elementData.displayIndex == displayIndexToFind;
 		end);
 		if button then
 			ClassTrainerFrame_InitServiceButton(button, button:GetElementData());
@@ -744,6 +845,7 @@ function ClassTrainer_SetSelection(id)
 	if tradeSkillStepIndex then
 		local elementData = {
 			skillIndex=tradeSkillStepIndex,
+			displayIndex=TRADE_SKILL_STEP_DISPLAY_INDEX,
 			playerMoney=GetMoney(),
 			trainerType=C_Trainer.GetTrainerType(),
 		}
@@ -767,12 +869,12 @@ ClassTrainerSkillButtonMixin = {};
 
 function ClassTrainerSkillButtonMixin:OnSmartNavSelect()
 	-- Make sure smart nav stays in sync with selected services
-	ClassTrainer_SetSelection(self:GetID());
+	ClassTrainer_SetSelection(self.displayIndex);
 end
 
 function ClassTrainerSkillButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		ClassTrainer_SetSelection(self:GetID());
+		ClassTrainer_SetSelection(self.displayIndex);
 	end
 end
 
@@ -780,6 +882,10 @@ function ClassTrainerTrainButton_OnClick(self, button)
 	if ( IsTradeskillTrainer() and ClassTrainerFrame.showDialog) then
 		StaticPopup_Show("CONFIRM_PROFESSION");
 	else
-		BuyTrainerService(ClassTrainerFrame.selectedService);
+		local skillIndex = ClassTrainer_GetSkillIndexForDisplayIndex(ClassTrainerFrame.selectedService);
+		if skillIndex then
+			BuyTrainerService(skillIndex);
+		end
 	end
 end
+

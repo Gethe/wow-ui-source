@@ -312,6 +312,16 @@ function TargetFrameMixin:CheckLevel()
 	end
 end
 
+-- Overridden per game type to point UnitFrameUtil at whichever regions that flavor actually renders.
+function TargetFrameMixin:GetPvPIndicatorElements()
+	local targetFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
+	return {
+		pvpIcon = targetFrameContentContextual.PvpIcon,
+		prestigePortrait = targetFrameContentContextual.PrestigePortrait,
+		prestigeBadge = targetFrameContentContextual.PrestigeBadge,
+	};
+end
+
 function TargetFrameMixin:CheckFaction()
 	if (not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit)) then
 		self.TargetFrameContent.TargetFrameContentMain.ReputationColor:SetVertexColor(0.5, 0.5, 0.5);
@@ -327,12 +337,7 @@ function TargetFrameMixin:CheckFaction()
 
 	local unitFramePvPContextualDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UnitFramePvPContextualDisabled);
 	if (self.showPVP and (not unitFramePvPContextualDisabled)) then
-		local targetFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
-		UnitFrameUtil.UpdateUnitPvPIndicator({
-			pvpIcon = targetFrameContentContextual.PvpIcon,
-			prestigePortrait = targetFrameContentContextual.PrestigePortrait,
-			prestigeBadge = targetFrameContentContextual.PrestigeBadge,
-		}, self.unit);
+		UnitFrameUtil.UpdateUnitPvPIndicator(self:GetPvPIndicatorElements(), self.unit);
 	end
 end
 
@@ -829,6 +834,11 @@ function TargetSpellBarMixin:AdjustPosition()
 
 	if not useAuraContainerAnchor and parentFrame.haveToT then
 		pointY = parentFrame.smallSize and -48 or -46;
+
+		if InputUtil.IsGamepadUIEnabled() then
+			-- Ensure that the spellbar does not overlap with right action bar when ToT is shown
+			pointX = parentFrame.smallSize and 118 or 123;
+		end
 	end
 
 	if useAuraContainerAnchor then

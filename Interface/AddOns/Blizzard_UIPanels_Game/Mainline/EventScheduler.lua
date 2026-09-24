@@ -294,8 +294,14 @@ function EventSchedulerMixin:AddScheduledEvents(dataProvider, scheduledEvents, h
 	local data = { entryType = EntryType.ScheduledHeader };
 	local categorySubtree = dataProvider:Insert(data);
 
+	local seenEvents = { };
+
 	for i, eventInfo in ipairs(scheduledEvents) do
-		if numFutureEvents < Constants.EventScheduler.SCHEDULED_EVENT_FUTURE_LIMIT then
+		local eventValid = numFutureEvents < Constants.EventScheduler.SCHEDULED_EVENT_FUTURE_LIMIT
+			and not seenEvents[eventInfo.eventKey];
+		if eventValid then
+			seenEvents[eventInfo.eventKey] = true;
+
 			local isHidden = hideRewardedEvents and eventInfo.rewardsClaimed;
 			if isHidden then
 				self.numHiddenEvents = self.numHiddenEvents + 1;

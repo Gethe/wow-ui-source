@@ -1,7 +1,7 @@
 ## Title: Blizzard_LFGUtil
 ## Dep: Blizzard_SharedXMLGame
-Shared\LFGEye.lua
-Shared\LFGEye.xml
+[Family]\LFGEye.lua
+[Family]\LFGEye.xml
 Shared\Constants.lua
 Shared\LFGRole.lua
 Shared\LFGRole.xml

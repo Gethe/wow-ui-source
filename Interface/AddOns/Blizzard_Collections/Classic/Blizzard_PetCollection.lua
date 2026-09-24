@@ -112,6 +112,7 @@ end
 function PetJournal_OnShow(self)
 	PetJournal_UpdatePetList();
 	PetJournal_UpdatePetCard(PetJournalPetCard);
+	self.PetCount:UpdateDisplayStyle(BLIZZARD_COLLECTIONS_COUNT_DISPLAY_STYLE);
 
 	CollectionsJournal:SetPortraitToAsset("Interface\\ICONS\\Spell_Magic_PolymorphChicken");
 end
@@ -211,6 +212,7 @@ function PetJournalSummonRandomPetSpellFrameMixin:OnLoad()
 	UIPanelSpellButtonFrameMixin.OnLoad(self);
 	self:AddUsabilityUpdateEvent("PET_BATTLE_OPENING_START");
 	self:AddUsabilityUpdateEvent("PET_BATTLE_CLOSE");
+	self:SetShown(BLIZZARD_COLLECTIONS_PETS_SHOW_SUMMON_RANDOM);
 
 	if self.spellID then
 		local spellInfo = C_Spell.GetSpellInfo(self.spellID);
@@ -339,7 +341,6 @@ function PetJournal_UpdatePetList()
 	local numPets, numOwned = C_PetJournal.GetNumPets();
 	PetJournal.PetCount.Count:SetText(numOwned);
 end
-
 
 function PetJournal_OnSearchTextChanged(self)
 	SearchBoxTemplate_OnTextChanged(self);

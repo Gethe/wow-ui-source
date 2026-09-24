@@ -1012,14 +1012,34 @@ function PlayerSpellsFrameMixin:SetUpClassTalentsGamepad()
 	select:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
 
 	-- Remove point --
-	local removePoint = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, RemovePoint, GAMEPAD_TALENT_REMOVE_POINT);
-	removePoint:AddButtonContext("ButtonContext_ClassTalent");
-	removePoint:AddCondition(CanRemovePoint);
+	local removePoint = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, "ClassTalents_RemovePoint_PromptedBinding");
+	removePoint:AddFooterBinding({
+		label = GAMEPAD_TALENT_REMOVE_POINT,
+		buttonContexts = "ButtonContext_ClassTalent",
+		conditions = { CanRemovePoint, function() return not ShouldShowUndo(); end, },
+	})
+	removePoint:AddFooterFunction({
+		buttonUpDown = GAMEPAD_BUTTON_ANY_UP,
+		bindingFunctions = RemovePoint,
+	})
 
-	local undoChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_TRIGGER_RIGHT, 0.5, nil, UndoChanges);
-	undoChanges:SetCustomPromptFrame(talentFrame.GamepadUndoButton);
-	undoChanges:AddCondition(ShouldShowUndo);
-	undoChanges:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	-- Undo changes --
+	local undoChanges = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, "ClassTalents_UndoChanges_PromptedBinding");
+	undoChanges:AddFooterBinding({
+		label = GAMEPAD_TALENT_REMOVE_POINT,
+		buttonContexts = "ButtonContext_ClassTalent",
+		conditions = { CanRemovePoint, ShouldShowUndo },
+	})
+	local undoChangesHoldBinding = undoChanges:AddCustomPromptBinding({
+		frame = talentFrame.GamepadUndoButton,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		conditions = ShouldShowUndo,
+	})
+	undoChanges:AddCustomPromptHoldFunction(undoChangesHoldBinding, {
+		holdTime = 0.5,
+		onTap = RemovePoint,
+		onHeld = UndoChanges,
+	});
 
 	-- Apply changes --
 	local applyChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, 0.5, nil, ApplyChanges, GAMEPAD_TALENT_APPLY);

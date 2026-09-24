@@ -1,11 +1,13 @@
-local SOFT_CURSOR_DEFUALT_MAX_SPEED = 200;
+local SOFT_CURSOR_DEFAULT_MAX_SPEED = 200;
+local SOFT_CURSOR_DEFAULT_INPUT_STICK = "Right";
 
 SoftCursorMixin = {}
 
 function SoftCursorMixin:OnLoad()
 	self.speedX = 0;
 	self.speedY = 0;
-	self.maxSpeed = SOFT_CURSOR_DEFUALT_MAX_SPEED;
+	self.maxSpeed = SOFT_CURSOR_DEFAULT_MAX_SPEED;
+	self.inputStick = SOFT_CURSOR_DEFAULT_INPUT_STICK;
 
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
@@ -21,7 +23,6 @@ end
 
 function SoftCursorMixin:OnShow()
 	self:EnableGamePadStick(true);
-	self:ResetPosition();
 
 	local introAnim = self.IntroAnim;
 	if introAnim:IsPlaying() then
@@ -93,8 +94,12 @@ function SoftCursorMixin:SetMaxSpeed(maxSpeed)
 	self.maxSpeed = maxSpeed;
 end
 
+function SoftCursorMixin:SetInputStick(inStick)
+	self.inputStick = inStick;
+end
+
 function SoftCursorMixin:OnGamePadStick(inStick, inX, inY)
-	if ( inStick ~= "Right" and inStick ~= "Camera" ) then
+	if ( inStick ~= self.inputStick ) then
 		return true;
 	end
 

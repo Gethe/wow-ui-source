@@ -93,6 +93,15 @@ local GameRules =
 			},
 		},
 		{
+			Name = "GetForeverExperiencePreset",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "preset", Type = "ForeverExperiencePreset", Nilable = true },
+			},
+		},
+		{
 			Name = "GetGameModeDisplayInfoByRecordID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -301,12 +310,14 @@ local GameRules =
 			},
 		},
 		{
-			Name = "SelectClassicExperiencePreset",
+			Name = "SetForeverExperiencePreset",
 			Type = "Function",
-		},
-		{
-			Name = "SelectModernExperiencePreset",
-			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "preset", Type = "ForeverExperiencePreset", Nilable = false },
+			},
 		},
 		{
 			Name = "SetSDHDToggleValue",
@@ -375,6 +386,18 @@ local GameRules =
 
 	Tables =
 	{
+		{
+			Name = "ForeverExperiencePreset",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Classic", Type = "ForeverExperiencePreset", EnumValue = 0 },
+				{ Name = "Modern", Type = "ForeverExperiencePreset", EnumValue = 1 },
+			},
+		},
 		{
 			Name = "GameModeDisplayInfo",
 			Type = "Structure",

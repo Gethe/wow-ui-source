@@ -67,13 +67,18 @@ function CommunitiesSettingsDialogMixin:OnShow()
 	end
 	self:SetDisabledStateOnCommunityFinderOptions(not self.ShouldListClub.Button:GetChecked()); 
 
+	if not GetBuildOption("CrossFactionCommunities") then
+		self.CrossFactionToggle:SetShown(false);
+		self.CrossFactionToggle.CheckButton:SetChecked(false);
+		self.CrossFactionToggle.CheckButton:SetEnabled(false);
+	end
+
 	HelpTip:Acknowledge(CommunitiesFrame, CLUB_FINDER_TUTORIAL_POSTING);
 	HelpTip:Acknowledge(CommunitiesFrame, CLUB_FINDER_TUTORIAL_LANGUAGE_FILTER);
 
 	self:RegisterEvent("CLUB_FINDER_POST_UPDATED");
 	
 	CommunitiesFrame:RegisterDialogShown(self);
-
 end
 
 function CommunitiesSettingsDialogMixin:OnHide() 

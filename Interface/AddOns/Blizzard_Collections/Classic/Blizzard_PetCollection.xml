@@ -163,9 +163,11 @@
 			<EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" parentKey="searchBox" letters="40">
 				<Size x="145" y="20"/>
 				<Anchors>
+					<!-- Overidden in CollectionsJournal_SearchBox_OnLoad -->
 					<Anchor point="TOPLEFT" relativeTo="$parentLeftInset" x="15" y="-9"/>
 				</Anchors>
 				<Scripts>
+					<OnLoad function="CollectionsJournal_SearchBox_OnLoad" inherit="prepend"/>
 					<OnTextChanged function="PetJournal_OnSearchTextChanged"/>
 				</Scripts>
 			</EditBox>
@@ -186,10 +188,9 @@
 			</Frame>
 			<EventFrame parentKey="ScrollBar" inherits="PetJournalScrollBar" frameStrata="HIGH"/>
 			<Frame name="$parentPetCard" parentKey="PetCard">
-				<Size x="405" y="512"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="$parentRightInset" x="3" y="-3"/>
-
+					<Anchor point="BOTTOMRIGHT" relativeTo="$parentRightInset" x="-3" y="3"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -201,16 +202,16 @@
 				<Frames>
 					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
 					<Button name="$parentPetInfo" parentKey="PetInfo">
-						<Size x="275" y="42"/>
+						<Size x="208" y="46"/>
 						<Anchors>
-							<Anchor point="TOPLEFT" x="0" y="0"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="6" y="-6"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
 								<Texture name="$parentIcon" parentKey="icon" file="Interface\Common\WhiteIconFrame">
 									<Size x="38" y="38"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" x="30" y="-40"/>
+										<Anchor point="LEFT" x="20" y="-20"/>
 									</Anchors>
 								</Texture>
 							</Layer>
@@ -243,7 +244,7 @@
 							<Layer level="OVERLAY" textureSubLevel="2">
 								<FontString parentKey="new" inherits="GameFontHighlight" wordwrap="false" justifyH="CENTER" text="NEW_CAPS" hidden="true">
 									<Anchors>
-										<Anchor point="BOTTOMLEFT" relativeKey="$parent.name" relativePoint="BOTTOMLEFT" x="8" y="0"/>
+										<Anchor point="LEFT" relativeKey="$parent.name" relativePoint="RIGHT" x="8" y="0"/>
 									</Anchors>
 									<Shadow>
 										<Color color="NEW_FEATURE_SHADOW_COLOR"/>
