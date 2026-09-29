@@ -12,6 +12,7 @@ local UnitAura =
 			Type = "Function",
 			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Registers a sound for an aura event. The sound is stopped after five seconds of playback. The throttleSeconds value must be between 0 and 5 seconds, inclusive." },
 
 			Arguments =
 			{

@@ -22,9 +22,16 @@
 
 	<EventFrame name="SettingsKeybindingSectionTemplate" inherits="SettingsExpandableSectionTemplate" mixin="SettingsKeybindingSectionMixin" virtual="true">
 		<Size y="25"/>
+		<Frames>
+			<Frame parentKey="NewFeature" inherits="NewFeatureLabelTemplate" frameStrata="HIGH" scale=".8" frameLevel="100" hidden="true">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="16" y="-10" relativeKey="$parent.Button.Text" relativePoint="LEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</EventFrame>
 </Ui>
-

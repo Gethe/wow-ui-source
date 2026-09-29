@@ -248,8 +248,13 @@ function ChatFrameMixin:SystemEventHandler(event, ...)
 		self:AddMessage(GetRegionalChatUnavailableString(), info.r, info.g, info.b, info.id);
 		return true;
 	elseif event == "NOTIFY_CHAT_SUPPRESSED" then
-		local hyperlink = string.format("|Haadcopenconfig|h[%s]", RESTRICT_CHAT_CONFIG_HYPERLINK);
-		local message = string.format(RESTRICT_CHAT_CHATFRAME_FORMAT, RESTRICT_CHAT_MESSAGE_SUPPRESSED, LIGHTBLUE_FONT_COLOR:WrapTextInColorCode(hyperlink));
+		local message;
+		if C_SocialRestrictions.IsAgeVerificationRestricted() then
+			message = C_SocialRestrictions.IsAgeVerificationRestrictedMinor() and AGE_RESTRICTED_CHAT_MINOR or AGE_RESTRICTED_CHAT_UNVERIFIED;
+		else
+			local hyperlink = string.format("|Haadcopenconfig|h[%s]", RESTRICT_CHAT_CONFIG_HYPERLINK);
+			message = string.format(RESTRICT_CHAT_CHATFRAME_FORMAT, RESTRICT_CHAT_MESSAGE_SUPPRESSED, LIGHTBLUE_FONT_COLOR:WrapTextInColorCode(hyperlink));
+		end
 		local info = ChatTypeInfo["SYSTEM"];
 		self:AddMessage(message, info.r, info.g, info.b, info.id);
 		return true;

@@ -458,6 +458,22 @@ function UnitPopupWhisperButtonMixin:IsEnabled(contextData)
 	return not unit or (UnitIsConnected(unit) and UnitIsHumanPlayer(unit));
 end
 
+function UnitPopupWhisperButtonMixin:IsDisabled(contextData)
+	return C_SocialRestrictions.IsAgeVerificationRestricted();
+end
+
+function UnitPopupWhisperButtonMixin:TooltipWhileDisabled()
+	return true;
+end
+
+function UnitPopupWhisperButtonMixin:TooltipWarning(contextData)
+	if C_SocialRestrictions.IsAgeVerificationRestricted() then
+		return C_SocialRestrictions.IsAgeVerificationRestrictedMinor() and AGE_RESTRICTED_CHAT_MINOR_TOOLTIP or AGE_RESTRICTED_CHAT_UNVERIFIED_TOOLTIP;
+	end
+
+	return nil;
+end
+
 UnitPopupInviteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupInviteButtonMixin:GetInviteName()

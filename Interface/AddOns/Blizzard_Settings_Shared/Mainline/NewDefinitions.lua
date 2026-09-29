@@ -108,6 +108,7 @@ NewSettings["12.1.5"] = {
 	"minimapShowPlayerCoords",
 	"coordsByTenths",
 	"CAAPulsePlayerHealthPercent",
+	"raidFramesDispelIndicatorAnimatedBorder",
 };
 
 NewSettingsPredicates["enableConnectToPhotoSharing"] = function()

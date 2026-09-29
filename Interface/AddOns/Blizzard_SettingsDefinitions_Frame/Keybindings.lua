@@ -43,10 +43,11 @@ end
 
 function SettingsKeybindingSectionMixin:Init(initializer)
 	SettingsExpandableSectionMixin.Init(self, initializer);
-	
+	self.NewFeature:SetShown(initializer:IsNewTagShown());
+
 	local data = initializer.data;
 	local bindingsCategories = data.bindingsCategories;
-	
+
 	self.Controls = {};
 	for _, categoryData in ipairs(bindingsCategories) do
 		if categoryData == KeybindingSpacer then
@@ -83,6 +84,11 @@ function SettingsKeybindingSectionMixin:Init(initializer)
 	end
 
 	self:EvaluateVisibility(data.expanded);
+
+	-- Sections expanded by default never fire OnExpandedChanged, so their bindings are seen as soon as they're initialized.
+	if data.expanded then
+		initializer:MarkBindingsAsSeen();
+	end
 end
 
 function SettingsKeybindingSectionMixin:Release(initializer)
@@ -103,6 +109,11 @@ end
 
 function SettingsKeybindingSectionMixin:OnExpandedChanged(expanded)
 	self:EvaluateVisibility(expanded);
+
+	if expanded then
+		local initializer = self:GetElementData();
+		initializer:MarkBindingsAsSeen();
+	end
 end
 
 function SettingsKeybindingSectionMixin:EvaluateVisibility(expanded)
@@ -121,6 +132,26 @@ function SettingsKeybindingSectionMixin:EvaluateVisibility(expanded)
 end
 
 local SettingsKeybindingSectionInitializer = CreateFromMixins(SettingsExpandableSectionInitializer);
+
+function SettingsKeybindingSectionInitializer:IsNewTagShown()
+	for _, categoryData in ipairs(self.data.bindingsCategories) do
+		local action = categoryData[2];
+		if action and IsNewSettingInCurrentVersion(action) then
+			return true;
+		end
+	end
+
+	return false;
+end
+
+function SettingsKeybindingSectionInitializer:MarkBindingsAsSeen()
+	for _, categoryData in ipairs(self.data.bindingsCategories) do
+		local action = categoryData[2];
+		if action and IsNewSettingInCurrentVersion(action) then
+			MarkNewSettingAsSeen(action);
+		end
+	end
+end
 
 function SettingsKeybindingSectionInitializer:GetExtent()
 	local bindingHeight = 25;
@@ -238,7 +269,7 @@ local function CreateKeybindingInitializers(category, layout)
 			layout:AddInitializer(CreateKeybindingSectionInitializer(categoryInfo.cat, categoryInfo.bindings, categoryInfo.requiredSettingName, categoryInfo.expanded));
 		end
 	end
-	
+
 	-- Keybindings (search + redirectCategory)
 	CreateSearchableSettings(category);
 end
@@ -258,7 +289,7 @@ local function Register()
 		local function GetValue()
 			return GetCurrentBindingSet() == Enum.BindingSet.Character;
 		end
-		
+
 		local function SetValue(value)
 			if value then
 				Settings.SelectCharacterBindings();
@@ -271,7 +302,7 @@ local function Register()
 		local setting = Settings.RegisterProxySetting(category, "PROXY_CHARACTER_SPECIFIC_BINDINGS",
 			Settings.VarType.Boolean, CHARACTER_SPECIFIC_KEYBINDINGS, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateCheckbox(category, setting, CHARACTER_SPECIFIC_KEYBINDING_TOOLTIP);
-		
+
 		-- Changing from character to account bindings requires confirmation since it overwrites
 		-- character with account bindings.
 		local function CanChangeSetting(value)
@@ -281,12 +312,12 @@ local function Register()
 			StaticPopup_Show("CONFIRM_DELETING_CHARACTER_SPECIFIC_BINDINGS");
 			return true;
 		end
-		
+
 		initializer:SetSettingIntercept(CanChangeSetting);
 	end);
 
 	KeybindingsOverrides.CreateBindingButtonSettings(layout);
-	
+
 	retained.initializers = CopyTable(layout:GetInitializers(), true);
 
 	CreateKeybindingInitializers(category, layout);
@@ -299,7 +330,7 @@ SettingsRegistrar:AddRegistrant(Register);
 EventRegistry:RegisterFrameEventAndCallback("ADDON_LOADED", function(o, ...)
 	local name, containsBindings = ...;
 	if not retained.layout then
-		--[[ We have not created any initial bindings. 
+		--[[ We have not created any initial bindings.
 		The initial bindings will include the addon's bindings.]]--
 		return;
 	end

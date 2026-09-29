@@ -2,7 +2,7 @@
 ## Dependencies: Blizzard_Settings_Shared, Blizzard_TextStatusBar, Blizzard_Colors, Blizzard_AccessibilityTemplates
 ## AllowLoad: Both
 ## LoadSavedVariablesFirst: 1
-## SavedVariablesPerCharacter: NewSettingsSeen
+## SavedVariables: NewSettingsSeen
 Groups.lua
 Graphics.xml
 Audio.xml

@@ -46,10 +46,10 @@ local UnitConstants =
 			{
 				{ Name = "unitToken", Type = "string", Nilable = false },
 				{ Name = "spellID", Type = "number", Nilable = false },
-				{ Name = "soundFileName", Type = "string", Nilable = true },
-				{ Name = "soundFileID", Type = "number", Nilable = true },
+				{ Name = "soundFileName", Type = "string", Nilable = true, Documentation = { "Sound file to play. Playback stops after five seconds." } },
+				{ Name = "soundFileID", Type = "number", Nilable = true, Documentation = { "Sound file to play. Playback stops after five seconds." } },
 				{ Name = "outputChannel", Type = "string", Nilable = true },
-				{ Name = "throttleSeconds", Type = "number", Nilable = true },
+				{ Name = "throttleSeconds", Type = "number", Nilable = true, Documentation = { "Minimum time in seconds between plays. Must be between 0 and 5 seconds, inclusive. Invalid values reject registration." } },
 			},
 		},
 		{
