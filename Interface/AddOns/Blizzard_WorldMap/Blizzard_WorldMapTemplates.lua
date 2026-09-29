@@ -601,12 +601,20 @@ function WorldMapCoordsPanelMixin:OnUpdate(elapsed)
 	local showCursorCoords = self.showCursorCoords and self:GetParent():IsCanvasMouseFocusOrPinFocus();
 	if showCursorCoords then
 		local cursorX, cursorY = self:GetParent():GetNormalizedCursorPosition();
-		local cursorLabel = InputUtil.IsMKBUIEnabled() and WORLD_MAP_CURSOR_COORDS or WORLD_MAP_CROSSHAIR_COORDS;
-		local cursorLabelIntger = InputUtil.IsMKBUIEnabled() and WORLD_MAP_CURSOR_COORDS_INTEGER or WORLD_MAP_CROSSHAIR_COORDS_INTEGER;
-		SetCoordText(self.CursorCoords.Label, cursorLabel, cursorLabelIntger, self.coordsByTenths, cursorX, cursorY);
+		SetCoordText(self.CursorCoords.Label, WORLD_MAP_CURSOR_COORDS, WORLD_MAP_CURSOR_COORDS_INTEGER, self.coordsByTenths, cursorX, cursorY);
 	end
 	if self.CursorCoords:IsShown() ~= showCursorCoords then
 		self.CursorCoords:SetShown(showCursorCoords);
+		self:Layout();
+	end
+
+	local showCrosshairCoords = self.showCursorCoords and self:GetParent():IsCanvasGamepadFocus();
+	if showCrosshairCoords then
+		local cursorX, cursorY = self:GetParent():GetNormalizedGamepadCursorPosition();
+		SetCoordText(self.CrosshairCoords.Label, WORLD_MAP_CROSSHAIR_COORDS, WORLD_MAP_CROSSHAIR_COORDS_INTEGER, self.coordsByTenths, cursorX, cursorY);
+	end
+	if self.CrosshairCoords:IsShown() ~= showCrosshairCoords then
+		self.CrosshairCoords:SetShown(showCrosshairCoords);
 		self:Layout();
 	end
 end

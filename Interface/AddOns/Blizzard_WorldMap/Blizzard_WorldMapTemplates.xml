@@ -52,9 +52,9 @@
 					<Size x="37" y="37"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Border" x="-2" y="1"/>
-					</Anchors>					
+					</Anchors>
 				</Texture>
-			</Layer>			
+			</Layer>
 		</Layers>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 		<Scripts>
@@ -140,10 +140,21 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="PlayerCoords">
+			<Frame parentKey="CrosshairCoords">
 				<Size x="100" y="15"/>
 				<KeyValues>
 					<KeyValue key="layoutIndex" type="number" value="2"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString inherits="GameFontHighlightSmall" parentKey="Label" justifyH="LEFT" text="WORLD_MAP_CROSSHAIR_COORDS"/>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="PlayerCoords">
+				<Size x="100" y="15"/>
+				<KeyValues>
+					<KeyValue key="layoutIndex" type="number" value="3"/>
 				</KeyValues>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -300,5 +311,5 @@
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
-	</Frame>	
+	</Frame>
 </Ui>

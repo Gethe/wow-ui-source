@@ -29,6 +29,7 @@ function MapCanvasScrollControllerMixin:OnLoad()
 	self.gamepadScrollSpeed = {};
 	self:SetGamepadScrollSpeed(0, 0);
 	self.gamepadZoom = 0;
+	self.gamepadPanMagnitude = 1;
 end
 
 function MapCanvasScrollControllerMixin:OnMouseDown(button)
@@ -836,6 +837,10 @@ function MapCanvasScrollControllerMixin:GetNormalizedGamepadCursorPosition()
 		x, y = SoftCursor:GetPosition();
 	end
 	return self:NormalizeUIPosition(x, y);
+end
+
+function MapCanvasScrollControllerMixin:HasGamepadCursorInput()
+	return SoftCursor:IsMoving();
 end
 
 function MapCanvasScrollControllerMixin:GetNormalizedMouseDelta(button)

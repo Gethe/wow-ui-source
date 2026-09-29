@@ -966,30 +966,22 @@ function MapCanvasMixin:DenormalizeVerticalSize(size)
 end
 
 function MapCanvasMixin:GetNormalizedCursorPosition()
-	if InputUtil.IsGamepadUIEnabled() then
-		return self.ScrollContainer:GetNormalizedGamepadCursorPosition();
-	end
-
-	return self.ScrollContainer:GetNormalizedCursorPosition()
+	return self.ScrollContainer:GetNormalizedCursorPosition();
 end
 
 function MapCanvasMixin:GetNormalizedGamepadCursorPosition()
 	return self.ScrollContainer:GetNormalizedGamepadCursorPosition();
 end
 
-function MapCanvasMixin:IsCanvasMouseFocus()
-	if InputUtil.IsGamepadUIEnabled() then
-		return self:IsMapFocused();
-	end
+function MapCanvasMixin:HasGamepadCursorInput()
+	return self.ScrollContainer:HasGamepadCursorInput();
+end
 
+function MapCanvasMixin:IsCanvasMouseFocus()
 	return self.ScrollContainer:IsMouseMotionFocus();
 end
 
 function MapCanvasMixin:IsCanvasMouseFocusOrPinFocus()
-	if InputUtil.IsGamepadUIEnabled() then
-		return self:IsMapFocused();
-	end
-
 	if self.ScrollContainer:IsMouseMotionFocus() then
 		return true;
 	end
@@ -1001,6 +993,10 @@ function MapCanvasMixin:IsCanvasMouseFocusOrPinFocus()
 		end
 	end
 
+	return false;
+end
+
+function MapCanvasMixin:IsCanvasGamepadFocus()
 	return false;
 end
 

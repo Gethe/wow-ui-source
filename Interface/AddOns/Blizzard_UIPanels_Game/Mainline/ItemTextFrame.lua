@@ -257,10 +257,10 @@ function ItemTextFrameMixin:SetupGamepad()
 	GamepadItemTextPrevPageButton:SetOnClick(ItemTextFrame_PrevPageOnClick);
 	GamepadItemTextNextPageButton:SetOnClick(ItemTextFrame_NextPageOnClick);
 	GamepadItemTextPrevPageButton:SetEnabledCondition(function()
-		return itemTextFramePrevious:AreConditionsMet();
+		return itemTextFramePrevious:IsAnyConditionMet();
 	end);
 	GamepadItemTextNextPageButton:SetEnabledCondition(function()
-		return itemTextFrameNext:AreConditionsMet();
+		return itemTextFrameNext:IsAnyConditionMet();
 	end);
 
 	-- Create binding footer

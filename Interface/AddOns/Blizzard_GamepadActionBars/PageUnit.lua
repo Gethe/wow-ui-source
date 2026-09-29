@@ -228,6 +228,8 @@ function GamepadActionBarPageUnitMixin:OnLoad()
 	CallbackRegistryMixin.OnLoad(self);
 
 	SetupActionBarReferences(self);
+	self:SetGamepadActionBarSlotIDs();
+
 	self:InitializePossessBar();
 	self:InitializeStanceBar();
 	self:InitializeTargetingBars();
@@ -246,6 +248,8 @@ function GamepadActionBarPageUnitMixin:OnLoad()
 	InputUtil.RegisterForInterfaceTransitions(self);
 	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
 	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+
+	self:InitializeCompactLayout();
 end
 
 function GamepadActionBarPageUnitMixin:OnEvent(event, ...)
@@ -258,7 +262,6 @@ end
 function GamepadActionBarPageUnitMixin:InitializeGamepad()
 	self:RegisterEvent("ACTIONBAR_SLOT_CHANGED");
 
-	self:InitializeCompactLayout();
 	self:ActionBarModKeyDownStateCheck();
 
 	EventUtil.ContinueOnVariablesLoaded(GenerateClosure(self.PostVariableSetUp, self));
@@ -394,7 +397,6 @@ function GamepadActionBarPageUnitMixin:SetGamepadActionBarSlotIDs()
 end
 
 function GamepadActionBarPageUnitMixin:PostVariableSetUp()
-	self:SetGamepadActionBarSlotIDs();
 	self:RefreshCompactLayout();
 	self:SetInitialPageDisplay();
 	self:ActionBarModKeyDownStateCheck();

@@ -525,10 +525,18 @@ function WorldMapMixin:IsCanvasMouseFocus()
 
 	local gamepadFocus = false;
 	if InputUtil.IsGamepadUIEnabled() then
-		gamepadFocus = self.currentFocus == MAP_FOCUS;
+		gamepadFocus = self:IsMapFocused();
 	end
 
 	return mouseFocus or gamepadFocus;
+end
+
+function WorldMapMixin:IsCanvasGamepadFocus()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return false;
+	end
+
+	return self:IsMapFocused();
 end
 
 function WorldMapMixin:IsQuestLogEmpty()

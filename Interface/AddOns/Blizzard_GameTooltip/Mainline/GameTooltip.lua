@@ -378,7 +378,12 @@ GAME_TOOLTIP_TEXTUREKIT_BACKDROP_STYLES = {
 };
 
 function GameTooltip_OnShow(self)
-	if (InputUtil.IsGamepadUIEnabled() and GamepadMode.FrameControlsManager:GetShownFrameCount() > 0 and GetCVarBool("GamepadDisableTooltips")) then
+	if InputUtil.IsGamepadUIEnabled()
+		and GamepadMode
+		and GamepadMode.FrameControlsManager
+		and GamepadMode.FrameControlsManager:GetShownFrameCount() > 0
+		and GetCVarBool("GamepadDisableTooltips")
+	then
 		self:Hide();
 	end
 
