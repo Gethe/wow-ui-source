@@ -1146,8 +1146,52 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.REMOVEFRIEND, SLASH_COMMAND_
 	end
 end);
 
+local function ShouldPreferCharacterIgnoreForName(name)
+	if C_Glue.IsOnGlueScreen() then
+		return false;
+	end
+
+	-- Prefer character ignore if the name matches the current target's full name exactly
+	if UnitIsHumanPlayer("target") then
+		local targetName = NameUtil.GetUnmodifiedUnitFullName("target");
+		local matchesTargetName = targetName and strcmputf8i(name, targetName) == 0;
+		if matchesTargetName then
+			return true;
+		end
+	end
+
+	-- If the name contains a surname separator (a space) and regional unique names are not enabled, it's probably not a character name
+	local hasSurnameSeparator = string.find(name, Constants.CharacterNameSeparatorConsts.CHARACTERNAME_SURNAME_SEPARATOR, 1, true) ~= nil;
+	if hasSurnameSeparator and not RegionalUniqueNamesEnabled() then
+		return false;
+	end
+
+	-- If the name looks like Name-Realm, prefer character ignore
+	local characterName, realmName, extraNamePart = string.split(Constants.CharacterNameSeparatorConsts.CHARACTERNAME_REALMNAME_SEPARATOR, name);
+	local hasCharacterName = characterName ~= "";
+	local hasRealmName = (realmName ~= nil) and (realmName ~= "");
+	local hasExactlyOneSeparator = extraNamePart == nil;
+	-- Double check other misc invalid characters like whitespace, # and |
+	local hasOnlyNameRealmCharacters = string.find(name, "[%s#|]") == nil;
+
+	local hasRealmQualifiedNameFormat = hasCharacterName and hasRealmName and hasExactlyOneSeparator and hasOnlyNameRealmCharacters;
+	if hasRealmQualifiedNameFormat then
+		return true;
+	end
+
+	-- Finally, prefer character ignore if autocomplete recognizes the name as a character
+	local characterOnlyAutoCompleteFilter = AUTOCOMPLETE_LIST_TEMPLATES.ALL_CHARS;
+	return C_AutoComplete.IsRecognizedName(name, characterOnlyAutoCompleteFilter.include, characterOnlyAutoCompleteFilter.exclude);
+end
+
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.IGNORE, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
 	if ( msg ~= "" ) then
+		local shouldPreferCharacterIgnore = ShouldPreferCharacterIgnoreForName(msg);
+		if shouldPreferCharacterIgnore then
+			C_FriendList.AddOrDelIgnore(msg);
+			return;
+		end
+
 		local bNetIDAccount = BNet_GetBNetIDAccount(msg);
 		if ( bNetIDAccount ) then
 			if ( BNIsFriend(bNetIDAccount) ) then

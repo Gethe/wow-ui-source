@@ -171,30 +171,10 @@
 			</Anchor>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture name="$parentBgTop" inherits="Char-Stat-Top" parentKey="BgTop">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="0" y="1"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBgBottom" inherits="Char-Stat-Top" parentKey="BgBottom">
-					<Anchors>
-						<Anchor point="BOTTOMLEFT" x="0" y="-4"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentBgMiddle" file="Interface\CharacterFrame\Char-Stat-Middle" parentKey="BgMiddle" vertTile="true">
-					<Size x="169" y="8"/>
-					<Anchors>
-						<Anchor point="LEFT" x="1"/>
-					</Anchors>
-					<TexCoords left="0.00390625" right="0.66406250" top="0.00000000" bottom="1.00000000"/>
-				</Texture>
-			</Layer>
 			<Layer level="BACKGROUND" textureSubLevel="1">
-				<Texture name="$parentStripe" parentKey="Stripe">
+				<Texture name="$parentStripe" parentKey="Stripe" atlas="UI-Character-Info-Line-Bounce2" useAtlasSize="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="1" y="0"/>
-						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+						<Anchor point="CENTER"/>
 					</Anchors>
 				</Texture>
 			</Layer>
@@ -213,9 +193,6 @@
 			</Layer>
 		</Layers>
 		<Scripts>
-			<OnLoad>
-				SetClampedTextureRotation(self.BgBottom, 180);
-			</OnLoad>
 			<OnClick>
 				PlayerTitleButton_OnClick(self);
 			</OnClick>
@@ -446,6 +423,11 @@
 							<Anchor point="RIGHT" relativeTo="PaperDollSidebarTab2" relativePoint="LEFT" x="0" y="0"/>
 						</Anchors>
 					</CheckButton>
+					<CheckButton name="PaperDollSidebarTab4" inherits="PaperDollSidebarTabTemplate" id="4">
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="PaperDollSidebarTab3" relativePoint="RIGHT" x="0" y="0"/>
+						</Anchors>
+					</CheckButton>					
 				</Frames>
 			</Frame>
 
@@ -500,12 +482,24 @@
 			<Frame parentKey="TitleManagerPane" hidden="true">
 				<Size x="172" y="354"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="CharacterFrameRightPaneHost" x="4" y="-4"/>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameRightPaneHostStoneBg" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameRightPaneHost"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" atlas="common-insideframe" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="1" y="1"/>
+								<Anchor point="BOTTOMRIGHT" x="-4" y="2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Frames>
-					<Frame parentKey="ScrollBox" setAllPoints="true" inherits="WowScrollBoxList">
+					<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
 						<Anchors>
-							<Anchor point="TOPLEFT" x="4" y="-4"/>
+							<Anchor point="TOPLEFT" x="10" y="-8"/>
+							<Anchor point="BOTTOMRIGHT" x="-30" y="30"/>
 						</Anchors>
 						<Scripts>
 							<OnShow function="PaperDollTitlesPane_Update"/>
@@ -513,8 +507,8 @@
 					</Frame>
 					<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="8" y="-5"/>
-							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="8" y="4"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-12"/>
+							<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>
 					</EventFrame>
 				</Frames>
@@ -852,6 +846,7 @@
 					</ItemButton>
 
 					<ItemButton name="CharacterMainHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate"/>
+					<!-- ^ Anchored in PaperDollItemSlotButton_OnLoad -->
 					<ItemButton name="CharacterSecondaryHandSlot" inherits="PaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeTo="CharacterMainHandSlot" relativePoint="TOPRIGHT" x="6" y="0"/>

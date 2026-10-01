@@ -29,13 +29,45 @@ function LegacySystem.GetChallengeIndices(categoryID)
 	return startOffset, count;
 end
 
-function LegacySystem.UpdateCurrencyInfo()
-	local treeData = LegacyTreeData[1];
-	local configID = C_Traits.GetConfigIDByTreeID(treeData.treeID);
-	local treeCurrencyInfo = C_Traits.GetTreeCurrencyInfo(configID, treeData.treeID, true);
+local cachedCurrencyInfo = nil;
+
+local function RefreshCachedCurrencyInfo()
+	local treeID = LegacyTreeData[1].treeID;
+	local configID = C_Traits.GetConfigIDByTreeID(treeID);
+	if not configID then
+		return nil;
+	end
+
+	-- Matches TalentFrameBaseMixin so the tree panel and summaries agree while changes are staged.
+	local excludeStagedChanges = false;
+	local treeCurrencyInfo = C_Traits.GetTreeCurrencyInfo(configID, treeID, excludeStagedChanges);
 	local currencyInfo = treeCurrencyInfo and treeCurrencyInfo[1] or nil;
+	if not currencyInfo then
+		return nil;
+	end
 
 	currencyInfo.renownCurrency = C_MajorFactions.GetCurrentRenownLevel(Constants.LegacyConsts.LEGACY_REWARD_TRACK_FACTION_ID);
+	cachedCurrencyInfo = currencyInfo;
 
-	EventRegistry:TriggerEvent("Legacy.UpdateCurrencyInfo", currencyInfo);
+	return currencyInfo;
+end
+
+function LegacySystem.UpdateCurrencyInfo()
+	local currencyInfo = RefreshCachedCurrencyInfo();
+	if currencyInfo then
+		EventRegistry:TriggerEvent("Legacy.UpdateCurrencyInfo", currencyInfo);
+	end
+end
+
+function LegacySystem.GetCurrencyInfo()
+	return cachedCurrencyInfo or RefreshCachedCurrencyInfo();
+end
+
+function LegacySystem.RegisterCurrencyInfoCallback(owner, method)
+	local currencyInfo = LegacySystem.GetCurrencyInfo();
+	if currencyInfo then
+		method(owner, currencyInfo);
+	end
+
+	EventRegistry:RegisterCallback("Legacy.UpdateCurrencyInfo", method, owner);
 end

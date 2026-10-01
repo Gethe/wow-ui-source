@@ -405,6 +405,7 @@ function CompactRaidFrameContainerMixin:AddFlaggedUnits()
 				--Target of target?
 				local targetOfTargetFrame = self:AddUnitFrame(unit.."targettarget", "target");
 				CompactUnitFrame_SetUpdateAllOnUpdate(targetOfTargetFrame, true);
+				SmartNavigation_MarkFrameIgnored(targetOfTargetFrame);
 
 				FlowContainer_EndAtomicAdd(self);
 			end

@@ -56,3 +56,16 @@ end
 function InterfaceOverrides.HasSwingTimer()
 	return true;
 end
+
+function InterfaceOverrides.AdjustDisplaySettings(category)
+	
+	-- Loading Screen Tips
+	Settings.SetupCVarCheckbox(category, "showLoadingScreenTips", SHOW_TIPOFTHEDAY_TEXT, OPTION_TOOLTIP_SHOW_TIPOFTHEDAY);
+	
+	-- Instant Quest Text
+	Settings.SetupCVarCheckbox(category, "instantQuestText", SHOW_QUEST_FADING_TEXT, OPTION_TOOLTIP_SHOW_QUEST_FADING);
+
+	-- Show Free Bag Space
+	Settings.SetupCVarCheckbox(category, "displayFreeBagSlots", DISPLAY_FREE_BAG_SLOTS, OPTION_TOOLTIP_DISPLAY_FREE_BAG_SLOTS);
+
+end

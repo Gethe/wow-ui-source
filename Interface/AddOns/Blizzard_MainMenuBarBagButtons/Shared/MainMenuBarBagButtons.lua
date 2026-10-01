@@ -275,10 +275,11 @@ function MainMenuBarBackpackMixin:OnLoadInternal()
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("AZERITE_EMPOWERED_ITEM_LOOTED");
 	self:RegisterEvent("INVENTORY_SEARCH_UPDATE");
+	self:RegisterEvent("CVAR_UPDATE");
 
 	self:UpdateTextures();
-	self.Count:ClearAllPoints();
-	self.Count:SetPoint("CENTER", 0, -10);
+	self.FreeSlots:ClearAllPoints();
+	self.FreeSlots:SetPoint("CENTER", 0, -10);
 end
 
 function MainMenuBarBackpackMixin:OnEnterInternal()
@@ -313,6 +314,11 @@ function MainMenuBarBackpackMixin:BackpackOnEvent(event, ...)
 		self:OnPlayerEnteringWorld();
 	elseif event == "AZERITE_EMPOWERED_ITEM_LOOTED" then
 		self:OnAzeriteEmpoweredItemLooted();
+	elseif event == "CVAR_UPDATE" then
+		local cvar = ...;
+		if cvar == "displayFreeBagSlots" then
+			self:SetCountShown(GetCVar("displayFreeBagSlots") == "1");
+		end
 	end
 end
 
@@ -327,21 +333,21 @@ function MainMenuBarBackpackMixin:UpdateFreeSlots()
 	end
 
 	self.freeSlots = totalFree;
-	self.Count:SetText(BACKPACK_FREESLOTS_FORMAT:format(totalFree));
+	self.FreeSlots:SetText(BACKPACK_FREESLOTS_FORMAT:format(totalFree));
 end
 
 function MainMenuBarBackpackMixin:SetCountShown(shown)
-	self.Count:SetShown(shown);
+	self.FreeSlots:SetShown(shown);
 end
 
 function MainMenuBarBackpackMixin:OnBagUpdate(bagID)
 	if bagID >= BACKPACK_CONTAINER and bagID <= NUM_TOTAL_EQUIPPED_BAG_SLOTS then
-		self:UpdateFreeSlots()
+		C_Timer.After(0, function() self:UpdateFreeSlots(); end); -- Do it one frame later to avoid race conditions when moving bags around
 	end
 end
 
 function MainMenuBarBackpackMixin:OnPlayerEnteringWorld()
-	self:SetCountShown(true);
+	self:SetCountShown(GetCVar("displayFreeBagSlots") == "1");
 	self:UpdateFreeSlots();
 end
 

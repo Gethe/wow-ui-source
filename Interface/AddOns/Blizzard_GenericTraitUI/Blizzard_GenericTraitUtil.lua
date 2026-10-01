@@ -20,7 +20,7 @@ local GenericTraitFrameLayoutOptions = {
 		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
 		PanOffset = { x = 0, y = 0 },
 		ButtonPurchaseFXIDs = { 150, 142, 143 },
-		CloseButtonOffset = { x = -9, y = -9 },
+		CloseButtonOffset = { x = -6, y = -8 },
 		PanelArea = "left",
 		HideCurrencyDisplay = false,
 	},
@@ -72,6 +72,12 @@ local GenericTraitFrameLayoutOptions = {
 		CurrencyOffset = { x = 100, y = 50 },
 		PanOffset = { x = -20, y = -20 },
 		ButtonPurchaseFXIDs = {},
+	},
+};
+
+local TextureKitOverrides = {
+	thewarwithin = {
+		CloseButtonOffset = { x = -9, y = -9 },
 	},
 };
 
@@ -145,6 +151,12 @@ function GenericTraitUtil.GetFrameLayoutInfo(treeID)
 	if treeInfo then
 		layoutInfo.Title = treeInfo.titleText;
 		layoutInfo.NineSliceTextureKit = layoutInfo.NineSliceTextureKit or treeInfo.uiTextureKit;
+
+		local kitOverrides = treeInfo.uiTextureKit and TextureKitOverrides[treeInfo.uiTextureKit];
+		if kitOverrides then
+			MergeTable(layoutInfo, kitOverrides);
+		end
+
 		if not layoutInfo.BackgroundAtlas and treeInfo.uiTextureKit then
 			layoutInfo.BackgroundAtlas = bgAtlasFormatStr:format(treeInfo.uiTextureKit);
 		end

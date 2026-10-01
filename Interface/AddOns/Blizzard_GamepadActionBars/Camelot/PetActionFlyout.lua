@@ -119,10 +119,11 @@ function PetActionFlyoutButtonMixin:UpdateFlyoutPopup(_)
 	self:SetPopup(GamepadPetActionFlyout);
 end
 
-function PetActionFlyoutButtonMixin:OnClick(button, down)
-	if not down then
+function PetActionFlyoutButtonMixin:HandleFlyoutClickOverride(button, down)
+	if down then
 		self:TogglePopup();
 	end
+	return true;
 end
 
 function PetActionFlyoutButtonMixin:UpdateIcon()

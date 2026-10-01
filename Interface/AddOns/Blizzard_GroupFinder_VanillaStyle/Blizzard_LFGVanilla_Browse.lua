@@ -462,6 +462,10 @@ function LFGBrowseSearchEntry_Update(self)
 	self.ActivityName:SetText(activityText);
 	self.ActivityName:SetTextColor(activityColor.r, activityColor.g, activityColor.b);
 
+	if self.PlaystyleLabel and searchResultInfo.generalPlaystyle then
+		self.PlaystyleLabel:SetText(GetGeneralPlaystyleString(searchResultInfo.generalPlaystyle));
+	end
+
 	if ( searchResultInfo.newPlayerFriendly ) then
 		self.NewPlayerFriendlyIcon:Show();
 	else

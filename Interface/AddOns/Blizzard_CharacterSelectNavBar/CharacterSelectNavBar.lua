@@ -465,6 +465,17 @@ function CharacterSelectNavBarMixin:SetRealmsButtonEnabled(enabled)
 	self:UpdateButtonDividerState(self.RealmsButton);
 end
 
+function CharacterSelectNavBarMixin:SetSuperDistrictsButtonEnabled(enabled)
+	if not self.SuperDistrictsButton then
+		return;
+	end
+
+	self.SuperDistrictsButton:SetEnabled(enabled);
+
+	self:UpdateButtonDividerState(self.MenuButton);
+	self:UpdateButtonDividerState(self.SuperDistrictsButton);
+end
+
 function CharacterSelectNavBarMixin:SetCampsButtonEnabled(enabled)
 	if not self.CampsButton then
 		return;

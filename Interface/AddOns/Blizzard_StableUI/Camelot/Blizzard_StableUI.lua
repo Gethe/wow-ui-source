@@ -1,5 +1,7 @@
 
 local CURRENT_PET_SLOT = 1;
+local GAMEPAD_ROTATION_SPEED = 300;
+local GAMEPAD_ZOOM_SPEED = 10;
 
 StableFrameMixin = {};
 
@@ -11,7 +13,7 @@ function StableFrameMixin:OnLoad()
 	self:RegisterEvent("UNIT_NAME_UPDATE");
 	self:RegisterEvent("PLAYER_MONEY");
 	self:RegisterEvent("SPELLS_CHANGED");
-	
+
 	EventRegistry:RegisterCallback("StableFrameMixin.PetSelected", self.OnPetSelected, self);
 	EventRegistry:RegisterCallback("StableFrameMixin.PetSwapRequested", self.OnPetSwapRequested, self);
 
@@ -34,6 +36,8 @@ function StableFrameMixin:OnLoad()
 		return 0, 0, 0;
 	end
 	self.expBar:SetTextLocked(true);
+
+	self:RegisterForTransitions();
 end
 
 function StableFrameMixin:OnEvent(event, ...)
@@ -60,12 +64,154 @@ function StableFrameMixin:OnHide()
 	self.selectedPet = nil;
 end
 
+function StableFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function StableFrameMixin:SetupGamepad()
+	local function CanPlacePet()
+		return GetCursorInfo() == "pet";
+	end
+
+	local function PlacePet()
+		local cursorType, petSlotID = GetCursorInfo();
+		if cursorType == "pet" then
+			local button = SmartNavigation:GetCurrentButton();
+			EventRegistry:TriggerEvent("StableFrameMixin.PetSwapRequested", petSlotID, button:GetID(), true);
+			ClearCursor();
+		end
+	end
+
+	local function CanPickUpPet()
+		local button = SmartNavigation:GetCurrentButton();
+		return C_StableInfo.GetStablePetInfo(button:GetID());
+	end
+
+	local function PickUpPet()
+		local button = SmartNavigation:GetCurrentButton();
+		C_StableInfo.PickupStablePet(button:GetID());
+	end
+
+	local function CanPurchaseSlot()
+		local button = SmartNavigation:GetCurrentButton();
+		-- The first ID is for the current pet, so the stable slots start at 2
+		return (button:GetID() - 1) > C_StableInfo.GetNumStableSlots();
+	end
+
+	local function PurchaseSlot()
+		StaticPopup_Show("CONFIRM_BUY_STABLE_SLOT");
+	end
+
+	local placePetBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, PlacePet, ACTION_LABEL_SELECT);
+	placePetBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	placePetBinding:AddButtonContext("ButtonContext_StableFramePetButton");
+	placePetBinding:AddCondition(CanPlacePet);
+
+	local pickUpPetBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, PickUpPet, ACTION_LABEL_SELECT);
+	pickUpPetBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	pickUpPetBinding:AddButtonContext("ButtonContext_StableFramePetButton");
+	pickUpPetBinding:AddCondition(CanPickUpPet);
+
+	local purchaseSlotBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, PurchaseSlot, PURCHASE);
+	purchaseSlotBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	purchaseSlotBinding:AddButtonContext("ButtonContext_StableFramePetButton");
+	purchaseSlotBinding:AddCondition(CanPurchaseSlot);
+
+	local paperDollZoom = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_VERTICAL, nil, FRAME_ACTION_ZOOM);
+	local paperDollRotate = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_HORIZONTAL, nil, ACTION_LABEL_ROTATE);
+	local paperDollReset = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, GenerateClosure(self.modelScene.Reset, self.modelScene), RESET);
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "StableFrameFooter");
+	self.footer:SetAnchorOffsets(0, -5);
+	self.footer:AddPromptedBinding(placePetBinding);
+	self.footer:AddPromptedBinding(pickUpPetBinding);
+	self.footer:AddPromptedBinding(purchaseSlotBinding);
+	self.footer:AddPromptedBinding(paperDollZoom);
+	self.footer:AddPromptedBinding(paperDollRotate);
+	self.footer:AddPromptedBinding(paperDollReset);
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+
+	self.bindings = GamepadMode.CreateBindingGroup("StableFrameBindings");
+	self.bindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.SetZoomAndRotateSpeeds, self));
+
+	SmartNavigation_MarkFrameFocusable(self.diet);
+	SmartNavigation_MarkFrameIgnored(self.modelScene);
+	SmartNavigation_AddJumpNavigationOverride(PetStableCurrentPet, SMART_NAV_INPUT_DIRECTION.UP, self.diet);
+
+	SmartNavigation:SetSmartNavPanelInfoAddedCallback(self, function()
+		SmartNavigation:SetTargetButtonForFrame(self, PetStableCurrentPet);
+	end);
+end
+
+function StableFrameMixin:InitializeGamepad()
+	PetStableCurrentPet.Text:SetFontObject(GameFontNormal);
+	PetStableStabledPet1.Text:SetFontObject(GameFontNormal);
+
+	PetStableCurrentPet:SetPointsOffset(-69, -40);
+	PetStableCurrentPet.Text:SetPointsOffset(0, 12);
+	PetStableStabledPet1.Text:SetPointsOffset(24, 12);
+
+	PetStableCostMoneyFrame:ClearAllPoints();
+	PetStableCostMoneyFrame:SetPoint("RIGHT", self.GamepadSlotCostText);
+
+	self.CloseButton:Hide();
+	self.purchaseButton:Hide();
+	PetStableCostLabel:Hide();
+	PetStableSlotText:Hide();
+	self:Update();
+end
+
+function StableFrameMixin:UninitializeGamepad()
+	PetStableCurrentPet.Text:SetFontObject(GameFontNormalSmall);
+	PetStableStabledPet1.Text:SetFontObject(GameFontNormalSmall);
+
+	PetStableCurrentPet.Text:SetPointsOffset(0, 6);
+	PetStableStabledPet1.Text:SetPointsOffset(24, 6);
+
+	PetStableCostMoneyFrame:ClearAllPoints();
+	PetStableCostMoneyFrame:SetPoint("LEFT", PetStableCostLabel, "RIGHT");
+
+	self.CloseButton:Show();
+	self.GamepadSlotCostText:Hide();
+	self:Update();
+end
+
+function StableFrameMixin:FocusGamepad()
+	self.footer:ShowAndActivateBindings();
+	GamepadMode.ActivateBindingGroup(self.bindings);
+end
+
+function StableFrameMixin:UnfocusGamepad()
+	self:SetZoomAndRotateSpeeds(0, 0);
+	self.footer:HideAndDeactivateBindings();
+	GamepadMode.DeactivateBindingGroup(self.bindings);
+end
+
+function StableFrameMixin:SetZoomAndRotateSpeeds(rotation, zoom)
+	self.rotationSpeed = rotation * GAMEPAD_ROTATION_SPEED;
+	self.zoomSpeed = zoom * GAMEPAD_ZOOM_SPEED;
+
+	if rotation ~= 0 or zoom ~= 0 then
+		self:SetScript("OnUpdate", self.OnUpdate);
+	else
+		self:SetScript("OnUpdate", nil);
+	end
+end
+
+function StableFrameMixin:OnUpdate(elapsed)
+	local camera = self.modelScene:GetActiveCamera();
+	if camera then
+		camera:AdjustYaw(self.rotationSpeed * elapsed, 0);
+		camera:ZoomBy(self.zoomSpeed * elapsed);
+	end
+end
+
 function StableFrameMixin:Update()
 	local nextCost = C_StableInfo.GetNextStableSlotCost();
 	MoneyFrame_Update("PetStableCostMoneyFrame", nextCost);
-	
-	local numSlots = C_StableInfo.GetNumStableSlots();
-	local numPets = C_StableInfo.GetNumStablePets();
 
 	if self.lastSwappedDestinationSlot and C_StableInfo.GetStablePetInfo(self.lastSwappedDestinationSlot) then
 		self:SelectPet(self.lastSwappedDestinationSlot);
@@ -85,12 +231,19 @@ function StableFrameMixin:Update()
 		self.modelScene:SetPet(selectedPetInfo);
 	end
 
-	self.purchaseButton:Update();
-
-	if not self.purchaseButton:IsShown() then
-		PetStableCurrentPet:SetPoint("TOP", self.modelScene, "BOTTOM", -69, -43);
+	if InputUtil.IsGamepadUIEnabled() then
+		local canPurchase = C_StableInfo.GetNumStableSlots() < Constants.PetConsts.MAX_STABLE_SLOTS;
+		self.GamepadSlotCostText:SetShown(canPurchase);
+		PetStableCostMoneyFrame:SetShown(canPurchase);
+		self.footer:Refresh();
 	else
-		PetStableCurrentPet:SetPoint("TOP", self.modelScene, "BOTTOM", -69, -23);
+		self.purchaseButton:Update();
+
+		if not self.purchaseButton:IsShown() then
+			PetStableCurrentPet:SetPoint("TOP", self.modelScene, "BOTTOM", -69, -43);
+		else
+			PetStableCurrentPet:SetPoint("TOP", self.modelScene, "BOTTOM", -69, -23);
+		end
 	end
 end
 
@@ -118,8 +271,8 @@ function StableFrameMixin:SelectPet(index)
 
 	if petInfo then
 		self.selectedPet = index;
-		self.modelScene.diet.stabledPetID = index;
-		self.modelScene.diet:UpdateHappiness();
+		self.diet.stabledPetID = index;
+		self.diet:UpdateHappiness();
 
 		if petInfo.name == petInfo.familyName then
 			PetStableLevelText:SetText(format(UNIT_LEVEL_TEMPLATE, petInfo.level) .. " ".. petInfo.familyName);
@@ -236,12 +389,16 @@ function PetStableSlotMixin:Update()
 
 end
 
+function PetStableSlotMixin:OnSmartNavSelect()
+	EventRegistry:TriggerEvent("StableFrameMixin.PetSelected", self:GetID());
+end
+
 PetStablePurchaseButtonMixin = {};
 
 function PetStablePurchaseButtonMixin:Update()
 
 	local numSlots = C_StableInfo.GetNumStableSlots();
-	
+
 	local nextCost = C_StableInfo.GetNextStableSlotCost();
 
 	-- Enable, disable, or hide purchase button

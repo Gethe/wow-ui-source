@@ -586,10 +586,10 @@ function CharacterFrameMixin:SetupGamepad()
 		);
 
 		local rightmostBottomButton;
-		if UnitHasRelicSlot("player") then
-			rightmostBottomButton = PaperDollItemsFrame.WeaponSlots[numWeaponSlots];
-		else
+		if UnitUsesAmmo("player") then
 			rightmostBottomButton = CharacterAmmoSlot;
+		else
+			rightmostBottomButton = PaperDollItemsFrame.WeaponSlots[numWeaponSlots];
 		end
 
 		SmartNavigation_AddJumpNavigationOverride(

@@ -8,7 +8,7 @@
 ## Dep: Blizzard_GlueCollections [AllowLoadGameType mainline]
 ## Dep: Blizzard_HelpPlate
 ## Dep: Blizzard_GlueMenuFrame
-## Dep: Blizzard_CharacterSelectNavBar [AllowLoadGameType vanilla, mainline]
+## Dep: Blizzard_CharacterSelectNavBar
 ## Dep: Blizzard_Narration
 ## Dep: Blizzard_GamepadSharedUtility
 ## LoadFirst: 1

@@ -177,7 +177,9 @@ function GlueParentMixin:OnEvent(event, ...)
 	elseif ( event == "ACTIVE_GAME_MODE_UPDATED" ) then
 		local gameMode = ...;
 		local isPlunderstorm = gameMode == Enum.GameMode.Plunderstorm;
-		WOW_PROJECT_ID = isPlunderstorm and WOW_PROJECT_WOWLABS or WOW_PROJECT_MAINLINE;
+		-- WOW_PROJECT_CAMELOT is only defined when the camelot game type is loaded.
+		local defaultProjectID = WOW_PROJECT_CAMELOT or WOW_PROJECT_MAINLINE;
+		WOW_PROJECT_ID = isPlunderstorm and WOW_PROJECT_WOWLABS or defaultProjectID;
 		local screen = isPlunderstorm and "plunderstorm" or "charselect";
 		GlueParent_SetScreen(screen);
 		C_Log.LogMessage("From ACTIVE_GAME_MODE_UPDATED");
@@ -205,7 +207,11 @@ end
 function GlueParent_IsScreenValid(screen)
 	local loginState = C_Login.GetState();
 	if ( screen == "plunderstorm" or screen == "charselect" or screen == "charcreate" or screen == "kioskmodesplash" ) then
-		return loginState.auroraState == LE_AURORA_STATE_NONE and (loginState.connectedToWoW or loginState.wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING) and not loginState.hasRealmList and not loginState.superDistrictChoicePending;
+		local isNormalAuroraState = (loginState.auroraState == LE_AURORA_STATE_NONE);
+		local connectionHappening = (loginState.connectedToWoW or loginState.wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING);
+		local pendingRealmSelect = (not loginState.hasRealmList or loginState.keepingCharacterListOnRealmJoin); -- We aren't pending if we were trying to keep around the undelete character list
+		local superDistrictChosen = (not loginState.superDistrictChoicePending);
+		return isNormalAuroraState and connectionHappening and pendingRealmSelect and superDistrictChosen;
 	elseif ( screen == "realmlist" ) then
 		return loginState.hasRealmList and not loginState.superDistrictChoicePending;
 	elseif ( screen == "login" ) then

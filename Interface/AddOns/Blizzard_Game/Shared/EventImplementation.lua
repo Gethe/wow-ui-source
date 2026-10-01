@@ -161,10 +161,6 @@ function GameEvent.HandlePlayerCamping(_dispatcher, _event)
 	StaticPopup_Show("CAMP");
 end
 
-function GameEvent.HandleShardTransferImminentEvent(_dispatcher, _event)
-	StaticPopup_Show("SHARD_TRANSFER_IMMINENT_EVENT");
-end
-
 function GameEvent.HandleShardTransferEvent(_dispatcher, _event)
 	StaticPopup_Hide("SHARD_TRANSFER_IMMINENT_EVENT");
 end

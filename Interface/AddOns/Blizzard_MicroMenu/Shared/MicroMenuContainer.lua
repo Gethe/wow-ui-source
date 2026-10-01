@@ -2,12 +2,13 @@
 MicroMenuContainerMixin = {};
 
 function MicroMenuContainerMixin:OnLoad()
-	self:RegisterEvent("PLAYER_LEVEL_UP");
+	-- PLAYER_LEVEL_UP fires before the new level is applied, which is too early for level-gated player conditions.
+	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
 end
 
 function MicroMenuContainerMixin:OnEvent(event, ...)
-	if ( event == "PLAYER_LEVEL_UP" or event == "TRIAL_STATUS_UPDATE" ) then
+	if ( event == "PLAYER_LEVEL_CHANGED" or event == "TRIAL_STATUS_UPDATE" ) then
 		UpdateMicroButtons();
 	end
 end

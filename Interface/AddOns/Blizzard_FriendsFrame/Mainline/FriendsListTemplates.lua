@@ -252,7 +252,7 @@ function FriendsListSocialViewMixin:OnShow()
 end
 
 function FriendsListSocialViewMixin:TryRegisterScrollBoxForCrossFactionInviteTutorial()
-	if HasAcknowledgedCrossFactionInviteTutorial() or not FriendsListUtil.GameStateUsesFactions() then
+	if HasAcknowledgedCrossFactionInviteTutorial() or not FriendsListUtil.GameStateUsesFactions() or not C_PartyInfo.CanFormCrossFactionParties() then
 		return;
 	end
 
@@ -887,7 +887,7 @@ local function AddWowCharacterDetailsToTooltip(tooltip, accountInfo)
 	end
 
 	local gameAccountInfo = accountInfo.gameAccountInfo;
-	local characterName = FULL_PLAYER_NAME:format(gameAccountInfo.characterName or "", gameAccountInfo.realmName or "");
+	local characterName = RegionalUniqueNamesEnabled() and gameAccountInfo.characterName or FULL_PLAYER_NAME:format(gameAccountInfo.characterName or "", gameAccountInfo.realmName or "");
 	if gameAccountInfo.timerunningSeasonID then
 		characterName = TimerunningUtil.AddSmallIcon(characterName);
 	end
@@ -1385,7 +1385,7 @@ local CrossFactionInviteAtlases =
 local function TryAddCrossFactionInviteDetailsToTooltip(tooltip, inviteInfo)
 	local isCrossFactionInvite = inviteInfo.isCrossFaction and inviteInfo.factionName;
 	local addedCrossFactionDetails = false;
-	if not isCrossFactionInvite then
+	if not isCrossFactionInvite or not C_PartyInfo.CanFormCrossFactionParties() then
 		return addedCrossFactionDetails;
 	end
 

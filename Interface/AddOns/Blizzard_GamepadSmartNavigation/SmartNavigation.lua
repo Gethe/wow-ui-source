@@ -951,6 +951,15 @@ function SmartNavigationMixin:SetWrapping(inFrame, shouldWrap)
 	end
 end
 
+-- Like SetWrapping, but LEFT/RIGHT navigation follows the visual reading order of the grid
+-- instead of wrapping within the current row. Requires grid navigation.
+function SmartNavigationMixin:SetContinuousRowWrapping(inFrame, shouldWrap)
+	local panelInfo = self:GetPanelInfo(inFrame, true);
+	if panelInfo then
+		panelInfo.continuousRowWrapping = shouldWrap;
+	end
+end
+
 -- Changes the navigation to use a logical grid to allow for more specific wrapping behaviors.
 -- This assumes all the frames exist in a strict grid where all frames share an X or Y coord with their neighbors.
 -- The frames are sorted into columns and rows to be used for navigation instead of using directional raycasts.
@@ -1081,10 +1090,9 @@ function SmartNavigationMixin:CanNavigateToButton(inButton)
 		return false;
 	end
 
-	if self.activeInfo.canNavigateTo then
-		if not self.activeInfo.canNavigateTo(inButton) then
-			return false;
-		end
+	local canNavigateTo = self.activeInfo and self.activeInfo.canNavigateTo;
+	if canNavigateTo and not canNavigateTo(inButton) then
+		return false;
 	end
 
 	return true;
@@ -1287,6 +1295,67 @@ function SmartNavigationMixin:GetButtonAtGridIndex(inX, inY)
 	return nil;
 end
 
+-- Walks buttons by visual reading order: top-to-bottom, then left-to-right within each row.
+-- Wraps forward from the last button to the first and backward from the first to the last.
+function SmartNavigationMixin:GetNextButtonInReadingOrder(grid, currentX, currentY, isForward)
+	local currentColumn = grid[currentX];
+	local currentButton = currentColumn and currentColumn[currentY];
+
+	local readingOrder = {};
+
+	-- Flatten the sparse grid into a single list of buttons. The original grid organization
+	-- is ignored because it may not match the desired visual reading order.
+	for _, column in ipairs(grid) do
+		for _, button in ipairs(column) do
+			if button:GetTop() and button:GetLeft() then
+				table.insert(readingOrder, button);
+			end
+		end
+	end
+
+	-- Allow for slight row variance to account for minor pixel differences in rendering
+	local ROW_TOLERANCE = 5;
+
+	-- Sort buttons by their actual screen position. Higher rows come first.
+	-- Buttons on the same row are ordered from left to right.
+	table.sort(readingOrder, function(leftButton, rightButton)
+		local leftTop = leftButton:GetTop();
+		local rightTop = rightButton:GetTop();
+		
+		if math.abs(leftTop - rightTop) > ROW_TOLERANCE then
+			return leftTop > rightTop;
+		end
+
+		return leftButton:GetLeft() < rightButton:GetLeft();
+	end);
+
+	-- Find the currently selected button within the sorted reading-order list.
+	local currentIndex;
+	for index, button in ipairs(readingOrder) do
+		if button == currentButton then
+			currentIndex = index;
+			break;
+		end
+	end
+
+	if not currentIndex then
+		return nil;
+	end
+
+	-- Advance to the next or previous button in reading order.
+	local step = isForward and 1 or -1;
+	local nextIndex = currentIndex + step;
+
+	-- Wrap around when moving past either end of the list.
+	if nextIndex > #readingOrder then
+		nextIndex = 1;
+	elseif nextIndex < 1 then
+		nextIndex = #readingOrder;
+	end
+
+	return readingOrder[nextIndex];
+end
+
 function SmartNavigationMixin:GetButtonInDirectionGrid(inButton, inDirection)
 	local panelInfo = self.activeInfo;
 	local grid = panelInfo.grid;
@@ -1312,7 +1381,13 @@ function SmartNavigationMixin:GetButtonInDirectionGrid(inButton, inDirection)
 	local nextX = currentX + inDirection.x;
 	local nextY = currentY - inDirection.y;
 
-	nextButton = self:GetButtonAtGridIndex(nextX, nextY);
+	local isHorizontal = inDirection:IsEqualTo(SMART_NAV_INPUT_DIRECTION.RIGHT) or inDirection:IsEqualTo(SMART_NAV_INPUT_DIRECTION.LEFT);
+	if panelInfo.continuousRowWrapping and isHorizontal then
+		local isForward = inDirection:IsEqualTo(SMART_NAV_INPUT_DIRECTION.RIGHT);
+		nextButton = self:GetNextButtonInReadingOrder(grid, currentX, currentY, isForward);
+	else
+		nextButton = self:GetButtonAtGridIndex(nextX, nextY);
+	end
 
 	if panelInfo.isWrapping then
 		if not nextButton then

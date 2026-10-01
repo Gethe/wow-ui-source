@@ -1381,6 +1381,16 @@ local PvpInfo =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "PlayerPvpFlagChanged",
+			Type = "Event",
+			LiteralName = "PLAYER_PVP_FLAG_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "isPvpFlagged", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PostMatchCurrencyRewardUpdate",
 			Type = "Event",
 			LiteralName = "POST_MATCH_CURRENCY_REWARD_UPDATE",

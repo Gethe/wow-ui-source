@@ -52,7 +52,10 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 
 	-- Aggro Highlight
 	if C_CVar.GetCVar("raidFramesDisplayAggroHighlight") then
-		Settings.SetupCVarCheckbox(category, "raidFramesDisplayAggroHighlight", COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT);
+		local _, aggroInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayAggroHighlight", COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT);
+		if aggroInitializer then
+			aggroInitializer:AddSearchTags(THREAT_TAG);
+		end
 	end
 
 	-- Class Colors
@@ -167,7 +170,6 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 		-- Dispel Overlay Animated Border (MarchingAnts)
 		local _, animatedBorderInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDispelIndicatorAnimatedBorder", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_ANIMATED_BORDER, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_ANIMATED_BORDER);
 		animatedBorderInitializer:SetParentInitializer(dispelInitializer, IsModifiable);
-	
 	end
 
 	-- Health Text

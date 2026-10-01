@@ -224,6 +224,8 @@
 				</Frames>
 				<Scripts>
 					<OnShow function="QuestFrameDetailPanel_OnShow"/>
+					<OnHide function="QuestFrameDetailPanel_OnHide"/>
+					<OnUpdate function="QuestFrameDetailPanel_OnUpdate"/>
 				</Scripts>
  			</Frame>
 			<Frame name="QuestFrameGreetingPanel" inherits="QuestFramePanelTemplate" hidden="true">

@@ -1103,7 +1103,7 @@ local function LeaveQueueWithMatchReadyCheck(idx)
 end
 
 function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
-	local status, mapName, teamSize, registeredMatch, _, _, _, _, asGroup, _, _, isSoloQueue  = GetBattlefieldStatus(idx);
+	local status, mapName, teamSize, registeredMatch, _, _, _, _, asGroup, _, _, isSoloQueued  = GetBattlefieldStatus(idx);
 
 	local name = mapName;
 	if ( name and status == "active" ) then
@@ -1116,7 +1116,7 @@ function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
 			LeaveQueueWithMatchReadyCheck(idx);
 		end);
 
-		if IsInGroup() and not UnitIsGroupLeader("player") and not isSoloQueue then
+		if IsInGroup() and not UnitIsGroupLeader("player") and not isSoloQueued then
 			button:SetEnabled(false);
 		end
 	elseif ( status == "locked" ) then

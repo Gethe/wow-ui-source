@@ -12,6 +12,7 @@ DefaultCompactUnitFrameOptions = {
 	displayHealPrediction = true,
 	displayRoleIcon = true,
 	displayRaidRoleIcon = true,
+	displayVehicleRoleIcon = true,
 	displayDispelDebuffs = true,
 	displayBuffs = true,
 	displayDebuffs = true,

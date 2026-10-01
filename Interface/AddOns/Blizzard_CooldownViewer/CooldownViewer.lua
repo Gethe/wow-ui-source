@@ -31,7 +31,7 @@ local function GetEditModeIcon(index)
 		EditModeIconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spellbook, spellIconsOnly);
 	end
 
-	return EditModeIconDataProvider:GetIconByIndex(index);
+	return EditModeIconDataProvider:GetIconByWrappedIndex(index);
 end
 
 local function GetEditModeDuration(index)
@@ -975,10 +975,10 @@ end
 
 function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromSpellCooldown(timeNow)
 	if not self:HasVisualDataSource_Charges() then
-		local spellCooldownInfo = self:GetSpellCooldownInfo();
+		-- NOTE: In the case of spell category cooldowns, the spellID may not be meaningful because it's a cover spell, or has no associated cooldown.
+		local spellCooldownInfo, spellID = self:GetSpellCooldownInfo();
 
 		if self:ShouldDisplaySpellCooldown(spellCooldownInfo) then
-			local spellID = self:GetSpellID();
 			-- CDMDebugGetDebugger():CheckDisplayCooldownInfo("CheckCacheCooldownValuesFromSpellCooldown", spellID, spellCooldownInfo);
 
 			local endTime = spellCooldownInfo.startTime + spellCooldownInfo.duration;

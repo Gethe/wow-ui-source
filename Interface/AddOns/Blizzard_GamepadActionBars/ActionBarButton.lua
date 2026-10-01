@@ -698,6 +698,29 @@ function GamepadActionBarButtonFlyoutMixin:OnLoad()
 	self.flyoutArrowAngleRads = 0;
 end
 
+function GamepadActionBarButtonFlyoutMixin:HandleFlyoutClickOverride(button, down)
+	if not self.isFlyoutAction then
+		return false;
+	end
+
+	local singleSpellID = self:GetSingleSpellID();
+
+	if down then
+		if singleSpellID then
+			if C_Spell.IsActiveSpell(singleSpellID) then
+				C_Spell.CancelSpellByID(singleSpellID);
+			else
+				CastSpellByID(singleSpellID);
+			end
+		else
+			local isActionBar, specID, showFullTooltip, reason = true, 0, false, nil;
+			self.popup:Toggle(self, self.flyoutID, isActionBar, specID, showFullTooltip, reason);
+		end
+	end
+
+	return true;
+end
+
 -- Overrides FlyoutButtonMixin:UpdateBorderShadow
 function GamepadActionBarButtonFlyoutMixin:UpdateBorderShadow()
 end
@@ -763,12 +786,10 @@ end
 
 -- Overrides BaseActionButtonMixin:UpdateFlyoutPopup
 function GamepadActionBarButtonFlyoutMixin:UpdateFlyoutPopup(actionType)
-	local flyout = GamepadSpellFlyout or SpellFlyout;
-
-	if actionType == "flyout" and flyout then
-		self:SetPopup(flyout);
-	else
+	if not self.isFlyoutAction or self:GetSingleSpellID() then
 		self:ClearPopup();
+	else
+		self:SetPopup(GamepadSpellFlyout or SpellFlyout);
 	end
 end
 
@@ -858,14 +879,6 @@ end
 
 -- Overrides ActionBarActionButtonMixin:UpdateAction
 function GamepadActionBarButtonFlyoutMixin:UpdateAction(force)
-	-- NOTE: This is called as a result of :SetAttribute, but :SetAttribute is also called by
-	-- functions called by this. If this is a recursive call, ignore it.
-	if self.isUpdatingAction then
-		return;
-	end
-
-	self.isUpdatingAction = true;
-
 	-- Normally ActionBarActionButtonMixin.UpdateAction will update self.action, but we don't want
 	-- to call that until a bit further down, since it will trigger a bunch of methods that need to
 	-- have up-to-date state, so instead we take a sneak peek.
@@ -887,8 +900,6 @@ function GamepadActionBarButtonFlyoutMixin:UpdateAction(force)
 
 		ActionBarActionButtonMixin.UpdateAction(self, force);
 	end
-
-	self.isUpdatingAction = false;
 end
 
 function GamepadActionBarButtonFlyoutMixin:UpdateFlyoutActionInfo(isFlyoutAction, flyoutID)
@@ -912,66 +923,39 @@ function GamepadActionBarButtonFlyoutMixin:UpdateFlyoutActionInfo(isFlyoutAction
 	self.flyoutID = flyoutID;
 
 	self:CacheFlyoutSpellInfo();
-	self:SetActionAttributes();
 end
 
 function GamepadActionBarButtonFlyoutMixin:CacheFlyoutSpellInfo()
 	SpellInfoCache:CancelRequest(self.flyoutSpellInfoRequest);
 	self.flyoutSpellInfoRequest = nil;
+	self.spellID = nil;
 
 	if not self.isFlyoutAction then
 		return;
 	end
 
 	local spellIDs = {};
+	local isFirstKnown = true;
 	local onlyKnown = false;
 
-	for _, overrideSpellID in self:EnumFlyoutSlotInfo(onlyKnown) do
+	for _, overrideSpellID, isKnown in self:EnumFlyoutSlotInfo(onlyKnown) do
 		table.insert(spellIDs, overrideSpellID);
+
+		if isKnown then
+			if isFirstKnown then
+				self.spellID = overrideSpellID;
+				isFirstKnown = false;
+			else
+				self.spellID = nil;
+			end
+		end
 	end
 
 	self.flyoutSpellInfoRequest = SpellInfoCache:RequestData(spellIDs, GenerateClosure(self.Update, self));
 end
 
-function GamepadActionBarButtonFlyoutMixin:SetActionAttributes()
-	local actionType = "action";
-	local spellID = 0;
-
-	if self.isFlyoutAction then
-		local knownSpellID = nil;
-		local numKnown = 0;
-		local onlyKnown = true;
-
-		for _, overrideSpellID in self:EnumFlyoutSlotInfo(onlyKnown) do
-			numKnown = numKnown + 1;
-			knownSpellID = overrideSpellID;
-		end
-
-		if numKnown == 1 then
-			actionType = "spell";
-			spellID = knownSpellID;
-		else
-			actionType = "flyout";
-			spellID = self.flyoutID;
-		end
-	end
-
-	self:SetAttribute("type", actionType);
-	self:SetAttribute("spell", spellID);
-
-	-- ActionButton_UpdateCooldown looks for a spellID field on the button before falling back to
-	-- the action, so set that field to ensure cooldown display works properly.
-	self.spellID = (actionType == "spell") and spellID or nil;
-end
-
 function GamepadActionBarButtonFlyoutMixin:GetSingleSpellID()
-	if self.isFlyoutAction then
-		-- If only one of the flyout spells are known, the flyout button should act like that spell
-		local actionType = SecureButton_GetModifiedAttribute(self, "type", "LeftButton");
-		if actionType == "spell" then
-			return SecureButton_GetModifiedAttribute(self, "spell", "LeftButton");
-		end
-	end
+	return self.isFlyoutAction and self.spellID or nil;
 end
 
 function GamepadActionBarButtonFlyoutMixin:GetActiveSpellID()
@@ -992,6 +976,7 @@ function GamepadActionBarButtonFlyoutMixin:OnEvent(event, ...)
 		local unitTarget = ...;
 		if unitTarget == "player" then
 			self:UpdateFlyoutActionIcon();
+			self:UpdateState();
 		end
 	elseif event == "UNIT_POWER_UPDATE" then
 		self:UpdateUsable();
@@ -1124,8 +1109,10 @@ function GamepadActionBarStandardButtonMixin:TriggerSecureClick(button, down)
 		end
 	end
 
-	local isSecureAction = true;
-	SecureActionButton_OnClick(self, button, down, isKeyPress, isSecureAction);
+	if not self:HandleFlyoutClickOverride(button, down) then
+		local isSecureAction = true;
+		SecureActionButton_OnClick(self, button, down, isKeyPress, isSecureAction);
+	end
 end
 
 function GamepadActionBarStandardButtonMixin:OnMouseDown()

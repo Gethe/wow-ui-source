@@ -465,6 +465,12 @@ function CombatTextMixin:ClearAnimationList()
 	end
 end
 
+function CombatText_UpdateDisplayedMessages()
+	if CombatText and CombatText.UpdateDisplayedMessages then
+		CombatText:UpdateDisplayedMessages();
+	end
+end
+
 function CombatTextMixin:UpdateDisplayedMessages()
 	-- set the unit to track
 	if ( UnitHasVehicleUI("player") ) then

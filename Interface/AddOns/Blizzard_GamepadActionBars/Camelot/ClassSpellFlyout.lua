@@ -42,23 +42,17 @@ end
 
 -- Overrides GamepadActionBarButtonFlyoutMixin.UpdateAction
 function ClassSpellFlyoutButtonMixin:UpdateAction(force)
-	if self.isUpdatingAction then
-		return;
-	end
-	self.isUpdatingAction = true;
 	self:UpdateFlyoutActionInfo(true, self.flyoutID);
+	self:UpdateFlyoutPopup("flyout");
 	self:Update();
-	self.isUpdatingAction = false;
 end
 
 -- Overrides GamepadActionBarButtonFlyoutMixin.Update
 function ClassSpellFlyoutButtonMixin:Update()
+	self:UpdateState();
+	self:UpdateUsable();
 	self:UpdateFlyoutActionIcon();
-end
-
--- Overrides GamepadClassActionButtonMixin.SetActionAttributes
-function ClassSpellFlyoutButtonMixin:SetActionAttributes()
-	GamepadActionBarButtonFlyoutMixin.SetActionAttributes(self);
+	ActionButton_UpdateCooldown(self);
 end
 
 EventUtil.ContinueOnPlayerLogin(function()

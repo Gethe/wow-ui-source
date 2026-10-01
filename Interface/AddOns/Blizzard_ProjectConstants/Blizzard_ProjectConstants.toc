@@ -4,3 +4,4 @@
 ## AllowLoad: Both
 ProjectConstants.lua
 WoWLabs\ProjectConstants.lua [AllowLoadGameType plunderstorm]
+Camelot\ProjectConstants.lua [AllowLoadGameType camelot]

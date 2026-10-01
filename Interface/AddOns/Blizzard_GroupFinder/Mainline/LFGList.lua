@@ -75,19 +75,6 @@ local LFG_STRING_FROM_ENUM = {
 	[Enum.LFGRole.Damage] = "DAMAGER",
 };
 
-local function GetGeneralPlaystyleString(enumValue)
-	if enumValue == Enum.LFGEntryGeneralPlaystyle.Learning then
-		return GROUP_FINDER_GENERAL_PLAYSTYLE1;
-	elseif enumValue == Enum.LFGEntryGeneralPlaystyle.FunRelaxed then
-		return GROUP_FINDER_GENERAL_PLAYSTYLE2;
-	elseif enumValue == Enum.LFGEntryGeneralPlaystyle.FunSerious then
-		return GROUP_FINDER_GENERAL_PLAYSTYLE3;
-	elseif enumValue == Enum.LFGEntryGeneralPlaystyle.Expert then
-		return GROUP_FINDER_GENERAL_PLAYSTYLE4;
-	end
-	return "";
-end
-
 function GetLFGStringFromEnum(role)
 	local stringName = LFG_STRING_FROM_ENUM[role];
 	
@@ -4345,9 +4332,9 @@ function LFGListUtil_GetActiveQueueMessage(isApplication)
 	end
 
 	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, _, _, isSoloQueue = GetBattlefieldStatus(i);
+		local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, _, _, isSoloQueued = GetBattlefieldStatus(i);
 		if ( status and status ~= "none" ) then
-			if not isSoloQueue or status == "active" then
+			if not isSoloQueued or status == "active" then
 				return CANNOT_DO_THIS_IN_BATTLEGROUND;
 			end
 		end

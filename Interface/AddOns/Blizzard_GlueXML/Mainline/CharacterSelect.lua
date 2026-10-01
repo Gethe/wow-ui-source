@@ -36,7 +36,8 @@ function CharacterSelectFrameMixin:OnLoad()
     self:RegisterEvent("STORE_STATUS_CHANGED");
     self:RegisterEvent("CHARACTER_UNDELETE_STATUS_CHANGED");
     self:RegisterEvent("CLIENT_FEATURE_STATUS_CHANGED");
-	self:RegisterEvent("CHARACTER_COPY_STATUS_CHANGED")
+	self:RegisterEvent("CHARACTER_COPY_STATUS_CHANGED");
+	self:RegisterEvent("CHARACTER_UNDELETE_STARTED");
     self:RegisterEvent("CHARACTER_UNDELETE_FINISHED");
     self:RegisterEvent("TOKEN_CAN_VETERAN_BUY_UPDATE");
     self:RegisterEvent("TOKEN_DISTRIBUTIONS_UPDATED");
@@ -531,11 +532,12 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		UpdateCharacterList();
 	elseif ( event == "CHARACTER_COPY_STATUS_CHANGED" ) then
 		CopyCharacterButton:UpdateButtonState();
+	elseif (event == "CHARACTER_UNDELETE_STARTED" ) then
+		StaticPopup_Show("UNDELETING_CHARACTER");
 	elseif ( event == "CHARACTER_UNDELETE_FINISHED" ) then
 		StaticPopup_Hide("UNDELETING_CHARACTER");
 		CharacterSelect_EndCharacterUndelete();
 		local result, guid = ...;
-
 		if ( result == LE_CHARACTER_UNDELETE_RESULT_OK ) then
 			self.undeleteGuid = guid;
 			self.undeleteFailed = nil;
@@ -1443,6 +1445,7 @@ function CharacterSelect_UpdateButtonState()
 	CharacterSelectUI:SetStoreEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked and not isCollectionsActive and isStoreAvailable);
 	CharacterSelectUI:SetMenuEnabled(servicesEnabled and not redemptionInProgress and not isCollectionsActive);
 	CharacterSelectUI:SetChangeRealmEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isCollectionsActive and not disableRealmsButton);
+	CharacterSelectUI:SetChangeSuperDistrictEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isCollectionsActive);
 	CharacterSelectUI:SetEditCampEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not disableCampsButton);
 
 	-- VAS tokens
@@ -2497,8 +2500,6 @@ function CharacterSelect_EndCharacterUndelete()
 end
 
 function CharacterSelect_FinishUndelete(guid)
-    StaticPopup_Show("UNDELETING_CHARACTER");
-
     UndeleteCharacter(guid);
     CharacterSelect.createIndex = 0;
 end

@@ -960,7 +960,6 @@ function ProfessionsLargeRightTabMixin:OnLoad()
 			tab:OnClick();
 		end
 	end);
-	EventRegistry:RegisterCallback("ProfessionsFrame.Show", function() self:CastProfessionSpell(); end, self);
 end
 
 function ProfessionsLargeRightTabMixin:CastProfessionSpell()

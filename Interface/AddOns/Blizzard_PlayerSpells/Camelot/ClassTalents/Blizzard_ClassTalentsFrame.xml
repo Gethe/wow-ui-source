@@ -304,6 +304,9 @@
 						<MaskedTexture childKey="AirParticlesClose"/>
 						<MaskedTexture childKey="AirParticlesFar"/>
 						<MaskedTexture childKey="ActivationTitansFX"/>
+						<MaskedTexture childKey="ActivationExpandFx"/>
+						<MaskedTexture childKey="ActivationClassFx3"/>
+						<MaskedTexture childKey="ActivationClassFx4"/>
 					</MaskedTextures>
 				</MaskTexture>
 			</Layer>

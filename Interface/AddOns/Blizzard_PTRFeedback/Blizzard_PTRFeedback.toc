@@ -1,5 +1,6 @@
 ## Title: PTR Issue Reporter
 ## OnlyBetaAndPTR: 1
+## DisableInCNBuild: 1
 ## Notes: Tool for gathering issues from PTR
 ## SavedVariables: Blizzard_PTRIssueReporter_Saved
 ## Dependencies: Blizzard_HelpPlate

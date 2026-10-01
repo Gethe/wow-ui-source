@@ -1432,16 +1432,28 @@ function LFDMicroButtonMixin:OnLoad()
 	self:GetDisabledTexture():SetDesaturated(true);
 	self.tooltipText = MicroButtonTooltipText(DUNGEONS_BUTTON, "TOGGLEGROUPFINDER");
 
-	self.disabledTooltip =	function()
-		local canUse, failureReason = C_LFGInfo.CanPlayerUseGroupFinder();
-		return canUse and FEATURE_UNAVAILBLE_PLAYER_IS_NEUTRAL or failureReason;
+	self.groupFinderDisabledTooltip = GenerateClosure(self.GetGroupFinderDisabledTooltip, self);
+	self.disabledTooltip = self.groupFinderDisabledTooltip;
+end
+
+function LFDMicroButtonMixin:CanPlayerUseGroupFinder()
+	-- The Vanilla-style group finder only exposes premade groups, so it is gated on premade access instead.
+	if C_LFGList.GetPremadeGroupFinderStyle() == Enum.PremadeGroupFinderStyle.Vanilla then
+		return C_LFGInfo.CanPlayerUsePremadeGroup();
 	end
 
-	self.IsActive =	function()
-		local factionGroup = UnitFactionGroup("player");
-		local canUse, failureReason = C_LFGInfo.CanPlayerUseGroupFinder();
-		return canUse and factionGroup ~= "Neutral" and not Kiosk.IsEnabled();
-	end
+	return C_LFGInfo.CanPlayerUseGroupFinder();
+end
+
+function LFDMicroButtonMixin:GetGroupFinderDisabledTooltip()
+	local canUse, failureReason = self:CanPlayerUseGroupFinder();
+	return canUse and FEATURE_UNAVAILBLE_PLAYER_IS_NEUTRAL or failureReason;
+end
+
+function LFDMicroButtonMixin:IsActive()
+	local factionGroup = UnitFactionGroup("player");
+	local canUse = self:CanPlayerUseGroupFinder();
+	return canUse and factionGroup ~= "Neutral" and not Kiosk.IsEnabled();
 end
 
 function LFDMicroButtonMixin:OnEvent(event, ...)
@@ -1483,10 +1495,7 @@ function LFDMicroButtonMixin:UpdateMicroButton()
 		self:SetPushed();
 	else
 		if not self:IsActive() then
-			self.disabledTooltip =	function()
-				local canUse, failureReason = C_LFGInfo.CanPlayerUseGroupFinder();
-				return canUse and FEATURE_UNAVAILBLE_PLAYER_IS_NEUTRAL or failureReason;
-			end
+			self.disabledTooltip = self.groupFinderDisabledTooltip;
 			self:Disable();
 		else
 			self:Enable();

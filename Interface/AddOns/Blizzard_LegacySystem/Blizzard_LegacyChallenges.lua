@@ -221,11 +221,7 @@ end
 LegacyChallengePointSummaryMixin = {}
 
 function LegacyChallengePointSummaryMixin:OnLoad()
-	EventRegistry:RegisterCallback("Legacy.UpdateCurrencyInfo", function(_, info)
-		self:SetCurrencyInfo(info);
-	end, self);
-
-	LegacySystem.UpdateCurrencyInfo();
+	LegacySystem.RegisterCurrencyInfoCallback(self, self.SetCurrencyInfo);
 end
 
 function LegacyChallengePointSummaryMixin:SetCurrencyInfo(currencyInfo)

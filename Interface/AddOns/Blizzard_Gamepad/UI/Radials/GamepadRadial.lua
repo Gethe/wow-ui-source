@@ -104,7 +104,7 @@ function BasicSegmentHandler:UpdateIcon()
 	local fontColor = self:IsEnabled() and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
 	self.segment.IconLabel:SetTextColor(fontColor:GetRGB());
 	self.segment.SegmentIcon:SetDesaturated(desaturate);
-	self.segment.SegmentDisabled:SetShown(not self:IsEnabled());	
+	self.segment.SegmentDisabled:SetShown(not self:IsEnabled());
 end
 
 function BasicSegmentHandler:SetIcon(icon)
@@ -331,7 +331,7 @@ function mainMenuMicroButtonHandler:UpdateIcon()
 	local fontColor = self:IsEnabled() and NORMAL_FONT_COLOR or DISABLED_FONT_COLOR;
 	self.segment.IconLabel:SetTextColor(fontColor:GetRGB());
 	self.segment.SegmentIcon:SetDesaturated(false);
-	self.segment.SegmentDisabled:SetShown(not self:IsEnabled());	
+	self.segment.SegmentDisabled:SetShown(not self:IsEnabled());
 end
 
 ------------------------------------------------------------
@@ -607,8 +607,8 @@ function GamepadRadialMixin:InitializeRadialData()
 
 		buffs = BasicSegmentHandler.Create({
 			label = RADIAL_LABEL_BUFFS,
-			isEnabled = function() return BuffFrame:HasActiveAura(); end,
-			action = function() if IsFrameShown(BuffFrame) then GamepadMode.FrameControlsManager:FrameShown(BuffFrame); end end,
+			isEnabled = function() return BuffFrame:HasActiveAura() or DebuffFrame:HasActiveAura(); end,
+			action = function() if not BuffFrame:SetGamepadFocus() then DebuffFrame:SetGamepadFocus(); end end,
 			disabledMsg = RADIAL_ERROR_NO_AURAS,
 			icons = {
 				up = "gamepad-radial-icon-viewbuffs",
@@ -766,7 +766,7 @@ function GamepadRadialMixin:InitializeRadialData()
 		tracking = BasicSegmentHandler.Create({
 			label = RADIAL_LABEL_TRACKING,
 			action = function() MinimapCluster.Tracking.Button:OpenMenu(); end,
-			
+
 			icons = {
 				up = "gamepad-radial-icon-minimapsettings",
 				down = "gamepad-radial-icon-minimapsettings-down",

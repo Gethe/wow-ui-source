@@ -23,6 +23,9 @@ function LegacySystemFrameMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN);
 	UpdateMicroButtons();
 
+	-- Currency and renown may have changed while the frame was closed.
+	LegacySystem.UpdateCurrencyInfo();
+
 	if InputUtil.IsGamepadUIEnabled() then
 		local LegacyTreeTalentPanel = self.TreePage.LegacyTreeTraitPanel;
 		LegacyTreeTalentPanel:RegisterCallback("TalentButtonReleased", function(_, button, forReinstantiation)
@@ -84,7 +87,12 @@ end
 local function UpdateSmartNavFocus_RewardTrack(legacy, page)
 	SmartNavigation:SelectButton(nil);
 
+	-- Nil until faction data is available and the track has been set up.
 	local elements = page.LegacyRewardProgressFrame:GetElements();
+	if not elements then
+		return;
+	end
+
 	SmartNavigation:SelectButton(elements[1]);
 end
 

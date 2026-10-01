@@ -377,10 +377,10 @@ function InspectFrameMixin:SetupGamepad()
 		);
 
 		local rightmostBottomButton;
-		if UnitHasRelicSlot("player") then
-			rightmostBottomButton = InspectPaperDollItemsFrame.WeaponSlots[numWeaponSlots];
-		else
+		if UnitUsesAmmo("player") then
 			rightmostBottomButton = InspectAmmoSlot;
+		else
+			rightmostBottomButton = InspectPaperDollItemsFrame.WeaponSlots[numWeaponSlots];
 		end
 
 		SmartNavigation_AddJumpNavigationOverride(

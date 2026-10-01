@@ -137,6 +137,10 @@ function QuestFrameRewardPanel_OnShow()
 	else
 		QuestFrame_HideQuestPortrait();
 	end
+	if ( GetCVar("instantQuestText") == "0" ) then
+		QuestRewardScrollChildFrame:SetAlpha(0);
+		UIFrameFadeIn(QuestRewardScrollChildFrame, QUESTINFO_FADE_IN);
+	end
 end
 
 function QuestRewardCancelButton_OnClick()
@@ -214,6 +218,10 @@ function QuestFrameProgressPanel_OnShow(self)
 		QuestFrameCompleteButton:Disable();
 	end
 	QuestFrameProgressItems_Update();
+	if ( GetCVar("instantQuestText") == "0" ) then
+		QuestProgressScrollChildFrame:SetAlpha(0);
+		UIFrameFadeIn(QuestProgressScrollChildFrame, QUESTINFO_FADE_IN);
+	end
 end
 
 function QuestFrameProgressItems_Update()
@@ -312,6 +320,10 @@ function QuestFrameGreetingPanel_OnShow()
 	QuestFrameProgressPanel:Hide();
 	QuestFrameDetailPanel:Hide();
 	QuestFrame_HideQuestPortrait();
+	if ( GetCVar("instantQuestText") == "0" ) then
+		QuestGreetingScrollChildFrame:SetAlpha(0);
+		UIFrameFadeIn(QuestGreetingScrollChildFrame, QUESTINFO_FADE_IN);
+	end
 	local material = QuestFrame_GetMaterial();
 	QuestFrame_SetMaterial(QuestFrameGreetingPanel, material);
 	GreetingText:SetText(GetGreetingText());
@@ -573,6 +585,51 @@ function QuestFrameDetailPanel_OnShow()
 		QuestFrame_ShowQuestPortrait(QuestFrame, questPortrait, questPortraitMount, questPortraitModelSceneID, questPortraitText, questPortraitName, 1, -42, useCompactDescription);
 	else
 		QuestFrame_HideQuestPortrait();
+	end
+
+	QuestDetailScrollChildFrame.alphaDependentText = {
+		QuestInfoQuestType,
+		QuestInfoObjectivesText,
+		QuestInfoRewardsFrame,
+		QuestInfoRewardText,
+		QuestInfoRequiredMoneyText,
+		QuestInfoGroupSize,
+		QuestInfoAnchor,
+		QuestInfoDescriptionHeader,
+		QuestInfoObjectivesHeader
+	};
+
+	-- Hide Objectives and rewards until the text is completely displayed
+	QuestInfo_HideAlphaDependentText(QuestDetailScrollChildFrame);
+	QuestFrameAcceptButton:Disable();
+
+	QuestFrameDetailPanel.fading = 1;
+	QuestFrameDetailPanel.fadingProgress = 0;
+	QuestInfoDescriptionText:SetAlphaGradient(0, QUEST_DESCRIPTION_GRADIENT_LENGTH);
+	if ( GetCVar("instantQuestText") ~= "0" ) then
+		QuestFrameDetailPanel.fadingProgress = 1024;
+	end
+end
+
+function QuestFrameDetailPanel_OnHide(self)
+	QuestInfo_ShowAlphaDependentText(QuestDetailScrollChildFrame);
+	QuestFrameDetailPanel.fading = nil;
+end
+
+function QuestFrameDetailPanel_OnUpdate(self, elapsed)
+	if ( self.fading ) then
+		self.fadingProgress = self.fadingProgress + (elapsed * QUEST_DESCRIPTION_GRADIENT_CPS);
+		PlaySound(SOUNDKIT.IG_WRITE_QUEST);
+		if ( not QuestInfoDescriptionText:SetAlphaGradient(self.fadingProgress, QUEST_DESCRIPTION_GRADIENT_LENGTH) ) then
+			self.fading = nil;
+			-- Show Quest Objectives and Rewards
+			if ( GetCVar("instantQuestText") == "0" ) then
+				QuestInfo_FadeInAlphaDependentText(QuestDetailScrollChildFrame, QUESTINFO_FADE_IN);
+			else
+				QuestInfo_ShowAlphaDependentText(QuestDetailScrollChildFrame);
+			end
+			QuestFrameAcceptButton:Enable();
+		end
 	end
 end
 

@@ -350,6 +350,7 @@ local BattleNet =
 		{
 			Name = "SetBlocked",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

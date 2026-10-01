@@ -42,6 +42,10 @@ local function SetupCVarsForInputMode( useGamepad )
 end
 
 local function SetGamepadModeCoreBindingContextActive(useGamepad)
+	if InGlue() then
+		return;
+	end
+
 	if (useGamepad) then
 		C_KeyBindings.ActivateBindingContext(Enum.BindingContext.GamepadModeInGameCore);
 	else

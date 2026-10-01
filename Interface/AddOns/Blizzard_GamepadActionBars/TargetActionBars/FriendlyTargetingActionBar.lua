@@ -147,18 +147,13 @@ function GamepadFriendlyTargetingActionBarMixin:RefreshGroupTargeting()
 			party4 = self.dpadLeftButton,
 		};
 
-		self.dpadTopButton.IconOverlay:SetAtlas("gamepad-targeting-first");
-		self.dpadRightButton.IconOverlay:SetAtlas("gamepad-targeting-second");
-		self.dpadBottomButton.IconOverlay:SetAtlas("gamepad-targeting-third");
-		self.dpadLeftButton.IconOverlay:SetAtlas("gamepad-targeting-fourth");
-
 		for unit, actionButton in pairs(mapping) do
 			Shared.SetUpTargetingButton(actionButton, unit);
 
 			actionButton.IconOverlay:Show();
 
 			if UnitExists(unit) then
-				SetClassColorTexture(actionButton.SpecialActionIcon, unit);
+				SetPortraitTexture(actionButton.SpecialActionIcon, unit);
 				actionButton.SpecialActionIcon:Show();
 				self:SetButtonEnabled(actionButton, true);
 			else

@@ -3409,9 +3409,9 @@ StaticPopupDialogs["SHARD_TRANSFER_IMMINENT_EVENT"] = {
 		if timeleft <= 0 then
 			return SHARD_TRANSFER_ANYTIME;
 		elseif timeleft < 60 then
-			return string.format(SHARD_TRANSFER_COUNTDOWN_MESSAGE, timeleft, SECONDS);
+			return string.format(SHARD_TRANSFER_COUNTDOWN_STATIC_POPUP_MESSAGE, timeleft, SECONDS);
 		else
-			return string.format(SHARD_TRANSFER_COUNTDOWN_MESSAGE, ceil(timeleft / 60), MINUTES);
+			return string.format(SHARD_TRANSFER_COUNTDOWN_STATIC_POPUP_MESSAGE, ceil(timeleft / 60), MINUTES);
 		end
 	end,
 	button1 = SHARD_TRANSFER_NOW_BUTTON,
@@ -3423,6 +3423,7 @@ StaticPopupDialogs["SHARD_TRANSFER_IMMINENT_EVENT"] = {
 	OnShow = function(dialog, data)
 		dialog.timeleft = GetEvictionTimeRemaining();
 	end,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["SHARD_TRANSFER_IMMEDIATE"] = {
@@ -3432,6 +3433,7 @@ StaticPopupDialogs["SHARD_TRANSFER_IMMEDIATE"] = {
 		C_PlayerInteractionManager.ShardTransferConfirm();
 		return;
 	end,
+	skipGamepadAutoFocus = 1,
 };
 
 -- Hardcore popups

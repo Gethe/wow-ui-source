@@ -58,6 +58,7 @@ function ShardTransferImminentMixin:Start(time)
 	self:SetExternallyManagedOutroAnimation(true);
 	AlertFrame_ShowNewAlert(self);
 	self.timer = GetEvictionTimeRemaining();
+	self.startingTimer = self.timer;
 end
 
 function ShardTransferImminentMixin:OnUpdate(elapsed)
@@ -65,14 +66,22 @@ function ShardTransferImminentMixin:OnUpdate(elapsed)
 		self.timer = self.timer - elapsed;
 	end
 
+	local secondsUntilMinimize = 15;
 	-- As long as this frame is shown, continue to update
 	if not self.timer or self.timer < 0 then
 		self.Text:SetFormattedText(SHARD_TRANSFER_ANYTIME);
+	elseif self.timer < self.startingTimer - secondsUntilMinimize then
+		if self.timer < 60 then
+			self.Text:SetFormattedText(SHARD_TRANSFER_REFRESH_MESSAGE, ceil(self.timer), SECONDS);
+		else
+			self.Text:SetFormattedText(SHARD_TRANSFER_REFRESH_MESSAGE, ceil(self.timer / 60), MINUTES);
+		end
 	elseif self.timer < 60 then
-		self.Text:SetFormattedText(SHARD_TRANSFER_REFRESH_MESSAGE, ceil(self.timer), SECONDS);
+		self.Text:SetFormattedText(SHARD_TRANSFER_COUNTDOWN_MESSAGE, ceil(self.timer), SECONDS);
 	else
-		self.Text:SetFormattedText(SHARD_TRANSFER_REFRESH_MESSAGE, ceil(self.timer / 60), MINUTES);
+		self.Text:SetFormattedText(SHARD_TRANSFER_COUNTDOWN_MESSAGE, ceil(self.timer / 60), MINUTES);
 	end
+
 	self:SetHeight(self.Text:GetStringHeight() + 20);
 end
 

@@ -10,6 +10,22 @@ CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.FORCE_SHOW_UNIT_NAME_CVA
 
 local CAST_BAR_SPARK_EXTRA_HEIGHT = 8;
 
+local function GetNamePlateFontObject(setupOptions)
+	if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar then
+		return "SystemFont_NamePlate_Outlined";
+	end
+
+	if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.CenteredAboveHealthBar then
+		return "SystemFont_NamePlate_Outlined";
+	end
+
+	if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.AboveHealthBar and setupOptions.useOutlinedFontWhenAboveHealthBar then
+		return "SystemFont_NamePlate_Outlined";
+	end
+
+	return "SystemFont_NamePlate";
+end
+
 -- Displays the info about the unit to which the nameplate is attached.
 -- This mixin is a child of a frame that has been created in code and is using NamePlateBaseMixin.
 NamePlateUnitFrameMixin = {};
@@ -205,35 +221,19 @@ function NamePlateUnitFrameMixin:ApplyFrameOptions(setupOptions, frameOptions)
 	self.CastBarsContainer.castBar.Text:SetTextHeight(setupOptions.castBarFontHeight);
 	self.CastBarsContainer.castBar.CastTargetNameText:SetTextHeight(setupOptions.castBarFontHeight);
 
-	if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar then
-		self.name:SetFontObject("SystemFont_NamePlate_Outlined");
-	elseif setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.AboveHealthBar and setupOptions.useOutlinedNameWhenAboveHealthBar then
-		self.name:SetFontObject("SystemFont_NamePlate_Outlined");
-	else
-		-- Outlined font is harder to read when text is outside the health bar.
-		self.name:SetFontObject("SystemFont_NamePlate");
+	local fontObject = GetNamePlateFontObject(setupOptions);
+	self.name:SetFontObject(fontObject);
+	self.name:SetTextHeight(setupOptions.healthBarFontHeight);
+
+	local healthBar = self.HealthBarsContainer.healthBar;
+	for _, healthText in ipairs({ healthBar.Text, healthBar.LeftText, healthBar.RightText }) do
+		healthText:SetFontObject(fontObject);
+		healthText:SetTextHeight(setupOptions.healthBarFontHeight);
 	end
 
 	self:UpdateHitTestArea(setupOptions);
 
-	if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar or setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.CenteredAboveHealthBar then
-		-- Health text is inside the bar.
-		self.HealthBarsContainer.healthBar.Text:SetFontObject("SystemFont_NamePlate_Outlined");
-		self.HealthBarsContainer.healthBar.LeftText:SetFontObject("SystemFont_NamePlate_Outlined");
-		self.HealthBarsContainer.healthBar.RightText:SetFontObject("SystemFont_NamePlate_Outlined");
-	else
-		-- Health text is above the bar.
-		self.HealthBarsContainer.healthBar.Text:SetFontObject("SystemFont_NamePlate");
-		self.HealthBarsContainer.healthBar.LeftText:SetFontObject("SystemFont_NamePlate");
-		self.HealthBarsContainer.healthBar.RightText:SetFontObject("SystemFont_NamePlate");
-	end
-
-	self.name:SetTextHeight(setupOptions.healthBarFontHeight);
-	self.HealthBarsContainer.healthBar.Text:SetTextHeight(setupOptions.healthBarFontHeight);
-	self.HealthBarsContainer.healthBar.LeftText:SetTextHeight(setupOptions.healthBarFontHeight);
-	self.HealthBarsContainer.healthBar.RightText:SetTextHeight(setupOptions.healthBarFontHeight);
-
-	self.HealthBarsContainer.healthBar.selectedBorder:SetAtlas(NamePlateConstants.SELECTED_BORDER_ATLAS, TextureKitConstants.IgnoreAtlasSize);
+	healthBar.selectedBorder:SetAtlas(NamePlateConstants.SELECTED_BORDER_ATLAS, TextureKitConstants.IgnoreAtlasSize);
 
 	self.ClassificationFrame:SetScale(setupOptions.classificationScale or 1.0);
 	self.PlayerLevelDiffFrame:SetSize(setupOptions.playerLevelDiffWidth, setupOptions.playerLevelDiffHeight);
@@ -767,14 +767,26 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 				self.name:SetPoint("BOTTOM", self.HealthBarsContainer, "TOP", 0, setupOptions.healthBarToNameAboveSpacing);
 			else -- NamePlateConstants.NAME_ANCHOR_STYLES.AboveHealthBar
 				self.name:SetJustifyH(setupOptions.nameJustificationWhenAboveHealthBar);
-				healthBarLeftText:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 2);
-				healthBarRightText:SetPoint("BOTTOMRIGHT", healthBarLeftText, "BOTTOMLEFT", -2, 0);
-				healthBarText:SetPoint("BOTTOMRIGHT", healthBarRightText, "BOTTOMLEFT", 2, 0);
 				self.name:SetPoint("BOTTOMLEFT", self.HealthBarsContainer, "TOPLEFT", 0, setupOptions.healthBarToNameAboveSpacing);
-				if (displayLevelFrame and levelFrameRelativeAnchor == "RIGHT") then
-					self.name:SetPoint("RIGHT", self.PlayerLevelDiffFrame, "RIGHT", 0, 0);
+
+				if setupOptions.healthTextInsideBarWhenNameAboveHealthBar then
+					healthBarLeftText:SetPoint("RIGHT", self.HealthBarsContainer.healthBar, "RIGHT", -4, 0);
+					healthBarRightText:SetPoint("RIGHT", healthBarLeftText, "LEFT", -2, 0);
+					healthBarText:SetPoint("RIGHT", healthBarRightText, "LEFT", 2, 0);
+					if (displayLevelFrame and levelFrameRelativeAnchor == "RIGHT") then
+						self.name:SetPoint("RIGHT", self.PlayerLevelDiffFrame, "RIGHT", 0, 0);
+					else
+						self.name:SetPoint("RIGHT", self.HealthBarsContainer, "RIGHT", 0, 0);
+					end
 				else
-					self.name:SetPoint("RIGHT", healthBarText, "LEFT", -2, 0);
+					healthBarLeftText:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 2);
+					healthBarRightText:SetPoint("BOTTOMRIGHT", healthBarLeftText, "BOTTOMLEFT", -2, 0);
+					healthBarText:SetPoint("BOTTOMRIGHT", healthBarRightText, "BOTTOMLEFT", 2, 0);
+					if (displayLevelFrame and levelFrameRelativeAnchor == "RIGHT") then
+						self.name:SetPoint("RIGHT", self.PlayerLevelDiffFrame, "RIGHT", 0, 0);
+					else
+						self.name:SetPoint("RIGHT", healthBarText, "LEFT", -2, 0);
+					end
 				end
 			end
 		end

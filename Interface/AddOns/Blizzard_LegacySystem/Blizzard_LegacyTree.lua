@@ -104,9 +104,7 @@ function LegacyTreeTraitPanelMixin:UpdateTreeCurrencyInfo()
 			self.SpentPointsFrame.Text:SetPoint("CENTER", 0, -1);
 		end
 
-		currencyInfo.renownCurrency = C_MajorFactions.GetCurrentRenownLevel(Constants.LegacyConsts.LEGACY_REWARD_TRACK_FACTION_ID);
-
-		EventRegistry:TriggerEvent("Legacy.UpdateCurrencyInfo", currencyInfo);
+		LegacySystem.UpdateCurrencyInfo();
 		self:RefreshConditionsCache();
 	end
 end
@@ -291,15 +289,19 @@ end
 LegacyTreePointSummaryMixin = {};
 
 function LegacyTreePointSummaryMixin:OnLoad()
-	EventRegistry:RegisterCallback("Legacy.UpdateCurrencyInfo", function(_, info)
-		self:RefreshText(info);
-	end, self);
+	LegacySystem.RegisterCurrencyInfoCallback(self, self.RefreshText);
 end
 
 function LegacyTreePointSummaryMixin:OnEnter()
+	local currencyInfo = LegacySystem.GetCurrencyInfo();
+	if not currencyInfo then
+		return;
+	end
+
 	local tooltip = GetAppropriateTooltip();
 	tooltip:SetOwner(self, "ANCHOR_RIGHT", -4, -10);
-	tooltip:SetText(self.tooltipText);
+	local tooltipText = LEGACY_POINTS_SEASONAL_CAP:format(currencyInfo.maxQuantity);
+	tooltip:SetText(tooltipText);
 	tooltip:Show();
 end
 
@@ -311,8 +313,6 @@ function LegacyTreePointSummaryMixin:RefreshText(currencyInfo)
 	local legacyPointsCurrencyAvailable = currencyInfo.quantity;
 	local legacyPointText = LEGACY_POINTS_AMOUNT:format(legacyPointsCurrencyAvailable);
 	self.AvailablePointsLabel:SetFormattedText(LEGACY_POINTS_AVAILABLE, legacyPointText);
-
-	self.tooltipText = LEGACY_POINTS_SEASONAL_CAP:format(currencyInfo.maxQuantity);
 
 	self.Shield.Points:SetText(currencyInfo.renownCurrency);
 end

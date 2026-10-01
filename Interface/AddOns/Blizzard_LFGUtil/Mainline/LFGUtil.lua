@@ -75,8 +75,8 @@ function WillAcceptInviteRemoveQueues()
 
 	--PvP
 	for i = 1, GetMaxBattlefieldID() do
-		local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, _, _, isSoloQueue = GetBattlefieldStatus(i);
-		if ( (status == "queued" or status == "confirmed" ) and not isSoloQueue ) then
+		local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, _, _, isSoloQueued = GetBattlefieldStatus(i);
+		if ( (status == "queued" or status == "confirmed" ) and not isSoloQueued ) then
 			return true;
 		end
 	end
@@ -310,4 +310,17 @@ end
 
 function OverrideLFGSetRoleRestriction()
 	return C_DelvesUI.HasActiveLFGLair();
+end
+
+function GetGeneralPlaystyleString(enumValue)
+	if enumValue == Enum.LFGEntryGeneralPlaystyle.Learning then
+		return GROUP_FINDER_GENERAL_PLAYSTYLE1;
+	elseif enumValue == Enum.LFGEntryGeneralPlaystyle.FunRelaxed then
+		return GROUP_FINDER_GENERAL_PLAYSTYLE2;
+	elseif enumValue == Enum.LFGEntryGeneralPlaystyle.FunSerious then
+		return GROUP_FINDER_GENERAL_PLAYSTYLE3;
+	elseif enumValue == Enum.LFGEntryGeneralPlaystyle.Expert then
+		return GROUP_FINDER_GENERAL_PLAYSTYLE4;
+	end
+	return "";
 end

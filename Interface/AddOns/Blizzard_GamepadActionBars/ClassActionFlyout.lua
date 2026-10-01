@@ -9,10 +9,6 @@ function GamepadClassActionButtonMixin:OnLoad()
 	self:UpdateAction();
 	C_ActionBar.UnregisterActionUIButton(self);
 
-	-- Default to a click action
-	self:SetAttribute("type", "click");
-	self:SetAttribute("clickbutton", self);
-
 	-- Use the round style
 	local size = GamepadActionBarStyleUtil.CIRCULAR_BUTTON_EXPANDED_SIZE;
 	self:SetShapeToCircle();
@@ -21,6 +17,9 @@ function GamepadClassActionButtonMixin:OnLoad()
 	self.CircleShadow:ClearAllPoints();
 	self.CircleShadow:SetPoint("TOPLEFT", -4, 4);
 	self.CircleShadow:SetPoint("BOTTOMRIGHT", 4, -4);
+	self.CheckedTexture:ClearAllPoints();
+	self.CheckedTexture:SetPoint("TOPLEFT", -4, 4);
+	self.CheckedTexture:SetPoint("BOTTOMRIGHT", 4, -4);
 
 	local _, relativeTo, _, x, y = self:GetPoint(1);
 	self.anchorInfo = { relativeTo=relativeTo, x=x, y=y };
@@ -77,13 +76,4 @@ end
 function GamepadClassActionButtonMixin:ApplyPressedStyle(pressed)
 	self.isPressed = pressed;
 	GamepadActionBarButtonMixin.ApplyPressedStyle(self, pressed);
-end
-
--- Gamepad action buttons call this function to support bound spell flyouts properly, but most of
--- the buttons using this won't need to use that, and it actively breaks non-action behaviors. So
--- by default it is overridden to do nothing, and then mixins for these buttons can re-add it if
--- they need it.
---
--- Overrides GamepadActionBarButtonFlyoutMixin.SetActionAttributes
-function GamepadClassActionButtonMixin:SetActionAttributes()
 end

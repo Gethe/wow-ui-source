@@ -96,8 +96,8 @@ function GamepadShortcutsActionBarMixin:SetUpFaceTop()
 	self.faceTopButton.SpecialActionIcon:Show();
 
 	Shared.SetButtonHandler(self.faceTopButton, function()
-		if BuffFrame and BuffFrame:IsShown() and BuffFrame:HasActiveAura() then
-			GamepadMode.FrameControlsManager:FrameShown(BuffFrame);
+		if not BuffFrame:SetGamepadFocus() then
+			DebuffFrame:SetGamepadFocus();
 		end
 	end);
 end

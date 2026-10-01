@@ -676,6 +676,7 @@ Interface\AddOns\Blizzard_AccountStore\Blizzard_AccountStoreItemRack.xml
 Interface\AddOns\Blizzard_AccountStore\Blizzard_AccountStoreUtil.lua
 Interface\AddOns\Blizzard_AchievementUI\Blizzard_AchievementUI.toc
 Interface\AddOns\Blizzard_AchievementUI\Blizzard_AchievementUI_Bootstrap.lua
+Interface\AddOns\Blizzard_AchievementUI\Camelot\Blizzard_AchievementUI.lua
 Interface\AddOns\Blizzard_AchievementUI\Cata\Blizzard_AchievementUI.lua
 Interface\AddOns\Blizzard_AchievementUI\Cata\Blizzard_AchievementUI.xml
 Interface\AddOns\Blizzard_AchievementUI\Mainline\Blizzard_AchievementUI.lua
@@ -3081,6 +3082,7 @@ Interface\AddOns\Blizzard_Professions\Camelot\Blizzard_ProfessionsFrame.xml
 Interface\AddOns\Blizzard_Professions\Localization.lua
 Interface\AddOns\Blizzard_Professions\Mainline\Blizzard_ProfessionsFrame.xml
 Interface\AddOns\Blizzard_ProjectConstants\Blizzard_ProjectConstants.toc
+Interface\AddOns\Blizzard_ProjectConstants\Camelot\ProjectConstants.lua
 Interface\AddOns\Blizzard_ProjectConstants\ProjectConstants.lua
 Interface\AddOns\Blizzard_ProjectConstants\WoWLabs\ProjectConstants.lua
 Interface\AddOns\Blizzard_QuestNavigation\Blizzard_QuestNavigation.toc

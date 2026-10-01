@@ -920,6 +920,12 @@ function GamepadActionBarEditFrameMixin:UpdateSelectedMoveDisplay_Outfit(selecte
 	self:SetDisplayedActionPickupInfo(C_TransmogOutfitInfo.PickupOutfit, outfitID);
 end
 
+function GamepadActionBarEditFrameMixin:UpdateSelectedMoveDisplay_Macro(selectedActionInfo)
+	local macroIndex = selectedActionInfo[2];
+	self:DisplayMacroAction(macroIndex);
+	self:SetDisplayedActionPickupInfo(PickupMacro, macroIndex);
+end
+
 GamepadActionBarEditFrameMixin.EDIT_FRAME_MOVE_DISPLAY_UPDATE_FUNC =
 {
 	spell = GamepadActionBarEditFrameMixin.UpdateSelectedMoveDisplay_Spell,
@@ -927,7 +933,8 @@ GamepadActionBarEditFrameMixin.EDIT_FRAME_MOVE_DISPLAY_UPDATE_FUNC =
 	petaction = GamepadActionBarEditFrameMixin.UpdateSelectedMoveDisplay_PetAction,
 	flyout = GamepadActionBarEditFrameMixin.UpdateSelectedMoveDisplay_Flyout,
 	equipmentset = GamepadActionBarEditFrameMixin.UpdateSelectedMoveDisplay_EquipmentSet,
-	outfit = GamepadActionBarEditFrameMixin.UpdateSelectedMoveDisplay_Outfit
+	outfit = GamepadActionBarEditFrameMixin.UpdateSelectedMoveDisplay_Outfit,
+	macro = GamepadActionBarEditFrameMixin.UpdateSelectedMoveDisplay_Macro,
 }
 
 --[[

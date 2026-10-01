@@ -75,8 +75,6 @@ MOVING_STAT_CATEGORY = nil;
 
 local StatCategoryFrames = {};
 
-local STRIPE_COLOR = {r=0.9, g=0.9, b=1};
-
 MIN_PLAYER_LEVEL_FOR_ITEM_LEVEL_DISPLAY = 10;
 
 local ProfessionEquipError =
@@ -102,6 +100,8 @@ function GetPaperDollSideBarFrame(tabIndex)
 	elseif tabIndex == 2 then
 		return PaperDollFrame.EquipmentManagerPane;
 	elseif tabIndex == 3 then
+		return PaperDollFrame.TitleManagerPane;
+	elseif tabIndex == 4 then
 		return CharacterStatsPanePetScrollBox;
 	end
 end
@@ -1498,11 +1498,7 @@ function PaperDollFrame_OnShow(self)
 	PaperDollFrame_SetLevel();
 	PaperDollFrame_UpdateStats();
 
-	if (UnitHasRelicSlot("player")) then
-		CharacterAmmoSlot:Hide();
-	else
-		CharacterAmmoSlot:Show();
-	end
+	CharacterAmmoSlot:SetShown(UnitUsesAmmo("player"));
 
 	PaperDollFrame_SetSidebar(PaperDollSidebarTabs, PaperDollSidebarTab1:GetID());
 	CharacterFrame:Expand();
@@ -1904,7 +1900,11 @@ function PaperDollItemSlotButton_OnLoad(self)
 
 	if (C_PaperDollInfo.IsRangedSlotShown()) then
 		if (slotName == "MainHandSlot") then
-			self:SetPoint("BOTTOM", CharacterFrame.LeftPaneHost, -60, 30);
+			if UnitUsesAmmo("player") then
+				self:SetPoint("BOTTOM", CharacterFrame.LeftPaneHost, -60, 30);
+			else
+				self:SetPoint("BOTTOM", CharacterFrame.LeftPaneHost, -40, 30);
+			end
 		end
 	else
 		if (slotName == "MainHandSlot") then
@@ -3249,26 +3249,7 @@ function PaperDollTitlesPane_InitButton(button, elementData)
 	local selected = PaperDollFrame.TitleManagerPane.selected == playerTitle.id;
 	PaperDollTitlesPane_SetButtonSelected(button, selected);
 
-	if (index == 1) then
-		button.BgTop:Show();
-		button.BgMiddle:SetPoint("TOP", button.BgTop, "BOTTOM");
-	else
-		button.BgTop:Hide();
-		button.BgMiddle:SetPoint("TOP");
-	end
-
-	local playerTitles = PaperDollFrame.TitleManagerPane.titles;
-	if (index == #playerTitles) then
-		button.BgBottom:Show();
-		button.BgMiddle:SetPoint("BOTTOM", button.BgBottom, "TOP");
-	else
-		button.BgBottom:Hide();
-		button.BgMiddle:SetPoint("BOTTOM");
-	end
-
 	if (index % 2 == 0) then
-		button.Stripe:SetColorTexture(STRIPE_COLOR.r, STRIPE_COLOR.g, STRIPE_COLOR.b);
-		button.Stripe:SetAlpha(0.1);
 		button.Stripe:Show();
 	else
 		button.Stripe:Hide();
@@ -3367,27 +3348,30 @@ function PaperDollFrame_UpdateSidebarTabLayout()
 	local tab1 = PaperDollSidebarTab1;
 	local tab2 = PaperDollSidebarTab2;
 	local tab3 = PaperDollSidebarTab3;
+	local tab4 = PaperDollSidebarTab4;
 
-	if not tab1 or not tab2 or not tab3 then
+	if not tab1 or not tab2 or not tab3 or not tab4 then
 		return;
 	end
 
-	tab3:SetShown(hasPet);
+	tab4:SetShown(hasPet);
 
 	tab1:ClearAllPoints();
 	tab2:ClearAllPoints();
 	tab3:ClearAllPoints();
+	tab4:ClearAllPoints();
 
 	if hasPet then
-		-- Preserve the original 3-tab anchor rules from XML.
-		tab2:SetPoint("TOP", PaperDollSidebarTabs, "TOP", 0, -5);
+		-- Preserve the original 4-tab anchor rules from XML.
+		tab2:SetPoint("TOPRIGHT", PaperDollSidebarTabs, "TOP", 0, -5);
 		tab3:SetPoint("LEFT", tab2, "RIGHT", 0, 0);
 		tab1:SetPoint("RIGHT", tab2, "LEFT", 0, 0);
+		tab4:SetPoint("LEFT", tab3, "RIGHT", 0, 0);
 	else
-		-- Recenter tab1 + tab2 as a two-tab group when no pet tab is available.
-		local centerOffset = tab2:GetWidth() * 0.5;
-		tab2:SetPoint("TOP", PaperDollSidebarTabs, "TOP", centerOffset, -5);
+		-- Recenter tab1 + tab2 + tab3 as a three-tab group when no pet tab is available.
+		tab2:SetPoint("TOP", PaperDollSidebarTabs, "TOP", 0, -5);
 		tab1:SetPoint("RIGHT", tab2, "LEFT", 0, 0);
+		tab3:SetPoint("LEFT", tab2, "RIGHT", 0, 0);
 	end
 end
 
@@ -3427,7 +3411,7 @@ function PaperDollFrame_SetSidebar(self, index)
 			barFrame:Hide();
 		end
 
-		if index == 3 then
+		if index == 4 then
 			CharacterFrameRightPaneHostStoneBg:SetAtlas("UI-Character-Info-Stat-StoneBG2", true);
 		else
 			CharacterFrameRightPaneHostStoneBg:SetAtlas("UI-Character-Info-Stat-StoneBG", true);

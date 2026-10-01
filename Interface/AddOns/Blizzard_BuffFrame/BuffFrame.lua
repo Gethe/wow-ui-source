@@ -255,7 +255,10 @@ function AuraFrameMixin:UpdateAuraButtons()
 	if InputUtil.IsGamepadUIEnabled() and SmartNavigation:GetActiveFrame() == self then
 		-- Unfocus if there are no buffs available.
 		if not self:HasActiveAura() then
-			self:SmartNavigationCloseHandler();
+			local otherFrame = (self == BuffFrame) and DebuffFrame or BuffFrame;
+			if not otherFrame:SetGamepadFocus() then
+				self:ClearGamepadFocus();
+			end
 			return;
 		end
 
@@ -466,6 +469,19 @@ function AuraFrameEditModeMixin:UpdatePrivateAuraAnchors()
 end
 
 BaseAuraFrameMixin = {};
+
+function BaseAuraFrameMixin:SetGamepadFocus()
+	if InputUtil.IsGamepadUIEnabled() and self:IsShown() and self:HasActiveAura() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+		return true;
+	end
+end
+
+function BaseAuraFrameMixin:ClearGamepadFocus()
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
+end
 
 function BaseAuraFrameMixin:GetIconLimitSettingEnum()
 	return Enum.EditModeAuraFrameSetting.IconLimitBuffFrame;
@@ -847,10 +863,14 @@ function BuffFrameMixin:SetupGamepad()
 end
 
 function BuffFrameMixin:FocusGamepad()
+	self:ClearAuraTooltipQueue();
 	self.footer:ShowAndActivateBindings();
+	SmartNavigation:RegisterCallback("HitBottomEdge", DebuffFrame.SetGamepadFocus, DebuffFrame);
 end
 
 function BuffFrameMixin:UnfocusGamepad()
+	SmartNavigation:UnregisterCallback("HitBottomEdge", DebuffFrame);
+	self:ClearGamepadFocus();
 	self.footer:HideAndDeactivateBindings();
 end
 
@@ -870,7 +890,7 @@ function BuffFrameMixin:RegisterForTransitions()
 end
 
 function BuffFrameMixin:SmartNavigationCloseHandler()
-	GamepadMode.FrameControlsManager:FrameHidden(self);
+	self:ClearGamepadFocus();
 end
 
 function BuffFrameMixin:GetNextAuraForTooltip()
@@ -936,6 +956,16 @@ function BuffFrameMixin:RemoveAuraForTooltip(removedAuraInstanceID)
 		end
 	end
 	table.removevalue(self.auraTooltipQueue, removedAuraInstanceID);
+end
+
+function BuffFrameMixin:ClearAuraTooltipQueue()
+	self.auraTooltipQueue = {};
+	BuffFrameTooltip:Hide();
+
+	if self.auraTooltipTimer then
+		self.auraTooltipTimer:Cancel();
+		self.auraTooltipTimer = nil;
+	end
 end
 
 DebuffFrameMixin = { };
@@ -1074,6 +1104,28 @@ end
 
 function DebuffFrameMixin:RegisterForTransitions()
 	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+end
+
+function DebuffFrameMixin:SetupGamepad()
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(GameTooltip, "DebuffFrameFooter");
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+end
+
+function DebuffFrameMixin:FocusGamepad()
+	self.footer:ShowAndActivateBindings();
+	SmartNavigation:RegisterCallback("HitTopEdge", BuffFrame.SetGamepadFocus, BuffFrame);
+end
+
+function DebuffFrameMixin:UnfocusGamepad()
+	SmartNavigation:UnregisterCallback("HitTopEdge", BuffFrame);
+	self:ClearGamepadFocus();
+	self.footer:HideAndDeactivateBindings();
+end
+
+function DebuffFrameMixin:SmartNavigationCloseHandler()
+	self:ClearGamepadFocus();
 end
 
 -- If you make changes to this, consider making the same changes to PrivateAuraMixin

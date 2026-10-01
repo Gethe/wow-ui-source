@@ -34,6 +34,7 @@ function RaidTargetingFreeSelectionMixin:UpdateVisibility()
 	if (IsInGroup() and (inRaid or EditModeManagerFrame:UseRaidStylePartyFrames())) then
 		local raidFrame = inRaid and CompactRaidFrameContainer or CompactPartyFrame;
 		self.raidTargetingFooter:SetParentFrame(raidFrame);
+		self.raidTargetingFooter.inputLegend:SetFrameStrata("MEDIUM");
 
 		self:Show();
 	else

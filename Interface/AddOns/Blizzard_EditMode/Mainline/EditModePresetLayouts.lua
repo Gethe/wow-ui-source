@@ -1883,5 +1883,7 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 	},
 
+	[Enum.EditModeSystem.RaidWarning] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.RaidWarning];
+
 	[Enum.EditModeSystem.GroupFinder] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.GroupFinder];
 };

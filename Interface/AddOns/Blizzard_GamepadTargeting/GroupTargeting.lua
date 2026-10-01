@@ -85,6 +85,7 @@ function GroupTargeting:StartTargeting(inContainer, extraContainers)
 	RaidTargetingManager:SetActive(true);
 	self.opening = true;
 	SmartNavigation:HandlePanelOpen(inContainer, extraContainers);
+	SmartNavigation:SetContinuousRowWrapping(inContainer, true);
 	SmartNavigation:SetWrapping(inContainer, true);
 	SmartNavigation:SetUseGridNavigation(inContainer, true);
 	self:SetStartTarget();
@@ -152,27 +153,22 @@ function GroupTargeting:OnPlayerSelected()
 end
 
 function GroupTargeting:SetStartTarget()
-	local targetToMatch = "target";
+	local buttonFrame;
 
-	if not UnitInAnyGroup("target") then
-		targetToMatch = "player";
+	-- Prefer the player's current target if it is represented by a raid frame.
+	if UnitInAnyGroup("target") then
+		buttonFrame = SmartNavigation:FindButton(function(inFrame)
+			return inFrame.unit and UnitIsUnit(inFrame.unit, "target");
+		end);
 	end
 
-	local function MatchTargetFunc(inFrame)
-		if inFrame.unit then
-			return UnitIsUnit(inFrame.unit, targetToMatch);
-		else
-			return false;
-		end
+	-- Otherwise start on the top-left button.
+	if not buttonFrame then
+		local panelInfo = SmartNavigation:GetPanelInfo(self.currentTargetingContainer, true);
+		buttonFrame = panelInfo and SmartNavigation:FindTopLeftButton(panelInfo);
 	end
 
-	local buttonFrame = SmartNavigation:FindButton(MatchTargetFunc);
-
-	if buttonFrame then
-		SmartNavigation:SetTargetButtonForFrame(self.currentTargetingContainer, buttonFrame);
-	else
-		SmartNavigation:SetTargetButtonForFrame(self.currentTargetingContainer, nil);
-	end
+	SmartNavigation:SetTargetButtonForFrame(self.currentTargetingContainer, buttonFrame);
 end
 
 function GroupTargeting:UpdateTarget()

@@ -3356,6 +3356,21 @@ local Unit =
 			},
 		},
 		{
+			Name = "UnitUsesAmmo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "unit", Type = "UnitToken", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "UnitUsingVehicle",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

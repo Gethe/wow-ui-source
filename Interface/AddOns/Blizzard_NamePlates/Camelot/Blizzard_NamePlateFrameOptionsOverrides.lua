@@ -1,3 +1,4 @@
 NamePlateEnemyFrameOptions.showClassificationIndicator = false;
+NamePlateSetupOptions.healthTextInsideBarWhenNameAboveHealthBar = true;
 NamePlateSetupOptions.nameJustificationWhenAboveHealthBar = "CENTER";
-NamePlateSetupOptions.useOutlinedNameWhenAboveHealthBar = true;
+NamePlateSetupOptions.useOutlinedFontWhenAboveHealthBar = true;

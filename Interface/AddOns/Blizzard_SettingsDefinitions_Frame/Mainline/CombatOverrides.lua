@@ -69,6 +69,54 @@ function CombatOverrides.CreateFloatingCombatTextSetting(category)
 		local _, floatModeInitializer = Settings.SetupCVarDropdown(category, "floatingCombatTextFloatMode_v2", Settings.VarType.Number, GetOptions, COMBAT_TEXT_FLOAT_MODE_LABEL, OPTION_TOOLTIP_COMBAT_TEXT_MODE);
 		floatModeInitializer:SetParentInitializer(fctInitializer, IsModifiable);
 		Settings.SetOnValueChangedCallback("floatingCombatTextFloatMode_v2", UpdateFloatingCombatTextSafe);
+
+		local _, lowHealthInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextLowManaHealth_v2", COMBAT_TEXT_SHOW_LOW_HEALTH_MANA_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_LOW_HEALTH_MANA);
+		lowHealthInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextLowManaHealth_v2", UpdateFloatingCombatTextSafe);
+
+		local _, aurasInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextAuras_v2", COMBAT_TEXT_SHOW_AURAS_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_AURAS);
+		aurasInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextAuras_v2", UpdateFloatingCombatTextSafe);
+
+		local _, fadeInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextAuraFade_v2", COMBAT_TEXT_SHOW_AURA_FADE_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_AURA_FADE);
+		fadeInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextAuraFade_v2", UpdateFloatingCombatTextSafe);
+
+		local _, combatStateInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextCombatState_v2", COMBAT_TEXT_SHOW_COMBAT_STATE_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_COMBAT_STATE);
+		combatStateInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextCombatState_v2", UpdateFloatingCombatTextSafe);
+
+		local _, dpmInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextDodgeParryMiss_v2", COMBAT_TEXT_SHOW_DODGE_PARRY_MISS_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_DODGE_PARRY_MISS);
+		dpmInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextDodgeParryMiss_v2", UpdateFloatingCombatTextSafe);
+
+		local _, dmgReductionInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextDamageReduction_v2", COMBAT_TEXT_SHOW_RESISTANCES_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_RESISTANCES);
+		dmgReductionInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextDamageReduction_v2", UpdateFloatingCombatTextSafe);
+
+		local _, repChangeInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextRepChanges_v2", COMBAT_TEXT_SHOW_REPUTATION_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_REPUTATION);
+		repChangeInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextRepChanges_v2", UpdateFloatingCombatTextSafe);
+
+		local _, reactiveInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextReactives_v2", COMBAT_TEXT_SHOW_REACTIVES_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_REACTIVES);
+		reactiveInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextReactives_v2", UpdateFloatingCombatTextSafe);
+
+		local _, friendlyHealerInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextFriendlyHealers_v2", COMBAT_TEXT_SHOW_FRIENDLY_NAMES_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_FRIENDLY_NAMES);
+		friendlyHealerInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextFriendlyHealers_v2", UpdateFloatingCombatTextSafe);
+
+		local _, comboPointsInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextComboPoints_v2", COMBAT_TEXT_SHOW_COMBO_POINTS_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_COMBO_POINTS);
+		comboPointsInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextComboPoints_v2", UpdateFloatingCombatTextSafe);
+
+		local _, energyInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextEnergyGains_v2", COMBAT_TEXT_SHOW_ENERGIZE_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_ENERGIZE);
+		energyInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextEnergyGains_v2", UpdateFloatingCombatTextSafe);
+
+		local _, honorInitializer = Settings.SetupCVarCheckbox(category, "floatingCombatTextHonorGains_v2", COMBAT_TEXT_SHOW_HONOR_GAINED_TEXT, OPTION_TOOLTIP_COMBAT_TEXT_SHOW_HONOR_GAINED);
+		honorInitializer:SetParentInitializer(fctInitializer, IsModifiable);
+		Settings.SetOnValueChangedCallback("floatingCombatTextHonorGains_v2", UpdateFloatingCombatTextSafe);
 	end
 end
 

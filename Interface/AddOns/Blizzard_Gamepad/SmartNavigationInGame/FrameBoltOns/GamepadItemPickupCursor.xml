@@ -4,7 +4,7 @@
 	<Frame name="GamepadItemPickupCursor" mixin="GamepadItemPickupCursorMixin" frameStrata="TOOLTIP" hidden="true">
 		<Size x="32" y="32" />
 		<Anchors>
-			<Anchor point="CENTER" />
+			<Anchor point="BOTTOMLEFT" relativeTo="SmartNavigation" relativePoint="BOTTOMRIGHT" x="5"/>
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">

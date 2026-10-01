@@ -37,13 +37,17 @@ function ProfessionsMixin:RefreshRightTabs()
 		nextTab = nextTab + 1;
 	end
 
-	local professionInfo = Professions.GetProfessionInfo();
-	local effectiveSkillLineID = professionInfo.parentProfessionID or professionInfo.professionID;
+	local effectiveSkillLineID = Professions.GetEffectiveSkillLineID();
 	for _, tab in ipairs(self.rightProfessionTabs) do
 		if tab.skillLine == effectiveSkillLineID and not self.BookPage:IsShown() then
 			self:RightTabSelected(tab);
 			return;
 		end
+	end
+
+	-- An open trade skill with no matching tab shouldn't be recast on reopen.
+	if effectiveSkillLineID ~= 0 then
+		self.selectedSkillLine = nil;
 	end
 end
 
@@ -74,6 +78,7 @@ end
 
 function ProfessionsMixin:RightTabSelected(frame)
 	self.selectedGamepadTabID = frame:GetID();
+	self.selectedSkillLine = frame.skillLine;
 
 	self.ProfessionsOverviewTab:SetChecked(frame == self.ProfessionsOverviewTab);
 
@@ -86,6 +91,25 @@ function ProfessionsMixin:RightTabSelected(frame)
 		self.TabIndicators:UpdateTabIndicators();
 		self:UpdateSmartNavFocus();
 	end
+end
+
+function ProfessionsMixin:RecastSelectedProfession()
+	-- Casting while a trade skill is open re-enters SetTradeSkill during TRADE_SKILL_SHOW.
+	local effectiveSkillLineID = Professions.GetEffectiveSkillLineID();
+	if effectiveSkillLineID ~= 0 then
+		return;
+	end
+
+	if self.selectedSkillLine then
+		for _, tab in ipairs(self.rightProfessionTabs) do
+			if tab:IsShown() and tab.skillLine == self.selectedSkillLine then
+				tab:CastProfessionSpell();
+				return;
+			end
+		end
+	end
+
+	self:SelectBookPage();
 end
 
 function ProfessionsMixin:SelectBookPage()

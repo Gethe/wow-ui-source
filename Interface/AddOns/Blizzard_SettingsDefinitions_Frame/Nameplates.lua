@@ -677,6 +677,7 @@ local function Register()
 		local setting = Settings.RegisterProxySetting(category, "UNIT_NAMEPLATES_THREAT_DISPLAY", Settings.VarType.Number, UNIT_NAMEPLATES_THREAT_DISPLAY, defaultValue, GetValue, SetValue);
 		local initializer = Settings.CreateDropdown(category, setting, GetOptions, UNIT_NAMEPLATES_THREAT_DISPLAY_TOOLTIP);
 		initializer:AddSearchTags(UNIT_NAMEPLATES_SEARCH_TAG);
+		initializer:AddSearchTags(THREAT_TAG);
 		initializer.getSelectionTextFunc = CreateSelectionTextFunction(UNIT_NAMEPLATES_THREAT_DISPLAY_NONE);
 		initializer.OnShow = OnPreviewNamePlateThreatDisplayChanged;
 		initializer.OnHide = OnDropdownHidden;

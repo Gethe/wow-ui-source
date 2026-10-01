@@ -3281,6 +3281,9 @@ function CharCreateSDToggleMixin:OnClick()
 	end
 
 	C_GameRules.SetSDHDToggleValue(not checked);
+
+	RaceAndClassFrame:UpdateState();
+
 	if(CharacterCreateFrame:IsMode(CHAR_CREATE_MODE_CUSTOMIZE)) then
 		local alsoReset = true;
 		local dontResetCamera = true;

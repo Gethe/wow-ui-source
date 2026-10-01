@@ -735,7 +735,8 @@ function FriendsFrameInviteTemplateMixin:OnLoad()
 			ReportFrame:InitiateReport(reportInfo, name, playerLocation, bnetIDAccount ~= nil);
 		end);
 
-		if StaticPopup_Show then
+		local canShowBlockInvitesButton = StaticPopup_Show and FriendsListUtil.CanAddFriendRequestSenderToBattleNetBlockList(self.inviteIndex);
+		if canShowBlockInvitesButton then
 			rootDescription:CreateButton(BLOCK_INVITES, function()
 				local inviteInfo = C_BattleNet.GetFriendInviteInfo(self.inviteIndex);
 				local inviteID = inviteInfo and inviteInfo.inviteID or nil;
@@ -1804,7 +1805,7 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 	-- GAME RULES TODO:: This should be an explicit game rule.
 	if C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Plunderstorm then
 		-- show cross faction helptip on first online cross faction friend
-		if hasTravelPassButton and isCrossFactionInvite and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CROSS_FACTION_INVITE) then
+		if hasTravelPassButton and isCrossFactionInvite and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CROSS_FACTION_INVITE) and C_PartyInfo.CanFormCrossFactionParties() then
 			local helpTipInfo = {
 				text = CROSS_FACTION_INVITE_HELPTIP,
 				buttonStyle = HelpTip.ButtonStyle.Close,
@@ -2408,7 +2409,7 @@ function TravelPassButton_OnEnter(self)
 	local inviteType, guid, factionName = FriendsFrame_GetDisplayedInviteTypeAndGuid(self:GetParent().id);
 	GameTooltip:SetText(inviteTypeToButtonText[inviteType], HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
 
-	if ( inviteTypeIsCrossFaction[inviteType] and factionName ) then
+	if ( inviteTypeIsCrossFaction[inviteType] and factionName and C_PartyInfo.CanFormCrossFactionParties() ) then
 		GameTooltip:AddLine(CROSS_FACTION_INVITE_TOOLTIP:format(FACTION_LABELS_FROM_STRING[factionName] or FACTION_NEUTRAL), nil, nil, nil, true);
 	end
 

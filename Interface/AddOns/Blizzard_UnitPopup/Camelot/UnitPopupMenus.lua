@@ -43,12 +43,22 @@ function UnitPopupMenuParty:GetEntries()
 	}
 end
 
+function UnitPopupMenuFriendlyPlayerInteract:GetEntries()
+	return {
+		UnitPopupWhisperButtonMixin,
+		UnitPopupInspectButtonMixin, 
+		UnitPopupTradeButtonMixin, 
+		UnitPopupFollowButtonMixin,
+		UnitPopupDuelButtonMixin,
+		UnitPopupDuelToTheDeathButtonMixin,
+	}
+end 
+
 function UnitPopupMenuEnemyPlayer:GetEntries()
 	return {
 		UnitPopupSetFocusButtonMixin,
 		UnitPopupInteractSubsectionTitle,
 		UnitPopupInspectButtonMixin, 
-		UnitPopupAchievementButtonMixin,
 		UnitPopupDuelButtonMixin,
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupEnterEditModeMixin,

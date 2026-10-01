@@ -28,6 +28,19 @@ function FriendsListUtil.IsTitleFriend(accountInfo)
 	return accountInfo ~= nil and accountInfo.friendLevel == Enum.BattleNetFriendLevel.Title;
 end
 
+function FriendsListUtil.CanAddFriendRequestSenderToBattleNetBlockList(inviteIndex)
+	if not inviteIndex then
+		return false;
+	end
+
+	local inviteInfo = C_BattleNet.GetFriendInviteInfo(inviteIndex);
+	if not inviteInfo or not inviteInfo.friendLevel then
+		return false;
+	end
+
+	return inviteInfo.friendLevel ~= Enum.BattleNetFriendLevel.Title;
+end
+
 function FriendsListUtil.GameStateUsesFactions()
 	return not C_Glue.IsOnGlueScreen() and not C_GameRules.IsCharacterlessLoginActive();
 end
@@ -82,7 +95,6 @@ function FriendsListUtil.GetGameAccountPartyInviteRestriction(gameAccountInfo)
 	if partyInfoAvailable then
 		local isCrossFactionFriend = gameAccountInfo.factionName and (gameAccountInfo.factionName ~= UnitFactionGroup("player"));
 		if isCrossFactionFriend then
-
 			if C_QuestSession.Exists() then
 				return BattleNetFriendPartyInviteRestrictionType.QuestSession;
 			end

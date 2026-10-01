@@ -1293,7 +1293,7 @@ local function Register()
 	end
 
 	-- Ray Traced Shadows
-	do
+	if (not C_VideoOptions.IsSecondaryLightingSupported()) then
 		local cvar = "shadowrt";
 
 		local function GetOptions()

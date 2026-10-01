@@ -15,12 +15,6 @@ local function SetUpDefaultActionButton(actionButton)
 	-- Not sure why we only need this for some icons but not others...
 	actionButton.SpecialActionIcon:SetDrawLayer("BACKGROUND", 1);
 
-	-- The gamepad action bar button has special behavior to be able to properly handle flyouts,
-	-- but that interferes with these buttons which aren't technically actions, but still use the
-	-- action button template. Since we can't have flyouts or other actions on these buttons, we
-	-- can replace this function with a dummy.
-	actionButton.SetActionAttributes = nop;
-
 	-- Most actions on these bars need an icon overlay
 	actionButton.IconOverlay = actionButton:CreateTexture();
 	actionButton.IconOverlay:SetAllPoints(actionButton.SpecialActionIcon);

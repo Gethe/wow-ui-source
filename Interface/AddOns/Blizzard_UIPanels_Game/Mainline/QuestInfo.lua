@@ -1115,6 +1115,35 @@ function QuestInfo_OnHyperlinkLeave(self)
 	GameTooltip:Hide();
 end
 
+function QuestInfo_ShowAlphaDependentText(parent)
+	if (not parent.alphaDependentText) then
+		return;
+	end
+	for index,frame in ipairs(parent.alphaDependentText) do
+		frame:SetAlpha(1);
+	end
+end
+
+function QuestInfo_HideAlphaDependentText(parent)
+	if (not parent.alphaDependentText) then
+		return;
+	end
+	for index,frame in ipairs(parent.alphaDependentText) do
+		frame:SetAlpha(0);
+	end
+end
+
+function QuestInfo_FadeInAlphaDependentText(parent, fadeTime)
+	if (not parent.alphaDependentText) then
+		return;
+	end
+	for index,frame in ipairs(parent.alphaDependentText) do
+		if (frame:IsShown()) then
+			UIFrameFadeIn(frame, fadeTime );
+		end
+	end
+end
+
 QUEST_TEMPLATE_DETAIL = { questLog = nil, chooseItems = nil, contentWidth = 275,
 	canHaveSealMaterial = true, sealXOffset = 160, sealYOffset = -6,
 	elements = {
@@ -1245,6 +1274,9 @@ function QuestInfoRewardItemMixin:GetBestQuestRewardContextIcon()
 end
 
 function QuestInfoRewardItemMixin:OnEnter()
+	if ( self:GetEffectiveAlpha() <= 0 ) then
+		return;
+	end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	local showCollectionText = false;
@@ -1346,6 +1378,9 @@ function QuestInfoReputationRewardButtonMixin:SetUpMajorFactionReputationReward(
 end
 
 function QuestInfoReputationRewardButtonMixin:OnEnter()
+	if ( self:GetEffectiveAlpha() <= 0 ) then
+		return;
+	end
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local wrapText = false;
 	GameTooltip_SetTitle(GameTooltip, QUEST_REPUTATION_REWARD_TITLE:format(self.factionName), HIGHLIGHT_FONT_COLOR, wrapText);
@@ -1363,6 +1398,9 @@ end
 QuestInfoRewardSpellCodeMixin = {};
 
 function QuestInfoRewardSpellCodeMixin:OnEnter()
+	if ( self:GetEffectiveAlpha() <= 0 ) then
+		return;
+	end
 	local isPet = nil;
 	local showSubtext = true;
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

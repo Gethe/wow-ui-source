@@ -1,13 +1,13 @@
 <Bindings>
-	<Binding name="OPENRADIAL" category="GAMEPAD_LABEL" hidden="true">
+	<Binding name="OPENRADIAL" category="GAMEPAD_LABEL" bindingContext="GamepadModeInGameCore" hidden="true">
 		GamepadMode.OpenRadial();
 	</Binding>
 
-	<Binding name="TOGGLEUIFOCUS" category="GAMEPAD_LABEL" hidden="true">
+	<Binding name="TOGGLEUIFOCUS" category="GAMEPAD_LABEL" bindingContext="GamepadModeInGameCore" hidden="true">
 		GamepadMode.ToggleUIFocus();
 	</Binding>
 
-	<Binding name="TOGGLEPINGSYSTEM" runOnUp="true" category="GAMEPAD_LABEL" hidden="true">
+	<Binding name="TOGGLEPINGSYSTEM" runOnUp="true" category="GAMEPAD_LABEL" bindingContext="GamepadModeInGameCore" hidden="true">
 		GamepadMode.TogglePingSystem(keystate == "down");
 	</Binding>
 

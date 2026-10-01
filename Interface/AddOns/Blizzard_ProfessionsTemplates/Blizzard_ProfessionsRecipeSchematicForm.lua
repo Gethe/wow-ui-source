@@ -90,7 +90,10 @@ function ProfessionsRecipeSchematicFormMixin:OnLoad()
 
 	self.elapsed = 0;
 
-	self.reagentSlotPool = CreateFramePool("FRAME", self, "ProfessionsReagentSlotTemplate");
+	local resetFunc = nil;
+	local forbidden = false;
+	local postCreate = GenerateClosure(self.OnReagentSlotCreated, self);
+	self.reagentSlotPool = CreateFramePool("FRAME", self, "ProfessionsReagentSlotTemplate", resetFunc, forbidden, postCreate);
 	self.selectedRecipeLevels = {};
 
 	self.RecraftingRequiredTools:SetPoint("TOPLEFT", self.RecraftingOutputText, "BOTTOMLEFT", 0, -4);
@@ -743,8 +746,7 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 				local requirements = C_TradeSkillUI.GetRecipeRequirements(recipeID);
 				if (#requirements > 0) then
 					local requirementsText = StringUtil.JoinAlternatingConditionalColor(", ", RED_FONT_COLOR, unpack(FormatRequirements(requirements)));
-					local maxWidth = minimized and 250 or 800;
-					local multiline = minimized;
+					local maxWidth, multiline = self:GetRequiredToolsTextLayout(minimized);
 					SetTextToFit(fontString, PROFESSIONS_REQUIRED_TOOLS:format(requirementsText), maxWidth, multiline);
 				else
 					fontString:SetText("");
@@ -1488,6 +1490,16 @@ function ProfessionsRecipeSchematicFormMixin:GetDescriptionWidth()
 		width = 340;
 	end
 	return width;
+end
+
+function ProfessionsRecipeSchematicFormMixin:GetRequiredToolsTextLayout(minimized)
+	local maxWidth = minimized and 250 or 800;
+	local multiline = minimized;
+	return maxWidth, multiline;
+end
+
+function ProfessionsRecipeSchematicFormMixin:OnReagentSlotCreated(_slot)
+	-- derived
 end
 
 function ProfessionsRecipeSchematicFormMixin:SetSelectedRecipeLevel(recipeID, recipeLevel)

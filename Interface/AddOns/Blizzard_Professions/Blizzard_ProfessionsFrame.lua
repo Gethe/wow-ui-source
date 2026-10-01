@@ -516,6 +516,7 @@ function ProfessionsMixin:OnShow()
 	ProfessionMicroButton.showProfessionSpellHighlights = nil;
 
 	self:RefreshRightTabs();
+	self:RecastSelectedProfession();
 
 	if InputUtil.IsGamepadUIEnabled() then
 		SmartNavigation:RegisterCallback("SelectedButtonUpdated", function()
@@ -570,6 +571,10 @@ function ProfessionsMixin:GetCurrentRecraftingRecipeID()
 end
 
 function ProfessionsMixin:RefreshRightTabs()
+	-- Stub for Mainline, overridden by specific flavors.
+end
+
+function ProfessionsMixin:RecastSelectedProfession()
 	-- Stub for Mainline, overridden by specific flavors.
 end
 

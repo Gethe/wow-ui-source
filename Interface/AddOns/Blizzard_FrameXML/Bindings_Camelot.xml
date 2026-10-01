@@ -1279,9 +1279,6 @@
 	<Binding name="TOGGLECOLLECTIONSTOYBOX" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
 	</Binding>
-	<Binding name="TOGGLECOLLECTIONSHEIRLOOM" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
-		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS);
-	</Binding>
 	<Binding name="TOGGLECOLLECTIONSWARDROBE" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		ToggleCollectionsJournal(COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES);
 	</Binding>

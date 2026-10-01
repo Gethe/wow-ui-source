@@ -1675,9 +1675,13 @@ function Professions.GetProfessionInfo()
 	return professionInfo;
 end
 
-function Professions.IsSelectedProfession(skillLine)
+function Professions.GetEffectiveSkillLineID()
 	local professionInfo = Professions.GetProfessionInfo();
-	local effectiveSkillLineID = professionInfo.parentProfessionID or professionInfo.professionID;
+	return professionInfo.parentProfessionID or professionInfo.professionID;
+end
+
+function Professions.IsSelectedProfession(skillLine)
+	local effectiveSkillLineID = Professions.GetEffectiveSkillLineID();
 	return skillLine == effectiveSkillLineID;
 end
 

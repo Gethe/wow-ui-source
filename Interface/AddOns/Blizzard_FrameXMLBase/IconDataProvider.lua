@@ -1,5 +1,7 @@
 
 local QuestionMarkIconFileDataID = 134400;
+local QUESTION_MARK_ICON_INDEX = 1;
+local FIRST_NON_PLACEHOLDER_ICON_INDEX = 2;
 
 local NumActiveIconDataProviders = 0;
 local BaseIconFilenames = nil;
@@ -126,7 +128,7 @@ function IconDataProviderMixin:GetNumIcons()
 end
 
 function IconDataProviderMixin:GetIconByIndex(index)
-	if index == 1 then
+	if index == QUESTION_MARK_ICON_INDEX then
 		return [[INTERFACE\ICONS\INV_MISC_QUESTIONMARK]];
 	end
 
@@ -156,10 +158,26 @@ function IconDataProviderMixin:GetIconByIndex(index)
 	end
 end
 
+-- Maps any index onto an available icon, skipping the "?" placeholder unless it's the only icon.
+function IconDataProviderMixin:GetIconByWrappedIndex(index)
+	local numIcons = self:GetNumIcons();
+	if numIcons < FIRST_NON_PLACEHOLDER_ICON_INDEX then
+		return self:GetIconByIndex(QUESTION_MARK_ICON_INDEX);
+	end
+
+	-- math.wrap uses a half-open [min, max) interval.
+	local wrappedIndex = math.wrap(index, FIRST_NON_PLACEHOLDER_ICON_INDEX, numIcons + 1);
+	return self:GetIconByIndex(wrappedIndex);
+end
+
 function IconDataProviderMixin:GetRandomIcon()
 	local numIcons = self:GetNumIcons();
-	local avoidQuestionMarkIndex = 2;
-	return self:GetIconByIndex(math.random(avoidQuestionMarkIndex, numIcons));
+	if numIcons < FIRST_NON_PLACEHOLDER_ICON_INDEX then
+		return self:GetIconByIndex(QUESTION_MARK_ICON_INDEX);
+	end
+
+	local randomIndex = math.random(FIRST_NON_PLACEHOLDER_ICON_INDEX, numIcons);
+	return self:GetIconByIndex(randomIndex);
 end
 
 function IconDataProviderMixin:GetIconForSaving(index)
@@ -173,7 +191,7 @@ end
 
 function IconDataProviderMixin:GetIndexOfIcon(icon)
 	if icon == QuestionMarkIconFileDataID then
-		return 1;
+		return QUESTION_MARK_ICON_INDEX;
 	end
 
 	local numIcons = self:GetNumIcons();

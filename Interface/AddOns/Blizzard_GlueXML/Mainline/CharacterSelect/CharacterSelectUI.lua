@@ -552,6 +552,10 @@ function CharacterSelectUIMixin:SetChangeRealmEnabled(enabled)
 	self.VisibilityFramesContainer.NavBar:SetRealmsButtonEnabled(enabled);
 end
 
+function CharacterSelectUIMixin:SetChangeSuperDistrictEnabled(enabled)
+	self.VisibilityFramesContainer.NavBar:SetSuperDistrictsButtonEnabled(enabled);
+end
+
 function CharacterSelectUIMixin:SetEditCampEnabled(enabled)
 	self.VisibilityFramesContainer.NavBar:SetCampsButtonEnabled(enabled);
 end

@@ -4,6 +4,9 @@
 		<Size>
 			<AbsDimension x="37" y="37"/>
 		</Size>
+		<KeyValues>
+			<KeyValue key="buttonContext" type="string" value="ButtonContext_StableFramePetButton"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BORDER">
 				<Texture name="$parentIconTexture"/>
@@ -72,7 +75,7 @@
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="PetStableFrame" mixin="StableFrameMixin" inherits="PortraitFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Size>
 			<AbsDimension x="384" y="512"/>
@@ -125,12 +128,18 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="GamepadSlotCostText" inherits="GameFontWhite" justifyH="LEFT" text="STABLE_SLOT_COST_TEXT" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="100" y="60"/>
+						<Anchor point="BOTTOMRIGHT" x="-100" y="25"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 
 		<Frames>
 			<ModelScene parentKey="modelScene" inherits="PanningModelSceneMixinTemplate"  mixin="StablePetModelSceneMixin">
-				
+
 				<Anchors>
 					<Anchor point="TOPLEFT" x="7" y="-72" />
 					<Anchor point="BOTTOMRIGHT" x="-10" y="140" />
@@ -174,18 +183,14 @@
 						</Anchors>
 					</Frame>
 
-					<Frame parentKey="diet" enableMouse="true" inherits="PetFrameHappinessTemplate">
-						<Anchors>
-							<Anchor point="TOPLEFT">
-								<Offset>
-									<AbsDimension x="4" y="-6"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-					</Frame>
-
 				</Frames>
 			</ModelScene>
+
+			<Frame parentKey="diet" enableMouse="true" inherits="PetFrameHappinessTemplate" frameLevel="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.modelScene" x="4" y="-6"/>
+				</Anchors>
+			</Frame>
 
 			<Frame parentKey="expBar" inherits="PetExpStatusBarTemplate">
 				<Anchors>
@@ -206,7 +211,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString inherits="GameFontNormalSmall" text="CURRENT_PET">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" text="CURRENT_PET">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP">
 									<Offset>
@@ -228,7 +233,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<FontString inherits="GameFontNormalSmall" text="STABLED_PETS">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" text="STABLED_PETS">
 							<Anchors>
 								<Anchor point="BOTTOM" relativePoint="TOP">
 									<Offset>
@@ -283,7 +288,7 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			
+
 			<Frame name="PetStableCostMoneyFrame" inherits="SmallMoneyFrameTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="PetStableCostLabel" relativePoint="RIGHT">

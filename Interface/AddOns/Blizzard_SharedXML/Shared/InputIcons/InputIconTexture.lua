@@ -400,24 +400,24 @@ do
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-stickl3-down");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-stickl3-focus");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-stickl3-disabled");
-	
+
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-stickr-updown-normal");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-stickr-updown-over");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-stickr-updown-down");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-stickr-updown-focus");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-stickr-updown-disabled");
-	
+
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-stickr-leftright-normal");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-stickr-leftright-over");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-stickr-leftright-down");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-stickr-leftright-focus");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-stickr-leftright-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-options-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-options-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-options-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-options-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-options-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-menu-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-menu-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-menu-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-menu-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-menu-disabled");
 
 	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-pslogo-normal");
 	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-pslogo-over");
@@ -425,11 +425,11 @@ do
 	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-pslogo-focus");
 	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-pslogo-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-share-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-share-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-share-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-share-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-share-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-touchpad-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-touchpad-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-touchpad-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-touchpad-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-touchpad-disabled");
 
 	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-symbols-plus");
 	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-symbols-plus");

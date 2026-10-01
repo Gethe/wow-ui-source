@@ -70,6 +70,7 @@ function PlayerFrame_OnLoadBase(self)
 	self:RegisterEvent("PVP_TIMER_UPDATE");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
+	self:RegisterEvent("PLAYER_PVP_FLAG_CHANGED");
 	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player", "vehicle");
 
@@ -197,6 +198,13 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateRolesAssigned();
 	elseif (event == "HONOR_LEVEL_UPDATE") then
 		PlayerFrame_UpdatePvPStatus();
+	elseif (event == "PLAYER_PVP_FLAG_CHANGED") then
+		local isPvpFlagged = arg1;
+		local canPlaySound = isPvpFlagged and PlayerFrame_CanPlayPVPUpdateSound();
+		local displayInfo = PlayerFrame_UpdatePvPStatus();
+		if (canPlaySound and displayInfo.showPvPIcon) then
+			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
+		end
 	end
 end
 
@@ -343,13 +351,11 @@ function PlayerFrame_UpdatePvPStatus()
 
 	local displayInfo = UnitFrameUtil.GetUnitPvPIndicatorDisplayInfo("player", true);
 
-	if ((displayInfo.showPvPIcon or displayInfo.showPrestigePortrait) and PlayerFrame_CanPlayPVPUpdateSound()) then
-		PlaySound(SOUNDKIT.IG_PVP_UPDATE);
-	end
-
 	UnitFrameUtil.UpdateUnitPvPIndicator(elements, "player", true);
 
 	PlayerFrame_UpdatePvPTimerText(displayInfo, elements);
+
+	return displayInfo;
 end
 
 function PlayerFrame_UpdatePvPTimerText(displayInfo, elements)

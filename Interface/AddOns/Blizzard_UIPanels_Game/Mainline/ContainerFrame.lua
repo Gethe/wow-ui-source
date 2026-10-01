@@ -2858,6 +2858,10 @@ function ContainerFrameCombinedBagsMixin:MatchesBagID(id)
 	return ContainerFrame_IsGenericHeldBag(id);
 end
 
+function ContainerFrameCombinedBagsMixin:CanUseForBagID(id)
+	return self:MatchesBagID(id);
+end
+
 function ContainerFrameCombinedBagsMixin:GetContainedBagIDs(outContainedBagIDs)
 	for i = 0, NUM_TOTAL_BAG_FRAMES do
 		table.insert(outContainedBagIDs, i);

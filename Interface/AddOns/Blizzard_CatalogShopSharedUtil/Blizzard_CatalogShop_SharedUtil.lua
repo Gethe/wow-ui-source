@@ -817,7 +817,6 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 			end
 		end
 	end
-
 	if actorDisplayData then
 		hideWeapon = actorDisplayData.hideWeapon;
 		sheatheWeapon = actorDisplayData.sheatheWeapon;
@@ -1083,6 +1082,8 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 
 	if productType == CatalogShopConstants.ProductType.Transmog then
 		actor = modelScene.CachedPlayerActor;
+		-- Defaulting to 1. Otherwise, we don't have actorDisplayData. Which causes it to early out during UpdateActorWithDisplayData
+		actorDisplayData = actorDisplayBucket[1];
 	elseif modelSceneTag ~= nil then
 		actor = modelScene:GetActorByTag(modelSceneTag);
 		for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do

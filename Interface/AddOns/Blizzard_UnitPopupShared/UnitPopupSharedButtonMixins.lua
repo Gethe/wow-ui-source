@@ -654,7 +654,12 @@ function UnitPopupBnetBlockButtonMixin:GetText(contextData)
 end
 
 function UnitPopupBnetBlockButtonMixin:CanShow(contextData)
-	return contextData.accountInfo and contextData.accountInfo.bnetAccountID;
+	local accountInfo = contextData.accountInfo;
+	if not accountInfo or not accountInfo.bnetAccountID then
+		return false;
+	end
+
+	return accountInfo.friendLevel ~= Enum.BattleNetFriendLevel.Title;
 end
 
 function UnitPopupBnetBlockButtonMixin:OnClick(contextData)

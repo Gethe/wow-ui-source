@@ -31,8 +31,8 @@ function AsyncCallbackSystemMixin:Init(apiType)
 		function(self, event, ...)
 			if event == self.api.event then
 				local id, success = ...;
-				if success then
-					self:FireCallbacks(id);
+				if success or apiType == AsyncCallbackAPIType.ASYNC_ITEM then
+					self:FireCallbacks(id, success);
 				else
 					self:ClearCallbacks(id);
 				end
@@ -67,13 +67,13 @@ function AsyncCallbackSystemMixin:AddCancelableCallback(id, callbackFunction)
 	end;
 end
 
-function AsyncCallbackSystemMixin:FireCallbacks(id)
+function AsyncCallbackSystemMixin:FireCallbacks(id, success)
 	local callbacks = self:GetCallbacks(id);
 	if callbacks then
 		self:ClearCallbacks(id);
 		for i, callback in ipairs(callbacks) do
 			if callback ~= CANCELED_SENTINEL then
-				xpcall(callback, CallErrorHandler);
+				xpcall(callback, CallErrorHandler, id, success);
 			end
 		end
 

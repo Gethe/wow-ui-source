@@ -230,6 +230,7 @@ function LFGListingMixin:CreateOrUpdateListing()
 		end
 	end
 	local newPlayerFriendlyEnabled = self.NewPlayerFriendlyButton.CheckButton:GetChecked();
+	local selectedPlaystyle = self.ActivityView.generalPlaystyle;
 
 	local saveSoloRoles = false;
 	if (C_LFGList.HasActiveEntryInfo()) then
@@ -253,6 +254,7 @@ function LFGListingMixin:CreateOrUpdateListing()
 			C_LFGList.CreateListing({
 				activityIDs = selectedActivityIDs,
 				newPlayerFriendly = newPlayerFriendlyEnabled,
+				generalPlaystyle = selectedPlaystyle,
 			});
 			saveSoloRoles = true;
 		end
@@ -418,6 +420,10 @@ function LFGListingMixin:UpdatePostButtonEnableState()
 		return;
 	elseif (self.selectedActivities > Constants.LFGConstsExposed.GROUP_FINDER_MAX_ACTIVITY_CAPACITY) then
 		self.PostButton.errorText = LFG_LIST_TOO_MANY_ACTIVITIES_SELECTED;
+		self.PostButton:SetEnabled(false);
+		return;
+	elseif self.ActivityView.PlayStyleDropdown and not self.ActivityView.generalPlaystyle then
+		self.PostButton.errorText = GROUP_FINDER_PLAYSTYLE_REQUIRED;
 		self.PostButton:SetEnabled(false);
 		return;
 	end
@@ -840,7 +846,43 @@ function LFGListingActivityView_OnShow(self)
 		self.Comment.EditBox:SetEnabled(isAccountSecured);
 	end
 
+	if self.PlayStyleDropdown then
+		self.PlayStyleDropdown:SetDefaultText(DISABLED_FONT_COLOR:WrapTextInColorCode(GROUP_FINDER_PLAYSTYLE_REQUIRED));
+	end
+	LFGListingActivityView_SetupPlayStyleDropdown(self);
+
 	LFGListingActivityView_UpdateActivities(self);
+end
+
+function LFGListingActivityView_SetupPlayStyleDropdown(self)
+	if not self.PlayStyleDropdown then
+		return;
+	end
+
+	local function IsSelected(generalPlaystyle)
+		return self.generalPlaystyle == generalPlaystyle;
+	end
+	
+	local function SetSelected(generalPlaystyle)
+		LFGListingActivityView_OnPlayStyleSelectedInternal(self, generalPlaystyle);
+	end
+
+	self.PlayStyleDropdown:SetupMenu(function(dropdown, rootDescription)
+		rootDescription:SetTag("MENU_LFG_FRAME_GROUP_PLAYSTYLE");
+
+		rootDescription:CreateRadio(GetGeneralPlaystyleString(Enum.LFGEntryGeneralPlaystyle.Learning), IsSelected, SetSelected, Enum.LFGEntryGeneralPlaystyle.Learning);
+		rootDescription:CreateRadio(GetGeneralPlaystyleString(Enum.LFGEntryGeneralPlaystyle.FunRelaxed), IsSelected, SetSelected, Enum.LFGEntryGeneralPlaystyle.FunRelaxed);
+		rootDescription:CreateRadio(GetGeneralPlaystyleString(Enum.LFGEntryGeneralPlaystyle.FunSerious), IsSelected, SetSelected, Enum.LFGEntryGeneralPlaystyle.FunSerious);
+		rootDescription:CreateRadio(GetGeneralPlaystyleString(Enum.LFGEntryGeneralPlaystyle.Expert), IsSelected, SetSelected, Enum.LFGEntryGeneralPlaystyle.Expert);
+	end);
+end
+
+function LFGListingActivityView_OnPlayStyleSelectedInternal(self, generalPlaystyle)
+	local previousPlaystyle = self.generalPlaystyle;
+	self.generalPlaystyle = generalPlaystyle;
+	local legacyLFGEntryPlaystyle = Enum.LFGEntryPlaystyle.None;
+
+	self:GetParent():UpdatePostButtonEnableState();
 end
 
 function LFGListingActivityView_ActivityFiltersChanged(self)

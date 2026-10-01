@@ -767,7 +767,8 @@ function FriendsFrameInviteTemplateMixin:OnLoad()
 			ReportFrame:InitiateReport(reportInfo, name, playerLocation, bnetIDAccount ~= nil);
 		end);
 
-		if StaticPopup_Show then
+		local canShowBlockInvitesButton = StaticPopup_Show and FriendsListUtil.CanAddFriendRequestSenderToBattleNetBlockList(self.inviteIndex);
+		if canShowBlockInvitesButton then
 			rootDescription:CreateButton(BLOCK_INVITES, function()
 				local inviteInfo = C_BattleNet.GetFriendInviteInfo(self.inviteIndex);
 				local inviteID = inviteInfo and inviteInfo.inviteID or nil;

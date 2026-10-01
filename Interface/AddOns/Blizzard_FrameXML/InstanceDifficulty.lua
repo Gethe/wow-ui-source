@@ -231,17 +231,19 @@ function GuildInstanceDifficultyMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
 	GameTooltip_SetTitle(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP:format(DifficultyUtil.GetDifficultyName(difficulty)));
 	GameTooltip_AddNormalLine(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP_PLAYER_COUNT:format(instanceGroupSize, maxPlayers));
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddColoredLine(GameTooltip, GUILD_GROUP, GREEN_FONT_COLOR);
-	if ( xpMultiplier < 1 ) then
-		GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE_MINXP:format(numGuildRequired, instanceGroupSize, guildName, xpMultiplier * 100), true);
-	elseif ( xpMultiplier > 1 ) then
-		GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE_MAXXP:format(guildName, xpMultiplier * 100), true);
-	else
-		if ( instanceType == "party" and maxPlayers == 5 ) then
-			numGuildRequired = 4;
+	if C_AchievementInfo.AreGuildAchievementsEnabled() then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddColoredLine(GameTooltip, GUILD_GROUP, GREEN_FONT_COLOR);
+		if ( xpMultiplier < 1 ) then
+			GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE_MINXP:format(numGuildRequired, instanceGroupSize, guildName, xpMultiplier * 100), true);
+		elseif ( xpMultiplier > 1 ) then
+			GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE_MAXXP:format(guildName, xpMultiplier * 100), true);
+		else
+			if ( instanceType == "party" and maxPlayers == 5 ) then
+				numGuildRequired = 4;
+			end
+			GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE:format(numGuildRequired, instanceGroupSize, guildName), true);
 		end
-		GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE:format(numGuildRequired, instanceGroupSize, guildName), true);
 	end
 	GameTooltip:Show();
 end

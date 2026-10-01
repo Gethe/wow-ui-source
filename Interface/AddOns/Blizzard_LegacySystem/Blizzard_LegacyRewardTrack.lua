@@ -9,24 +9,17 @@ local VISIBLE_CARDS = #CARD_POSITION_TO_PROGRESS;
 local MAX_STATIC_ITEMS = #STATIC_CARD_POSITION_TO_PROGRESS;
 
 function LegacyRewardTrackPageMixin:OnLoad()
-	EventRegistry:RegisterCallback("Legacy.UpdateCurrencyInfo", function(_, info)
-		self:RefreshPoints(info);
-	end, self);
-
 	local progressBar = self.LegacyRewardProgressBar;
 	self.progressBarMaskTextures = { self.ProgressBarBackground, progressBar:GetStatusBarTexture(), progressBar.ProgressBarFrame };
 
-	LegacySystem.UpdateCurrencyInfo();
-
-	self.majorFactionData = C_MajorFactions.GetMajorFactionData(Constants.LegacyConsts.LEGACY_REWARD_TRACK_FACTION_ID);
-
-	self:SetupRewardTrack();
+	LegacySystem.RegisterCurrencyInfoCallback(self, self.RefreshPoints);
 end
 
 function LegacyRewardTrackPageMixin:OnShow()
 	self.centerIndex = 1;
-	self:Refresh();
-	self.LegacyRewardProgressFrame:SetSelection(1, true);
+	if self:Refresh() then
+		self.LegacyRewardProgressFrame:SetSelection(1, true);
+	end
 
 	self:GetParent():SetTitle(LEGACY_TRACK_FRAME_TITLE);
 end
@@ -172,8 +165,10 @@ function LegacyRewardTrackPageMixin:GetLevels()
 end
 
 function LegacyRewardTrackPageMixin:Refresh()
-	if not self.majorFactionData or not self.majorFactionData.factionID then
-		return;
+	-- Can be nil if faction data isn't available yet.
+	self.majorFactionData = C_MajorFactions.GetMajorFactionData(Constants.LegacyConsts.LEGACY_REWARD_TRACK_FACTION_ID);
+	if not self.majorFactionData then
+		return false;
 	end
 
 	self:GetLevels();
@@ -182,6 +177,7 @@ function LegacyRewardTrackPageMixin:Refresh()
 	if self.majorFactionData.isUnlocked and not C_MajorFactions.IsMajorFactionHiddenFromExpansionPage(self.majorFactionData.factionID) then
 		self:SetupProgressDetails();
 	end
+	return true;
 end
 
 function LegacyRewardTrackPageMixin:SetupProgressDetails()

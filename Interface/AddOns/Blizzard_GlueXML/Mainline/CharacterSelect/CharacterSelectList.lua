@@ -564,18 +564,19 @@ end
 
 function CharacterSelectListMixin:UpdateUndeleteState()
 	local isUndeleting = CharacterSelectUtil.IsUndeleting();
+	local isRealmless = IsCharacterSelectListModeRealmless();
 
 	self.CreateCharacterButton:SetShown(not isUndeleting and InputUtil.IsMKBUIEnabled());
 	self.DeleteCharacterButton:SetShown(not isUndeleting and InputUtil.IsMKBUIEnabled());
 	self.UndeleteButton:SetShown(not isUndeleting and InputUtil.IsMKBUIEnabled());
 	self.UndeleteLabel:SetShown(isUndeleting);
-	self.UndeleteRealmLabel:SetShown(isUndeleting);
+	self.UndeleteRealmLabel:SetShown(isUndeleting and not isRealmless);
 	self.UndeleteRealmBackdrop:SetShown(isUndeleting);
 	self.BackToActiveButton:SetShown(isUndeleting);
 	self:UpdateConfigElements();
 	self.SearchBox:SetText("");
 
-	if isUndeleting then
+	if isUndeleting and not isRealmless then
 		self.UndeleteRealmLabel:SetText(CHARACTER_SELECT_UNDELETE_REALM_LABEL:format(CharacterSelectUtil.GetFormattedCurrentRealmName()));
 		local helpTipInfo = {
 			text = CHARACTER_SELECT_UNDELETE_REALM_HELPTIP,

@@ -119,6 +119,23 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetItemCooldown",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if the item is not found or on cooldown" },
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellCooldownInfo", Type = "SpellCooldownInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetItemModifiedAppearancesApplied",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

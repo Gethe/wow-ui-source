@@ -201,16 +201,6 @@ end
 local function CreateCoreBindingSet()
 	local inputBindingSet = GamepadSharedUtility.BindingStack.InputBindingSet;
 	local coreBindingSet = CreateAndInitFromMixin(inputBindingSet, "Core", GamepadSharedUtility.InputBindingManager);
-	local coreBindingTable = {
-		actions = {
-			gameMenu = {keys = {GAMEPAD_MENU_RIGHT}, action = "OPENRADIAL"},
-			openHUD = {keys = {GAMEPAD_MENU_LEFT}, action = "TOGGLEUIFOCUS"},
-			autoRun = {keys = {GAMEPAD_STICK_LEFT_PRESS}, action = "TOGGLEAUTORUN"},
-			togglePingSystem = {keys = {GAMEPAD_STICK_RIGHT_PRESS}, action = "TOGGLEPINGSYSTEM"},
-		}
-	};
-
-	coreBindingSet:AddActionBindings(coreBindingTable.actions);
 	bindingSets["Core"] = coreBindingSet;
 	GamepadSharedUtility.InputBindingManager:SetCoreBindingSet(coreBindingSet);
 end

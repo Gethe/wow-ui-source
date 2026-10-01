@@ -810,7 +810,7 @@ function ShouldShowName(frame)
 			failedRequirement = true;
 		end
 
-		if C_CVar.GetCVarBool("UnitNameFocused") and frame.optionTable.displayNameWhenSelected then
+		if GetCVarBool("UnitNameFocused") and frame.optionTable.displayNameWhenSelected then
 			if UnitIsUnit(frame.unit, "target") then
 				return true;
 			end

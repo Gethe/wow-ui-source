@@ -114,14 +114,15 @@ function SingleSpellMixin:UpdateFlyoutPopup(_)
 	self:SetPopup(nil);
 end
 
-function SingleSpellMixin:OnClick(button, down)
-	if not down then
+function SingleSpellMixin:HandleFlyoutClickOverride(button, down)
+	if down then
 		if button == "LeftButton" then
 			CastPetAction(self.petActionID);
 		else
 			TogglePetAutocast(self.petActionID);
 		end
 	end
+	return true;
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -167,10 +168,11 @@ function MultipleSpellsMixin:UpdateFlyoutPopup(_)
 	self:SetPopup(GamepadPetSpellFlyout);
 end
 
-function MultipleSpellsMixin:OnClick(button, down)
-	if not down then
+function MultipleSpellsMixin:HandleFlyoutClickOverride(button, down)
+	if down then
 		self:TogglePopup();
 	end
+	return true;
 end
 
 ---------------------------------------------------------------------------------------------------

@@ -45,6 +45,11 @@
 			<KeyValue key="commandName" value="TOGGLEBACKPACK" type="string"/>
 			<KeyValue key="quickKeybindHighlightAtlas" value="QuickKeybind-MainBag-Iconframe-Glow" type="string"/>
 		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="5">
+				<FontString parentKey="FreeSlots" inherits="NumberFontNormal" hidden="true"/>
+			</Layer>
+		</Layers>
 		<Anchors>
 			<Anchor point="RIGHT"/>
 		</Anchors>
