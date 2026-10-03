@@ -30,7 +30,7 @@ function TalentDisplayMixin:OnEnter()
 	local spellID = self:GetSpellID();
 	local spell = (spellID ~= nil) and Spell:CreateFromSpellID(spellID) or nil;
 	if spell and not spell:IsSpellEmpty() then
-		self.spellLoadCancel = spell:ContinueWithCancelOnSpellLoad(GenerateClosure(self.SetTooltipInternal, self));
+		self.spellLoadCancel = spell:ContinueWithCancelOnSpellLoad(GenerateFlatClosure(self.SetTooltipInternal, self));
 	else
 		self:SetTooltipInternal();
 	end
@@ -298,7 +298,7 @@ function TalentDisplayMixin:AddTooltipInfo(tooltip)
 		if overrideSpellID ~= spellID then
 			local overrideSpell = Spell:CreateFromSpellID(overrideSpellID);
 			if overrideSpell and not overrideSpell:IsSpellDataCached() then
-				self.overrideSpellLoadCancel = overrideSpell:ContinueWithCancelOnSpellLoad(GenerateClosure(self.SetTooltipInternal, self));
+				self.overrideSpellLoadCancel = overrideSpell:ContinueWithCancelOnSpellLoad(GenerateFlatClosure(self.SetTooltipInternal, self));
 			elseif strcmputf8i(self:GetName(), overrideSpell:GetSpellName()) ~= 0 then
 				GameTooltip_AddBlankLineToTooltip(tooltip);
 				

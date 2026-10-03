@@ -82,7 +82,7 @@ function ChatFrameEditBoxBaseMixin:ExtractTellTarget(msg, chatType)
 	local target = strmatch(msg, "%s*(.*)");
 
 	-- Wherever regional unique names are enabled we need to support 'FirstName-SecondName' and 'FirstName SecondName' whisper constructions
-	local targetMatchString = RegionalUniqueNamesEnabled() and "[%s-](%w+)%s" or "%s";
+	local targetMatchString = RegionalUniqueNamesEnabled() and "[%s-](%S+)%s" or "%s";
 
 	--If we haven't even finished one word, we aren't done.
 	if ( not target or not strfind(target, targetMatchString) ) then
