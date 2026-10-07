@@ -810,7 +810,9 @@ function NamePlateUnitFrameMixin:SetExplicitValues(explicitValues)
 	self:UpdateIsPlayer();
 	self:UpdateIsFriend();
 	self:UpdateIsSimplified();
-	self:UpdateNameOverride();
+	if (self.UpdateNameOverride) then
+		self:UpdateNameOverride();
+	end
 
 	self.AurasFrame:SetExplicitValues(explicitValues);
 	self.ClassificationFrame:SetExplicitValues(explicitValues);
