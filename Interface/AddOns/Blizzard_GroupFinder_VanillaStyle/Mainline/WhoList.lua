@@ -337,8 +337,8 @@ function LFGWhoListFilterUtil.InitClassFilters(rootDescription)
 	classSubmenu:CreateButton(CHECK_ALL, LFGWhoListFilterUtil.SetAllClassesFiltered, false);
 	classSubmenu:CreateButton(UNCHECK_ALL, LFGWhoListFilterUtil.SetAllClassesFiltered, true);
 
-	for index = 1, GetNumClasses() do
-		local classDisplayName, _, classID = GetClassInfo(index);
+	for _, classID in ipairs(C_SpecializationInfo.GetAllClassIDs()) do
+		local classDisplayName = GetClassInfo(classID);
 		if classID then
 			classSubmenu:CreateCheckbox(classDisplayName, IsClassChecked, SetClassChecked, classID);
 		end
@@ -346,8 +346,7 @@ function LFGWhoListFilterUtil.InitClassFilters(rootDescription)
 end
 
 function LFGWhoListFilterUtil.SetAllClassesFiltered(filtered)
-	for index = 1, GetNumClasses() do
-		local _, _, classID = GetClassInfo(index);
+	for _, classID in ipairs(C_SpecializationInfo.GetAllClassIDs()) do
 		if classID then
 			if filtered then
 				LFGWhoListFilterUtil.classesFiltered[classID] = true;

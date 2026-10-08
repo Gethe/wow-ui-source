@@ -22,8 +22,6 @@ RegisterGameMenuEscHandler(GameMenuEscPriority.Framework, EditModeManagerFrame_E
 
 function EditModeManagerFrameMixin:OnLoad()
 	self.registeredSystemFrames = {};
-	self.modernSystemMap = EditModePresetLayoutManager:GetModernSystemMap();
-	self.modernSystems = EditModePresetLayoutManager:GetModernSystems();
 
 	self.LayoutDropdown:SetWidth(220);
 
@@ -195,8 +193,6 @@ function EditModeManagerFrameMixin:OnEvent(event, ...)
 	if event == "EDIT_MODE_LAYOUTS_UPDATED" then
 		local layoutInfo, reconcileLayouts = ...;
 
-		-- BUILD FIXME
-		-- Blizzard_GamepadActionBars is creating an invalid dependency having the MicroMenuContainer and ActionBar anchor to each other.
 		local success = pcall(function()
 			self:UpdateLayoutInfo(layoutInfo, reconcileLayouts);
 		end);
@@ -778,16 +774,16 @@ function EditModeManagerFrameMixin:NotifyChatOfLayoutChange()
 end
 
 -- This method handles removing any out-dated systems/settings from a saved layout data table
-function EditModeManagerFrameMixin:RemoveOldSystemsAndSettings(layoutInfo)
+function EditModeManagerFrameMixin:RemoveOldSystemsAndSettings(systemMapToReconcileWith, layoutInfo)
 	local removedSomething = false;
 	local keepSystems = {};
 
 	for _, layoutSystemInfo in ipairs(layoutInfo.systems) do
 		local keepSystem;
 		if layoutSystemInfo.systemIndex then
-			keepSystem = self.modernSystemMap[layoutSystemInfo.system] and self.modernSystemMap[layoutSystemInfo.system][layoutSystemInfo.systemIndex];
+			keepSystem = systemMapToReconcileWith[layoutSystemInfo.system] and systemMapToReconcileWith[layoutSystemInfo.system][layoutSystemInfo.systemIndex];
 		else
-			keepSystem = self.modernSystemMap[layoutSystemInfo.system];
+			keepSystem = systemMapToReconcileWith[layoutSystemInfo.system];
 		end
 
 		if keepSystem then
@@ -827,7 +823,7 @@ function EditModeManagerFrameMixin:RemoveOldSystemsAndSettings(layoutInfo)
 end
 
 -- This method handles adding any missing systems/settings to a saved layout data table
-function EditModeManagerFrameMixin:AddNewSystemsAndSettings(layoutInfo)
+function EditModeManagerFrameMixin:AddNewSystemsAndSettings(systemsToReconcileWith, layoutInfo)
 	local addedSomething = false;
 
 	-- Create a system/setting map to allow for efficient checking of each system & setting below
@@ -845,8 +841,8 @@ function EditModeManagerFrameMixin:AddNewSystemsAndSettings(layoutInfo)
 		end
 	end
 
-	-- Loop through all of the modern systems/setting and add any that don't exist in the saved layout data table
-	for _, systemInfo in ipairs(self.modernSystems) do
+	-- Loop through all of the systems/setting to reconcile with and add any that don't exist in the saved layout data table
+	for _, systemInfo in ipairs(systemsToReconcileWith) do
 		local existingSystem;
 		if systemInfo.systemIndex then
 			existingSystem = layoutSystemMap[systemInfo.system] and layoutSystemMap[systemInfo.system][systemInfo.systemIndex];
@@ -873,18 +869,35 @@ function EditModeManagerFrameMixin:AddNewSystemsAndSettings(layoutInfo)
 	return addedSomething;
 end
 
-function EditModeManagerFrameMixin:ReconcileWithModern(layoutInfo)
-	local removedSomething = self:RemoveOldSystemsAndSettings(layoutInfo);
-	local addedSomething = self:AddNewSystemsAndSettings(layoutInfo);
+function EditModeManagerFrameMixin:ReconcileWith(layoutInfo, systemMap, systems)
+	local removedSomething = self:RemoveOldSystemsAndSettings(systemMap, layoutInfo);
+	local addedSomething = self:AddNewSystemsAndSettings(systems, layoutInfo);
 	return removedSomething or addedSomething;
+end
+
+function EditModeManagerFrameMixin:ReconcileWithModern(layoutInfo)
+	return self:ReconcileWith(layoutInfo, EditModePresetLayoutManager:GetModernSystemMap(), EditModePresetLayoutManager:GetModernSystems());
+end
+
+function EditModeManagerFrameMixin:ReconcileWithGamepad(layoutInfo)
+	return self:ReconcileWith(layoutInfo, EditModePresetLayoutManager:GetGamepadSystemMap(), EditModePresetLayoutManager:GetGamepadSystems());
+end
+
+local function IsMKBLayout(layoutInfo)
+	if layoutInfo.interfaceStyle == nil then
+		return true;
+	end
+	return layoutInfo.interfaceStyle == Enum.InputDeviceInterfaceType.Mkb;
 end
 
 -- Sometimes new systems/settings may be added to (or removed from) EditMode. When that happens the saved layout data be will out of date
 -- This method handles adding any missing systems/settings and removing any existing systems/settings from the saved layout data
-function EditModeManagerFrameMixin:ReconcileLayoutsWithModern()
+function EditModeManagerFrameMixin:ReconcileLayouts()
 	local somethingChanged = false;
 	for _, layoutInfo in ipairs(self.layoutInfo.layouts) do
-		if self:ReconcileWithModern(layoutInfo) then
+		if (layoutInfo.interfaceStyle == Enum.InputDeviceInterfaceType.Gamepad) and self:ReconcileWithGamepad(layoutInfo) then
+			somethingChanged = true;
+		elseif self:ReconcileWithModern(layoutInfo) then
 			somethingChanged = true;
 		end
 	end
@@ -997,7 +1010,7 @@ function EditModeManagerFrameMixin:UpdateLayoutInfo(layoutInfo, reconcileLayouts
 	self.layoutInfo = layoutInfo;
 
 	if reconcileLayouts then
-		self:ReconcileLayoutsWithModern();
+		self:ReconcileLayouts();
 	end
 
 	local savedLayouts = self.layoutInfo.layouts;

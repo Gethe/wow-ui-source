@@ -149,11 +149,6 @@ function ProfessionsCraftingPageMixin:OnLoad()
 		local width = ProfessionsFrame:GetWidth() + self.CraftingOutputLog:GetMaxPossibleWidth() + x;
 		SetUIPanelAttribute(ProfessionsFrame, "width", width);
 		UpdateUIPanelPositions(ProfessionsFrame);
-
-		if InputUtil.IsGamepadUIEnabled() then
-			GamepadMode.FrameControlsManager:SuspendFrame();
-			GamepadMode.FrameControlsManager:FrameShown(self.CraftingOutputLog);
-		end
 	end);
 
 	self.CraftingOutputLog:SetScript("OnHide", function()
@@ -161,11 +156,6 @@ function ProfessionsCraftingPageMixin:OnLoad()
 		local width = ProfessionsFrame:GetWidth();
 		SetUIPanelAttribute(ProfessionsFrame, "width", width);
 		UpdateUIPanelPositions(ProfessionsFrame);
-
-		if InputUtil.IsGamepadUIEnabled() then
-			GamepadMode.FrameControlsManager:FrameHidden(self.CraftingOutputLog);
-			GamepadMode.FrameControlsManager:UnsuspendFrame();
-		end
 	end);
 
 	self.SchematicForm.postInit = function() self:SchematicPostInit(); end;

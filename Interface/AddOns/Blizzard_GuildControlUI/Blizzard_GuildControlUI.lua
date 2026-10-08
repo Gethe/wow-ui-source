@@ -322,7 +322,7 @@ function GuildControlUI_Discord_Update(self)
 			-- show "your all linked" with an unlink button
 			local linkFrame = _G["DiscordLinkFrame"];
 			if( not linkFrame ) then
-				linkFrame = CreateFrame("Frame", "DiscordLinkFrame", self, "DiscordLinkedTemplate"); -- TODO_DISCORD: try defining this frame in the XML with hidden=true and unhiding it here
+				linkFrame = CreateFrame("Frame", "DiscordLinkFrame", self, "DiscordLinkedTemplate");
 				linkFrame:SetPoint("TOPLEFT", 0, 0);
 			end
 			local serverName = string.format(DISCORD_GUILD_LINKED_SERVER, linkedServerName);

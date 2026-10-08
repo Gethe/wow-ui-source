@@ -104,6 +104,7 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	self.ModelSceneContainerFrame:Init();
 
 	self.HeaderFrame.SearchBox:SetScript("OnTextChanged", GenerateClosure(self.OnSearchTextChanged, self));
+	self:InitializeGamepad();
 end
 
 function CatalogShopMixin:InitVariables()
@@ -318,6 +319,11 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 
 		self:HideLoadingScreen();
 		self:HideUnavailableScreen();
+
+		if InputUtil.IsGamepadUIEnabled() then
+			CatalogShopOutbound.SetupGamepad(self);
+			CatalogShopOutbound.RefreshSmartNav(self);
+		end
 	elseif event =="CATALOG_SHOP_FETCH_FAILURE" then
 		local shoppingSessionUUIDStr = ...;
 		if shoppingSessionUUIDStr and (shoppingSessionUUIDStr ~= self.shoppingSessionUUIDStr) then
@@ -431,6 +437,11 @@ function CatalogShopMixin:OnShow()
 
 	local isShown = true;
 	CatalogShopOutbound.VisibilityUpdated(isShown);
+	
+	if InputUtil.IsGamepadUIEnabled() then
+		CatalogShopOutbound.SetupGamepad(self);
+		CatalogShopOutbound.HandleGamepadFrameShown(self);
+	end
 end
 
 function CatalogShopMixin:OnHide()
@@ -470,6 +481,10 @@ function CatalogShopMixin:OnHide()
 
 	local isShown = false;
 	CatalogShopOutbound.VisibilityUpdated(isShown);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		CatalogShopOutbound.HandleGamepadFrameHidden(self);
+	end
 end
 
 function CatalogShopMixin:GetUseNativeForm()
@@ -623,6 +638,10 @@ function CatalogShopMixin:HideProductDetails()
 	local productInfo = self.ProductContainerFrame:GetSelectedProductInfo();
 	self.showDetails = false;
 	self:ToggleProductDetails(self.showDetails, productInfo);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		CatalogShopOutbound.HideProductDetails(self);
+	end
 end
 
 function CatalogShopMixin:ShowProductDetails()
@@ -633,6 +652,10 @@ function CatalogShopMixin:ShowProductDetails()
 	end
 	self.showDetails = true;
 	self:ToggleProductDetails(self.showDetails, productInfo);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		CatalogShopOutbound.ShowProductDetails(self);
+	end
 end
 
 function CatalogShopMixin:ShowAllRefundableDecor()
@@ -725,6 +748,10 @@ function CatalogShopMixin:OnCategorySelected(categoryID)
 
 	self.ProductContainerFrame:OnCategorySelected(categoryID);
 	self.PersistentRefundContainerFrame:OnCategorySelected(categoryID);
+
+	if self.showDetails then
+		CatalogShopFrame:HideProductDetails();
+	end
 end
 
 function CatalogShopMixin:ToggleProductDetails(showDetails, productInfo)
@@ -828,6 +855,37 @@ end
 
 function CatalogShopMixin:ClearSearchBox()
 	self.HeaderFrame.SearchBox:SetText("");
+end
+
+function CatalogShopMixin:CanRotateCurrentProduct()
+	return self.canRotateModelScene;
+end
+
+function CatalogShopMixin:InitializeGamepad()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	CatalogShopFrameCloseButton:Hide();
+	self.ProductDetailsContainerFrame.BackButton:Hide();
+	self.CatalogShopDetailsFrame.ButtonContainer.PurchaseButton:Hide();
+	self.CatalogShopDetailsFrame.ButtonContainer.DetailsButton:Hide();
+end
+
+function CatalogShopMixin:FocusGamepad()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	CatalogShopOutbound.FocusGamepad(self);
+end
+
+function CatalogShopMixin:UnfocusGamepad()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	CatalogShopOutbound.UnfocusGamepad(self);
 end
 
 ----------------------------------------------------------------------------------
@@ -1011,6 +1069,10 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 		self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price);
 	end
 	self.ButtonContainer.PurchaseButton:SetEnabled(isPurchasable);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		CatalogShopOutbound.RefreshGamepadPurchaseButton(CatalogShopFrame);
+	end
 
 	-- Adjust for text fields
 	self.ButtonContainer.NoPriceInGlues:SetShown(isTokenOnGlues);

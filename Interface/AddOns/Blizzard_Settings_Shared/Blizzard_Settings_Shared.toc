@@ -8,7 +8,8 @@
 
 NewDefinitionsFramework.lua
 NewDefinitionsFramework.xml
-[Family]\NewDefinitions.lua				[AllowLoadGameType mainline]
+Mainline\NewDefinitions.lua				[AllowLoadGameType standard]
+Camelot\NewDefinitions.lua				[AllowLoadGameType camelot]
 Blizzard_SettingsRegistrar.lua
 Blizzard_Settings.lua
 Blizzard_Category.lua
@@ -31,6 +32,7 @@ Blizzard_SettingsInbound.lua
 Blizzard_Deprecated.lua
 [Family]\GraphicsOverrides.lua
 [Family]\AudioOverrides.lua
+[Game]\AudioOverrides.lua [AllowLoadGameType camelot]
 Blizzard_Settings_PreferredPlaySettings.lua
 [Family]\LanguagesOverrides.lua   [ExcludeLoadGameType camelot]
 [Game]\LanguagesOverrides.lua     [AllowLoadGameType camelot]

@@ -297,7 +297,13 @@ function QuestObjectiveTrackerMixin:UpdateSingle(quest)
 	local isSequenced = IsQuestSequenced(questID);
 	local questLogIndex = quest:GetQuestLogIndex();
 	local block, isExistingBlock = self:GetBlock(questID);
-	local title = SetQuestTitleLevelAndDifficultyColor(questID, quest.title);
+	local tagText = self:GetQuestTagText(questID);
+
+	local title = quest.title;
+	if tagText then
+		title = title .. " " .. tagText;
+	end
+	title = SetQuestTitleLevelAndDifficultyColor(questID, title);
 
 	if QuestUtil.CanCreateQuestGroup(questID) then
 		block:AddRightEdgeFrame(self.findGroupButtonSettings, questID);
@@ -375,6 +381,11 @@ end
 
 function QuestObjectiveTrackerMixin:CanShowTimerBar()
 	return true;
+end
+
+-- Flavor-specific tracker overrides may provide quest tag text (for example Camelot).
+function QuestObjectiveTrackerMixin:GetQuestTagText(_questID)
+	return nil;
 end
 
 function QuestObjectiveTrackerMixin:WatchMoney(watch)

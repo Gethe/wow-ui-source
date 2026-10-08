@@ -25,6 +25,12 @@ function LegacyChallengesPageMixin:OnEvent(event, ...)
 
 		self:OnFilterUpdate();
 		EventRegistry:TriggerEvent("Legacy.RefreshChallenges");
+
+		-- Selected after the refresh, since regenerating the challenge list clears its selection.
+		if self.pendingChallengeID then
+			self:TrySelectChallengeResettingFilters(self.pendingChallengeID);
+			self.pendingChallengeID = nil;
+		end
 	end
 end
 
@@ -34,6 +40,10 @@ function LegacyChallengesPageMixin:OnShow()
 	LegacyChallengeObjectives.clearOnClose = false;
 
 	self:GetParent():SetTitle(LEGACY_CHALLENGE_FRAME_TITLE);
+end
+
+function LegacyChallengesPageMixin:OnHide()
+	self.pendingChallengeID = nil;
 end
 
 function LegacyChallengesPageMixin:UpdateCategoryList()
@@ -161,20 +171,26 @@ function LegacyChallengesPageMixin:OnCriteriaUpdate()
 end
 
 function LegacyChallengesPageMixin:SetDefaultFilters()
-	for _, filter in ipairs(LegacyChallengeFilters) do
+	for _, filter in pairs(LegacyChallengeFilters) do
 		filter.value = filter.default;
 	end
 end
 
 function LegacyChallengesPageMixin:IsUsingDefaultFilters()
 	local usingDefaults = true;
-	for _, filter in ipairs(LegacyChallengeFilters) do
+	for _, filter in pairs(LegacyChallengeFilters) do
 		if filter.value ~= filter.default then
 			usingDefaults = false;
 			break;
 		end
 	end
 	return usingDefaults;
+end
+
+function LegacyChallengesPageMixin:ResetFilters()
+	self:SetDefaultFilters();
+	self.CategoryList.FilterDropdown:ValidateResetState();
+	self:OnFilterUpdate();
 end
 
 function LegacyChallengesPageMixin:SetupFilterMenu(dropdown, rootDescription)
@@ -200,9 +216,55 @@ function LegacyChallengesPageMixin:OnFilterUpdate()
 	end
 end
 
+function LegacyChallengesPageMixin:TrySelectChallenge(achievementID)
+	local categoryID = GetAchievementCategory(achievementID);
+	local scrollToCategory = true;
+	if not self.CategoryList:OpenToCategory(categoryID, scrollToCategory) then
+		return false;
+	end
+
+	return self.DetailPane:SelectChallenge(achievementID);
+end
+
+-- Like AchievementFrame_SelectAchievement, shows all challenges when the filters hide the requested one.
+function LegacyChallengesPageMixin:TrySelectChallengeResettingFilters(achievementID)
+	if self:TrySelectChallenge(achievementID) then
+		return true;
+	end
+
+	local awaitingSearchResults = GetNumFilteredAchievements() == 0;
+	if awaitingSearchResults or self:IsUsingDefaultFilters() then
+		return false;
+	end
+
+	self:ResetFilters();
+	return self:TrySelectChallenge(achievementID);
+end
+
+function LegacyChallengesPageMixin:SelectChallenge(achievementID)
+	self.pendingChallengeID = nil;
+	if self:TrySelectChallengeResettingFilters(achievementID) then
+		return;
+	end
+
+	-- The first time the page is shown, search results arrive after the category list is built.
+	local awaitingSearchResults = GetNumFilteredAchievements() == 0;
+
+	local searchBox = self.CategoryList.SearchBox;
+	local hasSearchText = searchBox:GetText() ~= "";
+	if hasSearchText then
+		SearchBoxTemplate_ClearText(searchBox);
+	end
+
+	-- Search results update asynchronously, so retry on ACHIEVEMENT_SEARCH_UPDATED.
+	if awaitingSearchResults or hasSearchText then
+		self.pendingChallengeID = achievementID;
+	end
+end
+
 function LegacyChallengesPageMixin:InitFilterMenu(dropdown)
 	dropdown:SetDefaultCallback(function()
-		self:SetDefaultFilters();
+		self:ResetFilters();
 	end);
 
 	dropdown:SetUpdateCallback(function()
@@ -276,65 +338,4 @@ function ChallengePointBarMixin:Update(currencyInfo)
 	end, function() self.interpolator = nil; end);
 
 	self.ratio = newRatio;
-end
-
--- Achievement Overrides
-
-function AchievementFrame_SetDateCompleted(frame, day, month, year)
-	frame.DateCompleted:SetText(FormatShortDate(day, month, year));
-	local padding = 5;
-	frame.DateCompleted:SetWidth(frame.DateCompleted:GetStringWidth() + padding);
-end
-
-function AchievementFrame_ShowDateCompleted(parent, show)
-	parent.DateCompleted:SetShown(show);
-	if parent.Shield then
-		if parent.Shield.CheckBackground then
-			parent.Shield.CheckBackground:SetShown(show);
-		end
-		if parent.Shield.Check then
-			parent.Shield.Check:SetShown(show);
-		end
-	end
-end
-
-function AchievementFrame_ShowAsComplete(completed, wasEarnedByMe)
-	return completed and wasEarnedByMe;
-end
-
-function AchievementFrame_GetOverridePoints(points, achievementId)
-	local legacyPoints = C_Traits.GetTraitCurrencyForAchievement(Constants.LegacyConsts.LEGACY_POINTS_TRAIT_CURRENCY_ID, achievementId);
-	return legacyPoints;
-end
-
-function AchievementFrame_SelectAchievement(id, forceSelect)
-	if ( (not LegacySystemFrame:IsShown() and not forceSelect) or (not C_AchievementInfo.IsValidAchievement(id)) ) then
-		return;
-	end
-
-	local displayedId = AchievementFrame_FindDisplayedAchievement(id);
-	local categoryID = GetAchievementCategory(displayedId);
-	EventRegistry:TriggerEvent("Legacy.OpenToChallengeCategory", categoryID);
-
-	EventRegistry:TriggerEvent("Legacy.SelectChallenge", displayedId);
-end
-
-function AchievementShield_OnEnter(self)
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	local parent = self:GetParent();
-	local elementData = parent:GetElementData();
-	if elementData then
-		local rewardText = select(11, GetAchievementInfo(elementData.id));
-		GameTooltip:AddLine(rewardText);
-		GameTooltip:Show();
-		return;
-	end
-
-	-- pass-through to the achievement button
-	local func = parent:GetScript("OnEnter");
-	if ( func ) then
-		func(parent);
-	end
-
-	GameTooltip:Show();
 end

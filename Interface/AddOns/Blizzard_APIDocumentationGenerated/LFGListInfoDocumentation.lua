@@ -941,6 +941,7 @@ local LFGListInfo =
 				{ Name = "name", Type = "kstringLfgListApplicant", Nilable = false },
 				{ Name = "comment", Type = "kstringLfgListApplicant", Nilable = false },
 				{ Name = "voiceChat", Type = "kstringLfgListApplicant", Nilable = false },
+				{ Name = "voiceMode", Type = "LFGEntryVoiceMode", Nilable = false },
 				{ Name = "censored", Type = "bool", Nilable = false },
 				{ Name = "duration", Type = "time_t", Nilable = false },
 				{ Name = "autoAccept", Type = "bool", Nilable = false },
@@ -970,6 +971,7 @@ local LFGListInfo =
 				{ Name = "requiredDungeonScore", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "requiredItemLevel", Type = "number", Nilable = false, Default = 0 },
 				{ Name = "requiredPvpRating", Type = "number", Nilable = false, Default = 0 },
+				{ Name = "voiceMode", Type = "LFGEntryVoiceMode", Nilable = false, Default = "None" },
 			},
 		},
 		{
@@ -983,6 +985,7 @@ local LFGListInfo =
 				{ Name = "name", Type = "kstringLfgListSearch", Nilable = false },
 				{ Name = "comment", Type = "kstringLfgListSearch", Nilable = false },
 				{ Name = "voiceChat", Type = "kstringLfgListSearch", Nilable = false },
+				{ Name = "voiceMode", Type = "LFGEntryVoiceMode", Nilable = false },
 				{ Name = "censored", Type = "bool", Nilable = false },
 				{ Name = "requiredItemLevel", Type = "number", Nilable = false },
 				{ Name = "requiredHonorLevel", Type = "number", Nilable = false },

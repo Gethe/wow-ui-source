@@ -15,6 +15,17 @@ local DiscordConstants =
 			},
 		},
 		{
+			Name = "DiscordChannelID",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "InvalidDiscordID", Type = "DiscordChannelID", EnumValue = 0 },
+			},
+		},
+		{
 			Name = "DiscordDisplayNameType",
 			Type = "Enumeration",
 			NumValues = 3,
@@ -25,6 +36,17 @@ local DiscordConstants =
 				{ Name = "Default", Type = "DiscordDisplayNameType", EnumValue = 0 },
 				{ Name = "LastOnline", Type = "DiscordDisplayNameType", EnumValue = 1 },
 				{ Name = "GlobalName", Type = "DiscordDisplayNameType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "DiscordGuildID",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "InvalidDiscordID", Type = "DiscordGuildID", EnumValue = 0 },
 			},
 		},
 		{
@@ -39,11 +61,55 @@ local DiscordConstants =
 			},
 		},
 		{
+			Name = "DiscordID",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "InvalidDiscordID", Type = "DiscordID", EnumValue = 0 },
+			},
+		},
+		{
+			Name = "DiscordLobbyID",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "InvalidDiscordID", Type = "DiscordLobbyID", EnumValue = 0 },
+			},
+		},
+		{
+			Name = "DiscordMemberID",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "InvalidDiscordID", Type = "DiscordMemberID", EnumValue = 0 },
+			},
+		},
+		{
+			Name = "DiscordMessageID",
+			Type = "Enumeration",
+			NumValues = 1,
+			MinValue = 0,
+			MaxValue = 0,
+			Fields =
+			{
+				{ Name = "InvalidDiscordID", Type = "DiscordMessageID", EnumValue = 0 },
+			},
+		},
+		{
 			Name = "DiscordChatInfo",
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "userID", Type = "DiscordID", Nilable = false },
+				{ Name = "userID", Type = "DiscordMemberOpaqueID", Nilable = false },
 				{ Name = "globalName", Type = "string", Nilable = false },
 				{ Name = "type", Type = "DiscordDisplayNameType", Nilable = false, Default = "Default" },
 				{ Name = "lastOnlineGUID", Type = "WOWGUID", Nilable = false },

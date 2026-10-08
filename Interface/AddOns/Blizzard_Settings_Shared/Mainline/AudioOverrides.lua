@@ -1,5 +1,9 @@
 AudioOverrides = {}
 
+function AudioOverrides.HasPetBattleMusic()
+	return true;
+end
+
 function AudioOverrides.CreatePingSoundSettings(category, layout)
 	if not C_Glue.IsOnGlueScreen() then
 		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(PING_SYSTEM_LABEL));

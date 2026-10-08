@@ -458,7 +458,10 @@ end
 
 function PaperDollFrame_SetArmor(statFrame, unit)
 	local baselineArmor, effectiveArmor, armor, bonusArmor = UnitArmor(unit);
-	PaperDollFrame_SetLabelAndText(statFrame, STAT_ARMOR, BreakUpLargeNumbers(effectiveArmor), false, effectiveArmor);
+	local armorText = BreakUpLargeNumbers(effectiveArmor);
+	armorText = PaperDollFrame_FormatBonusValue(armorText, bonusArmor);
+
+	PaperDollFrame_SetLabelAndText(statFrame, STAT_ARMOR, armorText, false, effectiveArmor);
 	local armorReduction = PaperDollFrame_GetArmorReduction(effectiveArmor, UnitEffectiveLevel(unit));
 	local armorReductionAgainstTarget = PaperDollFrame_GetArmorReductionAgainstTarget(effectiveArmor);
 

@@ -1646,6 +1646,16 @@
 	</xs:complexType>
 	<xs:element name="Alpha" type="AlphaType" substitutionGroup="AnimationRef"/>
 
+	<xs:complexType name="RadialProgressType">
+		<xs:complexContent>
+			<xs:extension base="AnimationType">
+				<xs:attribute name="fromPercent" type="xs:float" default="0.0"/>
+				<xs:attribute name="toPercent" type="xs:float" default="0.0"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:element name="RadialProgress" type="RadialProgressType" substitutionGroup="AnimationRef"/>
+
 	<xs:complexType name="ControlPointsType">
 		<xs:sequence minOccurs="0">
 			<xs:choice maxOccurs="unbounded">

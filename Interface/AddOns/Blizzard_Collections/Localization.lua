@@ -12,8 +12,11 @@ local l10nTable = {
 	ruRU = {},
 	zhCN = {
 		localize = function()
-			StaticPopupDialogs["BATTLE_PET_RENAME"].maxLetters = 8;
-        end,
+			local renameDialog = StaticPopupDialogs["BATTLE_PET_RENAME"];
+			if renameDialog then
+				renameDialog.maxLetters = 8;
+			end
+		end,
 	},
 	zhTW = {},
 };

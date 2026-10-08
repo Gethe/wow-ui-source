@@ -439,17 +439,3 @@ function BankFramePurchaseButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION);
 	StaticPopup_Show("CONFIRM_BUY_BANK_TAB", nil, nil, { bankType = self:GetParent():GetActiveBankType() });
 end
-
-local function RegisterWithPlayerInteractionManager()
-	local frameInfo =
-	{
-		frame = "BankFrame",
-		showFunc = BankFrame_Open,
-	};
-
-	RegisterPlayerInteraction(Enum.PlayerInteractionType.Banker, frameInfo);
-	RegisterPlayerInteraction(Enum.PlayerInteractionType.CharacterBanker, frameInfo);
-	RegisterPlayerInteraction(Enum.PlayerInteractionType.AccountBanker, frameInfo);
-end
-
-RegisterWithPlayerInteractionManager();

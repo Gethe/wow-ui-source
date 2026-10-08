@@ -78,6 +78,32 @@ function LegacySystemFrameMixin:SelectPage(id)
 	end
 end
 
+function LegacySystemFrameMixin:ShowChallenges()
+	ShowUIPanel(self);
+	EventRegistry:TriggerEvent("Legacy.SelectPage", CHALLENGES_PAGE_IDX);
+end
+
+function LegacySystemFrameMixin:ToggleChallenges()
+	if self:IsShown() and self.currentPage == CHALLENGES_PAGE_IDX then
+		HideUIPanel(self);
+	else
+		self:ShowChallenges();
+	end
+end
+
+function LegacySystemFrameMixin:OpenToChallenge(achievementID, closeOtherWindows)
+	if closeOtherWindows and not self:IsShown() then
+		CloseAllWindows();
+	end
+
+	self:ShowChallenges();
+	AchievementFrame_SelectAchievement(achievementID);
+end
+
+function LegacySystemFrameMixin:SelectChallenge(achievementID)
+	self.ChallengesPage:SelectChallenge(achievementID);
+end
+
 function LegacySystemFrameMixin:RegisterForTransitions()
 	InputUtil.RegisterForInterfaceTransitions(self, nil);
 	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
@@ -381,11 +407,18 @@ function LegacySystemFrameMixin:SetupGamepadTreeFooter(navigateElements, toggleT
 		self.TreePage.LegacyTreeTraitPanel.ApplyButton:Click();
 	end
 
-	local applyChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, 0.5, nil, ApplyChanges, GAMEPAD_TALENT_APPLY);
+	local holdTime = 0.5;
+	local applyChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, holdTime, nil, ApplyChanges, GAMEPAD_TALENT_APPLY);
 	applyChanges:AddCondition(CanApplyChanges);
 	applyChanges:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
-	local applyChangesIcon = GamepadMode.AddGamepadIconToButton(self.TreePage.LegacyTreeTraitPanel.ApplyButton, GAMEPAD_FACE_LEFT, { buttonHeightScale = (1.3), });
-	GamepadMode.SetGamepadIconShown(applyChangesIcon, true);
+
+	local applyChangesIcon = GamepadMode.AddGamepadIconToButton(self.TreePage.LegacyTreeTraitPanel.ApplyButton, GAMEPAD_FACE_LEFT, { isHoldAction = true });
+	local applyChangesIconBinding = applyChanges:AddCustomPromptBinding({
+		conditions = { CanApplyChanges },
+		frame = applyChangesIcon,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+	});
+	applyChanges:AddCustomPromptHoldFunction(applyChangesIconBinding, { holdTime = holdTime });
 
 	local treeFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "LegacySystemFooter_Tree");
 	treeFooter:SetAnchorOffsets(0, -5);

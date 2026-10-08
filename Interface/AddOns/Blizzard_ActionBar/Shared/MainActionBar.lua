@@ -30,6 +30,10 @@ end
 
 function MainActionBar_InitializeGamepad()
 	MainActionBar:Hide();
+	MainActionBar:UpdateEndCaps(true);
+	if (MainActionBar.BorderArt) then
+		MainActionBar.BorderArt:Hide();
+	end
 	StanceBar:Hide();
 	MicroMenu:Hide();
 	BagsBar:Hide();
@@ -96,7 +100,8 @@ function MainActionBarMixin:SetQuickKeybindModeEffectsShown(showEffects)
 end
 
 function MainActionBarMixin:UpdateEndCaps(forceHide)
-	self.EndCaps:SetShown(not forceHide);
+	local show = (not forceHide) and (not InputUtil.IsGamepadUIEnabled());
+	self.EndCaps:SetShown(show);
 end
 
 function MainActionBarMixin:EditModeSetScale(newScale)

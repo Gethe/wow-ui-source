@@ -91,6 +91,7 @@ function DetailsProductContainerFrameMixin:InitProductContainer()
 		frame:Init();
 		frame:SetProductInfo(productInfo);
 		frame:SetSelected(isSelected);
+		frame.selectionBehavior = scrollContainer.selectionBehavior;
 		frame:SetScript("OnClick", function(button, buttonName)
 			scrollContainer.selectionBehavior:ToggleSelect(button);
 			EventRegistry:TriggerEvent("CatalogShop.OnBundleChildSelected", productInfo);

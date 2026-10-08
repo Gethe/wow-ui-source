@@ -89,6 +89,7 @@ end
 
 function InputAxisBinding:Unbind()
 	ReplaceAxisFunction(self.key, nil);
+	self.isActive = false;
 end
 
 function InputAxisBinding:OnOverbound()

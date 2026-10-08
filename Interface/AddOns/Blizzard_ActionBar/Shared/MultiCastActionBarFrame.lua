@@ -326,6 +326,7 @@ end
 
 function TotemActionBarMixin:SetIsInEditMode(isInEditMode)
 	self.isInEditMode = isInEditMode;
+	self:UpdateShownState();
 end
 
 function TotemActionBarMixin:UpdateShownState()
@@ -847,7 +848,9 @@ function MultiCastSpellButton_OnEvent(self, event, ...)
 end
 
 function MultiCastSpellButton_OnEnter(self)
-	MultiCastSpellButton_SetTooltip(self);
+	if ( self.spellId and self.spellId > 0 ) then
+		MultiCastSpellButton_SetTooltip(self);
+	end
 end
 
 function MultiCastSpellButton_OnLeave(self)

@@ -39,9 +39,9 @@ local ChatConstants =
 		{
 			Name = "ChatChannelType",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 8,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 7,
 			Fields =
 			{
 				{ Name = "None", Type = "ChatChannelType", EnumValue = 0 },
@@ -49,6 +49,9 @@ local ChatConstants =
 				{ Name = "PrivateParty", Type = "ChatChannelType", EnumValue = 2 },
 				{ Name = "PublicParty", Type = "ChatChannelType", EnumValue = 3 },
 				{ Name = "Communities", Type = "ChatChannelType", EnumValue = 4 },
+				{ Name = "DiscordParty", Type = "ChatChannelType", EnumValue = 5 },
+				{ Name = "DiscordGuild", Type = "ChatChannelType", EnumValue = 6 },
+				{ Name = "DiscordSolo", Type = "ChatChannelType", EnumValue = 7 },
 			},
 		},
 		{

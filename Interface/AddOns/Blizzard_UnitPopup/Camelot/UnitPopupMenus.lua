@@ -47,6 +47,7 @@ function UnitPopupMenuFriendlyPlayerInteract:GetEntries()
 	return {
 		UnitPopupWhisperButtonMixin,
 		UnitPopupInspectButtonMixin, 
+		UnitPopupInspectTalentsButtonMixin,
 		UnitPopupTradeButtonMixin, 
 		UnitPopupFollowButtonMixin,
 		UnitPopupDuelButtonMixin,
@@ -58,7 +59,6 @@ function UnitPopupMenuEnemyPlayer:GetEntries()
 	return {
 		UnitPopupSetFocusButtonMixin,
 		UnitPopupInteractSubsectionTitle,
-		UnitPopupInspectButtonMixin, 
 		UnitPopupDuelButtonMixin,
 		UnitPopupOtherSubsectionTitle,
 		UnitPopupEnterEditModeMixin,

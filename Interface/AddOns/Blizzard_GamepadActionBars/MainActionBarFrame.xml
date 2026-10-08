@@ -1,13 +1,11 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Frame name="GamepadMainActionBarFrame" parentKey="GamepadMainActionBarFrame" parent="UIParent" mixin="GamepadMainActionBarFrameMixin" hidden="true">
-		<Size x="656" y="202" />
-		<Anchors>
-			<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM" x="0" y="110"/>
-		</Anchors>
+	<Frame name="GamepadMainActionBarFrame" inherits="EditModeGamepadMainActionBarSystemTemplate" parentKey="GamepadMainActionBarFrame" parent="UIParent" mixin="GamepadMainActionBarFrameMixin" hidden="true">
+		<Size x="656" y="202"/>
 		<Scripts>
 			<OnShow method="OnShow"/>
 			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 		<Frames>

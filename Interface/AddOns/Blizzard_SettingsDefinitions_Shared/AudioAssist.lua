@@ -91,6 +91,13 @@ local function InitScreenNarrationSettings(category, layout)
 	end
 end
 
+local function GetVoiceServiceTooltip(tooltip)
+	if C_VoiceChat.GetActiveVoiceProviderID and C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord then
+		return ("%s\n\n|cnERROR_COLOR:%s|r"):format(tooltip, VOICE_CHAT_JOIN_GROUP_DISCORD_TEXT);
+	end
+	return tooltip;
+end
+
 local function Register()
 	local category, layout = Settings.RegisterVerticalLayoutCategory(ACCESSIBILITY_AUDIO_LABEL);
 
@@ -107,7 +114,7 @@ local function Register()
 		if voiceChatEnabled then
 			local setting = Settings.RegisterCVarSetting(category, "speechToText", Settings.VarType.Boolean, ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION);
 			local options = nil;
-			local data = Settings.CreateSettingInitializerData(setting, options, OPTION_TOOLTIP_ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION);
+			local data = Settings.CreateSettingInitializerData(setting, options, GenerateClosure(GetVoiceServiceTooltip, OPTION_TOOLTIP_ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION));
 			local initializer = Settings.CreateSettingInitializer("STTTemplate", data);
 			layout:AddInitializer(initializer);
 		end
@@ -125,7 +132,7 @@ local function Register()
 
 		-- Speak for me in Voice Chat
 		if voiceChatEnabled then
-			local rtttSetting, rtttInitializer = Settings.SetupCVarCheckbox(category, "remoteTextToSpeech", ENABLE_REMOTE_TEXT_TO_SPEECH, OPTION_TOOLTIP_ENABLE_REMOTE_TEXT_TO_SPEECH);
+			local rtttSetting, rtttInitializer = Settings.SetupCVarCheckbox(category, "remoteTextToSpeech", ENABLE_REMOTE_TEXT_TO_SPEECH, GenerateClosure(GetVoiceServiceTooltip, OPTION_TOOLTIP_ENABLE_REMOTE_TEXT_TO_SPEECH));
 
 			local function IsSpeakForMeAllowed()
 				return C_VoiceChat.IsSpeakForMeAllowed();
@@ -1315,6 +1322,11 @@ local function Register()
 
 	do
 		local function InitRemoteVoices(category)
+			if C_VoiceChat.GetActiveVoiceProviderID and C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord then
+				InitSettings(category);
+				return;
+			end
+
 			local voices = C_VoiceChat.GetRemoteTtsVoices();
 			if #voices > 0 then
 				InitSettings(category);

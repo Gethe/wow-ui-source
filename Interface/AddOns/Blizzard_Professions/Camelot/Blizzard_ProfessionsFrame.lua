@@ -87,8 +87,15 @@ function ProfessionsMixin:RightTabSelected(frame)
 	end
 
 	if InputUtil.IsGamepadUIEnabled() then
-		self.TabIndicators:SetCurrentIndex(self.selectedGamepadTabID);
-		self.TabIndicators:UpdateTabIndicators();
+		local tabIndicators = self.TabIndicators;
+		tabIndicators:UpdateTabVisibility();
+
+		local visibleIndex = tIndexOf(tabIndicators.visibleTabs, frame);
+		if visibleIndex then
+			tabIndicators:SetCurrentIndex(visibleIndex);
+			tabIndicators:UpdateTabIndicators();
+		end
+
 		self:UpdateSmartNavFocus();
 	end
 end
@@ -120,6 +127,22 @@ function ProfessionsMixin:SelectBookPage()
 	ProfessionsFrame:SetTitleFormatted(TRADE_SKILL_TITLE, TRADE_SKILLS);
 
 	ProfessionsFrame:RightTabSelected(self.ProfessionsOverviewTab);
+end
+
+-- The book page lives inside this frame, so stay open and only drop a trade skill still open for the abandoned profession.
+function ProfessionsMixin:OnSkillAbandoned(skillLine)
+	if Professions.IsSelectedProfession(skillLine) then
+		C_TradeSkillUI.CloseTradeSkill();
+	end
+end
+
+-- Closing a trade skill behind the book page must not dismiss the frame.
+function ProfessionsMixin:OnTradeSkillClosed()
+	if self.BookPage:IsShown() then
+		self:RefreshRightTabs();
+	else
+		HideUIPanel(self);
+	end
 end
 
 function ProfessionsMixin:OverrideArt()

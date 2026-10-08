@@ -159,10 +159,16 @@
 						<!-- Reanchored in code. -->
 					</Anchors>
 				</FontString>
+				<Texture parentKey="DiscordIcon" atlas="UI-ChatIcon-Discord" hidden="true" collapsesLayout="true">
+					<Size x="16" y="16"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT" x="4" y="0"/>
+					</Anchors>
+				</Texture>
 				<FontString parentKey="Level" inherits="GameFontDisableLeft" maxLines="1">
 					<Size x="0" y="14"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMRIGHT" x="4" y="0"/>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.DiscordIcon" relativePoint="BOTTOMRIGHT" x="4" y="0"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="ClassIcon" atlas="groupfinder-icon-class-warrior" hidden="true">
@@ -396,6 +402,11 @@
 				</FontString>
 				<FontString parentKey="CompletedEncounterHeader" inherits="GameFontNormal" justifyH="LEFT" text="LFG_LIST_BOSSES_DEFEATED">
 					<!-- Reanchored in script. -->
+				</FontString>
+				<FontString parentKey="VoiceChat" inherits="GameFontNormal" justifyH="LEFT" wordwrap="false" hidden="true" collapsesLayout="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.MemberCount" relativePoint="BOTTOMLEFT" x="0" y="-8"/>
+					</Anchors>
 				</FontString>
 			</Layer>
 		</Layers>

@@ -57,6 +57,11 @@ end
 
 function ChannelListMixin:AddChatSystemButton(channelID)
 	local name, header, _, channelNumber, count, active, category, channelType = GetChannelDisplayInfo(channelID);
+
+	if C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord and channelType == Enum.ChatChannelType.PrivateParty then
+		channelType = Enum.ChatChannelType.DiscordParty;
+	end
+
 	if header then
 		self:AddHeaderButton(channelID, name, header, channelNumber, count, active, category);
 	elseif not self:IsCollapsed(category) then
@@ -93,7 +98,6 @@ function ChannelListMixin:Update()
 	for i = 1, numGroupChatChannels do
 		self:AddChatSystemButton(i);
 	end
-
 
 	-- Then add community streams
 	local clubs = C_Club.GetSubscribedClubs();

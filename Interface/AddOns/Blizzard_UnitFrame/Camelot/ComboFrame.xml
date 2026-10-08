@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ComboFrame" mixin="ComboFrameMixin" toplevel="true" hidden="true" alpha="0">
+		<Size x="1" y="1"/>
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="PlayerFrame" relativePoint="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

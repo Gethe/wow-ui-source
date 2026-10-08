@@ -9,7 +9,7 @@ function ClassNameplateBarFeralDruid:Setup()
 end
 
 function ClassNameplateBarFeralDruid:ShouldShowBar()
-	local shouldShowBar = DruidComboPointBarMixin.ShouldShowBar(self);
+	local shouldShowBar = DruidComboPointBarMixin.ShouldShowComboPointBar(self);
 	if shouldShowBar then
 		self:ShowNameplateBar();
 	else

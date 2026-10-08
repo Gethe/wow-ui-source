@@ -297,8 +297,6 @@ function ProfessionsCraftingOutputLogMixin:OnLoad()
 	
 	self.parentResults = {};
 	self.childResults = {};
-
-	self:RegisterForTransitions();
 end
 
 function ProfessionsCraftingOutputLogMixin:ProcessResultData(resultData)
@@ -422,85 +420,4 @@ end
 function ProfessionsCraftingOutputLogMixin:Cleanup()
 	self.ScrollBox:Flush();
 	self:Hide();
-end
-
-function ProfessionsCraftingOutputLogMixin:SetupGamepad()
-	local function LinkReagentInChat()
-		local suspendedButton = GamepadMode.FrameControlsManager:GetSuspendedButton();
-		if not suspendedButton then
-			return;
-		end
-
-		local itemLink = suspendedButton.itemLink;
-		if not itemLink then
-			return;
-		end
-
-		Menu.GetManager():CloseMenus();
-
-		local activeChatFrame = FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK);
-		if activeChatFrame and activeChatFrame:IsShown() then
-			activeChatFrame:SetGamepadFocus();
-		end
-
-		return ChatFrameUtil.InsertLink(itemLink);
-	end
-
-	local function OpenBagTo()
-		local suspendedButton = GamepadMode.FrameControlsManager:GetSuspendedButton();
-		if not suspendedButton then
-			return;
-		end
-
-		local itemLink = suspendedButton.itemLink;
-		if not itemLink then
-			return;
-		end
-
-		GamepadMode.FrameControlsManager:UnsuspendAllFrames();
-
-		OpenBackpack();
-		GamepadMode.FrameControlsManager:FocusFrame(ContainerFrameCombinedBags);
-		ContainerFrameCombinedBags:SetFocusByItemLink(itemLink);
-	end
-
-	local function CanOpenBagTo()
-		local button = SmartNavigation:GetCurrentButton();
-		return SearchBagsForItemLink(button.itemLink) >= 0;
-	end
-
-	local moreOptions = GamepadSharedUtility.CreateMoreActionsPromptedBinding(GAMEPAD_FACE_TOP);
-	moreOptions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_SEE_IN_BAG, OpenBagTo, CanOpenBagTo);
-	moreOptions:AddMoreActionsEntry(SOCIAL_SHARE_TEXT, LinkReagentInChat);
-
-	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CraftingOutputFooter");
-	self.footer:AddPromptedBinding(moreOptions);
-	self.footer:AddStandardFrameControlManagerBindings(self);
-	self.footer:Finalize();	
-end
-
-function ProfessionsCraftingOutputLogMixin:GetJumpHintLabel()
-	return PROFESSIONS_CRAFT_OUTPUT_TITLE;
-end
-
-function ProfessionsCraftingOutputLogMixin:InitGamepad()
-	self.ClosePanelButton:Hide();
-end
-
-function ProfessionsCraftingOutputLogMixin:FocusGamepad()
-	self.footer:ShowAndActivateBindings();
-
-	SmartNavigation:SetScrollFrameForFrame(self, self.ScrollBox);
-	GamepadScrollBarHint:SetOwner(self.ScrollBar.Track.Thumb, "CENTER");
-	GamepadScrollBarHint:Show();
-end
-
-function ProfessionsCraftingOutputLogMixin:UnfocusGamepad()
-	self.footer:HideAndDeactivateBindings();
-end
-
-function ProfessionsCraftingOutputLogMixin:RegisterForTransitions()
-	InputUtil.RegisterForInterfaceTransitions(self, nil);
-	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
-	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitGamepad, self));
 end

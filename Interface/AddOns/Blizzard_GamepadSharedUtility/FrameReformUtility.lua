@@ -17,6 +17,7 @@ local BUTTON_HEIGHT_RATIO = 0.8;
 	{
 	  buttonHeightScale: scale factor applied to `button` height to compute the final icon size
 	  hookEnableDisableScript: Whether to hook `OnEnable` and `OnDisable`
+	  isHoldAction: Whether it represents a hold action
 
 	  See `UpdateGamepadIconAnchor` for more options.
 	}
@@ -33,6 +34,7 @@ function GamepadMode.AddGamepadIconToButton(button, gamepadButtonName, opts)
 
 	local icon = CreateFrame("FRAME", nil, button, "InputIconTextureFrameTemplate");
 	icon:SetInputKey(gamepadButtonName);
+	icon:SetIsHoldAction(opts.isHoldAction);
 	local iconSize = math.floor(button:GetHeight() * buttonHeightScale);
 	icon:SetSize(iconSize, iconSize);
 	icon.gamepadShown = true;

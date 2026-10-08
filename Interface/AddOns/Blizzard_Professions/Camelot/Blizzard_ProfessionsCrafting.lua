@@ -17,8 +17,10 @@ function ProfessionsCraftingPageMixin:OverrideArt()
 	-- shown in Blizzard_ProfessionsRecipeSchematicForm.lua
 	self.SchematicForm.NineSlice:ClearAllPoints();
 
-	self.SchematicForm.TrackRecipeCheckbox:ClearAllPoints();
-	self.SchematicForm.TrackRecipeCheckbox:SetPoint("BOTTOMLEFT", 17, 11);
+	local trackRecipeCheckbox = self.SchematicForm.TrackRecipeCheckbox;
+	local textWidth = trackRecipeCheckbox.Text:GetStringWidth();
+	trackRecipeCheckbox:ClearAllPoints();
+	trackRecipeCheckbox:SetPoint("BOTTOMRIGHT", -(textWidth + 20), 11);
 
 	self.RecipeList:SetWidth(304);
 end

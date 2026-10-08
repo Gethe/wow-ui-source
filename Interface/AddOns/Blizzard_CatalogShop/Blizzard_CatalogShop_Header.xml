@@ -2,6 +2,9 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
 	<Frame name="CatalogShopHeaderFrameTemplate" mixin="CatalogShopHeaderFrameMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="1612" y="40"/>
 		<Frames>
 				<Frame parentKey="CatalogShopNavBar" inherits="NavigationBarTemplate">
@@ -19,6 +22,15 @@
 						<Anchor point="RIGHT" x="-20" y="0"/>
 					</Anchors>
 				</EditBox>
+			<Frame parentKey="SearchBoxIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_LEFT" type="global"/>
+				</KeyValues>
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.SearchBox" relativePoint="LEFT" x="-7" y="0" />
+				</Anchors>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="OVERLAY">

@@ -131,11 +131,11 @@ function SuperDistrictButtonMixin:SetupSuperDistrictButton(superDistrictID)
 	self.superDistrictID = superDistrictID;
 	local info = C_DistrictUtils.GetSuperDistrictInfo(superDistrictID);
 
-	local disallowLogin = info.disallowLogin;
-	self:SetEnabled(not disallowLogin);
-	self:SetDisabledVisuals(disallowLogin);
-	self:SetMotionScriptsWhileDisabled(disallowLogin);
-	self:SetDisabledTooltip(disallowLogin and SUPER_DISTRICT_DISALLOW_LOGIN or nil, "ANCHOR_BOTTOM");
+	local disabled = info.disallowLogin or info.noRealmsAvailable;
+	self:SetEnabled(not disabled);
+	self:SetDisabledVisuals(disabled);
+	self:SetMotionScriptsWhileDisabled(disabled);
+	self:SetDisabledTooltip(disabled and SUPER_DISTRICT_DISALLOW_LOGIN or nil, "ANCHOR_BOTTOM");
 	self:SetScript("OnEnter", self.OnEnter);
 	self:SetScript("OnLeave", self.OnLeave);
 

@@ -9,6 +9,7 @@
 Blizzard_GroupFinder_VanillaStyle_Bootstrap.lua [Bootstrap]
 
 [Family]\LFGVanilla_Constants.lua
+Blizzard_LFGVanilla_VoiceChat.lua
 
 [Family]\Templates.lua							[ExcludeLoadGameType classic]
 [Family]\Templates.xml							[ExcludeLoadGameType classic]

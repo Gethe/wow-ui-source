@@ -32,6 +32,20 @@ local LFGConstants =
 			},
 		},
 		{
+			Name = "LFGEntryVoiceMode",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "LFGEntryVoiceMode", EnumValue = 0 },
+				{ Name = "Legacy", Type = "LFGEntryVoiceMode", EnumValue = 1 },
+				{ Name = "Discord", Type = "LFGEntryVoiceMode", EnumValue = 2 },
+				{ Name = "Custom", Type = "LFGEntryVoiceMode", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "LFGListDisplayType",
 			Type = "Enumeration",
 			NumValues = 6,

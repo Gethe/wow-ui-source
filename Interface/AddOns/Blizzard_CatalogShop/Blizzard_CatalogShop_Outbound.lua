@@ -52,3 +52,43 @@ end
 function CatalogShopOutboundInterface.VisibilityUpdated(isShown)
 	securecall("CatalogShopVisibilityUpdated", isShown);
 end
+
+function CatalogShopOutboundInterface.HandleGamepadFrameShown(frame, isPopup, shouldFocusFrame)
+	securecallfunction(function()
+		GamepadMode.FrameControlsManager:FrameShown(frame, isPopup, shouldFocusFrame);
+	end);
+end
+
+function CatalogShopOutboundInterface.HandleGamepadFrameHidden(frame)
+	securecallfunction(function()
+		GamepadMode.FrameControlsManager:FrameHidden(frame);
+	end);
+end
+
+function CatalogShopOutboundInterface.SetupGamepad(frame)
+	securecall("CatalogShopSetupGamepad", frame);
+end
+
+function CatalogShopOutboundInterface.FocusGamepad(frame)
+	securecall("CatalogShopFocusGamepad", frame);
+end
+
+function CatalogShopOutboundInterface.UnfocusGamepad(frame)
+	securecall("CatalogShopUnfocusGamepad", frame);
+end
+
+function CatalogShopOutboundInterface.RefreshSmartNav(frame)
+	securecall("CatalogShopRefreshSmartNav", frame);
+end
+
+function CatalogShopOutboundInterface.ShowProductDetails(frame)
+	securecall("CatalogShopShowProductDetails", frame);
+end
+
+function CatalogShopOutboundInterface.HideProductDetails(frame)
+	securecall("CatalogShopHideProductDetails", frame);
+end
+
+function CatalogShopOutboundInterface.RefreshGamepadPurchaseButton(frame)
+	securecall("CatalogShopRefreshGamepadPurchaseButton", frame);
+end

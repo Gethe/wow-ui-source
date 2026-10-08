@@ -111,13 +111,9 @@ end
 function InspectSwitchTabs(newID)
 	local newFrame = _G[INSPECTFRAME_SUBFRAMES[newID]];
 	local oldFrame = _G[INSPECTFRAME_SUBFRAMES[PanelTemplates_GetSelectedTab(InspectFrame)]];
-	if ( newFrame ) then
-		if ( oldFrame ) then
-			oldFrame:Hide();
-		end
-		PanelTemplates_SetTab(InspectFrame, newID);
-		newFrame:Show();
-	end
+	oldFrame:Hide();
+	PanelTemplates_SetTab(InspectFrame, newID);
+	newFrame:Show();
 end
 
 function InspectFrameTab_OnClick(self)

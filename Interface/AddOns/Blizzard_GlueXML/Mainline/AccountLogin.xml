@@ -71,7 +71,7 @@
 						<Texture parentKey="GameLogo">
 							<Size x="256" y="128"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="3" y="-7"/>
+								<Anchor point="TOPLEFT" x="3" y="-2"/>
 							</Anchors>
 						</Texture>
 						<Texture name="WorldOfWarcraftRating" hidden="true">

@@ -800,7 +800,7 @@ function ShouldShowName(frame)
 		if frame.optionTable.displayNameByPlayerNameRules then
 			if frame.IsSimplified and frame:IsSimplified() and (not frame.IsTarget or not frame:IsTarget()) then
 				failedRequirement = true;
-			elseif frame.forceShowUnitName then
+			elseif frame.forceShowUnitName and not UnitIsGameObject(frame.unit) then
 				-- If this is set, return true for all non-simplified nameplates.
 				return true;
 			elseif UnitShouldDisplayName(frame.unit) then

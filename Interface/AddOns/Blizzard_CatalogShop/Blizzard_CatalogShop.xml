@@ -131,6 +131,7 @@
 					<ModelScene parentKey="MainModelScene" inherits="NoZoomModelSceneMixinTemplate" drawLayer="BORDER" frameLevel="500" >
 						<KeyValues>
 							<KeyValue key="allowOverlappedModels" value="true" type="boolean"/>
+							<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -449,6 +450,7 @@
 			<Frame parentKey="CatalogShopDetailsFrame" hidden="true" inherits="VerticalLayoutFrame" mixin="CatalogShopProductDetailsFrameMixin" frameLevel="1000" hyperlinksEnabled="true" enableMouse="true">
 				<KeyValues>
 					<KeyValue key="fixedWidth" value="320" type="number"/>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-45" y="45"/>
@@ -551,6 +553,20 @@
 								<Size x="141" y="50"/>
 								<Anchors>
 									<Anchor point="TOPLEFT" x="15" y="0"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="catalogShopOnClickMethod" value="PurchaseProduct" type="string"/>
+								</KeyValues>
+								<Frames>
+									<Frame parentKey="Spinner" inherits="SpinnerTemplate" alpha="0.5" hidden="true">
+										<Size x="18" y="18"/>
+									</Frame>
+								</Frames>
+							</Button>
+							<Button parentKey="GamepadPurchaseButton" inherits="CatalogShopRedGoldButtonTemplate" mixin="CatalogShopPurchaseButtonMixin" frameLevel="2000" hidden="true">
+								<Size x="200" y="50"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="catalogShopOnClickMethod" value="PurchaseProduct" type="string"/>

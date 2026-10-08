@@ -3,6 +3,18 @@ RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y = -77;
 RIGHT_ACTION_BAR_DEFAULT_PADDING_X = 0;
 RIGHT_CONTAINER_OFFSET_Y = -260;
 
+local function CopySettings(settings, overrideSettings)
+	local copy = {};
+	for k, v in pairs(settings) do
+		if overrideSettings[k] ~= nil then
+			copy[k] = overrideSettings[k];
+		else
+			copy[k] = v;
+		end
+	end
+	return copy;
+end
+
 EDIT_MODE_MODERN_SYSTEM_MAP =
 {
 	[Enum.EditModeSystem.ActionBar] = {
@@ -1249,65 +1261,32 @@ EDIT_MODE_CLASSIC_SYSTEM_MAP =
 EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 {
 	[Enum.EditModeSystem.ActionBar] = {
-		[Enum.EditModeActionBarSystemIndices.StanceBar] = {
-			settings = {
-				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
-				[Enum.EditModeActionBarSetting.NumRows] = 1,
-				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 2,
-			},
-			anchorInfo = {
-				point = "BOTTOM",
-				relativeTo = "UIParent",
-				relativePoint = "BOTTOM",
-				offsetX = 0,
-				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
-				bottomBarOffsetX = BOTTOM_ACTION_BAR_DEFAULT_OFFSET_X,
-			},
-		},
+		[Enum.EditModeActionBarSystemIndices.StanceBar] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.ActionBar][Enum.EditModeActionBarSystemIndices.StanceBar],
 
-		[Enum.EditModeActionBarSystemIndices.PetActionBar] = {
-			settings = {
-				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
-				[Enum.EditModeActionBarSetting.NumRows] = 1,
-				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 2,
-				[Enum.EditModeActionBarSetting.AlwaysShowButtons] = 0,
-			},
-			anchorInfo = {
-				point = "BOTTOM",
-				relativeTo = "UIParent",
-				relativePoint = "BOTTOM",
-				offsetX = 0,
-				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
-				bottomBarOffsetX = BOTTOM_ACTION_BAR_DEFAULT_OFFSET_X,
-			},
-		},
+		[Enum.EditModeActionBarSystemIndices.PetActionBar] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.ActionBar][Enum.EditModeActionBarSystemIndices.PetActionBar],
 
-		[Enum.EditModeActionBarSystemIndices.PossessActionBar] = {
-			settings = {
-				[Enum.EditModeActionBarSetting.Orientation] = Enum.ActionBarOrientation.Horizontal,
-				[Enum.EditModeActionBarSetting.NumRows] = 1,
-				[Enum.EditModeActionBarSetting.IconSize] = 5,
-				[Enum.EditModeActionBarSetting.IconPadding] = 2,
-			},
-			anchorInfo = {
-				point = "BOTTOM",
-				relativeTo = "UIParent",
-				relativePoint = "BOTTOM",
-				offsetX = 0,
-				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
-				bottomBarOffsetX = BOTTOM_ACTION_BAR_DEFAULT_OFFSET_X,
-			},
+		[Enum.EditModeActionBarSystemIndices.PossessActionBar] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.ActionBar][Enum.EditModeActionBarSystemIndices.PossessActionBar],
+	},
+
+	[Enum.EditModeSystem.GamepadMainActionBar] = {
+		settings = {
+			[Enum.EditModeGamepadMainActionBarSetting.Compact] = 0,
+			[Enum.EditModeGamepadMainActionBarSetting.ShowEmptyBars] = 1,
+			[Enum.EditModeGamepadMainActionBarSetting.ShowButtonPrompts] = 0,
+			[Enum.EditModeGamepadMainActionBarSetting.ShowHighlight] = 1,
+			[Enum.EditModeGamepadMainActionBarSetting.ShouldExpand] = 1,
+		},
+		anchorInfo = {
+			point = "BOTTOM",
+			relativeTo = "UIParent",
+			relativePoint="BOTTOM",
+			offsetX = 0,
+			offsetY = 110,
 		},
 	},
 
 	[Enum.EditModeSystem.CastBar] = {
-		settings = {
-			[Enum.EditModeCastBarSetting.BarSize] = 0,
-			[Enum.EditModeCastBarSetting.LockToPlayerFrame] = 0,
-			[Enum.EditModeCastBarSetting.ShowCastTime] = 0,
-		},
+		settings = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.CastBar].settings,
 		anchorInfo = {
 			point = "BOTTOM",
 			relativeTo = "GamepadMainActionBarFrame",
@@ -1319,10 +1298,7 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 
 	[Enum.EditModeSystem.UnitFrame] = {
 		[Enum.EditModeUnitFrameSystemIndices.Player] = {
-			settings = {
-				[Enum.EditModeUnitFrameSetting.CastBarUnderneath] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
-			},
+			settings = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Player].settings,
 			anchorInfo = {
 				point = "BOTTOMRIGHT",
 				relativeTo = "UIParent",
@@ -1333,10 +1309,10 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 
 		[Enum.EditModeUnitFrameSystemIndices.Target] = {
-			settings = {
+			settings = CopySettings(EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Target].settings,
+			{
 				[Enum.EditModeUnitFrameSetting.BuffsOnTop] = 1,
-				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
-			},
+			}),
 			anchorInfo = {
 				point = "BOTTOMLEFT",
 				relativeTo = "UIParent",
@@ -1347,11 +1323,7 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 
 		[Enum.EditModeUnitFrameSystemIndices.Focus] = {
-			settings = {
-				[Enum.EditModeUnitFrameSetting.BuffsOnTop] = 0,
-				[Enum.EditModeUnitFrameSetting.UseLargerFrame] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
-			},
+			settings = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Focus].settings,
 			anchorInfo = {
 				point = "BOTTOMLEFT",
 				relativeTo = "UIParent",
@@ -1362,16 +1334,11 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 
 		[Enum.EditModeUnitFrameSystemIndices.Party] = {
-			settings = {
-				[Enum.EditModeUnitFrameSetting.UseRaidStylePartyFrames] = 0,
-				[Enum.EditModeUnitFrameSetting.ShowPartyFrameBackground] = 0,
-				[Enum.EditModeUnitFrameSetting.UseHorizontalGroups] = 0,
-				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
+			settings = CopySettings(EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Party].settings,
+			{
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
-				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Group,
-			},
+			}),
 			anchorInfo = {
 				point = "TOPLEFT",
 				relativeTo = "CompactRaidFrameManager",
@@ -1382,15 +1349,11 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 
 		[Enum.EditModeUnitFrameSystemIndices.Raid] = {
-			settings = {
-				[Enum.EditModeUnitFrameSetting.ViewRaidSize] = Enum.ViewRaidSize.Ten,
-				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-				[Enum.EditModeUnitFrameSetting.RaidGroupDisplayType] = Enum.RaidGroupDisplayType.SeparateGroupsVertical,
-				[Enum.EditModeUnitFrameSetting.SortPlayersBy] = Enum.SortPlayersBy.Role,
+			settings = CopySettings(EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Raid].settings,
+			{
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
-				[Enum.EditModeUnitFrameSetting.RowSize] = 5,
-			},
+			}),
 			anchorInfo = {
 				point = "TOPLEFT",
 				relativeTo = "CompactRaidFrameManager",
@@ -1401,12 +1364,7 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 
 		[Enum.EditModeUnitFrameSystemIndices.Boss] = {
-			settings = {
-				[Enum.EditModeUnitFrameSetting.UseLargerFrame] = 0,
-				[Enum.EditModeUnitFrameSetting.CastBarOnSide] = 1,
-				-- [Enum.EditModeUnitFrameSetting.ShowCastTime] = 0,
-				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
-			},
+			settings = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Boss].settings,
 			anchorInfo = {
 				point = "RIGHT",
 				relativeTo = "UIParent",
@@ -1417,12 +1375,11 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 
 		[Enum.EditModeUnitFrameSystemIndices.Arena] = {
-			settings = {
-				[Enum.EditModeUnitFrameSetting.ViewArenaSize] = Enum.ViewArenaSize.Three,
+			settings = CopySettings(EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Arena].settings,
+			{
 				[Enum.EditModeUnitFrameSetting.FrameHeight] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameWidth] = 0,
-				[Enum.EditModeUnitFrameSetting.DisplayBorder] = 0,
-			},
+			}),
 			anchorInfo = {
 				point = "RIGHT",
 				relativeTo = "UIParent",
@@ -1432,115 +1389,24 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 			},
 		},
 
-		[Enum.EditModeUnitFrameSystemIndices.Pet] = {
-			settings = {
-				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
-			},
-			anchorInfo = {
-				point = "CENTER",
-				relativeTo = "UIParent",
-				relativePoint = "CENTER",
-				offsetX = 0,
-				offsetY = 0,
-			},
-		},
+		[Enum.EditModeUnitFrameSystemIndices.Pet] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.UnitFrame][Enum.EditModeUnitFrameSystemIndices.Pet],
 	},
 
-	[Enum.EditModeSystem.Minimap] = {
-		settings = {
-			[Enum.EditModeMinimapSetting.HeaderUnderneath] = 0,
-			[Enum.EditModeMinimapSetting.RotateMinimap] = 0,
-			[Enum.EditModeMinimapSetting.Size] = 5,
-		},
-		anchorInfo = {
-			point = "TOPRIGHT",
-			relativeTo = "UIParent",
-			relativePoint = "TOPRIGHT",
-			offsetX = 0,
-			offsetY = 0,
-		},
-	},
+	[Enum.EditModeSystem.Minimap] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.Minimap],
 
-	[Enum.EditModeSystem.EncounterBar] = {
-		settings = {
-		},
-		anchorInfo = {
-			point = "BOTTOM",
-			relativeTo = "UIParent",
-			relativePoint = "BOTTOM",
-			offsetX = 0,
-			offsetY = MAIN_ACTION_BAR_OFFSET_Y,
-		},
-	},
+	[Enum.EditModeSystem.EncounterBar] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.EncounterBar],
 
-	[Enum.EditModeSystem.ExtraAbilities] = {
-		settings = {
-		},
-		anchorInfo = {
-			point = "BOTTOM",
-			relativeTo = "UIParent",
-			relativePoint = "BOTTOM",
-			offsetX = 0,
-			offsetY = MAIN_ACTION_BAR_OFFSET_Y,
-		},
-	},
+	[Enum.EditModeSystem.ExtraAbilities] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.ExtraAbilities],
 
-	[Enum.EditModeSystem.AuraFrame] = {
-		[Enum.EditModeAuraFrameSystemIndices.BuffFrame] = {
-			settings = {
-				[Enum.EditModeAuraFrameSetting.Orientation] = Enum.AuraFrameOrientation.Horizontal,
-				[Enum.EditModeAuraFrameSetting.IconWrap] = Enum.AuraFrameIconWrap.Down,
-				[Enum.EditModeAuraFrameSetting.IconDirection] = Enum.AuraFrameIconDirection.Left,
-				[Enum.EditModeAuraFrameSetting.IconLimitBuffFrame] = 11,
-				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
-				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
-			},
-			anchorInfo = {
-				point = "TOPRIGHT",
-				relativeTo = "UIParent",
-				relativePoint = "TOPRIGHT",
-				offsetX = -255,
-				offsetY = -10,
-			},
-		},
-		[Enum.EditModeAuraFrameSystemIndices.DebuffFrame] = {
-			settings = {
-				[Enum.EditModeAuraFrameSetting.Orientation] = Enum.AuraFrameOrientation.Horizontal,
-				[Enum.EditModeAuraFrameSetting.IconWrap] = Enum.AuraFrameIconWrap.Down,
-				[Enum.EditModeAuraFrameSetting.IconDirection] = Enum.AuraFrameIconDirection.Left,
-				[Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame] = 8,
-				[Enum.EditModeAuraFrameSetting.IconSize] = 5,
-				[Enum.EditModeAuraFrameSetting.IconPadding] = 5,
-			},
-			anchorInfo = {
-				point = "TOPRIGHT",
-				relativeTo = "UIParent",
-				relativePoint = "TOPRIGHT",
-				offsetX = -270,
-				offsetY = -155,
-			},
-		},
-	},
+	[Enum.EditModeSystem.AuraFrame] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.AuraFrame],
 
-	[Enum.EditModeSystem.TalkingHeadFrame] = {
-		settings = {
-		},
-		anchorInfo = {
-			point = "BOTTOM",
-			relativeTo = "UIParent",
-			relativePoint = "BOTTOM",
-			offsetX = 0,
-			offsetY = MAIN_ACTION_BAR_OFFSET_Y,
-		},
-	},
+	[Enum.EditModeSystem.TalkingHeadFrame] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.TalkingHeadFrame],
 
 	[Enum.EditModeSystem.ChatFrame] = {
-		settings = {
-			[Enum.EditModeChatFrameSetting.WidthHundreds] = 4,
-			[Enum.EditModeChatFrameSetting.WidthTensAndOnes] = 30,
-			[Enum.EditModeChatFrameSetting.HeightHundreds] = 1,
+		settings = CopySettings(EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.ChatFrame].settings,
+		{
 			[Enum.EditModeChatFrameSetting.HeightTensAndOnes] = 20,
-		},
+		}),
 		anchorInfo = {
 			point = "BOTTOMLEFT",
 			relativeTo = "UIParent",
@@ -1550,34 +1416,12 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 	},
 
-	[Enum.EditModeSystem.VehicleLeaveButton] = {
-		settings = {
-		},
-		anchorInfo = {
-			point = "BOTTOM",
-			relativeTo = "UIParent",
-			relativePoint = "BOTTOM",
-			offsetX = 0,
-			offsetY = MAIN_ACTION_BAR_OFFSET_Y,
-			bottomBarOffsetX = BOTTOM_ACTION_BAR_DEFAULT_OFFSET_X,
-		},
-	},
+	[Enum.EditModeSystem.VehicleLeaveButton] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.VehicleLeaveButton],
 
-	[Enum.EditModeSystem.LootFrame] = {
-		settings = {
-		},
-		anchorInfo = {
-			point = "TOPLEFT",
-			relativeTo = "UIParent",
-			relativePoint = "TOPLEFT",
-			offsetX = 16,
-			offsetY = -116,
-		},
-	},
+	[Enum.EditModeSystem.LootFrame] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.LootFrame],
 
 	[Enum.EditModeSystem.HudTooltip] = {
-		settings = {
-		},
+		settings = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.HudTooltip].settings,
 		anchorInfo = {
 			point = "BOTTOMRIGHT",
 			relativeTo = "UIParent",
@@ -1587,55 +1431,15 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 	},
 
-	[Enum.EditModeSystem.ObjectiveTracker] = {
-		settings = {
-			[Enum.EditModeObjectiveTrackerSetting.Height] = 40,
-			[Enum.EditModeObjectiveTrackerSetting.Opacity] = 0,
-			[Enum.EditModeObjectiveTrackerSetting.TextSize] = 0,
-		},
-		anchorInfo = {
-			point = "TOPRIGHT",
-			relativeTo = "UIParent",
-			relativePoint = "TOPRIGHT",
-			offsetX = -110,
-			offsetY = -275,
-		},
-	},
+	[Enum.EditModeSystem.ObjectiveTracker] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.ObjectiveTracker],
 
-	[Enum.EditModeSystem.MicroMenu] = {
-		settings = {
-			[Enum.EditModeMicroMenuSetting.Orientation] = Enum.MicroMenuOrientation.Horizontal,
-			[Enum.EditModeMicroMenuSetting.Order] = Enum.MicroMenuOrder.Default,
-			[Enum.EditModeMicroMenuSetting.Size] = 6,
-		},
-		anchorInfo = {
-			point = MICRO_MENU_ANCHOR_POINT,
-			relativeTo = MICRO_MENU_ANCHOR_RELATIVE_TO,
-			relativePoint = MICRO_MENU_ANCHOR_RELATIVE_POINT,
-			offsetX = MICRO_MENU_ANCHOR_OFFSET_X,
-			offsetY = MICRO_MENU_ANCHOR_OFFSET_Y,
-		},
-	},
+	[Enum.EditModeSystem.MicroMenu] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.MicroMenu],
 
-	[Enum.EditModeSystem.Bags] = {
-		settings = {
-			[Enum.EditModeBagsSetting.Orientation] = Enum.BagsOrientation.Horizontal,
-			[Enum.EditModeBagsSetting.Direction] = Enum.BagsDirection.Left,
-			[Enum.EditModeBagsSetting.Size] = 5,
-		},
-		anchorInfo = {
-			point = BAGS_ANCHOR_POINT,
-			relativeTo = BAGS_ANCHOR_RELATIVE_TO,
-			relativePoint = BAGS_ANCHOR_RELATIVE_POINT,
-			offsetX = BAGS_ANCHOR_OFFSET_X,
-			offsetY = BAGS_ANCHOR_OFFSET_Y,
-		},
-	},
+	[Enum.EditModeSystem.Bags] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.Bags],
 
 	[Enum.EditModeSystem.StatusTrackingBar] = {
 		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar1] = {
-			settings = {
-			},
+			settings = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.StatusTrackingBar][Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar1].settings,
 			anchorInfo = {
 				point = "BOTTOM",
 				relativeTo = "StatusTrackingBarManager",
@@ -1645,8 +1449,7 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 			},
 		},
 		[Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar2] = {
-			settings = {
-			},
+			settings = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.StatusTrackingBar][Enum.EditModeStatusTrackingBarSystemIndices.StatusTrackingBar2].settings,
 			anchorInfo = {
 				point = "BOTTOM",
 				relativeTo = "StatusTrackingBarManager",
@@ -1657,70 +1460,19 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 	},
 
-	[Enum.EditModeSystem.MainActionBarEndCap] = {
-		[Enum.EditModeMainActionBarEndCapSystemIndices.EndCapLeft] = {
-			settings = {
-				[Enum.EditModeMainActionBarEndCapSetting.Hidden] = 1,
-			},
-			anchorInfo = {
-				point = "RIGHT",
-				relativeTo = "MainActionBar",
-				relativePoint = "LEFT",
-				offsetX = 30,
-				offsetY = 5,
-			},
-		},
-		[Enum.EditModeMainActionBarEndCapSystemIndices.EndCapRight] = {
-			settings = {
-				[Enum.EditModeMainActionBarEndCapSetting.Hidden] = 1,
-			},
-			anchorInfo = {
-				point = "LEFT",
-				relativeTo = "BagsBar",
-				relativePoint = "RIGHT",
-				offsetX = -30,
-				offsetY = 5,
-			},
-		},
-	},
+	[Enum.EditModeSystem.MainActionBarEndCap] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.MainActionBarEndCap],
 
-	[Enum.EditModeSystem.DurabilityFrame] = {
-		settings = {
-			[Enum.EditModeDurabilityFrameSetting.Size] = 5,
-		},
-		anchorInfo = {
-			point = "RIGHT",
-			relativeTo = "UIParent",
-			relativePoint = "RIGHT",
-			offsetX = 0,
-			offsetY = 0,
-		},
-	},
+	[Enum.EditModeSystem.DurabilityFrame] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.DurabilityFrame],
 
-	[Enum.EditModeSystem.TimerBars] = {
-		settings = {
-			[Enum.EditModeTimerBarsSetting.Size] = 0,
-		},
-		anchorInfo = {
-			point = "TOP",
-			relativeTo = "UIParent",
-			relativePoint = "TOP",
-			offsetX = 0,
-			offsetY = -100,
-		},
-	},
+	[Enum.EditModeSystem.TimerBars] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.TimerBars],
 
 	[Enum.EditModeSystem.SwingTimer] = {
 		[Enum.EditModeSwingTimerSystemIndices.MainHand] = {
-			settings = {
-				[Enum.EditModeSwingTimerSetting.Scale] = 5,
-				[Enum.EditModeSwingTimerSetting.Opacity] = 50,
-				[Enum.EditModeSwingTimerSetting.Visibility] = Enum.EditModeSwingTimerVisibility.Always,
+			settings = CopySettings(EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.SwingTimer][Enum.EditModeSwingTimerSystemIndices.MainHand].settings,
+			{
 				[Enum.EditModeSwingTimerSetting.Width] = 120,
 				[Enum.EditModeSwingTimerSetting.Height] = 6,
-				[Enum.EditModeSwingTimerSetting.ShowBarTitle] = 1,
-				[Enum.EditModeSwingTimerSetting.ShowTime] = 1,
-			},
+			}),
 			-- Swing timers are stacked by the bottom managed frame container; these anchors only take effect once a bar is moved out of it.
 			anchorInfo = {
 				point = "BOTTOM",
@@ -1731,15 +1483,11 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 			},
 		},
 		[Enum.EditModeSwingTimerSystemIndices.OffHand] = {
-			settings = {
-				[Enum.EditModeSwingTimerSetting.Scale] = 5,
-				[Enum.EditModeSwingTimerSetting.Opacity] = 50,
-				[Enum.EditModeSwingTimerSetting.Visibility] = Enum.EditModeSwingTimerVisibility.Always,
+			settings = CopySettings(EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.SwingTimer][Enum.EditModeSwingTimerSystemIndices.OffHand].settings,
+			{
 				[Enum.EditModeSwingTimerSetting.Width] = 120,
 				[Enum.EditModeSwingTimerSetting.Height] = 6,
-				[Enum.EditModeSwingTimerSetting.ShowBarTitle] = 1,
-				[Enum.EditModeSwingTimerSetting.ShowTime] = 1,
-			},
+			}),
 			-- Swing timers are stacked by the bottom managed frame container; these anchors only take effect once a bar is moved out of it.
 			anchorInfo = {
 				point = "BOTTOM",
@@ -1750,15 +1498,11 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 			},
 		},
 		[Enum.EditModeSwingTimerSystemIndices.Ranged] = {
-			settings = {
-				[Enum.EditModeSwingTimerSetting.Scale] = 5,
-				[Enum.EditModeSwingTimerSetting.Opacity] = 50,
-				[Enum.EditModeSwingTimerSetting.Visibility] = Enum.EditModeSwingTimerVisibility.Always,
+			settings = CopySettings(EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.SwingTimer][Enum.EditModeSwingTimerSystemIndices.Ranged].settings,
+			{
 				[Enum.EditModeSwingTimerSetting.Width] = 120,
 				[Enum.EditModeSwingTimerSetting.Height] = 6,
-				[Enum.EditModeSwingTimerSetting.ShowBarTitle] = 1,
-				[Enum.EditModeSwingTimerSetting.ShowTime] = 1,
-			},
+			}),
 			-- Swing timers are stacked by the bottom managed frame container; these anchors only take effect once a bar is moved out of it.
 			anchorInfo = {
 				point = "BOTTOM",
@@ -1770,120 +1514,23 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 	},
 
-	[Enum.EditModeSystem.VehicleSeatIndicator] = {
-		settings = {
-			[Enum.EditModeVehicleSeatIndicatorSetting.Size] = 10,
-		},
-		anchorInfo = {
-			point = "RIGHT",
-			relativeTo = "UIParent",
-			relativePoint = "RIGHT",
-			offsetX = 0,
-			offsetY = 0,
-		},
-	},
+	[Enum.EditModeSystem.VehicleSeatIndicator] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.VehicleSeatIndicator],
 
-	[Enum.EditModeSystem.ArchaeologyBar] = {
-		settings = {
-			[Enum.EditModeArchaeologyBarSetting.Size] = 0,
-		},
-		anchorInfo = {
-			point = "BOTTOM",
-			relativeTo = "UIParent",
-			relativePoint = "BOTTOM",
-			offsetX = 0,
-			offsetY = 0,
-		},
-	},
+	[Enum.EditModeSystem.ArchaeologyBar] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.ArchaeologyBar],
 
-	[Enum.EditModeSystem.CooldownViewer] = {
-		[Enum.EditModeCooldownViewerSystemIndices.Essential] = {
-			settings = {
-				[Enum.EditModeCooldownViewerSetting.Orientation] = Enum.CooldownViewerOrientation.Horizontal,
-				[Enum.EditModeCooldownViewerSetting.IconLimit] = 12,
-				[Enum.EditModeCooldownViewerSetting.IconDirection] = Enum.CooldownViewerIconDirection.Right,
-				[Enum.EditModeCooldownViewerSetting.IconSize] = 5,
-				[Enum.EditModeCooldownViewerSetting.IconPadding] = 2,
-				[Enum.EditModeCooldownViewerSetting.Opacity] = 100,
-				[Enum.EditModeCooldownViewerSetting.VisibleSetting] = Enum.CooldownViewerVisibleSetting.Always,
-				-- [Enum.EditModeCooldownViewerSetting.BarContent] = Enum.CooldownViewerBarContent.IconAndName,
-				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
-				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
-			},
-			anchorInfo = {
-				point = "BOTTOM",
-				relativeTo = "UIParent",
-				relativePoint = "BOTTOM",
-				offsetX = 0,
-				offsetY = 310,
-			},
-		},
-		[Enum.EditModeCooldownViewerSystemIndices.Utility] = {
-			settings = {
-				[Enum.EditModeCooldownViewerSetting.Orientation] = Enum.CooldownViewerOrientation.Horizontal,
-				[Enum.EditModeCooldownViewerSetting.IconLimit] = 7,
-				[Enum.EditModeCooldownViewerSetting.IconDirection] = Enum.CooldownViewerIconDirection.Right,
-				[Enum.EditModeCooldownViewerSetting.IconSize] = 5,
-				[Enum.EditModeCooldownViewerSetting.IconPadding] = 2,
-				[Enum.EditModeCooldownViewerSetting.Opacity] = 100,
-				[Enum.EditModeCooldownViewerSetting.VisibleSetting] = Enum.CooldownViewerVisibleSetting.Always,
-				-- [Enum.EditModeCooldownViewerSetting.BarContent] = Enum.CooldownViewerBarContent.IconAndName,
-				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
-				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
-			},
-			anchorInfo = {
-				point = "BOTTOM",
-				relativeTo = "UIParent",
-				relativePoint = "BOTTOM",
-				offsetX = 0,
-				offsetY = 240,
-			},
-		},
-		[Enum.EditModeCooldownViewerSystemIndices.BuffIcon] = {
-			settings = {
-				[Enum.EditModeCooldownViewerSetting.Orientation] = Enum.CooldownViewerOrientation.Horizontal,
-				[Enum.EditModeCooldownViewerSetting.IconLimit] = 1,
-				[Enum.EditModeCooldownViewerSetting.IconDirection] = Enum.CooldownViewerIconDirection.Right,
-				[Enum.EditModeCooldownViewerSetting.IconSize] = 5,
-				[Enum.EditModeCooldownViewerSetting.IconPadding] = 5,
-				[Enum.EditModeCooldownViewerSetting.Opacity] = 100,
-				[Enum.EditModeCooldownViewerSetting.VisibleSetting] = Enum.CooldownViewerVisibleSetting.Always,
-				-- [Enum.EditModeCooldownViewerSetting.BarContent] = Enum.CooldownViewerBarContent.IconAndName,
-				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
-				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
-			},
-			anchorInfo = {
-				point = "BOTTOM",
-				relativeTo = "UIParent",
-				relativePoint = "BOTTOM",
-				offsetX = 0,
-				offsetY = 370,
-			},
-		},
-		[Enum.EditModeCooldownViewerSystemIndices.BuffBar] = {
-			settings = {
-				[Enum.EditModeCooldownViewerSetting.Orientation] = Enum.CooldownViewerOrientation.Vertical,
-				[Enum.EditModeCooldownViewerSetting.IconLimit] = 1,
-				[Enum.EditModeCooldownViewerSetting.IconDirection] = Enum.CooldownViewerIconDirection.Left,
-				[Enum.EditModeCooldownViewerSetting.IconSize] = 5,
-				[Enum.EditModeCooldownViewerSetting.IconPadding] = 5,
-				[Enum.EditModeCooldownViewerSetting.Opacity] = 100,
-				[Enum.EditModeCooldownViewerSetting.VisibleSetting] = Enum.CooldownViewerVisibleSetting.Always,
-				[Enum.EditModeCooldownViewerSetting.BarContent] = Enum.CooldownViewerBarContent.IconAndName,
-				[Enum.EditModeCooldownViewerSetting.HideWhenInactive] = 1,
-				[Enum.EditModeCooldownViewerSetting.ShowTimer] = 1,
-			},
-			anchorInfo = {
-				point = "BOTTOM",
-				relativeTo = "UIParent",
-				relativePoint = "BOTTOM",
-				offsetX = 420,
-				offsetY = 430,
-			},
-		},
-	},
+	[Enum.EditModeSystem.TotemActionBar] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.TotemActionBar],
 
-	[Enum.EditModeSystem.RaidWarning] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.RaidWarning];
+	[Enum.EditModeSystem.CooldownViewer] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.CooldownViewer],
 
-	[Enum.EditModeSystem.GroupFinder] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.GroupFinder];
+	[Enum.EditModeSystem.PersonalResourceDisplay] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.PersonalResourceDisplay],
+
+	[Enum.EditModeSystem.EncounterEvents] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.EncounterEvents],
+
+	[Enum.EditModeSystem.DamageMeter] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.DamageMeter],
+
+	[Enum.EditModeSystem.RaidWarning] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.RaidWarning],
+
+	[Enum.EditModeSystem.GroupFinder] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.GroupFinder],
+
+	[Enum.EditModeSystem.LossOfControl] = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.LossOfControl],
 };

@@ -63,6 +63,8 @@ function LegacyChallengeDetailPaneMixin:SelectChallenge(achievementId, scrollToC
 			end
 		end
 	end
+
+	return elementData ~= nil;
 end
 
 function LegacyChallengeDetailPaneMixin:UpdateChallenge(elementData)

@@ -4,7 +4,8 @@
 
 function VoiceTranscriptionFrame_UpdateVisibility(self)
 	local id = self:GetID();
-	local showVoice = (GetCVarBool("speechToText") and self.isTranscribing) or C_VoiceChat.IsSpeakForMeActive();
+	local isDiscord = C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord;
+	local showVoice = not isDiscord and ((GetCVarBool("speechToText") and self.isTranscribing) or C_VoiceChat.IsSpeakForMeActive());
 	local shown, _, docked = select(7, GetChatWindowInfo(id));
 	local update = false;
 
@@ -143,7 +144,9 @@ end
 
 function VoiceTranscriptionFrame_CustomEventHandler(self, event, ...)
 	local cvarName = ...
-	if ( event == "VARIABLES_LOADED" ) then
+	if ( event == "VOICE_CHAT_ACTIVE_VOICE_PROVIDER_CHANGED" ) then
+		VoiceTranscriptionFrame_UpdateVisibility(self);
+	elseif ( event == "VARIABLES_LOADED" ) then
 		VoiceTranscriptionFrame_UpdateVisibility(self);
 		VoiceTranscriptionFrame_UpdateVoiceTab(self);
 		VoiceTranscriptionFrame_UpdateEditBox(self);
@@ -182,6 +185,7 @@ function VoiceTranscriptionFrame_Init(self)
 	self.Tab = _G[self:GetName().."Tab"];
 	self.customEventHandler = VoiceTranscriptionFrame_CustomEventHandler;
 	self:RegisterEvent("VARIABLES_LOADED");
+	self:RegisterEvent("VOICE_CHAT_ACTIVE_VOICE_PROVIDER_CHANGED");
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("VOICE_CHAT_SPEAK_FOR_ME_ACTIVE_STATUS_UPDATED");
 	self:RegisterEvent("UPDATE_CHAT_COLOR");

@@ -35,8 +35,6 @@ function ProfessionsBookFrameMixin:UpdateRankBar(frame, skillLine, rank, maxRank
 			professionInfo.skillModifier = rankModifier;
 		end
 
-		-- Prevent the status bar from listening to events and instead depend on Updates from the book, which have more context.
-		frame.StatusBar.ownerManagesEvents = true;
 		frame.StatusBar:Update(professionInfo);
 		frame.StatusBar:Show();
 	end

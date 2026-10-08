@@ -123,6 +123,20 @@ function BankFrame_Open()
 	end
 end
 
+local function RegisterWithPlayerInteractionManager()
+	local frameInfo =
+	{
+		frame = "BankFrame",
+		showFunc = BankFrame_Open,
+	};
+
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.Banker, frameInfo);
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.CharacterBanker, frameInfo);
+	RegisterPlayerInteraction(Enum.PlayerInteractionType.AccountBanker, frameInfo);
+end
+
+RegisterWithPlayerInteractionManager();
+
 BankPanelSystemMixin = {};
 
 function BankPanelSystemMixin:GetBankPanel()

@@ -231,7 +231,8 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 		local mapID = self:GetParent():GetMapID();
 		local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
 
-		rootDescription:CreateTitle(WORLD_MAP_FILTER_LABEL_SHOW);
+		local title = self:GetParent():ShouldCombineMapAndQuestMenu() and WORLD_MAP_FILTER_TITLE_SHOW_MAP or WORLD_MAP_FILTER_LABEL_SHOW;
+		rootDescription:CreateTitle(title);
 
 		local function AddFilter(parent, cvarName)
 			local filter = self:GetWorldMapFilter(cvarName);
@@ -319,6 +320,23 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 
 		if arch then
 			AddFilter(rootDescription, "digSites");
+		end
+
+		if self:GetParent():ShouldCombineMapAndQuestMenu() then
+			local function IsSelected()
+				return GetCVarBool("showQuestObjectivesInLog");
+			end
+
+			local function SetSelected()
+				SetCVar("showQuestObjectivesInLog", not IsSelected());
+				QuestLogQuests_Update();
+			end
+
+			rootDescription:QueueSpacer();
+			rootDescription:QueueDivider();
+			rootDescription:QueueSpacer();
+			rootDescription:CreateTitle(WORLD_MAP_FILTER_TITLE_SHOW_QUEST_LOG);
+			rootDescription:CreateCheckbox(QUEST_LOG_SHOW_OBJECTIVES, IsSelected, SetSelected);
 		end
 	end);
 end

@@ -434,7 +434,7 @@ function CharacterSelectNavBarMixin:SetStoreButtonEnabled(enabled)
 
 	self.StoreButton:SetEnabled(enabled);
 
-	local highlight = false;
+	local highlight = enabled and self.StoreButton:IsMouseOver();
 	self.StoreButton:formatButtonTextCallback(enabled, highlight);
 
 	self:UpdateButtonDividerState(self.GameModeButton);

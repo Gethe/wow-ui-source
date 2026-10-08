@@ -1513,6 +1513,44 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			formatter = ShowAsPercentage,
 		},
 	},
+
+	[Enum.EditModeSystem.GamepadMainActionBar] =
+	{
+		-- Compact
+		{
+			setting = Enum.EditModeGamepadMainActionBarSetting.Compact,
+			name = GAMEPAD_TOGGLE_COMPACT_ACTION_BAR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Empty Bars
+		{
+			setting = Enum.EditModeGamepadMainActionBarSetting.ShowEmptyBars,
+			name = GAMEPAD_SHOW_EMPTY_ACTIONBARS,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Button Prompts
+		{
+			setting = Enum.EditModeGamepadMainActionBarSetting.ShowButtonPrompts,
+			name = GAMEPAD_ACTION_BAR_INPUT_PROMPT_TOGGLE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Highlight
+		{
+			setting = Enum.EditModeGamepadMainActionBarSetting.ShowHighlight,
+			name = GAMEPAD_ACTION_BAR_HIGHLIGHT_TOGGLE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Expand
+		{
+			setting = Enum.EditModeGamepadMainActionBarSetting.ShouldExpand,
+			name = GAMEPAD_ACTION_BAR_SCALING_TOGGLE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+	},
 };
 
 local DefaultSettingDisplayInfo = {};

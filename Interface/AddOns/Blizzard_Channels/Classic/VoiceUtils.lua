@@ -89,7 +89,10 @@ function Voice_GetGameErrorStringFromStatusCode(statusCode)
 end
 
 function Voice_IsConnectionError(statusCode)
-	return statusCode == Enum.VoiceChatStatusCode.ProxyConnectionTimeOut or statusCode == Enum.VoiceChatStatusCode.ProxyConnectionUnexpectedDisconnect;
+	return statusCode == Enum.VoiceChatStatusCode.Failure
+		or statusCode == Enum.VoiceChatStatusCode.Disabled
+		or statusCode == Enum.VoiceChatStatusCode.ProxyConnectionTimeOut
+		or statusCode == Enum.VoiceChatStatusCode.ProxyConnectionUnexpectedDisconnect;
 end
 
 -- This exists so that the chat frame isn't spammed with voice errors related to certain features being disabled.

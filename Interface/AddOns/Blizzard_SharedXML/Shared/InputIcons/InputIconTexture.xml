@@ -3,17 +3,66 @@
 	<Frame name="InputIconTextureFrameTemplate" virtual="true" mixin="InputIconTextureMixin">
 		<Size x="24" y="24"/>
 		<KeyValues>
-			<KeyValue key="useDropShadow" value="false" type="boolean"/>
+			<KeyValue key="useDropShadow" value="true" type="boolean"/>
 		</KeyValues>
 		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="NormalTexture" hidden="true" />
+				<Texture parentKey="HoverTexture" hidden="true "/>
+				<Texture parentKey="PressedTexture" hidden="true "/>
+				<Texture parentKey="ActiveTexture" hidden="true "/>
+				<Texture parentKey="DisabledTexture" hidden="true "/>
+				<Texture parentKey="LoadBar" atlas="gamepad-press&amp;hold-loadBar" hidden="true" rotation="180">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NormalTexture"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalTexture"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="HoldIndicatorBG" atlas="gamepad-press&amp;hold-indicator-BG" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NormalTexture"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalTexture"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LoadBarBG" atlas="gamepad-press&amp;hold-loadBar-BG" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NormalTexture"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalTexture"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="LoadBarGlow" atlas="gamepad-press&amp;hold-loadBar-glw-BG" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NormalTexture"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalTexture"/>
+					</Anchors>
+				</Texture>
+			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="1">
-				<Texture name="$parentNormalTexture" parentKey="NormalTexture" hidden="true" />
-				<Texture name="$parentHoverTexture" parentKey="HoverTexture" hidden="true "/>
-				<Texture name="$parentPressedTexture" parentKey="PressedTexture" hidden="true "/>
-				<Texture name="$parentActiveTexture" parentKey="ActiveTexture" hidden="true "/>
-				<Texture name="$parentDisabledTexture" parentKey="DisabledTexture" hidden="true "/>
+				<Texture parentKey="HoldIndicator" atlas="gamepad-press&amp;hold-indicator" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NormalTexture"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalTexture"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SpinnerTip" atlas="gamepad-press&amp;hold-spinnerTip" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.NormalTexture"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.NormalTexture"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="HoldAnim" setToFinalAlpha="true">
+				<Rotation parentKey="SpinnerTipAnim" childKey="SpinnerTip" order="1" degrees="-360">
+					<Origin point="CENTER"/>
+				</Rotation>
+				<RadialProgress parentKey="LoadBarAnim" childKey="LoadBar" order="1" fromPercent="0" toPercent="1"/>
+				<Alpha parentKey="LoadBarGlowAnim" childKey="LoadBarGlow" order="1" fromAlpha="0" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 		</Scripts>

@@ -39,68 +39,38 @@ local DefaultTextureStatesByUsable = {
 	[InputIconUsableState.Disabled] = InputIconTextureState.Disabled,
 }
 
---[[
-	Which variation of the a button propt to utilize.
-
-	Design intent:
-	* 'Standard' is the icon variants without any dropshadow)
-	* 'WithShadow_Game' is a variant that has a dropshadow, which will be used outside of glue screens
-	* 'WithShadow_Glue' is a variant that has a dropshadow, which will be used when in glue screens
-
-	Current reality:
-	* Replacement art was only provided _with_ dropshadows. This needs to be rectified for launch, but the
-	code remains - it was was deemed acceptable for BlizzCon.
-]]
-local InputIconVariant = {
+InputDeviceIconVariant = {
 	Standard = 1,
-	WithShadow_Game = 2,
-	WithShadow_Glue = 3,
-}
+	NoShadow = 2,
+};
 
 function InputDeviceIconSetMixin:Init()
 	self.inputIconPromptTextures = {};
 end
 
-function InputDeviceIconSetMixin:GetInputIconTexturesForKey(inputKey)
-	if not self.inputIconPromptTextures[inputKey] then
+function InputDeviceIconSetMixin:GetInputIconTexturesForKey(inputKey, variant)
+	local variants = self.inputIconPromptTextures[inputKey];
+	if not variants then
 		return;
 	end
 
-	--[[ Code remains in place to support shadowed and unshadowed variants of icon
-		textures. Variable shadow versions of each are also implemented, one for
-		glue screens, and one for game screens. This variable (and code defining it)
-		exists to maintain that functionality.
-
-		At time of writing, only full-shadowed icons exist, and are used universally.
-		We shall call this 'Standard' for now, and otherwise revisit them when
-		proper icons are ready.
-
-		Naming conventions are inconsistently applied, and I get the feeling that art
-		is completely unaware that these multiple variations exist, so I'm holding off
-		on implementing the variations / predicting their atlas keys until that
-		discussion is had.
-	]]
-	local variant = InputIconVariant.Standard;
-	if self.useDropShadow then
-		if InGlue() then
-			variant = InputIconVariant.WithShadow_Glue;
-		else
-			variant = InputIconVariant.WithShadow_Game;
-		end
+	if not variant then
+		variant = InputDeviceIconVariant.Standard;
 	end
 
-	--[[ Until the above is revisited, this assert is impractical, but I'm leaving it here
-		because I do think it should exist when that day arrives. For now, fall back
-		to the standard variation if a variant is not found. ]]
-	-- assert(self.inputIconPromptTextures[inputKey][variant], "Variant not found.");
-	return self.inputIconPromptTextures[inputKey][variant] or self.inputIconPromptTextures[inputKey][InputIconVariant.Standard];
+	local iconTextures = variants[variant];
+	if not assertsafe(iconTextures, "Variant not found.") then
+		iconTextures = variants[InputDeviceIconVariant.Standard];
+	end
+
+	return iconTextures;
 end
 
 function InputDeviceIconSetMixin:GetInputIconTextureSetForKey(inputKey)
 	if self.inputIconPromptTextures[inputKey] == nil then
 		self.inputIconPromptTextures[inputKey] = {};
 
-		for _, variant in pairs(InputIconVariant) do
+		for _, variant in pairs(InputDeviceIconVariant) do
 			self.inputIconPromptTextures[inputKey][variant] = {}
 			for _, state in pairs(InputIconTextureState) do
 				self.inputIconPromptTextures[inputKey][variant][state] = {}
@@ -111,9 +81,21 @@ function InputDeviceIconSetMixin:GetInputIconTextureSetForKey(inputKey)
 	return self.inputIconPromptTextures[inputKey];
 end
 
-function InputDeviceIconSetMixin:SetInputIconTextureForKey(inputKey, variant, state, promptIconTexture)
+function InputDeviceIconSetMixin:SetInputIconTextureForKey(inputKey, state, promptIconTexture)
+	local lastDash = promptIconTexture:match('^.*()-');
+	assert(lastDash ~= nil, "Invalid texture naming convention");
+	local flatTex = promptIconTexture:sub(1, lastDash - 1) .. "-flat" .. promptIconTexture:sub(lastDash);
 	local set = self:GetInputIconTextureSetForKey(inputKey);
-	set[variant][state] = promptIconTexture;
+	set[InputDeviceIconVariant.Standard][state] = promptIconTexture;
+	set[InputDeviceIconVariant.NoShadow][state] = flatTex;
+end
+
+function InputDeviceIconSetMixin:SetSymbolInputIconTextureForKey(inputKey, symbolIconTexture)
+	local set = self:GetInputIconTextureSetForKey(inputKey);
+	for k, v in pairs(InputIconTextureState) do
+		set[InputDeviceIconVariant.Standard][v] = symbolIconTexture;
+		set[InputDeviceIconVariant.NoShadow][v] = symbolIconTexture;
+	end
 end
 
 local INPUT_DEVICE_INPUT_ICON_TEXTURE_SETS =
@@ -124,496 +106,464 @@ local INPUT_DEVICE_INPUT_ICON_TEXTURE_SETS =
 	Reverse = CreateAndInitFromMixin(InputDeviceIconSetMixin),
 }
 
+for _, key in ipairs({"Generic", "Letters", "Shapes", "Reverse"}) do
+	local iconSet = INPUT_DEVICE_INPUT_ICON_TEXTURE_SETS[key];
+	iconSet:SetSymbolInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, "gamepad-symbols-plus");
+	iconSet:SetSymbolInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, "gamepad-symbols-slash");
+end
+
 for _, key in ipairs({"Generic", "Letters"}) do
 	local iconSet = INPUT_DEVICE_INPUT_ICON_TEXTURE_SETS[key];
-	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-trigger-lt-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-trigger-lt-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-trigger-lt-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-trigger-lt-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-trigger-lt-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Normal, "gamepad-xbox1-trigger-lt-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Hover, "gamepad-xbox1-trigger-lt-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Pressed, "gamepad-xbox1-trigger-lt-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Active, "gamepad-xbox1-trigger-lt-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Disabled, "gamepad-xbox1-trigger-lt-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-trigger-rt-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-trigger-rt-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-trigger-rt-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-trigger-rt-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-trigger-rt-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Normal, "gamepad-xbox1-trigger-rt-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Hover, "gamepad-xbox1-trigger-rt-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Pressed, "gamepad-xbox1-trigger-rt-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Active, "gamepad-xbox1-trigger-rt-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Disabled, "gamepad-xbox1-trigger-rt-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-trigger-lb-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-trigger-lb-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-trigger-lb-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-trigger-lb-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-trigger-lb-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Normal, "gamepad-xbox1-trigger-lb-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Hover, "gamepad-xbox1-trigger-lb-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Pressed, "gamepad-xbox1-trigger-lb-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Active, "gamepad-xbox1-trigger-lb-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Disabled, "gamepad-xbox1-trigger-lb-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-trigger-rb-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-trigger-rb-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-trigger-rb-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-trigger-rb-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-trigger-rb-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Normal, "gamepad-xbox1-trigger-rb-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Hover, "gamepad-xbox1-trigger-rb-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Pressed, "gamepad-xbox1-trigger-rb-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Active, "gamepad-xbox1-trigger-rb-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Disabled, "gamepad-xbox1-trigger-rb-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-dpadall-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-dpadall-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-dpadall-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-dpadall-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-dpadall-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Normal, "gamepad-xbox1-dpadall-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Hover, "gamepad-xbox1-dpadall-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Pressed, "gamepad-xbox1-dpadall-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Active, "gamepad-xbox1-dpadall-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Disabled, "gamepad-xbox1-dpadall-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-dpadleftright-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-dpadleftright-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-dpadleftright-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-dpadleftright-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-dpadleftright-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Normal, "gamepad-xbox1-dpadleftright-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Hover, "gamepad-xbox1-dpadleftright-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Pressed, "gamepad-xbox1-dpadleftright-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Active, "gamepad-xbox1-dpadleftright-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Disabled, "gamepad-xbox1-dpadleftright-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-dpadupdown-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-dpadupdown-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-dpadupdown-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-dpadupdown-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-dpadupdown-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Normal, "gamepad-xbox1-dpadupdown-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Hover, "gamepad-xbox1-dpadupdown-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Pressed, "gamepad-xbox1-dpadupdown-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Active, "gamepad-xbox1-dpadupdown-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Disabled, "gamepad-xbox1-dpadupdown-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-dpadup-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-dpadup-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-dpadup-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-dpadup-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-dpadup-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Normal, "gamepad-xbox1-dpadup-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Hover, "gamepad-xbox1-dpadup-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Pressed, "gamepad-xbox1-dpadup-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Active, "gamepad-xbox1-dpadup-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Disabled, "gamepad-xbox1-dpadup-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-dpaddown-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-dpaddown-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-dpaddown-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-dpaddown-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-dpaddown-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Normal, "gamepad-xbox1-dpaddown-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Hover, "gamepad-xbox1-dpaddown-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Pressed, "gamepad-xbox1-dpaddown-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Active, "gamepad-xbox1-dpaddown-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Disabled, "gamepad-xbox1-dpaddown-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-dpadleft-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-dpadleft-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-dpadleft-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-dpadleft-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-dpadleft-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Normal, "gamepad-xbox1-dpadleft-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Hover, "gamepad-xbox1-dpadleft-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Pressed, "gamepad-xbox1-dpadleft-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Active, "gamepad-xbox1-dpadleft-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Disabled, "gamepad-xbox1-dpadleft-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-dpadright-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-dpadright-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-dpadright-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-dpadright-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-dpadright-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Normal, "gamepad-xbox1-dpadright-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Hover, "gamepad-xbox1-dpadright-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Pressed, "gamepad-xbox1-dpadright-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Active, "gamepad-xbox1-dpadright-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Disabled, "gamepad-xbox1-dpadright-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-buttony-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-buttony-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-buttony-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-buttony-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-buttony-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Normal, "gamepad-xbox1-buttony-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Hover, "gamepad-xbox1-buttony-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Pressed, "gamepad-xbox1-buttony-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Active, "gamepad-xbox1-buttony-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Disabled, "gamepad-xbox1-buttony-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-buttona-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-buttona-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-buttona-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-buttona-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-buttona-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Normal, "gamepad-xbox1-buttona-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Hover, "gamepad-xbox1-buttona-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Pressed, "gamepad-xbox1-buttona-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Active, "gamepad-xbox1-buttona-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Disabled, "gamepad-xbox1-buttona-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-buttonx-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-buttonx-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-buttonx-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-buttonx-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-buttonx-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Normal, "gamepad-xbox1-buttonx-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Hover, "gamepad-xbox1-buttonx-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Pressed, "gamepad-xbox1-buttonx-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Active, "gamepad-xbox1-buttonx-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Disabled, "gamepad-xbox1-buttonx-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-buttonb-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-buttonb-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-buttonb-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-buttonb-focus");
-	-- NOTE: Typo in texture name.
-	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-buttonb-isabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Normal, "gamepad-xbox1-buttonb-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Hover, "gamepad-xbox1-buttonb-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Pressed, "gamepad-xbox1-buttonb-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Active, "gamepad-xbox1-buttonb-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Disabled, "gamepad-xbox1-buttonb-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-stick-l-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-stick-l-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-stick-l-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-stick-l-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-stick-l-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Normal, "gamepad-xbox1-stick-l-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Hover, "gamepad-xbox1-stick-l-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Pressed, "gamepad-xbox1-stick-l-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Active, "gamepad-xbox1-stick-l-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Disabled, "gamepad-xbox1-stick-l-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-stick-r-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-stick-r-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-stick-r-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-stick-r-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-stick-r-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Normal, "gamepad-xbox1-stick-r-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Hover, "gamepad-xbox1-stick-r-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Pressed, "gamepad-xbox1-stick-r-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Active, "gamepad-xbox1-stick-r-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Disabled, "gamepad-xbox1-stick-r-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-stick-r3-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-stick-r3-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-stick-r3-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-stick-r3-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-stick-r3-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Normal, "gamepad-xbox1-stick-r3-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Hover, "gamepad-xbox1-stick-r3-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Pressed, "gamepad-xbox1-stick-r3-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Active, "gamepad-xbox1-stick-r3-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Disabled, "gamepad-xbox1-stick-r3-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-stick-l3-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-stick-l3-over");
-	-- NOTE: Typo in texture name
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-stick-l3_down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-stick-l3-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-stick-l3-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Normal, "gamepad-xbox1-stick-l3-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Hover, "gamepad-xbox1-stick-l3-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Pressed, "gamepad-xbox1-stick-l3-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Active, "gamepad-xbox1-stick-l3-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Disabled, "gamepad-xbox1-stick-l3-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-stick-updown-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-stick-updown-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-stick-updown-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-stick-updown-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-stick-updown-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Normal, "gamepad-xbox1-stick-updown-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Hover, "gamepad-xbox1-stick-updown-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Pressed, "gamepad-xbox1-stick-updown-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Active, "gamepad-xbox1-stick-updown-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Disabled, "gamepad-xbox1-stick-updown-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-stickr-leftright-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-stickr-leftright-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-stickr-leftright-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-stickr-leftright-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-stickr-leftright-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Normal, "gamepad-xbox1-stickr-leftright-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Hover, "gamepad-xbox1-stickr-leftright-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Pressed, "gamepad-xbox1-stickr-leftright-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Active, "gamepad-xbox1-stickr-leftright-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Disabled, "gamepad-xbox1-stickr-leftright-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-menu-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-menu-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-menu-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-menu-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-menu-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Normal, "gamepad-xbox1-menu-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Hover, "gamepad-xbox1-menu-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Pressed, "gamepad-xbox1-menu-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Active, "gamepad-xbox1-menu-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Disabled, "gamepad-xbox1-menu-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-xblogo-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-xblogo-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-xblogo-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-xblogo-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-xblogo-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Normal, "gamepad-xbox1-xblogo-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Hover, "gamepad-xbox1-xblogo-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Pressed, "gamepad-xbox1-xblogo-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Active, "gamepad-xbox1-xblogo-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Disabled, "gamepad-xbox1-xblogo-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-xbox1-view-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-xbox1-view-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-xbox1-view-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-xbox1-view-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-xbox1-view-disabled");
-
-	iconSet:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-symbols-plus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-symbols-plus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-symbols-plus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-symbols-plus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-symbols-plus");
-
-	iconSet:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-symbols-slash");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-symbols-slash");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-symbols-slash");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-symbols-slash");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-symbols-slash");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Normal, "gamepad-xbox1-view-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Hover, "gamepad-xbox1-view-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Pressed, "gamepad-xbox1-view-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Active, "gamepad-xbox1-view-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Disabled, "gamepad-xbox1-view-disabled");
 end
 
 local shapes = INPUT_DEVICE_INPUT_ICON_TEXTURE_SETS.Shapes;
 do
-	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-triggerl2-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-triggerl2-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-triggerl2-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-triggerl2-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-triggerl2-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Normal, "gamepad-ps-triggerl2-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Hover, "gamepad-ps-triggerl2-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Pressed, "gamepad-ps-triggerl2-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Active, "gamepad-ps-triggerl2-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Disabled, "gamepad-ps-triggerl2-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-triggerr2-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-triggerr2-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-triggerr2-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-triggerr2-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-triggerr2-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Normal, "gamepad-ps-triggerr2-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Hover, "gamepad-ps-triggerr2-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Pressed, "gamepad-ps-triggerr2-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Active, "gamepad-ps-triggerr2-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Disabled, "gamepad-ps-triggerr2-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-triggerl1-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-triggerl1-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-triggerl1-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-triggerl1-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-triggerl1-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Normal, "gamepad-ps-triggerl1-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Hover, "gamepad-ps-triggerl1-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Pressed, "gamepad-ps-triggerl1-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Active, "gamepad-ps-triggerl1-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Disabled, "gamepad-ps-triggerl1-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-triggerr1-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-triggerr1-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-triggerr1-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-triggerr1-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-triggerr1-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Normal, "gamepad-ps-triggerr1-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Hover, "gamepad-ps-triggerr1-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Pressed, "gamepad-ps-triggerr1-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Active, "gamepad-ps-triggerr1-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Disabled, "gamepad-ps-triggerr1-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-dpadall-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-dpadall-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-dpadall-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-dpadall-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-dpadall-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Normal, "gamepad-ps-dpadall-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Hover, "gamepad-ps-dpadall-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Pressed, "gamepad-ps-dpadall-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Active, "gamepad-ps-dpadall-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Disabled, "gamepad-ps-dpadall-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-dpadleftright-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-dpadleftright-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-dpadleftright-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-dpadleftright-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-dpadleftright-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Normal, "gamepad-ps-dpadleftright-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Hover, "gamepad-ps-dpadleftright-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Pressed, "gamepad-ps-dpadleftright-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Active, "gamepad-ps-dpadleftright-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Disabled, "gamepad-ps-dpadleftright-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-dpadupdown-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-dpadupdown-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-dpadupdown-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-dpadupdown-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-dpadupdown-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Normal, "gamepad-ps-dpadupdown-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Hover, "gamepad-ps-dpadupdown-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Pressed, "gamepad-ps-dpadupdown-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Active, "gamepad-ps-dpadupdown-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Disabled, "gamepad-ps-dpadupdown-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-dpadup-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-dpadup-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-dpadup-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-dpadup-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-dpadup-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Normal, "gamepad-ps-dpadup-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Hover, "gamepad-ps-dpadup-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Pressed, "gamepad-ps-dpadup-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Active, "gamepad-ps-dpadup-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Disabled, "gamepad-ps-dpadup-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-dpaddown-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-dpaddown-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-dpaddown-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-dpaddown-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-dpaddown-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Normal, "gamepad-ps-dpaddown-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Hover, "gamepad-ps-dpaddown-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Pressed, "gamepad-ps-dpaddown-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Active, "gamepad-ps-dpaddown-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Disabled, "gamepad-ps-dpaddown-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-dpadleft-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-dpadleft-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-dpadleft-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-dpadleft-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-dpadleft-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Normal, "gamepad-ps-dpadleft-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Hover, "gamepad-ps-dpadleft-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Pressed, "gamepad-ps-dpadleft-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Active, "gamepad-ps-dpadleft-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Disabled, "gamepad-ps-dpadleft-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-dpadright-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-dpadright-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-dpadright-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-dpadright-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-dpadright-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Normal, "gamepad-ps-dpadright-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Hover, "gamepad-ps-dpadright-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Pressed, "gamepad-ps-dpadright-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Active, "gamepad-ps-dpadright-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Disabled, "gamepad-ps-dpadright-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-buttontriangle-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-buttontriangle-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-buttontriangle-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-buttontriangle-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-buttontriangle-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Normal, "gamepad-ps-buttontriangle-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Hover, "gamepad-ps-buttontriangle-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Pressed, "gamepad-ps-buttontriangle-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Active, "gamepad-ps-buttontriangle-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Disabled, "gamepad-ps-buttontriangle-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-buttoncrox-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-buttoncrox-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-buttoncrox-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-buttoncrox-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-buttoncrox-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Normal, "gamepad-ps-buttoncrox-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Hover, "gamepad-ps-buttoncrox-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Pressed, "gamepad-ps-buttoncrox-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Active, "gamepad-ps-buttoncrox-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Disabled, "gamepad-ps-buttoncrox-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-buttonsquare-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-buttonsquare-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-buttonsquare-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-buttonsquare-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-buttonsquare-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Normal, "gamepad-ps-buttonsquare-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Hover, "gamepad-ps-buttonsquare-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Pressed, "gamepad-ps-buttonsquare-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Active, "gamepad-ps-buttonsquare-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Disabled, "gamepad-ps-buttonsquare-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-buttoncircle-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-buttoncircle-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-buttoncircle-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-buttoncircle-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-buttoncircle-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Normal, "gamepad-ps-buttoncircle-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Hover, "gamepad-ps-buttoncircle-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Pressed, "gamepad-ps-buttoncircle-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Active, "gamepad-ps-buttoncircle-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Disabled, "gamepad-ps-buttoncircle-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-stickl-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-stickl-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-stickl-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-stickl-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-stickl-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Normal, "gamepad-ps-stickl-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Hover, "gamepad-ps-stickl-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Pressed, "gamepad-ps-stickl-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Active, "gamepad-ps-stickl-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Disabled, "gamepad-ps-stickl-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-stickr-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-stickr-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-stickr-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-stickr-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-stickr-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Normal, "gamepad-ps-stickr-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Hover, "gamepad-ps-stickr-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Pressed, "gamepad-ps-stickr-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Active, "gamepad-ps-stickr-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Disabled, "gamepad-ps-stickr-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-stickr3-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-stickr3-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-stickr3-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-stickr3-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-stickr3-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Normal, "gamepad-ps-stickr3-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Hover, "gamepad-ps-stickr3-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Pressed, "gamepad-ps-stickr3-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Active, "gamepad-ps-stickr3-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Disabled, "gamepad-ps-stickr3-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-stickl3-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-stickl3-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-stickl3-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-stickl3-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-stickl3-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Normal, "gamepad-ps-stickl3-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Hover, "gamepad-ps-stickl3-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Pressed, "gamepad-ps-stickl3-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Active, "gamepad-ps-stickl3-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Disabled, "gamepad-ps-stickl3-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-stickr-updown-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-stickr-updown-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-stickr-updown-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-stickr-updown-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-stickr-updown-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Normal, "gamepad-ps-stickr-updown-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Hover, "gamepad-ps-stickr-updown-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Pressed, "gamepad-ps-stickr-updown-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Active, "gamepad-ps-stickr-updown-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Disabled, "gamepad-ps-stickr-updown-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-stickr-leftright-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-stickr-leftright-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-stickr-leftright-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-stickr-leftright-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-stickr-leftright-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Normal, "gamepad-ps-stickr-leftright-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Hover, "gamepad-ps-stickr-leftright-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Pressed, "gamepad-ps-stickr-leftright-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Active, "gamepad-ps-stickr-leftright-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Disabled, "gamepad-ps-stickr-leftright-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-menu-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-menu-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-menu-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-menu-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-menu-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Normal, "gamepad-ps-menu-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Hover, "gamepad-ps-menu-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Pressed, "gamepad-ps-menu-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Active, "gamepad-ps-menu-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Disabled, "gamepad-ps-menu-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-pslogo-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-pslogo-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-pslogo-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-pslogo-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-pslogo-disabled");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Normal, "gamepad-ps-pslogo-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Hover, "gamepad-ps-pslogo-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Pressed, "gamepad-ps-pslogo-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Active, "gamepad-ps-pslogo-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Disabled, "gamepad-ps-pslogo-disabled");
 
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-ps-touchpad-normal");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-ps-touchpad-over");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-ps-touchpad-down");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-ps-touchpad-focus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-ps-touchpad-disabled");
-
-	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-symbols-plus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-symbols-plus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-symbols-plus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-symbols-plus");
-	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-symbols-plus");
-
-	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-symbols-slash");
-	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-symbols-slash");
-	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-symbols-slash");
-	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-symbols-slash");
-	shapes:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-symbols-slash");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Normal, "gamepad-ps-touchpad-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Hover, "gamepad-ps-touchpad-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Pressed, "gamepad-ps-touchpad-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Active, "gamepad-ps-touchpad-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Disabled, "gamepad-ps-touchpad-disabled");
 end
 
 local reverse = INPUT_DEVICE_INPUT_ICON_TEXTURE_SETS.Reverse;
 do
-	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-zl-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-zl-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-zl-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-zl-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-zl-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Normal, "gamepad-switch-128x-zl-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Hover, "gamepad-switch-128x-zl-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Pressed, "gamepad-switch-128x-zl-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Active, "gamepad-switch-128x-zl-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_LEFT, InputIconTextureState.Disabled, "gamepad-switch-128x-zl-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-zr-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-zr-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-zr-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-zr-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-zr-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Normal, "gamepad-switch-128x-zr-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Hover, "gamepad-switch-128x-zr-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Pressed, "gamepad-switch-128x-zr-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Active, "gamepad-switch-128x-zr-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_TRIGGER_RIGHT, InputIconTextureState.Disabled, "gamepad-switch-128x-zr-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-shoulder-l-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-shoulder-l-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-shoulder-l-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-shoulder-l-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-shoulder-l-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Normal, "gamepad-switch-128x-shoulder-l-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Hover, "gamepad-switch-128x-shoulder-l-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Pressed, "gamepad-switch-128x-shoulder-l-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Active, "gamepad-switch-128x-shoulder-l-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_LEFT, InputIconTextureState.Disabled, "gamepad-switch-128x-shoulder-l-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-shoulder-r-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-shoulder-r-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-shoulder-r-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-shoulder-r-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-shoulder-r-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Normal, "gamepad-switch-128x-shoulder-r-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Hover, "gamepad-switch-128x-shoulder-r-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Pressed, "gamepad-switch-128x-shoulder-r-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Active, "gamepad-switch-128x-shoulder-r-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_SHOULDER_RIGHT, InputIconTextureState.Disabled, "gamepad-switch-128x-shoulder-r-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-all-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-all-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-all-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-dpad-all-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-all-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-all-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-all-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-all-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Active, "gamepad-switch-128x-dpad-all-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-all-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-leftright-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-leftright-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-leftright-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-dpad-leftright-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-leftright-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-leftright-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-leftright-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-leftright-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Active, "gamepad-switch-128x-dpad-leftright-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_HORIZONTAL, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-leftright-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-updown-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-updown-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-updown-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-dpad-updown-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-updown-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-updown-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-updown-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-updown-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Active, "gamepad-switch-128x-dpad-updown-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_VERTICAL, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-updown-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-up-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-up-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-up-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-dpad-up-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-up-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-up-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-up-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-up-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Active, "gamepad-switch-128x-dpad-up-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_TOP, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-up-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-down-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-down-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-down-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-dpad-down-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-down-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-down-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-down-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-down-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Active, "gamepad-switch-128x-dpad-down-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_BOTTOM, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-down-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-left-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-left-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-left-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-dpad-left-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-left-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-left-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-left-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-left-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Active, "gamepad-switch-128x-dpad-left-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_LEFT, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-left-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-right-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-right-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-right-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-dpad-right-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-right-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Normal, "gamepad-switch-128x-dpad-right-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Hover, "gamepad-switch-128x-dpad-right-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Pressed, "gamepad-switch-128x-dpad-right-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Active, "gamepad-switch-128x-dpad-right-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_DPAD_RIGHT, InputIconTextureState.Disabled, "gamepad-switch-128x-dpad-right-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-face-x-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-face-x-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-face-x-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-face-x-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-face-x-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Normal, "gamepad-switch-128x-face-x-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Hover, "gamepad-switch-128x-face-x-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Pressed, "gamepad-switch-128x-face-x-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Active, "gamepad-switch-128x-face-x-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_TOP, InputIconTextureState.Disabled, "gamepad-switch-128x-face-x-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-face-b-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-face-b-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-face-b-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-face-b-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-face-b-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Normal, "gamepad-switch-128x-face-b-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Hover, "gamepad-switch-128x-face-b-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Pressed, "gamepad-switch-128x-face-b-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Active, "gamepad-switch-128x-face-b-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_BOTTOM, InputIconTextureState.Disabled, "gamepad-switch-128x-face-b-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-face-y-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-face-y-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-face-y-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-face-y-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-face-y-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Normal, "gamepad-switch-128x-face-y-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Hover, "gamepad-switch-128x-face-y-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Pressed, "gamepad-switch-128x-face-y-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Active, "gamepad-switch-128x-face-y-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_LEFT, InputIconTextureState.Disabled, "gamepad-switch-128x-face-y-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-face-a-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-face-a-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-face-a-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-face-a-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-face-a-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Normal, "gamepad-switch-128x-face-a-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Hover, "gamepad-switch-128x-face-a-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Pressed, "gamepad-switch-128x-face-a-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Active, "gamepad-switch-128x-face-a-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_FACE_RIGHT, InputIconTextureState.Disabled, "gamepad-switch-128x-face-a-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-stick-l-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-stick-l-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-l-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-stick-l-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-l-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Normal, "gamepad-switch-128x-stick-l-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Hover, "gamepad-switch-128x-stick-l-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-l-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Active, "gamepad-switch-128x-stick-l-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-l-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-stick-r-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-stick-r-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-r-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-stick-r-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-r-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Normal, "gamepad-switch-128x-stick-r-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Hover, "gamepad-switch-128x-stick-r-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-r-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Active, "gamepad-switch-128x-stick-r-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-r-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-stick-r3-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-stick-r3-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-r3-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-stick-r3-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-r3-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Normal, "gamepad-switch-128x-stick-r3-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Hover, "gamepad-switch-128x-stick-r3-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-r3-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Active, "gamepad-switch-128x-stick-r3-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_PRESS, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-r3-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-stick-l3-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-stick-l3-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-l3-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-stick-l3-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-l3-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Normal, "gamepad-switch-128x-stick-l3-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Hover, "gamepad-switch-128x-stick-l3-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-l3-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Active, "gamepad-switch-128x-stick-l3-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-l3-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-stick-r-updown-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-stick-r-updown-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-r-updown-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-stick-r-updown-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-r-updown-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Normal, "gamepad-switch-128x-stick-r-updown-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Hover, "gamepad-switch-128x-stick-r-updown-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-r-updown-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Active, "gamepad-switch-128x-stick-r-updown-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-r-updown-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-stick-r-leftright-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-stick-r-leftright-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-r-leftright-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-stick-r-leftright-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-r-leftright-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Normal, "gamepad-switch-128x-stick-r-leftright-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Hover, "gamepad-switch-128x-stick-r-leftright-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-r-leftright-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Active, "gamepad-switch-128x-stick-r-leftright-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-r-leftright-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-plus-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-plus-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-plus-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-plus-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-plus-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Normal, "gamepad-switch-128x-plus-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Hover, "gamepad-switch-128x-plus-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Pressed, "gamepad-switch-128x-plus-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Active, "gamepad-switch-128x-plus-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Disabled, "gamepad-switch-128x-plus-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-home-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-home-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-home-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-home-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-home-disabled");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Normal, "gamepad-switch-128x-home-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Hover, "gamepad-switch-128x-home-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Pressed, "gamepad-switch-128x-home-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Active, "gamepad-switch-128x-home-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_CENTER, InputIconTextureState.Disabled, "gamepad-switch-128x-home-disabled");
 
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-switch-128x-minus-normal");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-switch-128x-minus-hover");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-switch-128x-minus-pressed");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-switch-128x-minus-selected");
-	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-switch-128x-minus-disabled");
-
-	reverse:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-symbols-plus");
-	reverse:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-symbols-plus");
-	reverse:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-symbols-plus");
-	reverse:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-symbols-plus");
-	reverse:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_PLUS, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-symbols-plus");
-
-	reverse:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Normal, "gamepad-symbols-slash");
-	reverse:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Hover, "gamepad-symbols-slash");
-	reverse:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Pressed, "gamepad-symbols-slash");
-	reverse:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Active, "gamepad-symbols-slash");
-	reverse:SetInputIconTextureForKey(GAMEPAD_PROMPT_DIVIDER_SLASH, InputIconVariant.Standard, InputIconTextureState.Disabled, "gamepad-symbols-slash");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Normal, "gamepad-switch-128x-minus-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Hover, "gamepad-switch-128x-minus-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Pressed, "gamepad-switch-128x-minus-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Active, "gamepad-switch-128x-minus-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_MENU_LEFT, InputIconTextureState.Disabled, "gamepad-switch-128x-minus-disabled");
 end
 
 InputIconTextureSetUtility = {};
 
-function InputIconTextureSetUtility.GetActiveInputIconButtonTextures(buttonKey)
+function InputIconTextureSetUtility.GetActiveInputIconButtonTextures(buttonKey, variant)
 	assert(type(buttonKey) == "string");
 	local activeInputDeviceIconSet = InputDeviceIconSetManager:GetActiveInputDeviceIconSet();
 	local activeInputDeviceInputIconTextureSet = INPUT_DEVICE_INPUT_ICON_TEXTURE_SETS[activeInputDeviceIconSet];
-	return activeInputDeviceInputIconTextureSet and activeInputDeviceInputIconTextureSet:GetInputIconTexturesForKey(buttonKey);
+	return activeInputDeviceInputIconTextureSet and activeInputDeviceInputIconTextureSet:GetInputIconTexturesForKey(buttonKey, variant);
 end
 
-function InputIconTextureSetUtility.GetNormalActiveInputIconButtonTexture(buttonKey)
-	return InputIconTextureSetUtility.GetActiveInputIconButtonTextures(buttonKey)[InputIconTextureState.Normal];
+function InputIconTextureSetUtility.GetNormalActiveInputIconButtonTexture(buttonKey, variant)
+	return InputIconTextureSetUtility.GetActiveInputIconButtonTextures(buttonKey, variant)[InputIconTextureState.Normal];
 end
 
 function InputIconTextureSetUtility.GetInputIconNameFromBindingKey(bindingKey)
@@ -646,16 +596,25 @@ end
 ---------------------------
 -- InputIconTextureMixin --
 ---------------------------
-InputIconTextureMixin = { mappedButtonKey = GAMEPAD_FACE_BOTTOM, useDropShadow = false, };
+InputIconTextureMixin = {
+	mappedButtonKey = GAMEPAD_FACE_BOTTOM,
+	isHoldAction = false,
+	useDropShadow = true,
+};
 local LARGE_PROMPT_ATLAS_WIDTH = 76;
 local LARGE_PROMPT_ATLAS_HEIGHT = 75;
 
 function InputIconTextureMixin:RefreshIconTextures()
-	local iconTextures = InputIconTextureSetUtility.GetActiveInputIconButtonTextures(self.mappedButtonKey);
+	local iconVariant = InputDeviceIconVariant[self.useDropShadow and "Standard" or "NoShadow"];
+	local iconTextures = InputIconTextureSetUtility.GetActiveInputIconButtonTextures(self.mappedButtonKey, iconVariant);
 	for state, texture in pairs(self.textureStateTextures) do
 		texture:SetAtlas(iconTextures[state]);
 		self:ApplyTextureLayout(texture, iconTextures[state]);
 	end
+
+	self:SetHoldState(false);
+	self.HoldIndicatorBG:SetShown(self.isHoldAction);
+	self.HoldIndicator:SetShown(self.isHoldAction);
 end
 
 --[[
@@ -668,11 +627,9 @@ function InputIconTextureMixin:ApplyTextureLayout(texture, atlasKey)
 
 	if self:ShouldUseAdjustedTextureBounds(atlasKey) then
 		texture:SetPoint("TOPLEFT", -5, 5);
-		texture:SetPoint("BOTTOMRIGHT", 4, -3);
-		texture:SetTexCoord(0.015, 0.96, 0.015, 0.94);
+		texture:SetPoint("BOTTOMRIGHT", 5, -5);
 	else
 		texture:SetAllPoints();
-		texture:SetTexCoord(0, 1, 0, 1);
 	end
 end
 
@@ -705,6 +662,9 @@ function InputIconTextureMixin:OnLoad()
 	if not self.textureState then
 		self:SetTextureState(InputIconTextureState.Normal);
 	end
+
+	self.HoldAnim:SetScript("OnFinished", GenerateClosure(self.OnHoldAnimFinished, self));
+	self.HoldAnim:SetScript("OnStop", GenerateClosure(self.OnHoldAnimStopped, self));
 end
 
 function InputIconTextureMixin:SetInputKey(buttonKey)
@@ -790,4 +750,47 @@ end
 
 function InputIconTextureMixin:SetEnabled(enabled)
 	self:SetUsableState((enabled and InputIconUsableState.Pressable) or InputIconUsableState.Disabled);
+end
+
+function InputIconTextureMixin:SetIsHoldAction(isHoldAction)
+	self.isHoldAction = isHoldAction;
+	self:RefreshIconTextures();
+end
+
+function InputIconTextureMixin:BeginHold(duration)
+	if not assertsafe(self.isHoldAction) then
+		return;
+	end
+
+	self:SetHoldState(true);
+
+	self.HoldAnim.LoadBarGlowAnim:SetDuration(duration);
+	self.HoldAnim.LoadBarAnim:SetDuration(duration);
+	self.HoldAnim.SpinnerTipAnim:SetDuration(duration);
+	self.HoldAnim:Play();
+end
+
+function InputIconTextureMixin:EndHold()
+	if not assertsafe(self.isHoldAction) then
+		return;
+	end
+
+	self.HoldAnim:Stop();
+end
+
+function InputIconTextureMixin:SetHoldState(holding)
+	self.HoldIndicatorBG:SetShown(not holding);
+	self.HoldIndicator:SetShown(not holding);
+	self.LoadBarBG:SetShown(holding);
+	self.LoadBarGlow:SetShown(holding);
+	self.LoadBar:SetShown(holding);
+	self.SpinnerTip:SetShown(holding);
+end
+
+function InputIconTextureMixin:OnHoldAnimFinished()
+	self:SetHoldState(false);
+end
+
+function InputIconTextureMixin:OnHoldAnimStopped()
+	self:SetHoldState(false);
 end

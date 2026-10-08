@@ -1,5 +1,5 @@
-local Shared = require(".Shared");
-local StaticOverrideActionBarMixin = require(".StaticOverrideActionBar");
+local Shared = import(".Shared");
+local StaticOverrideActionBarMixin = import(".StaticOverrideActionBar");
 
 local AUTO_SHOT_SPELL_ID = 75;
 local SHOOT_RANGED_WEAPON_SPELL_ID_MAPPING = {

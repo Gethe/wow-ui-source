@@ -482,6 +482,21 @@ local EditModeManagerConstants =
 			},
 		},
 		{
+			Name = "EditModeGamepadMainActionBarSetting",
+			Type = "Enumeration",
+			NumValues = 5,
+			MinValue = 0,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Compact", Type = "EditModeGamepadMainActionBarSetting", EnumValue = 0 },
+				{ Name = "ShowEmptyBars", Type = "EditModeGamepadMainActionBarSetting", EnumValue = 1 },
+				{ Name = "ShowButtonPrompts", Type = "EditModeGamepadMainActionBarSetting", EnumValue = 2 },
+				{ Name = "ShowHighlight", Type = "EditModeGamepadMainActionBarSetting", EnumValue = 3 },
+				{ Name = "ShouldExpand", Type = "EditModeGamepadMainActionBarSetting", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "EditModeGroupFinderSetting",
 			Type = "Enumeration",
 			NumValues = 1,
@@ -715,9 +730,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 30,
+			NumValues = 31,
 			MinValue = 0,
-			MaxValue = 29,
+			MaxValue = 30,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -750,6 +765,7 @@ local EditModeManagerConstants =
 				{ Name = "GroupFinder", Type = "EditModeSystem", EnumValue = 27 },
 				{ Name = "LossOfControl", Type = "EditModeSystem", EnumValue = 28 },
 				{ Name = "SwingTimer", Type = "EditModeSystem", EnumValue = 29 },
+				{ Name = "GamepadMainActionBar", Type = "EditModeSystem", EnumValue = 30 },
 			},
 		},
 		{

@@ -264,6 +264,7 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		CatalogShopFrame.ModelSceneContainerFrame.MainModelScene:SetScript("OnMouseUp", nil);
 	end
 
+	CatalogShopFrame.canRotateModelScene = canRotateModelScene;
 	CatalogShopFrame.PMTImageContainerFrame:Hide();-- by default we hide it
 	if productInfo.isMystery then
 		CatalogShopFrame.ServicesContainerFrame:Show();
@@ -539,6 +540,7 @@ function ProductContainerFrameMixin:InitProductContainer()
 		frame:Init();
 		frame:SetProductInfo(productInfo);
 		frame:SetSelected(isSelected);
+		frame.selectionBehavior = scrollContainer.selectionBehavior;
 		frame:SetScript("OnClick", function(button, buttonName)
 			scrollContainer.selectionBehavior:ToggleSelect(button);
 		end);

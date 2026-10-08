@@ -626,16 +626,6 @@
 									<Anchor point="TOPRIGHT" x="19" y="25"/>
 								</Anchors>
 							</DropdownButton>
-							<Frame parentKey="GamepadSettingsFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
-								<Size x="22" y="22"/>
-								<KeyValues>
-									<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
-									<KeyValue key="useDropShadow" value="true" type="boolean"/>
-								</KeyValues>
-								<Anchors>
-									<Anchor point="RIGHT" relativeKey="$parent.SettingsDropdown" relativePoint="LEFT" x="-5" y="1"/>
-								</Anchors>
-							</Frame>
 							<Frame parentKey="BorderFrame" inherits="QuestLogBorderFrameTemplate">
 								<Layers>
 									<Layer level="BACKGROUND">

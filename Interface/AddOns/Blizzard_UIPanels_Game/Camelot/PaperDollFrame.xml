@@ -431,52 +431,6 @@
 				</Frames>
 			</Frame>
 
-			<Frame name="PaperDollLevelInfo" frameLevel="5">
-				<Size x="220" y="20"/>
-				<Anchors>
-					<Anchor point="TOP" relativeTo="PaperDollSidebarTabs" y="-50"/>
-				</Anchors>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture name="CharacterLevelTextBackground" atlas="UI-Character-Info-ItemLevel-Bounce" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOP"/>
-								<Anchor point="BOTTOM"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-					<Layer level="ARTWORK">
-						<FontString name="CharacterLevelText" inherits="GameFontNormalLarge" justifyV="MIDDLE" justifyH="CENTER">
-							<Size y="20"/>
-							<Anchors>
-								<Anchor point="TOP"/>
-								<Anchor point="LEFT"/>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</FontString>
-						<FontString name="PetLoyaltyText" inherits="GameFontHighlight" justifyV="MIDDLE" justifyH="CENTER">
-							<Size y="20"/>
-							<Anchors>
-								<Anchor point="BOTTOM"/>
-								<Anchor point="LEFT"/>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-					<Layer level="OVERLAY">
-						<FontString name="CharacterTrialLevelErrorText" inherits="GameFontNormalSmall" text="TRIAL_LEVEL_CAPPED" hidden="true">
-							<Size y="24"/>
-							<Anchors>
-								<Anchor point="TOP" relativeTo="CharacterLevelText" relativePoint="BOTTOM" x="0" y="0"/>
-								<Anchor point="LEFT"/>
-								<Anchor point="RIGHT"/>
-							</Anchors>
-							<Color r="1" g="0.1" b="0.1" a="1"/>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-
 			<Frame name="PaperDollTabIndicators" parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true" />
 
 			<Frame parentKey="TitleManagerPane" hidden="true">
@@ -599,9 +553,63 @@
 					<OnUpdate function="PaperDollEquipmentManagerPane_OnUpdate"/>
 				</Scripts>
 			</Frame>
-			<ModelScene parentKey="CharacterModelScene" name="CharacterModelScene" mixin ="CharacterModelSceneMixin" inherits="PanningModelSceneMixinTemplate" frameLevel="50">
+			<Frame parentKey="TopBackgroundStripHost" frameLevel="50">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="CharacterFrameLeftPaneHost"/>
+					<Anchor point="TOPRIGHT" relativeTo="CharacterFrameLeftPaneHost"/>
+				</Anchors>
+				<Size y="36"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="TopBackgroundStrip" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" setAllPoints="true"/>
+						<Texture parentKey="TopBackgroundStripBottomEdge" atlas="_UI-Frame-InnerTopTile" useAtlasSize="true" horizTile="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.TopBackgroundStrip" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopBackgroundStrip" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="PaperDollLevelInfo" frameStrata="HIGH" frameLevel="520">
+				<Size x="220" y="20"/>
+				<Anchors>
+					<Anchor point="CENTER" y="-2" relativeKey="$parent.TopBackgroundStripHost" relativePoint="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="CharacterLevelText" inherits="GameFontNormalMed2Outline" justifyV="MIDDLE" justifyH="CENTER">
+							<Size y="20"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame name="PaperDollPetLevelInfo" frameStrata="HIGH" frameLevel="520" hidden="true">
+				<Size x="220" y="20"/>
+				<Anchors>
+					<Anchor point="CENTER" y="-2" relativeKey="$parent.TopBackgroundStripHost" relativePoint="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="PetCharacterLevelText" inherits="GameFontNormalMed2Outline" justifyV="MIDDLE" justifyH="CENTER">
+							<Size y="20"/>
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<ModelScene parentKey="CharacterModelScene" name="CharacterModelScene" mixin ="CharacterModelSceneMixin" inherits="PanningModelSceneMixinTemplate" frameLevel="50">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.TopBackgroundStripHost.TopBackgroundStrip" relativePoint="BOTTOMLEFT"/>
+					<Anchor point="TOPRIGHT" relativeKey="$parent.TopBackgroundStripHost.TopBackgroundStrip" relativePoint="BOTTOMRIGHT"/>
 					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameLeftPaneHost"/>
 				</Anchors>
 				<Layers>
@@ -644,7 +652,7 @@
 				<Frames>
 					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate" >
 						<Anchors>
-							<Anchor point="TOP" y="-10"/>
+							<Anchor point="TOP" relativeTo="CharacterFrameLeftPaneHost" y="-40"/>
 						</Anchors>
 					</Frame>
 

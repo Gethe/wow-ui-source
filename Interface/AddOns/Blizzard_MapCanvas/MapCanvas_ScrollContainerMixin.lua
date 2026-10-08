@@ -30,6 +30,7 @@ function MapCanvasScrollControllerMixin:OnLoad()
 	self:SetGamepadScrollSpeed(0, 0);
 	self.gamepadZoom = 0;
 	self.gamepadPanMagnitude = 1;
+	self.hasInitializedGamepadCursor = false;
 end
 
 function MapCanvasScrollControllerMixin:OnMouseDown(button)
@@ -229,6 +230,7 @@ function MapCanvasScrollControllerMixin:OnHide()
 	self.currentScale = nil;
 	self.currentScrollX = nil;
 	self.currentScrollY = nil;
+	self.hasInitializedGamepadCursor = false;
 end
 
 function MapCanvasScrollControllerMixin:SetCanvasSize(width, height)
@@ -887,7 +889,9 @@ function MapCanvasScrollControllerMixin:SetGamepadFocus(inFocus)
 		local map = self:GetMap();
 
 		-- Only initialize the cursor when entering the map UI, we want to retain cursor position on sub frame focus change.
-		if not map.currentFocus then
+		if not self.hasInitializedGamepadCursor then
+			self.hasInitializedGamepadCursor = true;
+
 			local boundsFunc = function()
 				local width, height = self:GetSize();
 				local centerX, centerY = self:GetCenter();

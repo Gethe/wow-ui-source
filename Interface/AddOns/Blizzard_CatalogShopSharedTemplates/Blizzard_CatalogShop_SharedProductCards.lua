@@ -312,6 +312,14 @@ function CatalogShopDefaultProductCardMixin:GetCurrentPrice()
 	return self.productInfo.price;
 end
 
+function CatalogShopDefaultProductCardMixin:OnSmartNavSelect()
+	-- Forbidden cards can't simulate a real click so select the underlying
+	-- element data directly via the scroll box's selection behavior instead
+	if self.selectionBehavior then
+		self.selectionBehavior:Select(self);
+	end
+end
+
 --------------------------------------------------
 -- SMALL CATALOG SHOP PRODUCT CARD MIXIN
 SmallCatalogShopProductCardMixin = {};

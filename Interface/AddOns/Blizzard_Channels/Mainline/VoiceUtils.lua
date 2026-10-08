@@ -10,9 +10,15 @@ Voice_RaidChannelTypeToChatInfoType =
 	[Enum.ChatChannelType.PublicParty] = "INSTANCE_CHAT",
 };
 
+-- Discord party voice uses the party chat channel, which the chat system registers as PrivateParty.
+function Voice_GetChatChannelType(channelType)
+	return channelType == Enum.ChatChannelType.DiscordParty and Enum.ChatChannelType.PrivateParty or channelType;
+end
+
 function Voice_GetChatInfoForChannelType(channel)
-	local isRaid = IsChatChannelRaid(channel.channelType);
-	local chatType = isRaid and Voice_RaidChannelTypeToChatInfoType[channel.channelType] or Voice_PartyChannelTypeToChatInfoType[channel.channelType];
+	local channelType = Voice_GetChatChannelType(channel.channelType);
+	local isRaid = IsChatChannelRaid(channelType);
+	local chatType = isRaid and Voice_RaidChannelTypeToChatInfoType[channelType] or Voice_PartyChannelTypeToChatInfoType[channelType];
 	if chatType then
 		return ChatTypeInfo[chatType];
 	end
@@ -123,7 +129,7 @@ end
 local channelTypeToPartyCategory = tInvert(partyCategoryToChannelType);
 
 function GetPartyCategoryFromChannelType(channelType)
-	return channelTypeToPartyCategory[channelType];
+	return channelTypeToPartyCategory[Voice_GetChatChannelType(channelType)];
 end
 
 function IsPublicVoiceChannel(channel)

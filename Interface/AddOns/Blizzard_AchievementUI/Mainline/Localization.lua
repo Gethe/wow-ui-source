@@ -76,7 +76,9 @@ local l10nTable = {
 				button.Description:SetFontObject("AchievementFont_Small");
 				button.HiddenDescription:SetFontObject("AchievementFont_Small");
 				button.Shield:SetPoint("TOPRIGHT", -10, 0);
-				button.Tabard:SetPoint("TOPRIGHT", -7, -4);
+				if button.Tabard then
+					button.Tabard:SetPoint("TOPRIGHT", -7, -4);
+				end
 			end
 
 			ACHIEVEMENTCOMPARISON_FRIENDSHIELDFONT1 = GameFontBlack;

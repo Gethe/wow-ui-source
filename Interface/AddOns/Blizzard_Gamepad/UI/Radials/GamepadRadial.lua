@@ -596,7 +596,7 @@ function GamepadRadialMixin:InitializeRadialData()
 	self.segmentOptions = {
 		bags = BasicSegmentHandler.Create({
 			label = RADIAL_LABEL_BAGS,
-			action = function() ToggleAllBags(); end,
+			action = function() ToggleBackpack_Combined(); end,
 			isOpen = function() return IsBagOpen(Enum.BagIndex.Backpack); end,
 			icons = {
 				up = "gamepad-radial-icon-bags",

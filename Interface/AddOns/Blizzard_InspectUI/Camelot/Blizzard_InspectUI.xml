@@ -22,9 +22,10 @@
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(CHARACTER_INFO, 1.0,1.0,1.0 );
 					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
-			<Button name="InspectFrameTab2" inherits="PanelTabButtonTemplate" id="2" text="GUILD" hidden="true">
+			<Button name="InspectFrameTab2" inherits="PanelTabButtonTemplate" id="2" text="PVP" hidden="true">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="InspectFrameTab1" relativePoint="RIGHT" x="-16" y="0"/>
 				</Anchors>
@@ -32,8 +33,22 @@
 					<OnClick function="InspectFrameTab_OnClick"/>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(PLAYER_V_PLAYER, 1.0,1.0,1.0 );
+					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+			<Button name="InspectFrameTab3" inherits="PanelTabButtonTemplate" id="3" text="GUILD" hidden="true">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="InspectFrameTab2" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="InspectFrameTab_OnClick"/>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(GUILD, 1.0,1.0,1.0 );
 					</OnEnter>
+					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 			</Button>
 			<Frame name="InspectUITabs" parentKey="ModeTabs">
@@ -42,8 +57,21 @@
 					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" y="-30"/>
 				</Anchors>
 				<Frames>
-					<Frame name="InspectFrameModeTab1" parentArray="Tabs" parentKey="CharacterTab" inherits="InspectFrameModeSideTabTemplate" id="1"/>
-					<Frame name="InspectFrameModeTab2" parentArray="Tabs" parentKey="GuildTab" inherits="InspectFrameModeSideTabTemplate" id="2"/>
+					<Frame name="InspectFrameModeTab1" parentArray="Tabs" parentKey="CharacterTab" inherits="InspectFrameModeSideTabTemplate" id="1">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="CHARACTER_INFO" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="InspectFrameModeTab2" parentArray="Tabs" parentKey="PvPTab" inherits="InspectFrameModeSideTabTemplate" id="2">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="PLAYER_V_PLAYER" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="InspectFrameModeTab3" parentArray="Tabs" parentKey="GuildTab" inherits="InspectFrameModeSideTabTemplate" id="3">
+						<KeyValues>
+							<KeyValue key="tooltipText" value="GUILD" type="global"/>
+						</KeyValues>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true">
@@ -57,7 +85,6 @@
 			<OnEvent method="OnEvent" />
 			<OnShow method="OnShow" />
 			<OnHide method="OnHide" />
-			<OnUpdate method="OnUpdate" />
 		</Scripts>
 	</Frame>
 </Ui>

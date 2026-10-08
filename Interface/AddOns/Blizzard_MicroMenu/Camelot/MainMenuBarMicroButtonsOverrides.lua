@@ -20,10 +20,27 @@ function PlayerSpellsMicroButtonMixin:GetTalentUnlockLevel()
 	return math.max(minUnlockLevel, defaultUnlockLevel - nodeInfo.activeRank);
 end
 
+-- Camelot has no ProfessionsBookFrame; the button toggles ProfessionsFrame instead.
+function ProfessionMicroButtonMixin:GetToggledFrame()
+	return ProfessionsFrame;
+end
+
+function ProfessionMicroButtonMixin:RegisterToggledFrameEvents()
+	EventRegistry:RegisterCallback("ProfessionsFrame.Show", UpdateMicroButtons, self);
+	EventRegistry:RegisterCallback("ProfessionsFrame.Hide", UpdateMicroButtons, self);
+end
+
+-- The Vanilla-style group finder is shown in LFGParentFrame instead of PVEFrame.
+function LFDMicroButtonMixin:GetToggledFrame()
+	if self:IsVanillaStyleGroupFinder() then
+		return LFGParentFrame;
+	end
+
+	return PVEFrame;
+end
 
 function CharacterMicroButtonMixin:ShouldShowTokenFrame()
 	local hasCurrencies = C_CurrencyInfo.GetCurrencyListSize() > 0;
 	local shouldShow = true;
 	return shouldShow, hasCurrencies;
 end
-

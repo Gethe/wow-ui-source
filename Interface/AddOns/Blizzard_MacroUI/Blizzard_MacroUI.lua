@@ -283,14 +283,12 @@ function MacroFrameCancelButton_OnClick()
 end
 
 function MacroFrameMixin:SelectMacro(index, scrollToSelected)
-	if index then
-		local macroCount = select(PanelTemplates_GetSelectedTab(self), GetNumMacros());
-		if macroCount < index then
-			index = nil;
-		end
+	local macroCount = select(PanelTemplates_GetSelectedTab(self), GetNumMacros());
+	if not index or index > macroCount then
+		index = macroCount > 0 and 1 or nil;
 	end
 
-	self.MacroSelector:SetSelectedIndex(index or 1);
+	self.MacroSelector:SetSelectedIndex(index);
 
 	if scrollToSelected then
 		self.MacroSelector:ScrollToElementDataIndex(index or 1, ScrollBoxConstants.AlignNearest);

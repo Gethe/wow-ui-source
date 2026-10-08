@@ -742,7 +742,7 @@ end
 
 function PlayerSpellsFrameMixin:IsCurrentButtonUsable()
 	local button = SmartNavigation:GetCurrentButton();
-	
+
 	if self:IsSpellButton(button) then
 		return self:IsSpellButtonButtonContextUsable();
 	elseif self:IsOutfitButton(button) then
@@ -754,7 +754,7 @@ end
 
 function PlayerSpellsFrameMixin:IsCurrentButtonBindable()
 	local button = SmartNavigation:GetCurrentButton();
-	
+
 	if self:IsSpellButton(button) then
 		return self:IsSpellButtonButtonContextBindable();
 	elseif self:IsOutfitButton(button) then
@@ -801,7 +801,7 @@ function PlayerSpellsFrameMixin:NavigateSection(x, y, directionHandlers)
 		end
 	end
 
-	
+
 	if directionHandler then
 		directionHandler();
 		self.waitingForStickReset = true;
@@ -872,7 +872,7 @@ function PlayerSpellsFrameMixin:SetUpSpellBookGamepad()
 	};
 
 	self.navigateSpellBookSection = GamepadMode.CreateBindingGroup("SpellbookNavigateSection");
-	self.navigateSpellBookSection:AddAxisBinding(GAMEPAD_STICK_LEFT, 
+	self.navigateSpellBookSection:AddAxisBinding(GAMEPAD_STICK_LEFT,
 		function(x, y)
 			self:NavigateSection(x, y, SpellBookFrameSectionHandlers);
 		end
@@ -1042,15 +1042,22 @@ function PlayerSpellsFrameMixin:SetUpClassTalentsGamepad()
 	});
 
 	-- Apply changes --
-	local applyChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, 0.5, nil, ApplyChanges, GAMEPAD_TALENT_APPLY);
+	local holdTime = 0.5;
+	local applyChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT,	holdTime, nil, ApplyChanges, GAMEPAD_TALENT_APPLY);
 	applyChanges:AddCondition(CanApplyChanges);
 	applyChanges:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
-	local applyChangesIcon = GamepadMode.AddGamepadIconToButton(talentFrame.ApplyButton, GAMEPAD_FACE_LEFT, { buttonHeightScale = (1.3), });
-	GamepadMode.SetGamepadIconShown(applyChangesIcon, true);
+
+	local applyChangesIcon = GamepadMode.AddGamepadIconToButton(talentFrame.ApplyButton, GAMEPAD_FACE_LEFT, { isHoldAction = true });
+	local applyChangesIconBinding = applyChanges:AddCustomPromptBinding({
+		conditions = { CanApplyChanges },
+		frame = applyChangesIcon,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+	});
+	applyChanges:AddCustomPromptHoldFunction(applyChangesIconBinding, { holdTime = holdTime });
 
 	-- Navigate Section --
 	self.navigateTalentSection = GamepadMode.CreateBindingGroup("ClassTalentsNavigateSection");
-	self.navigateTalentSection:AddAxisBinding(GAMEPAD_STICK_LEFT, 
+	self.navigateTalentSection:AddAxisBinding(GAMEPAD_STICK_LEFT,
 		function(x, y)
 			self:NavigateSection(x, y, TalentFrameSectionHandlers);
 		end
@@ -1161,7 +1168,7 @@ function PlayerSpellsFrameMixin:SetUpSearchGamepad(frame)
 
 	searchBox.clearButton.smartNavigationIgnored = true;
 	EventRegistry:RegisterCallback("SpellSearchBox.FocusedGained", OnSearchBoxFocusGained, frame);
-	EventRegistry:RegisterCallback("SpellSearchBox.FocusedLost", OnSearchBoxFocusLost, frame); 
+	EventRegistry:RegisterCallback("SpellSearchBox.FocusedLost", OnSearchBoxFocusLost, frame);
 	EventRegistry:RegisterCallback("SpellSearchPreview.FocusedGained", OnSearchPreviewFocusGained, frame);
 	EventRegistry:RegisterCallback("SpellSearchPreview.FocusedLost", OnSearchPreviewFocusLost, frame);
 end
@@ -1173,7 +1180,7 @@ function PlayerSpellsFrameMixin:SetUpGamepad()
 
 	self:SetUpSearchGamepad(self.SpellBookFrame);
 	self:SetUpSearchGamepad(self.TalentsFrame);
-	
+
 	local function OnSpellBookHitRightEdge(self)
 		self.SpellBookFrame:GamepadSpellBookNextPage();
 	end

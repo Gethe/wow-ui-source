@@ -15,10 +15,14 @@ function ManaAlternatePowerMixin:Initialize()
 	self:EvaluateUnit();
 end
 
+function ManaAlternatePowerMixin:AreRequirementsMet(classFileName, specialization)
+	return classFileName == self.requiredClass and specialization == self.requiredSpec;
+end
+
 function ManaAlternatePowerMixin:EvaluateUnit()
 	local _className, classFileName, _classID = UnitClass("player");
 	local specialization = C_SpecializationInfo.GetSpecialization();
-	self.alternatePowerRequirementsMet = classFileName == self.requiredClass and specialization == self.requiredSpec;
+	self.alternatePowerRequirementsMet = self:AreRequirementsMet(classFileName, specialization);
 
 	if self.alternatePowerRequirementsMet then
 		self:UpdatePower();

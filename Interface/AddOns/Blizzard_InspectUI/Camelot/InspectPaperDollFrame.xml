@@ -57,11 +57,11 @@
 		<Frames>
 			<Frame parentKey="LevelTextWrapper" inherits="ResizeLayoutFrame" mixin="LevelTextMixin">
 				<Anchors>
-					<Anchor point="TOP" x="0" y="-27" />
+					<Anchor point="TOP" x="0" y="-40" />
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<FontString name="InspectLevelText" inherits="GameFontNormalSmall" wordwrap="false">
+						<FontString name="InspectLevelText" inherits="GameFontNormalMed2Outline" wordwrap="false">
 							<Size x="220" />
 							<Anchors>
 								<Anchor point="TOP" x="0" y="0" />
@@ -74,18 +74,6 @@
 					<OnLeave method="OnLeave" />
 				</Scripts>
 			</Frame>
-			<Button parentKey="InspectTalents" mixin="InspectPaperDollFrameTalentsButtonMixin"
-				inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="INSPECT_TALENTS_BUTTON">
-				<Size x="102" y="20" />
-				<Anchors>
-					<Anchor point="TOP" x="0" y="-39" />
-				</Anchors>
-				<Scripts>
-					<OnEnter method="OnEnter" />
-					<OnLeave method="OnLeave" />
-					<OnClick method="OnClick" />
-				</Scripts>
-			</Button>
 			<Button parentKey="ViewButton" inherits="UIPanelButtonTemplate" text="VIEW_IN_DRESSUP_FRAME" hidden="true">
 				<Size x="0" y="22" />
 				<Anchors>
@@ -310,7 +298,7 @@
 					</ItemButton>
 					<ItemButton name="InspectMainHandSlot" inherits="InspectPaperDollItemSlotButtonBottomTemplate">
 						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="116" y="16" />
+							<Anchor point="BOTTOMLEFT" x="108" y="16" />
 						</Anchors>
 					</ItemButton>
 					<ItemButton name="InspectSecondaryHandSlot" inherits="InspectPaperDollItemSlotButtonBottomTemplate">

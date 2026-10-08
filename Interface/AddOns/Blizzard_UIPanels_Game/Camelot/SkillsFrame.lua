@@ -37,8 +37,12 @@ local function ClampPercentage(value)
 	return math.max(-100.0, math.min(100.0, value));
 end
 
+local function GetExpectedSkillForLevelOffset(levelOffset)
+	return (UnitLevel("player") + levelOffset) * SKILL_RANKS_PER_SKILL_LEVEL;
+end
+
 local function GetWeaponSkillDiff(levelOffset, weaponSkill)
-	local targetDefenseSkill = (UnitLevel("player") + levelOffset) * SKILL_RANKS_PER_SKILL_LEVEL;
+	local targetDefenseSkill = GetExpectedSkillForLevelOffset(levelOffset);
 	return targetDefenseSkill - weaponSkill;
 end
 
@@ -48,36 +52,6 @@ end
 
 local function GetCriticalHitChance(levelOffset, weaponSkill)
 	return GetWeaponSkillDiff(levelOffset, weaponSkill) * -0.04;
-end
-
-local function GetGlancingBlowPenalty(levelOffset, weaponSkill)
-	local skillDiff = GetWeaponSkillDiff(levelOffset, weaponSkill);
-
-	local low = 1.30 - 0.05 * skillDiff;
-	if skillDiff > 10 then
-		low = low + 0.1;
-	end
-	low = math.min(low, 0.91);
-	low = math.max(low, 0.01);
-
-	local high = 1.20 - 0.03 * skillDiff;
-	if skillDiff > 10 then
-		high = high + 0.1;
-	end
-	high = math.max(high, 0.20);
-	high = math.min(high, 0.99);
-
-	return 100.0 - math.max(0.0, math.min(1.0, (low + high) / 2.0)) * 100.0;
-end
-
-local function GetGlancingBlowChance(levelOffset, weaponSkill)
-	local maxRating = UnitLevel("player") * SKILL_RANKS_PER_SKILL_LEVEL;
-	weaponSkill = math.min(maxRating, weaponSkill);
-
-	local difference = GetWeaponSkillDiff(levelOffset, weaponSkill);
-	local chance = 0.02 * difference + 0.1;
-
-	return ClampPercentage(chance * 100.0);
 end
 
 local WEAPON_SKILL_BOSS_LEVEL_OFFSET = 3;
@@ -310,8 +284,9 @@ function SkillDetailFrameMixin:AddWeaponSkillRows(skillInfo)
 	if isRanged then
 		self:AddWrappedRow(WEAPON_SKILL_DETAIL_BOSS_RANGED:format(bossHit, bossCrit), NORMAL_FONT_COLOR);
 	else
-		local glancingChance = FormatPercent(GetGlancingBlowChance(WEAPON_SKILL_BOSS_LEVEL_OFFSET, weaponSkill));
-		local glancingPenalty = FormatPercent(GetGlancingBlowPenalty(WEAPON_SKILL_BOSS_LEVEL_OFFSET, weaponSkill));
+		local bossDefenseSkill = GetExpectedSkillForLevelOffset(WEAPON_SKILL_BOSS_LEVEL_OFFSET);
+		local glancingChance = FormatPercent(GetGlancingBlowChance(weaponSkill, bossDefenseSkill) * 100);
+		local glancingPenalty = FormatPercent(GetGlancingBlowPenalty(weaponSkill, bossDefenseSkill) * 100);
 		self:AddWrappedRow(WEAPON_SKILL_DETAIL_BOSS:format(bossHit, bossCrit, glancingChance, glancingPenalty), NORMAL_FONT_COLOR);
 	end
 end

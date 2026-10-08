@@ -19,3 +19,15 @@ function ToggleLegacySystemUI()
 		ToggleFrame(LegacySystemFrame);
 	end
 end
+
+function ToggleLegacyChallenges()
+	if LegacySystemFrame_LoadUI() then
+		LegacySystemFrame:ToggleChallenges();
+	end
+end
+
+function ShowLegacyChallenge(achievementID, closeOtherWindows)
+	if LegacySystemFrame_LoadUI() then
+		LegacySystemFrame:OpenToChallenge(achievementID, closeOtherWindows);
+	end
+end

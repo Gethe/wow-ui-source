@@ -154,6 +154,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_ADVANCEDLIGHT_LOW);
 		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_ADVANCEDLIGHT_MEDIUM);
 		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_ADVANCEDLIGHT_HIGH);
+		AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_ULTRA, VIDEO_OPTIONS_ADVANCEDLIGHT_ULTRA);
 		AddRecommended(container, cvar);
 		return container:GetData();
 	end

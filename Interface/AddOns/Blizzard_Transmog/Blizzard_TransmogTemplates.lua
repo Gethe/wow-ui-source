@@ -1351,7 +1351,7 @@ function TransmogItemModelMixin:UpdateItem()
 	-- Icons
 	self.FavoriteVisual:SetShown(appearanceInfo.isFavorite);
 	self.HideVisual:SetShown(appearanceInfo.isHideVisual);
-	self.WarnVisual:SetShown(isArmor and not appearanceInfo.isValidForEquippedItem);
+	self.WarnVisual:SetShown(not transmogLocation:IsIllusion() and not appearanceInfo.isValidForEquippedItem);
 	self.NewVisual:SetShown(C_TransmogCollection.IsNewAppearance(appearanceInfo.visualID));
 end
 

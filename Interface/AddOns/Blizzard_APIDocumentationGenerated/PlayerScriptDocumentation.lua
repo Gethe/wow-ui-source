@@ -464,6 +464,42 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetGlancingBlowChance",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If no playerWeaponSkill value is provided, uses the skill value for the player's main hand weapon/shapeshift form." },
+
+			Arguments =
+			{
+				{ Name = "playerWeaponSkill", Type = "number", Nilable = true },
+				{ Name = "targetDefenseSkill", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetGlancingBlowPenalty",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "If no playerWeaponSkill value is provided, uses the skill value for the player's main hand weapon/shapeshift form." },
+
+			Arguments =
+			{
+				{ Name = "playerWeaponSkill", Type = "number", Nilable = true },
+				{ Name = "targetDefenseSkill", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetHaste",
 			Type = "Function",
 			SecretWhenUnitStatsRestricted = true,

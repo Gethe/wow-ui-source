@@ -434,6 +434,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetFrameStrata",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.FrameStrata },
 
 			Arguments =
 			{
@@ -1292,7 +1293,8 @@ local SimpleFrameAPI =
 			Name = "SetFrameStrata",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "NotAllowed",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.FrameStrata },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{

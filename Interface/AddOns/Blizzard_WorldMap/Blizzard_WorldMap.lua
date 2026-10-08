@@ -550,9 +550,21 @@ function WorldMapMixin:OnOpenQuestDetails()
 	end
 end
 
+function WorldMapMixin:SelectQuestButton()
+	if InputUtil.IsGamepadUIEnabled() then
+		if self.refocusQuestButton then
+			SmartNavigation:SelectButton(self.refocusQuestButton);
+		else
+			SmartNavigation:SelectFirstButton();
+		end
+	end
+end
+
 function WorldMapMixin:CloseQuestDetails()
 	if InputUtil.IsGamepadUIEnabled() then
 		QuestMapFrame.QuestsFrame.DetailsFrame.BackFrame.BackButton:Click();
+		SmartNavigation:RefreshButtonGroups();
+		self:SelectQuestButton();
 	end
 end
 
@@ -560,12 +572,7 @@ function WorldMapMixin:OnCloseQuestDetails()
 	if InputUtil.IsGamepadUIEnabled() then
 		if self:IsShown() and self.currentFocus == DETAILS_FOCUS then
 			self:FocusQuests();
-			if self.refocusQuestButton then
-				SmartNavigation:SelectButton(self.refocusQuestButton);
-				self.refocusQuestButton = nil;
-			else
-				SmartNavigation:SelectFirstButton();
-			end
+			self:SelectQuestButton();
 		end
 	end
 end
@@ -620,6 +627,7 @@ end
 function WorldMapMixin:FocusDetails()
 	self:ClearBindings();
 	SmartNavigation:RefreshButtonGroups(self);
+	SmartNavigation:SelectFirstButton();
 	SmartNavigation:EnterFocusGroup(QUEST_FOCUS); -- Details needs to be tracked as its own state, but intentionally does not have its own focus group.
 	self.currentFocus = DETAILS_FOCUS;
 	SmartNavigation:ActivateBinding();
@@ -1049,11 +1057,29 @@ end
 function WorldMapMixin:FocusSearchBox()
 	local searchBox = QuestScrollFrame.SearchBox;
 	if not searchBox:HasFocus() then
+		self.refocusQuestButton = SmartNavigation:GetCurrentButton();
 		SmartNavigation:SelectButton(searchBox);
 		searchBox:SetFocus();
 	else
 		searchBox:ClearFocus();
+		self:SelectQuestButton();
+		self.refocusQuestButton = nil;
 	end
+end
+
+function WorldMapMixin:QuestLogHandleBack()
+	local searchBox = QuestScrollFrame.SearchBox;
+	if searchBox:HasFocus() then
+		QuestScrollFrameClearButton:Click();
+		self:SelectQuestButton();
+		return;
+	end
+
+	WorldMapFrameCloseButton:Click();
+end
+
+function WorldMapMixin:ShouldCombineMapAndQuestMenu()
+	return InputUtil.IsGamepadUIEnabled();
 end
 
 -- Return the map frame to normal size before handling bindings that focus or overlay something on top.
@@ -1110,17 +1136,16 @@ function WorldMapMixin:SetupGamepad()
 	local focusSearch = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, GenerateClosure(self.FocusSearchBox, self));
 	focusSearch:SetCustomPromptFrame(QuestScrollFrame.GamepadSearchFocusIcon);
 
-	local settingsDropdown = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, GenerateClosure(self.HandleMainMenu, self));
-	settingsDropdown:SetCustomPromptFrame(QuestScrollFrame.GamepadSettingsFocusIcon);
-
+	local back = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.QuestLogHandleBack, self), FRAME_ACTION_BACK);
+	
 	self.questLogFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "QuestLogFooter");
 	self.questLogFooter:AddStandardSelectPrompt();
-	self.questLogFooter:AddStandardBackPrompt();
 	self.questLogFooter:AddPromptedBinding(questOptions);
 	self.questLogFooter:AddPromptedBinding(focusMap);
 	self.questLogFooter:AddPromptedBinding(focusSearch);
-	self.questLogFooter:AddPromptedBinding(settingsDropdown);
+	self.questLogFooter:AddPromptedBinding(back);
 	self.questLogFooter:AddStandardFrameControlManagerBindings(self);
+	self.questLogFooter:SetAlignmentType(PromptedBindingFooterMixin.ALIGNMENT_TYPE.RIGHT);
 	self.questLogFooter:Finalize();
 	
 	self.questLogTooltipBindings = GamepadMode.CreateBindingGroup("questLogTooltipBindings");
@@ -1138,6 +1163,7 @@ function WorldMapMixin:SetupGamepad()
 	self.questDetailsFooter:AddPromptedBinding(questDetailsOptionsPage);
 	self.questDetailsFooter:AddPromptedBinding(questDetailsFocusMap);
 	self.questDetailsFooter:AddPromptedBinding(questDetailsBackPage);
+	self.questDetailsFooter:SetAlignmentType(PromptedBindingFooterMixin.ALIGNMENT_TYPE.RIGHT);
 	self.questDetailsFooter:Finalize();
 
 	-- World Map actions.
@@ -1214,10 +1240,8 @@ function WorldMapMixin:FocusGamepad()
 		self:FocusMap();
 	elseif self.currentFocus == DETAILS_FOCUS or QuestMapFrame.DetailsFrame:IsShown() then
 		self:FocusDetails();
-	elseif self.currentFocus == QUEST_FOCUS then
-		self:FocusQuests();
 	else
-		self:FocusMap();
+		self:FocusQuests();
 	end
 
 	self:UpdateStateChangeIndicators();
@@ -1251,7 +1275,8 @@ function WorldMapMixin:InitializeGamepad()
 	QuestMapFrame.QuestsFrame.DetailsFrame.TrackButton:Hide();
 
 	QuestScrollFrame.SearchBox:ClearAllPoints();
-	QuestScrollFrame.SearchBox:SetPoint("BOTTOMRIGHT", QuestScrollFrame.Contents, "TOP", 25, 7);
+	QuestScrollFrame.SearchBox:SetPoint("BOTTOMRIGHT", QuestScrollFrame, "TOP", 65, 7);
+	QuestScrollFrame.SettingsDropdown:Hide();
 
 	self.WorldMapTrackingOptionsButton:SetPoint("LEFT", self.NavBar, "RIGHT", 19, -2);
 

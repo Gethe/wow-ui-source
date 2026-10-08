@@ -10,7 +10,7 @@ local FOCUS_STATES = { COLLAPSED = 1, EXPANDED = 2 };
 local LEFTSQUARE_RIGHTCIRCLE_STYLE = 0;
 local ACTION_BAR_BUTTON_PRESSED_SIZE_OFFSET = -4;
 local ACTION_BAR_BUTTON_PRESSED_ANCHOR_OFFSET = { x=0, y=math.round(ACTION_BAR_BUTTON_PRESSED_SIZE_OFFSET * 0.5) };
-local FocusFX = require('.ActionBarFocusFX');
+local FocusFX = import('.ActionBarFocusFX');
 
 GamepadActionBarStyleUtil = {};
 

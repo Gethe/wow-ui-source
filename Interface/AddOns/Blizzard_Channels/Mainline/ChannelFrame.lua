@@ -32,6 +32,8 @@ do
 		self:RegisterEvent("CHANNEL_ROSTER_UPDATE");
 		self:RegisterEvent("VOICE_CHAT_LOGIN");
 		self:RegisterEvent("VOICE_CHAT_LOGOUT");
+		self:RegisterEvent("VOICE_CHAT_VOICE_PROVIDER_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_ACTIVE_VOICE_PROVIDER_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_JOINED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED");
@@ -130,6 +132,12 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:OnVoiceChatLogin(...);
 	elseif event == "VOICE_CHAT_LOGOUT" then
 		self:OnVoiceChatLogout();
+	elseif event == "VOICE_CHAT_VOICE_PROVIDER_CHANGED" then
+		-- Queued commands target the previous provider's login.
+		self.queuedVoiceChannelCommands = nil;
+		self:MarkDirty("UpdateAll");
+	elseif event == "VOICE_CHAT_ACTIVE_VOICE_PROVIDER_CHANGED" then
+		self:OnActiveVoiceProviderChanged(...);
 	elseif event == "VOICE_CHAT_CHANNEL_JOINED" then
 		self:OnVoiceChannelJoined(...);
 	elseif event == "VOICE_CHAT_CHANNEL_ACTIVATED" then
@@ -148,6 +156,8 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:OnGroupFormed(...);
 	elseif event == "GROUP_LEFT" then
 		self:OnGroupLeft(...);
+	elseif event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" then
+		self:OnLFGListActiveEntryUpdate();
 	elseif event == "CLUB_ADDED" then
 		self:OnClubAdded(...);
 	elseif event == "CLUB_REMOVED" then
@@ -265,15 +275,23 @@ function ChannelFrameMixin:TryCreateVoiceChannel(channelName)
 end
 
 function ChannelFrameMixin:TryJoinVoiceChannelByType(channelType, autoActivate)
+	local isPartyChannel = channelType == Enum.ChatChannelType.PrivateParty or channelType == Enum.ChatChannelType.DiscordParty;
+	if isPartyChannel then
+		C_VoiceChat.RestoreActiveVoiceProvider();
+		local isDiscord = C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord;
+		channelType = isDiscord and Enum.ChatChannelType.DiscordParty or Enum.ChatChannelType.PrivateParty;
+	end
+
 	return self:TryExecuteCommand(function()
 		C_VoiceChat.RequestJoinChannelByChannelType(channelType, autoActivate);
-	end);
+	end, channelType);
 end
 
 function ChannelFrameMixin:TryJoinCommunityStreamChannel(clubId, streamId)
-	return self:TryExecuteCommand(function()
-		C_VoiceChat.RequestJoinAndActivateCommunityStreamChannel(clubId, streamId);
-	end);
+	-- Community voice needs Legacy; the native request logs in if needed, so the join survives party changes during login.
+	C_VoiceChat.SetActiveVoiceProvider(Enum.VoiceProviderID.Legacy);
+	C_VoiceChat.RequestJoinAndActivateCommunityStreamChannel(clubId, streamId);
+	return true;
 end
 
 function ChannelFrameMixin:CreateVoiceChannel(channelName)
@@ -290,33 +308,45 @@ function ChannelFrameMixin:OnVoiceChatLogin(loginStatusCode)
 				cmd();
 			end
 		end
-	end
 
-	self.queuedVoiceChannelCommands = nil;
+		self.queuedVoiceChannelCommands = nil;
+	end
 end
 
 function ChannelFrameMixin:OnVoiceChatLogout()
 	self.queuedVoiceChannelCommands = nil;
 end
 
-function ChannelFrameMixin:QueueVoiceChannelCommand(cmd)
+function ChannelFrameMixin:OnActiveVoiceProviderChanged(voiceProviderID)
+	if not C_VoiceChat.IsSpeakForMeActive() and not GetCVarBool("speechToText") then
+		return;
+	end
+
+	-- Discord does not support Speak for Me or transcription.
+	local isDiscord = voiceProviderID == Enum.VoiceProviderID.Discord;
+	ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_SERVICE_SWITCHING:format(isDiscord and VOICE_CHAT_SERVICE_DISCORD or VOICE_CHAT_SERVICE_LEGACY));
+	ChatFrameUtil.DisplaySystemMessageInPrimary(isDiscord and VOICE_CHAT_TTS_STT_DISABLED or VOICE_CHAT_TTS_STT_ENABLED);
+end
+
+function ChannelFrameMixin:QueueVoiceChannelCommand(cmd, channelType)
 	if not self.queuedVoiceChannelCommands then
 		self.queuedVoiceChannelCommands = {};
 	end
 
-	local statusCode = C_VoiceChat.Login();
+	local statusCode = C_VoiceChat.Login(channelType);
+
 	if statusCode == Enum.VoiceChatStatusCode.OperationPending then
 		table.insert(self.queuedVoiceChannelCommands, cmd);
 	end
 end
 
-function ChannelFrameMixin:TryExecuteCommand(cmd)
+function ChannelFrameMixin:TryExecuteCommand(cmd, channelType)
 	if C_VoiceChat.IsLoggedIn() then
 		cmd();
 		return true;
 	end
 
-	self:QueueVoiceChannelCommand(cmd);
+	self:QueueVoiceChannelCommand(cmd, channelType);
 	return false;
 end
 
@@ -565,9 +595,50 @@ function ChannelFrameMixin:OnCountUpdate(id, _count)
 end
 
 function ChannelFrameMixin:OnGroupFormed(partyCategory, partyGUID)
+	if partyCategory ~= LE_PARTY_CATEGORY_HOME then
+		return;
+	end
+
+	if not C_LFGList.HasActiveEntryInfo() then
+		-- The active listing status can arrive after GROUP_FORMED.
+		self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+		return;
+	end
+
+	self:TryPromptGroupVoiceChat();
+end
+
+function ChannelFrameMixin:OnLFGListActiveEntryUpdate()
+	if C_LFGList.HasActiveEntryInfo() then
+		self:UnregisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+		self:TryPromptGroupVoiceChat();
+	end
+end
+
+function ChannelFrameMixin:TryPromptGroupVoiceChat()
+	if not C_VoiceChat.IsEnabled() or C_VoiceChat.IsParentalDisabled() then
+		return;
+	end
+
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+	local voiceMode = activeEntryInfo and activeEntryInfo.voiceMode;
+	if voiceMode ~= Enum.LFGEntryVoiceMode.Discord and voiceMode ~= Enum.LFGEntryVoiceMode.Legacy then
+		return;
+	end
+
+	if UnitIsGroupLeader("player") then
+		local isDiscord = C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord;
+		self:TryJoinVoiceChannelByType(isDiscord and Enum.ChatChannelType.DiscordParty or Enum.ChatChannelType.PrivateParty, true);
+	elseif not StaticPopup_Visible("VOICE_CHAT_JOIN_GROUP") then
+		StaticPopup_Show("VOICE_CHAT_JOIN_GROUP");
+	end
 end
 
 function ChannelFrameMixin:OnGroupLeft(partyCategory, partyGUID)
+	if partyCategory == LE_PARTY_CATEGORY_HOME then
+		self:UnregisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+	end
+
 	-- TODO: This isn't fully correct, needs to check and see if you're still in a party and prompt to switch
 	-- back to that party's voice chat (e.g. you just left pug and now you're seeing your private/home party again)
 	-- ...need to verify some things related to zoning out of the instance/bg/etc...

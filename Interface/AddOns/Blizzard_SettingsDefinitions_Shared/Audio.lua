@@ -19,6 +19,10 @@ end
 function VoiceTestMicrophoneMixin:OnEvent(event, ...)
 	if event == "ADDONS_UNLOADING" then
 		self:EndInputDeviceTest(self);
+	elseif event == "VOICE_CHAT_AUDIO_CAPTURE_STOPPED" then
+		-- The capture can stop without us asking, such as when the voice provider has no audio source.
+		self:EndInputDeviceTest();
+		self:UpdateTestButton();
 	elseif event == "VOICE_CHAT_AUDIO_CAPTURE_ENERGY" then
 		self:UpdateVUMeter(...);
 	end
@@ -62,6 +66,7 @@ function VoiceTestMicrophoneMixin:Init(initializer)
 	SettingsListElementMixin.Init(self, initializer);
 
 	self:RegisterEvent("ADDONS_UNLOADING");
+	self:RegisterEvent("VOICE_CHAT_AUDIO_CAPTURE_STOPPED");
 	self:RegisterEvent("VOICE_CHAT_AUDIO_CAPTURE_ENERGY");
 end
 
@@ -82,6 +87,7 @@ function VoiceTestMicrophoneMixin:Release()
 	SettingsListElementMixin.Release(self);
 
 	self:UnregisterEvent("ADDONS_UNLOADING");
+	self:UnregisterEvent("VOICE_CHAT_AUDIO_CAPTURE_STOPPED");
 	self:UnregisterEvent("VOICE_CHAT_AUDIO_CAPTURE_ENERGY");
 end
 
@@ -106,7 +112,7 @@ end
 
 function VoicePushToTalkMixin:Init(data)
 	SettingsListElementMixin.Init(self, data);
-	
+
 	if not self.PushToTalkKeybindButton then
 		self.PushToTalkKeybindButton = CustomBindingManager:RegisterHandlerAndCreateButton(CreateVoicePushToTalkBindingHandler(), "CustomBindingButtonTemplate", self);
 		self.PushToTalkKeybindButton:SetPoint("LEFT", self, "CENTER", -80, 0);
@@ -114,6 +120,16 @@ function VoicePushToTalkMixin:Init(data)
 		self.PushToTalkKeybindButton.selectedHighlight:SetWidth(self.PushToTalkKeybindButton:GetWidth());
 	end
 
+	self:EvaluateState();
+end
+
+function VoicePushToTalkMixin:EvaluateState()
+	SettingsListElementMixin.EvaluateState(self);
+
+	local initializer = self:GetElementData();
+	local enabled = self:IsEnabled() and initializer:EvaluateModifyPredicates();
+	self.PushToTalkKeybindButton:SetBindingEnabled(enabled);
+	self:DisplayEnabled(enabled);
 	BindingButtonTemplate_SetupBindingButton(nil, self.PushToTalkKeybindButton);
 end
 
@@ -142,7 +158,7 @@ local function FindDeviceByPredicate(devices, predicate)
 	end
 	return nil;
 end
-	
+
 local function FindActiveDevice(devices)
 	return FindDeviceByPredicate(devices, function(device)
 		return device.isActive;
@@ -218,11 +234,59 @@ local function InitVoiceSettings(category, layout)
 		end
 	end
 
+	local function CanModifyDiscordSyncedSetting()
+		local isSynced = Settings.GetValue("voiceUseDiscordSettings") and Settings.GetValue("voiceProvider") == Enum.VoiceProviderID.Discord and C_Discord.IsVoiceEnabled() and C_Discord.IsUserOAuthed();
+		return not isSynced;
+	end
+
+	-- Locks a control whose value is imported from the Discord client.
+	local function LockWhenDiscordSettingsSynced(initializer)
+		initializer:AddModifyPredicate(CanModifyDiscordSyncedSetting);
+		initializer:AddEvaluateStateCVar("voiceUseDiscordSettings");
+		initializer:AddEvaluateStateCVar("voiceProvider");
+		initializer:AddEvaluateStateFrameEvent("VOICE_CHAT_VOICE_PROVIDERS_AVAILABLE_CHANGED");
+		initializer:AddEvaluateStateFrameEvent("DISCORD_LINK_UPDATE");
+	end
+
 	-- System Prefs
 	if IsMacClient() and not C_MacOptions.IsMicrophoneEnabled() then
 		local data = {};
 		local initializer = Settings.CreatePanelInitializer("MacMicrophoneAccessWarningTemplate", data);
 		layout:AddInitializer(initializer);
+	end
+
+	do
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(Enum.VoiceProviderID.Discord, VOICE_CHAT_SERVICE_DISCORD, OPTION_TOOLTIP_VOICE_CHAT_SERVICE_DISCORD);
+			container:Add(Enum.VoiceProviderID.Legacy, VOICE_CHAT_SERVICE_LEGACY, OPTION_TOOLTIP_VOICE_CHAT_SERVICE_LEGACY);
+			return container:GetData();
+		end
+
+		local function IsVoiceProviderVisible()
+			return C_Discord.IsVoiceEnabled();
+		end
+
+		local providerSetting, initializer = Settings.SetupCVarDropdown(category, "voiceProvider", Settings.VarType.Number,
+			GetOptions, VOICE_CHAT_SERVICE, OPTION_TOOLTIP_VOICE_CHAT_SERVICE);
+
+		initializer:AddShownPredicate(IsVoiceProviderVisible);
+		initializer:AddEvaluateStateFrameEvent("VOICE_CHAT_VOICE_PROVIDERS_AVAILABLE_CHANGED");
+		initializer:AddEvaluateStateFrameEvent("PARTY_LEADER_CHANGED");
+
+		-- Use Discord Client Settings
+		local function IsDiscordPreferred()
+			return providerSetting:GetValue() == Enum.VoiceProviderID.Discord and C_Discord.IsUserOAuthed();
+		end
+
+		local _, useDiscordInitializer = Settings.SetupCVarCheckbox(category, "voiceUseDiscordSettings",
+			VOICE_CHAT_USE_DISCORD_SETTINGS, OPTION_TOOLTIP_VOICE_CHAT_USE_DISCORD_SETTINGS);
+
+		useDiscordInitializer:AddShownPredicate(IsVoiceProviderVisible);
+		useDiscordInitializer:AddModifyPredicate(IsDiscordPreferred);
+		useDiscordInitializer:AddEvaluateStateCVar("voiceProvider");
+		useDiscordInitializer:AddEvaluateStateFrameEvent("VOICE_CHAT_VOICE_PROVIDERS_AVAILABLE_CHANGED");
+		useDiscordInitializer:AddEvaluateStateFrameEvent("DISCORD_LINK_UPDATE");
 	end
 
 	-- Output Device
@@ -267,6 +331,7 @@ local function InitVoiceSettings(category, layout)
 
 			local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_VOICE_OUTPUT_VOLUME);
 			initializer:SetParentInitializer(outputInitializer);
+			LockWhenDiscordSettingsSynced(initializer);
 		end
 
 		-- Ducking
@@ -275,11 +340,11 @@ local function InitVoiceSettings(category, layout)
 			local function GetValue()
 				return max - C_VoiceChat.GetMasterVolumeScale();
 			end
-			
+
 			local function SetValue(value)
 				C_VoiceChat.SetMasterVolumeScale(max - value);
 			end
-		
+
 			local defaultValue = tonumber(GetCVarDefault("VoiceChatMasterVolumeScale"));
 			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_DUCKING",
 				Settings.VarType.Number, VOICE_CHAT_DUCKING_SCALE, defaultValue, GetValue, SetValue);
@@ -305,7 +370,7 @@ local function InitVoiceSettings(category, layout)
 			end
 
 			local defaultValue = GetDefaultInputDeviceID();
-			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_DEVICE", 
+			local setting = Settings.RegisterProxySetting(category, "PROXY_VOICE_INPUT_DEVICE",
 				Settings.VarType.String, VOICE_CHAT_MIC_DEVICE, defaultValue, GetActiveInputDeviceID, C_VoiceChat.SetInputDevice);
 			setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 
@@ -332,6 +397,7 @@ local function InitVoiceSettings(category, layout)
 
 			local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_VOICE_INPUT_VOLUME);
 			initializer:SetParentInitializer(inputInitializer);
+			LockWhenDiscordSettingsSynced(initializer);
 		end
 
 		-- Sensitivity
@@ -352,7 +418,7 @@ local function InitVoiceSettings(category, layout)
 
 			local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 			options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, FormatScaledPercentage);
-			
+
 			local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_VOICE_ACTIVATION_SENSITIVITY);
 			initializer:SetParentInitializer(inputInitializer);
 		end
@@ -383,6 +449,7 @@ local function InitVoiceSettings(category, layout)
 				Settings.VarType.Number, VOICE_CHAT_MODE, defaultValue, C_VoiceChat.GetCommunicationMode, C_VoiceChat.SetCommunicationMode);
 
 			chatModeInitializer = Settings.CreateDropdown(category, setting, GetOptionData, OPTION_TOOLTIP_VOICE_CHAT_MODE);
+			LockWhenDiscordSettingsSynced(chatModeInitializer);
 		end
 
 		-- Push To Talk
@@ -391,8 +458,33 @@ local function InitVoiceSettings(category, layout)
 			local initializer = Settings.CreateElementInitializer("VoicePushToTalkTemplate", data);
 			initializer:AddSearchTags(VOICE_CHAT_MODE_KEY);
 			initializer:SetParentInitializer(chatModeInitializer);
+			LockWhenDiscordSettingsSynced(initializer);
 			layout:AddInitializer(initializer);
+
+			-- Also locks the push-to-talk button in the Keybindings UI.
+			local function IsPushToTalkBindingLocked()
+				return not CanModifyDiscordSyncedSetting();
+			end
+
+			local function RefreshPushToTalkBindingButtons()
+				CustomBindingManager:RefreshButtons(Enum.CustomBindingType.VoicePushToTalk);
+			end
+
+			CustomBindingManager:SetLockedPredicate(Enum.CustomBindingType.VoicePushToTalk, IsPushToTalkBindingLocked);
+			Settings.SetOnValueChangedCallback("voiceUseDiscordSettings", RefreshPushToTalkBindingButtons);
+			Settings.SetOnValueChangedCallback("voiceProvider", RefreshPushToTalkBindingButtons);
+			EventRegistry:RegisterFrameEventAndCallback("VOICE_CHAT_VOICE_PROVIDERS_AVAILABLE_CHANGED", RefreshPushToTalkBindingButtons);
+			EventRegistry:RegisterFrameEventAndCallback("DISCORD_LINK_UPDATE", RefreshPushToTalkBindingButtons);
+			EventRegistry:RegisterFrameEventAndCallback("VOICE_CHAT_DISCORD_SETTINGS_UPDATED", RefreshPushToTalkBindingButtons);
 		end
+
+		local function OnDiscordSettingsUpdated()
+			Settings.NotifyUpdate("PROXY_VOICE_OUTPUT_VOLUME");
+			Settings.NotifyUpdate("PROXY_VOICE_INPUT_VOLUME");
+			Settings.NotifyUpdate("PROXY_VOICE_CHAT_MODE");
+		end
+
+		EventRegistry:RegisterFrameEventAndCallback("VOICE_CHAT_DISCORD_SETTINGS_UPDATED", OnDiscordSettingsUpdated);
 	end
 end
 
@@ -429,7 +521,7 @@ local function Register()
 	do
 		-- Master Volume
 		local masterSetting, masterInitializer = Settings.SetupCVarSlider(category, "Sound_MasterVolume", volumeOptions, MASTER_VOLUME, OPTION_TOOLTIP_MASTER_VOLUME);
-		
+
 		-- Music Volume
 		local setting, initializer = Settings.SetupCVarSlider(category, "Sound_MusicVolume", volumeOptions, MUSIC_VOLUME, OPTION_TOOLTIP_MUSIC_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
@@ -441,12 +533,12 @@ local function Register()
 		-- Ambience Volume
 		setting, initializer = Settings.SetupCVarSlider(category, "Sound_AmbienceVolume", volumeOptions, AMBIENCE_VOLUME, OPTION_TOOLTIP_AMBIENCE_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
-		
+
 		-- Dialog Volume
 		setting, initializer = Settings.SetupCVarSlider(category, "Sound_DialogVolume", volumeOptions, DIALOG_VOLUME, OPTION_TOOLTIP_DIALOG_VOLUME);
 		initializer:SetParentInitializer(masterInitializer);
 	end
-	
+
 	-- Music
 	do
 		local musicSetting, musicInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableMusic", ENABLE_MUSIC, OPTION_TOOLTIP_ENABLE_MUSIC);
@@ -459,9 +551,9 @@ local function Register()
 		end
 		loopingInitializer:SetParentInitializer(musicInitializer, IsModifiable);
 		end
-		
+
 		-- Pet Battle Music
-		if C_CVar.GetCVar("Sound_EnablePetBattleMusic") then
+		if AudioOverrides.HasPetBattleMusic() and C_CVar.GetCVar("Sound_EnablePetBattleMusic") then
 			local petBattleSetting, petBattleInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnablePetBattleMusic", ENABLE_PET_BATTLE_MUSIC, OPTION_TOOLTIP_ENABLE_PET_BATTLE_MUSIC);
 			local function IsModifiable()
 				return musicSetting:GetValue();
@@ -482,7 +574,7 @@ local function Register()
 			end
 			petSoundsInitializer:SetParentInitializer(soundFXInitializer, IsModifiable);
 		end
-			
+
 		do
 		-- Emote Sounds
 			local emoteSoundsSetting, emoteSoundsInitializer = Settings.SetupCVarCheckbox(category, "Sound_EnableEmoteSounds", ENABLE_EMOTE_SOUNDS, OPTION_TOOLTIP_ENABLE_EMOTE_SOUNDS);
@@ -507,16 +599,16 @@ local function Register()
 		end
 		errorSpeechInitializer:SetParentInitializer(dialogInitializer, IsModifiable);
 	end
-	
+
 	-- Ambient Sounds
 	Settings.SetupCVarCheckbox(category, "Sound_EnableAmbience", ENABLE_AMBIENCE, OPTION_TOOLTIP_ENABLE_AMBIENCE);
-	
+
 	-- Sound in Background
 	Settings.SetupCVarCheckbox(category, "Sound_EnableSoundWhenGameIsInBG", ENABLE_BGSOUND, OPTION_TOOLTIP_ENABLE_BGSOUND);
 
 	-- Enable Reverb
 	Settings.SetupCVarCheckbox(category, "Sound_EnableReverb", ENABLE_REVERB, OPTION_TOOLTIP_ENABLE_REVERB);
-	
+
 	-- Distance Filtering
 	Settings.SetupCVarCheckbox(category, "Sound_EnablePositionalLowPassFilter", ENABLE_SOFTWARE_HRTF, OPTION_TOOLTIP_ENABLE_SOFTWARE_HRTF);
 

@@ -167,3 +167,21 @@ end
 	self:EnableGamePadButton(false);
 	self:EnableKeyboard(false);
 end
+
+-- Owners use this instead of SetEnabled so a locked binding stays disabled.
+--[[public]] function CustomBindingButtonMixin:SetBindingEnabled(enabled)
+	self.isBindingEnabled = enabled;
+	self:UpdateEnabledState();
+end
+
+--[[public]] function CustomBindingButtonMixin:UpdateEnabledState()
+	local customBindingType = self:GetCustomBindingType();
+	local enabled = self.isBindingEnabled ~= false and not CustomBindingManager:IsLocked(customBindingType);
+	if not enabled and self:IsBindingModeActive() then
+		-- Canceling applies any pending bind, so drop it first.
+		CustomBindingManager:OnDismissed(customBindingType, false);
+		self:CancelBinding();
+	end
+
+	self:SetEnabled(enabled);
+end

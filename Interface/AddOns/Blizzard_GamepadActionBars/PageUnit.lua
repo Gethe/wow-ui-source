@@ -1,4 +1,4 @@
-local TargetActionBars_Shared = require(".TargetActionBars.Shared");
+local TargetActionBars_Shared = import(".TargetActionBars.Shared");
 
 local STARTING_PAGE_ON_LOAD = 1;
 local PAGE_TRACKER_BACKGROUND_WIDTH_PADDING = 5;
@@ -235,14 +235,6 @@ function GamepadActionBarPageUnitMixin:OnLoad()
 	self:InitializeTargetingBars();
 	SetupPageTracker(self);
 
-	CVarCallbackRegistry:SetCVarCachable("GamepadShowActionBarButtonPrompts");
-	CVarCallbackRegistry:SetCVarCachable("GamepadShowActionBarHighlight");
-	CVarCallbackRegistry:SetCVarCachable("GamepadShowActionBarScaling");
-	CVarCallbackRegistry:SetCVarCachable("GamepadUseCompactActionBar");
-	CVarCallbackRegistry:RegisterCallback("GamepadShowActionBarButtonPrompts", self.ActionBarModKeyDownStateCheck, self);
-	CVarCallbackRegistry:RegisterCallback("GamepadShowActionBarHighlight", self.ActionBarModKeyDownStateCheck, self);
-	CVarCallbackRegistry:RegisterCallback("GamepadShowActionBarScaling", self.ActionBarModKeyDownStateCheck, self);
-	CVarCallbackRegistry:RegisterCallback("GamepadUseCompactActionBar", self.RefreshCompactLayout, self);
 	InputDeviceIconSetManager:RegisterActiveInputDeviceIconSetUpdatedCallback(self.OnInputDeviceIconSetUpdated, self);
 
 	InputUtil.RegisterForInterfaceTransitions(self);
@@ -272,17 +264,8 @@ function GamepadActionBarPageUnitMixin:UninitializeGamepad()
 end
 
 function GamepadActionBarPageUnitMixin:ShouldUseCompactLayout()
-	return self.useCompactLayout == nil
-		and CVarCallbackRegistry:GetCVarValueBool("GamepadUseCompactActionBar")
-		or self.useCompactLayout;
-end
-
-function GamepadActionBarPageUnitMixin:SetUseCompactLayout(value)
-	-- NOTE:
-	-- `RefreshCompactLayout` should be called sometime after you call `SetUseCompactLayout`.
-	-- `RefreshCompactLayout` uses a character stored cvar and so must be called after cvars are loaded.
-	-- Therefore it is up to the caller to ensure `RefreshCompactLayout` is called at an appropiate time.
-	self.useCompactLayout = value;
+	local actionbar = self:GetParent();
+	return actionbar.useCompactLayout;
 end
 
 function GamepadActionBarPageUnitMixin:InitializeCompactLayout()

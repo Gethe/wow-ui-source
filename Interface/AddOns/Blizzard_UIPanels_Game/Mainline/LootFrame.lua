@@ -119,7 +119,9 @@ function LootFrameMixin:OnHideAnimFinished()
 end
 
 function LootFrameMixin:CalculateElementsHeight()
-	return ScrollUtil.CalculateScrollBoxElementExtent(self.ScrollBox:GetDataProviderSize(), ScrollBoxElementHeight, ScrollBoxSpacing);
+	local scrollHeight = ScrollUtil.CalculateScrollBoxElementExtent(self.ScrollBox:GetDataProviderSize(), ScrollBoxElementHeight, ScrollBoxSpacing);
+	scrollHeight = math.max(scrollHeight, ScrollBoxElementHeight);
+	return scrollHeight;
 end
 
 function LootFrameMixin:OnEvent(event, ...)

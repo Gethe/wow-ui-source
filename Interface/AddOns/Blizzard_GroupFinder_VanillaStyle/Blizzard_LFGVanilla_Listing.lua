@@ -8,8 +8,18 @@ local LFGLISTING_VIEWSTATE_LOCKED = 3;
 local LFGLISTING_BUTTONTYPE_ACTIVITYGROUP = 1;
 local LFGLISTING_BUTTONTYPE_ACTIVITY = 2;
 
+local VOICE_CHAT_ROW_HEIGHT = 36;
+
 local IN_SET_CATEGORY_SELECTION = false; -- Baby hack. This bool will be true when we're in code triggered by LFGListingMixin:SetCategorySelection. Useful for downstream effects.
 local PENDING_LISTING_UPDATE = false; -- Will be true after the player fires off an update to their listing from the UI. Used to determine what feedback we should give.
+local LFGVoiceChat = import(".Blizzard_LFGVanilla_VoiceChat");
+
+local VOICE_CHAT_MODE_ORDER = {
+	Enum.LFGEntryVoiceMode.None,
+	Enum.LFGEntryVoiceMode.Discord,
+	Enum.LFGEntryVoiceMode.Legacy,
+	Enum.LFGEntryVoiceMode.Custom,
+};
 
 -------------------------------------------------------
 ----------LFGListingMixin
@@ -35,6 +45,28 @@ function LFGListingMixin:OnLoad()
 	self.dirty = false;
 	self.viewState = LFGLISTING_VIEWSTATE_ACTIVITIES;
 	self.savedInstances = {};
+	if self.ActivityView.VoiceChatDropdown then
+		self.voiceMode = Enum.LFGEntryVoiceMode.None;
+		self.ActivityView.VoiceChatDropdown:SetWidth(220);
+		self.ActivityView.VoiceChatLabel:SetPoint("RIGHT", self.ActivityView.VoiceChatDropdown, "LEFT", -8, 0);
+		self.ActivityView.VoiceChatDropdown:SetDefaultText(LFGVoiceChat.VoiceModeLabels[self.voiceMode]);
+		self.ActivityView.VoiceChatDropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetTag("MENU_LFG_LISTING_VOICE_CHAT");
+
+			local function IsSelected(voiceMode)
+				return self.voiceMode == voiceMode;
+			end
+
+			local function SetSelected(voiceMode)
+				self.voiceMode = voiceMode;
+				self:SetDirty(true);
+			end
+
+			for _, voiceMode in ipairs(VOICE_CHAT_MODE_ORDER) do
+				rootDescription:CreateRadio(LFGVoiceChat.VoiceModeLabels[voiceMode], IsSelected, SetSelected, voiceMode);
+			end
+		end);
+	end
 
 	self:ClearUI();
 	self:LoadSoloRolesOnStartup();
@@ -113,6 +145,10 @@ function LFGListingMixin:OnShow()
 		self:LoadActiveEntry();
 		self:LoadSoloRoles();
 	else
+		if self.ActivityView.VoiceChatDropdown and not self.dirty then
+			self.voiceMode = C_VoiceChat.GetActiveChannelID() and (C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord and Enum.LFGEntryVoiceMode.Discord or Enum.LFGEntryVoiceMode.Legacy) or Enum.LFGEntryVoiceMode.None;
+			self.ActivityView.VoiceChatDropdown:GenerateMenu();
+		end
 		self:SetDirty(self:IsAnyActivitySelected());
 	end
 
@@ -160,6 +196,10 @@ function LFGListingMixin:ClearUI()
 	self:ClearCategorySelection();
 	C_LFGList.ClearCreationTextFields();
 	self.ActivityView.Comment.EditBox:ClearFocus();
+	if self.ActivityView.VoiceChatDropdown then
+		self.voiceMode = Enum.LFGEntryVoiceMode.None;
+		self.ActivityView.VoiceChatDropdown:GenerateMenu();
+	end
 	self:SetDirty(false);
 end
 
@@ -209,6 +249,10 @@ function LFGListingMixin:LoadActiveEntry()
 		self:SetCategorySelection(activityInfo.categoryID); -- This will call UpdateActivities.
 		C_LFGList.CopyActiveEntryInfoToCreationFields();
 		self.NewPlayerFriendlyButton.CheckButton:SetChecked(activeEntryInfo.newPlayerFriendly);
+		if self.ActivityView.VoiceChatDropdown then
+			self.voiceMode = activeEntryInfo.voiceMode or Enum.LFGEntryVoiceMode.None;
+			self.ActivityView.VoiceChatDropdown:GenerateMenu();
+		end
 
 		self:SetDirty(false);
 	end
@@ -232,6 +276,19 @@ function LFGListingMixin:CreateOrUpdateListing()
 	local newPlayerFriendlyEnabled = self.NewPlayerFriendlyButton.CheckButton:GetChecked();
 	local selectedPlaystyle = self.ActivityView.generalPlaystyle;
 
+	-- If group leader's voice provider preference is mismatched, switches group leader's preference to this selection.
+	if hasSelectedActivity and self.ActivityView.VoiceChatDropdown and (not IsInGroup() or UnitIsGroupLeader("player")) then
+		local voiceProvider;
+		if self.voiceMode == Enum.LFGEntryVoiceMode.Discord then
+			voiceProvider = Enum.VoiceProviderID.Discord;
+		elseif self.voiceMode == Enum.LFGEntryVoiceMode.Legacy then
+			voiceProvider = Enum.VoiceProviderID.Legacy;
+		end
+		if voiceProvider and tonumber(GetCVar("voiceProvider")) ~= voiceProvider then
+			SetCVar("voiceProvider", voiceProvider);
+		end
+	end
+
 	local saveSoloRoles = false;
 	if (C_LFGList.HasActiveEntryInfo()) then
 		if (hasSelectedActivity) then
@@ -240,6 +297,7 @@ function LFGListingMixin:CreateOrUpdateListing()
 			C_LFGList.UpdateListing({
 				activityIDs = selectedActivityIDs,
 				newPlayerFriendly = newPlayerFriendlyEnabled,
+				voiceMode = self.voiceMode,
 			});
 			saveSoloRoles = true;
 		else
@@ -255,6 +313,7 @@ function LFGListingMixin:CreateOrUpdateListing()
 				activityIDs = selectedActivityIDs,
 				newPlayerFriendly = newPlayerFriendlyEnabled,
 				generalPlaystyle = selectedPlaystyle,
+				voiceMode = self.voiceMode,
 			});
 			saveSoloRoles = true;
 		end
@@ -798,13 +857,14 @@ function LFGListingActivityView_OnLoad(self)
 	view:SetElementExtent(self.ListingSpacingY);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
+	local scrollBoxBottom = 88 + (self.VoiceChatDropdown and VOICE_CHAT_ROW_HEIGHT or 0);
 	local scrollBoxAnchorsWithBar = {
 		CreateAnchor("TOPLEFT", 0, self.ScrollBox.TopAnchorY),
-		CreateAnchor("BOTTOMRIGHT", -28, 88);
+		CreateAnchor("BOTTOMRIGHT", -28, scrollBoxBottom);
 	};
 	local scrollBoxAnchorsWithoutBar = {
 		scrollBoxAnchorsWithBar[1],
-		CreateAnchor("BOTTOMRIGHT", 0, 88);
+		CreateAnchor("BOTTOMRIGHT", 0, scrollBoxBottom);
 	};
 	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchorsWithBar, scrollBoxAnchorsWithoutBar);
 end
@@ -840,7 +900,7 @@ function LFGListingActivityView_OnShow(self)
 		self.ScrollBox:Show();
 		self.commentRequired = false;
 		self.Comment:ClearAllPoints();
-		self.Comment:SetPoint("BOTTOM", 0, 19);
+		self.Comment:SetPoint("BOTTOM", 0, 19 + (self.VoiceChatDropdown and VOICE_CHAT_ROW_HEIGHT or 0));
 		self.Comment:SetHeight(47);
 		self.Comment.EditBox.Instructions:SetText(isAccountSecured and DESCRIPTION_OF_YOUR_GROUP or LFG_AUTHENTICATOR_DESCRIPTION_BOX);
 		self.Comment.EditBox:SetEnabled(isAccountSecured);

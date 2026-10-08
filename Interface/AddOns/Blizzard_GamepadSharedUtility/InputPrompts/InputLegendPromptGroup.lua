@@ -106,7 +106,9 @@ function InputPromptLegendMixin:RefreshWithPromptedBindings(promptedBindings)
 		local divider = GAMEPAD_PROMPT_DIVIDER_SLASH;
 
 		local promptFrame = self:GetOrCreatePromptFrameUsingTemplateAndInputs(template.name, keys, divider);
+		promptedBinding.promptFrame = promptFrame;
 		promptFrame:SetPromptText(label);
+		promptFrame:SetIsHoldAction(promptedBinding:IsHoldPrompt());
 
 		if showEnabled then
 			promptFrame:EnablePrompt();

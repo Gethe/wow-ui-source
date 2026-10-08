@@ -290,7 +290,32 @@ function UnitPopupInspectButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupInspectButtonMixin:IsEnabled(contextData)
-	return not UnitIsDeadOrGhost("player");
+	return not UnitIsDeadOrGhost("player") and CanInspect(contextData.unit);
+end
+
+UnitPopupInspectTalentsButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
+
+function UnitPopupInspectTalentsButtonMixin:GetText(contextData)
+	return INSPECT_TALENTS;
+end
+
+function UnitPopupInspectTalentsButtonMixin:CanShow(contextData)
+	local unit = contextData.unit;
+	if not unit or UnitCanAttack("player", unit) then
+		return false;
+	end
+
+	return UnitPopupSharedUtil.IsPlayer(contextData);
+end
+
+function UnitPopupInspectTalentsButtonMixin:OnClick(contextData)
+	local unit = contextData.unit;
+	NotifyInspect(unit);
+	PlayerSpellsUtil.OpenToClassTalentsTab(unit);
+end
+
+function UnitPopupInspectTalentsButtonMixin:IsEnabled(contextData)
+	return not UnitIsDeadOrGhost("player") and CanInspect(contextData.unit);
 end
 
 UnitPopupTargetButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);

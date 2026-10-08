@@ -82,9 +82,11 @@ function GamepadActionBarMixin:ShowHighlight()
 		return;
 	end
 
-	local shouldShowButtonIcons = CVarCallbackRegistry:GetCVarValueBool("GamepadShowActionBarButtonPrompts");
-	local shouldShowHighlight = CVarCallbackRegistry:GetCVarValueBool("GamepadShowActionBarHighlight");
-	local shouldShowScaling = CVarCallbackRegistry:GetCVarValueBool("GamepadShowActionBarScaling");
+	local actionbar = self.pagingUnitOwner:GetParent();
+
+	local shouldShowButtonIcons = actionbar.showButtonIcons;
+	local shouldShowHighlight = actionbar.showHighlight;
+	local shouldShowScaling = actionbar.shouldExpand;
 
 	-- If we disable scaling, button icons overlap the spell icons so disabling scaling will also disable buttons for now.
 	if shouldShowButtonIcons and shouldShowScaling then
@@ -145,12 +147,9 @@ function GamepadActionBarMixin:SetActionBarShowSetting(cvarName)
 	self.actionBarShowSetting = cvarName;
 end
 
-local function GetGamepadActionBarShowSettingValue(gamepadActionBar)
-	if (gamepadActionBar.actionBarShowSetting) then
-		return CVarCallbackRegistry:GetCVarValueBool(gamepadActionBar.actionBarShowSetting);
-	else
-		return true;
-	end
+local function GetGamepadActionBarShowSettingValue(pageUnit)
+	local actionbar = pageUnit:GetParent();
+	return actionbar.showEmptyBars;
 end
 
 function GamepadActionBarMixin:RefreshActionBarVisibility()
@@ -173,7 +172,7 @@ function GamepadActionBarMixin:RefreshActionBarVisibility()
 			return false;
 		end
 
-		if not GetGamepadActionBarShowSettingValue(self) and self:IsBarEmpty() then
+		if not GetGamepadActionBarShowSettingValue(pageUnit) and self:IsBarEmpty() then
 			return false;
 		end
 

@@ -12,9 +12,6 @@ end
 function InspectGuildFrame_OnShow()
 	ButtonFrameTemplate_ShowButtonBar(InspectFrame);
 	InspectGuildFrame_Update();
-
-	InspectGuildFrame.guildRealmName:SetShown(InspectGuildFrame_ShowRealm());
-	InspectGuildFrame.Points:SetShown(InspectGuildFrame_ShowPoints());
 end
 
 function InspectGuildFrame_Update()

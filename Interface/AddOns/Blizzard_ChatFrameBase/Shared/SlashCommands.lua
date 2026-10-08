@@ -1590,6 +1590,9 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.VOICECHAT, SLASH_COMMAND_CAT
 	local streamID;
 	if lowerName == string.lower(PARTY) then
 		channelType = Enum.ChatChannelType.PrivateParty;
+		if C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord then
+			channelType = Enum.ChatChannelType.DiscordParty;
+		end
 	elseif lowerName == string.lower(INSTANCE) then
 		channelType = Enum.ChatChannelType.PublicParty;
 	elseif lowerName == string.lower(GUILD) then

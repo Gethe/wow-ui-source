@@ -49,14 +49,22 @@ end
 
 function EditModePresetLayoutManager:GetCopyOfOverrideLayouts()
 	return CopyTable(self.overrideLayoutInfo);
-end 
+end
 
 function EditModePresetLayoutManager:GetModernSystemMap()
 	return EDIT_MODE_MODERN_SYSTEM_MAP;
 end
 
+function EditModePresetLayoutManager:GetGamepadSystemMap()
+	return EDIT_MODE_GAMEPAD_SYSTEM_MAP;
+end
+
 function EditModePresetLayoutManager:GetModernSystems()
 	return self.presetLayoutInfo[1].systems;
+end
+
+function EditModePresetLayoutManager:GetGamepadSystems()
+	return self.presetLayoutInfo[3].systems;
 end
 
 function EditModePresetLayoutManager:GetDefaultSystemAnchorInfo(system, systemIndex)

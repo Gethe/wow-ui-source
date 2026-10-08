@@ -21,7 +21,7 @@ local EDIT_FRAME_DISPLAY_ACTION_TYPES =
 	UNSPECIFIED = "UNSPECIFIED",
 }
 
-local FocusFX = require('.ActionBarFocusFX');
+local FocusFX = import('.ActionBarFocusFX');
 
 function GamepadActionBarEditFrameMixin:GetTooltip()
 	return self.ActionTooltip;
@@ -36,6 +36,12 @@ function GamepadActionBarEditFrameMixin:OnLoad()
 
 	self:InitializePageUnit();
 	self:CreateInputBindingGroups();
+
+	self.useCompactLayout = false;
+	self.showEmptyBars = true;
+	self.showButtonIcons = false;
+	self.showHighlight = true;
+	self.shouldExpand = true;
 
 	-- A button that when clicked causes the edit frame to enter edit mode.
 	self.clickHandlers["EnterEditMode"] = GamepadSharedUtility.CreateDownClickButton("GamepadActionBarEditFrameEnterEditMode", self, GenerateClosure(self.EnterEditMode, self));
@@ -539,9 +545,6 @@ function GamepadActionBarEditFrameMixin:InitializePageUnit()
 		GamepadActionBarPageUnitMixin.ShowActionBarPageTracker(self.PageUnit, true);
 	end;
 	self.PageUnit:ShowActionBarPageTracker();
-
-	-- Always show all the bars in edit mode
-	self.PageUnit:SetUseCompactLayout(false);
 
 	-- This page unit doesn't need to display any button art other than the standard slot display.
 	self.PageUnit:DisableActionButtonGameplayFeedback();

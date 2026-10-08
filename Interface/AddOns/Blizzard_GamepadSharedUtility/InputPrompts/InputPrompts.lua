@@ -55,6 +55,24 @@ function InputPromptMixin:SetUseDropShadow(shouldUse)
 	end
 end
 
+function InputPromptMixin:SetIsHoldAction(isHoldAction)
+	for _, icon in ipairs(self.InputIcons or {}) do
+		icon:SetIsHoldAction(isHoldAction);
+	end
+end
+
+function InputPromptMixin:BeginHold(duration)
+	for _, icon in ipairs(self.InputIcons or {}) do
+		icon:BeginHold(duration);
+	end
+end
+
+function InputPromptMixin:EndHold()
+	for _, icon in ipairs(self.InputIcons or {}) do
+		icon:EndHold();
+	end
+end
+
 function InputPromptMixin:SetDividerType(newDividerType)
 	local dividers = self.IconDividers;
 	local icons = self.InputIcons;

@@ -18,6 +18,7 @@ Blizzard_LegacyChallengeCategoryList.xml
 Blizzard_LegacyChallengeCategoryList.lua
 Blizzard_LegacyChallenges.xml
 Blizzard_LegacyChallenges.lua
+Blizzard_LegacyAchievementOverrides.lua
 Blizzard_LegacySystem.lua
 Blizzard_LegacySystem.xml
 Blizzard_LegacySystemRegistration.lua

@@ -194,7 +194,7 @@ local function ShouldHandleUpDown(buttonUpDown, down)
 	return false;
 end
 
-local function HandleHoldBinding(binding, keyIndex, down, onTapCond)
+local function HandleHoldBinding(binding, keyIndex, down, onTapCond, promptFrame)
 	local function OnHeld()
 		local onHeld = binding.onHeld and binding.onHeld[keyIndex];
 		if onHeld then
@@ -210,9 +210,18 @@ local function HandleHoldBinding(binding, keyIndex, down, onTapCond)
 			onDown();
 		end
 
-		binding.holdTimer[keyIndex] = C_Timer.NewTimer(binding.holdTime[keyIndex], OnHeld);
+		local holdTime = binding.holdTime[keyIndex];
+		if promptFrame and promptFrame.BeginHold then
+			promptFrame:BeginHold(holdTime);
+		end
+
+		binding.holdTimer[keyIndex] = C_Timer.NewTimer(holdTime, OnHeld);
 	elseif (binding.holdTimer[keyIndex]) then
 		binding.holdTimer[keyIndex]:Cancel();
+
+		if promptFrame and promptFrame.EndHold then
+			promptFrame:EndHold();
+		end
 
 		local onTap = binding.onTap and binding.onTap[keyIndex];
 		if onTap and onTapCond() then
@@ -370,6 +379,10 @@ end
 function PromptedBindingMixin:AddCustomPromptHoldFunction(customPrompt, opts)
 	opts = opts or {};
 	ApplyHoldFunctionOpts(customPrompt, opts);
+
+	if customPrompt.frame and customPrompt.frame.SetIsHoldAction then
+		customPrompt.frame:SetIsHoldAction(true);
+	end
 end
 
 -- Adds an entry that will be shown in the popup menu
@@ -584,6 +597,22 @@ function PromptedBindingMixin:RequireTriggerBinding()
 	return false;
 end
 
+function PromptedBindingMixin:IsHoldPrompt()
+	if self.footerBinding and self.footerBinding.holdTime then
+		return true;
+	end
+
+	if self.customPromptFrames then
+		for _, customPromptFrame in ipairs(self.customPromptFrames) do
+			if customPromptFrame.holdTime then
+				return true;
+			end
+		end
+	end
+
+	return false;
+end
+
 function PromptedBindingMixin:TriggerBinding(keyIndex, down)
 	local activeButtonContext = SmartNavigation:GetCurrentButtonContext();
 	local footerCondMet = IsConditionMet(self.footerBinding, activeButtonContext);
@@ -593,7 +622,7 @@ function PromptedBindingMixin:TriggerBinding(keyIndex, down)
 			CreateMoreActionsMenu(self);
 		end
 		if self.footerBinding.holdTime ~= nil then
-			HandleHoldBinding(self.footerBinding, keyIndex, down, function() return true; end);
+			HandleHoldBinding(self.footerBinding, keyIndex, down, function() return true; end, self.promptFrame);
 		else
 			HandleBinding(self.footerBinding, keyIndex, down);
 		end
@@ -615,7 +644,7 @@ function PromptedBindingMixin:TriggerBinding(keyIndex, down)
 	for _, customPromptFrame in ipairs(self.customPromptFrames) do
 		if IsConditionMet(customPromptFrame, activeButtonContext) then
 			if customPromptFrame.holdTime ~= nil then
-				HandleHoldBinding(customPromptFrame, keyIndex, down, CustomPromptTapCond);
+				HandleHoldBinding(customPromptFrame, keyIndex, down, CustomPromptTapCond, customPromptFrame.frame);
 			else
 				HandleBinding(customPromptFrame, keyIndex, down);
 			end

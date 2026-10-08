@@ -411,19 +411,8 @@ function AchievementAlertFrame_OnClick (self, button, down)
 		return;
 	end
 
-	if not AchievementFrame:IsShown() then
-		CloseAllWindows();
-		AchievementFrame_ToggleAchievementFrame();
-	end
-
-	local _, _, _, achCompleted = GetAchievementInfo(id);
-	if ( achCompleted and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_INCOMPLETE].func) ) then
-		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
-	elseif ( (not achCompleted) and (ACHIEVEMENTUI_SELECTEDFILTER == AchievementFrameFilters[ACHIEVEMENT_FILTER_COMPLETE].func) ) then
-		AchievementFrame_SetFilter(ACHIEVEMENT_FILTER_ALL);
-	end
-
-	AchievementFrame_SelectAchievement(id)
+	local closeOtherWindows = true;
+	ShowAchievementFrameForAchievement(id, closeOtherWindows);
 end
 
 AchievementAlertSystem = AlertFrame:AddQueuedAlertFrameSubSystem("AchievementAlertFrameTemplate", AchievementAlertFrame_SetUp, 2, 6);

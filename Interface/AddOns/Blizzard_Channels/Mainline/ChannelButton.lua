@@ -131,6 +131,7 @@ end
 
 function ChannelButtonBaseMixin:GetVoiceChannelID()
 	local voiceChannel = self:GetVoiceChannel();
+
 	if voiceChannel then
 		return voiceChannel.channelID;
 	end

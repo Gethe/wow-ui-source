@@ -3,7 +3,7 @@ ObjectiveTrackerFrameMixin = { };
 local function GetQuestBlockNavAnchor(block)
 	if block.poiButton then
 		SmartNavigation_MarkFrameIgnored(block.HeaderButton);
-		return block:GetPOIButton();
+		return block.poiButton;
 	else
 		SmartNavigation_ClearIgnoreStatus(block.HeaderButton);
 		return block.HeaderButton;

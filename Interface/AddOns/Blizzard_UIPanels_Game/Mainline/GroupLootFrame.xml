@@ -596,7 +596,7 @@
 			</Frame>
 		</Frames>
 	</Frame>
-	<Frame name="GamepadGroupLootRollFrame" mixin="GamepadGroupLootRollFrameMixin" inherits="DefaultPanelFlatTemplate" hidden="true">
+	<Frame name="GamepadGroupLootRollFrame" mixin="GamepadGroupLootRollFrameMixin" inherits="DefaultPanelFlatTemplate" hidden="true" parent="UIParent">
 		<Size x="300" y="345"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="38" y="-347"/>

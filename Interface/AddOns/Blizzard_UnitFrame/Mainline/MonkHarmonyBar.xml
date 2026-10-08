@@ -108,8 +108,7 @@
 			<KeyValue key="powerToken2" value="DARK_FORCE" type="string"/>
 			<KeyValue key="powerType" value="Enum.PowerType.Chi" type="global"/>
 			<KeyValue key="resourcePointTemplate" value="MonkLightEnergyTemplate" type="string"/>
-			<KeyValue key="resourcePointSetupFunc" value="MonkLightEnergyMixin.Setup" type="global"/>
-			<KeyValue key="resourcePointReleaseFunc" value="MonkLightEnergyMixin.OnRelease" type="global"/>
+			<KeyValue key="resourcePointMixin" value="MonkLightEnergyMixin" type="global"/>
 			<!-- Spacing is adjusted dynamically at runtime in lua -->
 			<KeyValue key="spacing" value="2" type="number"/>
 			<KeyValue key="class" value="MONK" type="string"/>

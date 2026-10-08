@@ -29,20 +29,6 @@ function GamepadMainActionBarFrameMixin:RefreshSecondaryActionbarVisibility()
 	actionBars.rightBar:RefreshActionBarVisibility();
 end
 
-function GamepadMainActionBarFrameMixin:LinkGamepadMainActionBarsWithShowSettings()
-	local actionBars = self:GetActionBars();
-
-	--[[
-		Gamepad main top action bar should always be shown as long as gamepad UI is
-		enabled, so it is not linked with a show setting
-	]]
-	actionBars.leftBar:SetActionBarShowSetting("GamepadShowEmptyActionbars");
-	actionBars.rightBar:SetActionBarShowSetting("GamepadShowEmptyActionbars");
-	actionBars.bottomBar:SetActionBarShowSetting("GamepadShowEmptyActionbars");
-
-	SettingsCallbackRegistry:RegisterCallback("GamepadShowEmptyActionbars", GenerateClosure(self.RefreshSecondaryActionbarVisibility, self));
-end
-
 --[[
 	Checks if the action bars should be collapsed or not.
 ]]
@@ -94,10 +80,56 @@ function GamepadMainActionBarFrameMixin:OnAutoLootCVarChanged()
 	self.autoLootOnTap = CVarCallbackRegistry:GetCVarValueBool("autoLootDefault");
 end
 
+function GamepadMainActionBarFrameMixin:SetUseCompactLayout(useCompactLayout)
+	local oldVal = self.useCompactLayout;
+	self.useCompactLayout = useCompactLayout;
+	return oldVal;
+end
+
+function GamepadMainActionBarFrameMixin:SetShowEmptyBars(showEmptyBars)
+	local oldVal = self.showEmptyBars;
+	self.showEmptyBars = showEmptyBars;
+	return oldVal;
+end
+
+function GamepadMainActionBarFrameMixin:SetShowButtonPrompts(showButtonIcons)
+	local oldVal = self.showButtonIcons;
+	self.showButtonIcons = showButtonIcons;
+	return oldVal;
+end
+
+function GamepadMainActionBarFrameMixin:SetShowHighlight(showHighlight)
+	local oldVal = self.showHighlight;
+	self.showHighlight = showHighlight;
+	return oldVal;
+end
+
+function GamepadMainActionBarFrameMixin:SetShouldExpand(shouldExpand)
+	local oldVal = self.shouldExpand;
+	self.shouldExpand = shouldExpand;
+	return oldVal;
+end
+
+function GamepadMainActionBarFrameMixin:RefreshCompactLayout()
+	self.PageUnit:RefreshCompactLayout();
+end
+
+function GamepadMainActionBarFrameMixin:RefreshActiveActionBar()
+	self.PageUnit:ActionBarModKeyDownStateCheck();
+end
+
 function GamepadMainActionBarFrameMixin:OnLoad()
+	-- Edit Mode Settings
+	self.useCompactLayout = false;
+	self.showEmptyBars = true;
+	self.showButtonIcons = false;
+	self.showHighlight = true;
+	self.shouldExpand = true;
+
+	EditModeSystemMixin.OnSystemLoad(self);
+
 	self:AssignActionBarUsableConditionalFunc();
 	self.PageUnit:ActionBarModKeyDownStateCheck();
-	self:LinkGamepadMainActionBarsWithShowSettings();
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self.PageUnit:StartListeningForModifierUpdates();
@@ -124,6 +156,10 @@ end
 
 function GamepadMainActionBarFrameMixin:OnShow()
 	self:ResetShoulderIcons();
+end
+
+function GamepadMainActionBarFrameMixin:OnHide()
+	EditModeSystemMixin.OnSystemHide(self);
 end
 
 local function MakeInteractAction(unit)

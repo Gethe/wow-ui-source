@@ -153,8 +153,7 @@
 			<KeyValue key="tooltip1" value="SOUL_SHARDS_POWER" type="global"/>
 			<KeyValue key="tooltip2" value="SOUL_SHARDS_TOOLTIP" type="global"/>
 			<KeyValue key="resourcePointTemplate" value="ShardTemplate" type="string"/>
-			<KeyValue key="resourcePointSetupFunc" value="WarlockShardMixin.Setup" type="global"/>
-			<KeyValue key="resourcePointReleaseFunc" value="WarlockShardMixin.OnRelease" type="global"/>
+			<KeyValue key="resourcePointMixin" value="WarlockShardMixin" type="global"/>
 			<KeyValue key="spacing" value="1" type="number"/>
 			<KeyValue key="class" value="WARLOCK" type="string"/>
 			<KeyValue key="requiredShownLevel" value="10" type="number"/>

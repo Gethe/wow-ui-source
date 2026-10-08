@@ -296,7 +296,6 @@ function GroupLootFrame_OnLoad(self)
 			GameTooltip:SetOwner(menu, "ANCHOR_NONE");
 			GameTooltip:ClearAllPoints();
 			GameTooltip:SetPoint("LEFT", menu, "RIGHT");
-			GameTooltip_SuppressAutomaticCompareItem(GameTooltip);
 			GameTooltip:SetHyperlink(contextData.selectedItemLink);
 			GameTooltip:Show();
 		end
@@ -1435,9 +1434,20 @@ function GamepadGroupLootRollFrameMixin:UninitializeGamepad()
 	end
 end
 
+function GamepadGroupLootRollFrameMixin:RefreshSelectedTooltip()
+	local selectedRollID = GetSelectedRollID(self);
+	local frameFocused = SmartNavigation:GetActiveFrame() == self;
+	if selectedRollID and frameFocused then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetLootRollItem(selectedRollID);
+		GameTooltip:Show();
+	end
+end
+
 function GamepadGroupLootRollFrameMixin:AddRoll(rollID, rollTime)
 	table.insert(self.waitingRolls, { rollID = rollID, rollTime = rollTime });
 	ClampSelectedRollIndex(self);
+	self:RefreshSelectedTooltip();
 end
 
 function GamepadGroupLootRollFrameMixin:RemoveRoll(rollID)
@@ -1462,9 +1472,9 @@ function GamepadGroupLootRollFrameMixin:RemoveRoll(rollID)
 		self:UnfocusGamepad();
 		self:DoFullRefresh();
 		self:FocusGamepad();
+		self:RefreshSelectedTooltip();
 	end
 end
-
 function GamepadGroupLootRollFrameMixin:RemoveAllRolls()
 	self.waitingRolls = {};
 	self.selectedRollIndex = nil;

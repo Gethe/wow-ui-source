@@ -64,10 +64,12 @@ function ProfessionsMixin:OnLoad()
 
 	self:RegisterEvent("OPEN_RECIPE_RESPONSE");
 
-	EventRegistry:RegisterCallback("Professions.SelectSkillLine", function(_, info) 
+	EventRegistry:RegisterCallback("Professions.SelectSkillLine", function(_, info)
 		local useLastSkillLine = false;
 		self:SetProfessionInfo(info, useLastSkillLine);
 	 end, self);
+
+	EventRegistry:RegisterCallback("Professions.SkillAbandoned", self.OnSkillAbandoned, self);
 
 	EventRegistry:RegisterCallback("Professions.ShowSelectedCraftingPage", function(_, info)
 		if self.BookPage and self.BookPage:IsShown() then
@@ -80,6 +82,14 @@ function ProfessionsMixin:OnLoad()
 	self:OverrideArt();
 
 	self:RegisterForTransitions();
+end
+
+function ProfessionsMixin:OnSkillAbandoned(_skillLine)
+	HideUIPanel(self);
+end
+
+function ProfessionsMixin:OnTradeSkillClosed()
+	HideUIPanel(self);
 end
 
 function ProfessionsMixin:OverrideArt()
@@ -159,7 +169,9 @@ function ProfessionsMixin:OnEvent(event, ...)
 
 		local useLastSkillLine = true;
 		self:SetProfessionInfo(professionInfo, useLastSkillLine);
-	elseif event == "TRADE_SKILL_CLOSE" or event == "GARRISON_TRADESKILL_NPC_CLOSED" then
+	elseif event == "TRADE_SKILL_CLOSE" then
+		self:OnTradeSkillClosed();
+	elseif event == "GARRISON_TRADESKILL_NPC_CLOSED" then
 		HideUIPanel(self);
 	elseif event == "OPEN_RECIPE_RESPONSE" then
 		local recipeID, professionSkillLineID, expansionSkillLineID = ...;
@@ -952,7 +964,7 @@ function ProfessionsMixin:GetReagentMoreOptions()
 		AuctionHouseFrame.SearchBar.SearchButton:Click();
 		GamepadMode.FrameControlsManager:FocusFrame(AuctionHouseFrame);
 	end
-	
+
 	local reagentMoreOptions = GamepadSharedUtility.CreateMoreActionsPromptedBinding(GAMEPAD_FACE_TOP);
 	reagentMoreOptions:AddButtonContext("ButtonContext_ProfessionsReagentButton");
 	reagentMoreOptions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_SEE_IN_BAG, OpenBagTo, CanOpenBagTo);
@@ -980,7 +992,7 @@ function ProfessionsMixin:SetUpGamepadCraftingPageFooter(toggleTooltips)
 		local button = SmartNavigation:GetCurrentButton();
 		return button ~= self.CraftingPage.RecipeList.SearchBox;
 	end
-	
+
 	local function CreateAll()
 		self.CraftingPage.CreateAllButton:Click();
 	end
@@ -1025,12 +1037,24 @@ function ProfessionsMixin:SetUpGamepadCraftingPageFooter(toggleTooltips)
 	focusSearchBox:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
 
 	-- Create / Create All
-	local create = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, 0.5, Create, CreateAll, CONTEXT_ACTION_LABEL_CREATE_ALL);
+	local holdTime = 0.5;
+	local create = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, holdTime, Create, CreateAll, CONTEXT_ACTION_LABEL_CREATE_ALL);
 	create:AddCondition(CanCreate);
-	self.gamepadCreateAllIcon = GamepadMode.AddGamepadIconToButton(self.CraftingPage.CreateAllButton, GAMEPAD_FACE_LEFT, { buttonHeightScale = (1.0), });
-	GamepadMode.SetGamepadIconShown(self.gamepadCreateAllIcon, true);
-	self.gamepadCreateIcon = GamepadMode.AddGamepadIconToButton(self.CraftingPage.CreateButton, GAMEPAD_FACE_LEFT, { buttonHeightScale = (1.0),  });
-	GamepadMode.SetGamepadIconShown(self.gamepadCreateIcon, true);
+
+	self.gamepadCreateAllIcon = GamepadMode.AddGamepadIconToButton(self.CraftingPage.CreateAllButton, GAMEPAD_FACE_LEFT, { isHoldAction = true });
+	local createAllIconBinding = create:AddCustomPromptBinding({
+		conditions = { CanCreate },
+		frame = self.gamepadCreateAllIcon,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+	});
+	create:AddCustomPromptHoldFunction(createAllIconBinding, { holdTime = holdTime });
+
+	self.gamepadCreateIcon = GamepadMode.AddGamepadIconToButton(self.CraftingPage.CreateButton, GAMEPAD_FACE_LEFT, {});
+	create:AddCustomPromptBinding({
+		conditions = { CanCreate },
+		frame = self.gamepadCreateIcon,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+	});
 
 	-- Adjust Create Amount
 	self.adjustAmount = GamepadMode.CreateBindingGroup("ProfessionsCreateMultiple");
@@ -1143,7 +1167,7 @@ function ProfessionsMixin:UnfocusGamepad()
 end
 
 function ProfessionsMixin:UpdateSmartNavFocus()
-	if not InputUtil.IsGamepadUIEnabled() then
+	if not InputUtil.IsGamepadUIEnabled() or SmartNavigation:GetActiveFrame() ~= self then
 		return;
 	end
 

@@ -11,6 +11,7 @@
 [Family]\AccessibilityOverrides.lua [ExcludeLoadGameType classic]
 [Family]\NameplatesOverrides.lua [ExcludeLoadGameType classic]
 [Game]\NameplatesOverrides.lua [AllowLoadGameType camelot]
+[Game]\ColorblindOverrides.lua [AllowLoadGameType camelot]
 [Game]\ControlsOverrides.lua [AllowLoadGameType camelot]
 [Game]\SocialOverrides.lua [AllowLoadGameType camelot]
 [Game]\KeybindingsOverrides.lua [AllowLoadGameType camelot]

@@ -23,6 +23,7 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	highLeveTexture:SetPoint("CENTER", levelBackgroundCircle, "CENTER", 0, 0);
 end
 
+-- Overridden per game type to point UnitFrameUtil at whichever regions that flavor actually renders.
 function TargetFrameMixin:GetPvPIndicatorElements()
 	local targetFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
 	return {
@@ -31,3 +32,15 @@ function TargetFrameMixin:GetPvPIndicatorElements()
 	};
 end
 
+function TargetFrameMixin:IsPvPBackgroundShown()
+	for key, region in pairs(self:GetPvPIndicatorElements()) do
+		if region:IsShown() then
+			return true;
+		end
+	end
+	return false;
+end
+
+function TargetFrameMixin:GetPortrait()
+	return self.TargetFrameContainer.Portrait;
+end

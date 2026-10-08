@@ -330,8 +330,10 @@ function CharacterFrameMixin:HidePaperDollRightPane()
 		GetPaperDollSideBarFrame(i):Hide();
 	end
 
+	local isPetPage = PaperDollFrame.currentSideBar == CharacterStatsPanePetScrollBox;
 	PaperDollSidebarTabs:Hide();
-	PaperDollLevelInfo:Hide();
+	PaperDollLevelInfo:SetShown(not isPetPage);
+	PaperDollPetLevelInfo:SetShown(isPetPage);
 end
 
 function CharacterFrameMixin:UpdateRightPaneToggleButton()
@@ -815,11 +817,14 @@ end
 function CharacterFrameMixin:Expand()
 	self.Expanded = true;
 
+	local isPetPage = PaperDollFrame:IsShown() and PaperDollFrame.currentSideBar == CharacterStatsPanePetScrollBox;
+	PaperDollLevelInfo:SetShown(not isPetPage);
+	PaperDollPetLevelInfo:SetShown(isPetPage);
+
 	if self:IsRightPaneCollapsed() then
 		self:HidePaperDollRightPane();
 	else
 		PaperDollSidebarTabs:Show();
-		PaperDollLevelInfo:Show();
 
 		if (PaperDollFrame:IsShown() and PaperDollFrame.currentSideBar) then
 			PaperDollFrame.currentSideBar:Show();
@@ -1210,16 +1215,19 @@ function CharacterStatsPaneScrollBoxMixin:UpdateStats()
 		tinsert(self.elementData, headerData);
 
 		for statIndex, resistanceData in ipairs(RESISTANCE_STAT_ENTRIES) do
-			local _baseResistance, effectiveResistance = UnitResistance(unit, resistanceData.damageClass);
+			local _baseResistance, _realResistance, effectiveResistance, bonusResistance = UnitResistance(unit, resistanceData.damageClass);
 			local tooltipData = {};
 			PaperDollFrame_SetResistanceTooltips(tooltipData, resistanceData.name, effectiveResistance, unit, resistanceData.damageClass);
+
+			local valueText = BreakUpLargeNumbers(effectiveResistance);
+			valueText = PaperDollFrame_FormatBonusValue(valueText, bonusResistance);
 
 			local statData = {
 				isHeader = false,
 				statIndex = statIndex,
 				atlas = resistanceData.atlas,
 				labelText = resistanceData.name,
-				valueText = BreakUpLargeNumbers(effectiveResistance),
+				valueText = valueText,
 				numericValue = effectiveResistance,
 				tooltip = tooltipData.tooltip,
 				tooltip2 = tooltipData.tooltip2,

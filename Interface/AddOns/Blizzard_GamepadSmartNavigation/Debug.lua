@@ -1,4 +1,4 @@
-local Utility = require(".Utility");
+local Utility = import(".Utility");
 
 local BUTTON_COLOR = { 0, 1, 0, 0.2 };
 local SCROLL_FRAME_COLOR = { 1, 1, 0, 0.2 };

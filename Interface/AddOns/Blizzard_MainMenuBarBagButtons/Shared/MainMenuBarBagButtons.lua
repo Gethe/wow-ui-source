@@ -173,6 +173,10 @@ function BaseBagSlotButtonMixin:IsBackpack()
 	return false;
 end
 
+function BaseBagSlotButtonMixin:IsExtended()
+	return false;
+end
+
 function BaseBagSlotButtonMixin:UpdateItemContextOverlayTextures(contextMode)
 	if contextMode then
 		self.ItemContextOverlay:SetColorTexture(0, 0, 0, 0.8);
@@ -205,26 +209,42 @@ end
 GamepadBagBarMixin = {};
 
 function GamepadBagBarMixin:GetBagButton(bagID)
-	return self.BagButtonArray[bagID];
+	if not InputUtil.IsGamepadUIEnabled() then
+		return nil;
+	end
+	if bagID == (KEYRING_CONTAINER) then
+		return self.KeyRingButton;
+	end
+	return self.BagButtonArray[bagID + 1];
 end
 
 function GamepadBagBarMixin:OnLoad()
-	for bagID = 0, Constants.InventoryConstants.NumBagSlots do
-		local gamepadBagButton = self:GetBagButton(bagID + 1);
-		gamepadBagButton.BagDropdownButton:SetupMenu(function(dropdown, rootDescription)
-			ContainerFrame_AddButtons_BagFilters(rootDescription, bagID);
-			ContainerFrame_AddButtons_BagCleanup(rootDescription, bagID);
+	for bagID = 0, NUM_TOTAL_BAG_FRAMES do
+		local gamepadBagButton = self:GetBagButton(bagID);
+		if gamepadBagButton then
+			gamepadBagButton.BagDropdownButton:SetupMenu(function(dropdown, rootDescription)
+				ContainerFrame_AddButtons_BagFilters(rootDescription, bagID);
+				ContainerFrame_AddButtons_BagCleanup(rootDescription, bagID);
 
-			if (bagID > 0) then
-				rootDescription:CreateDivider();
-				rootDescription:CreateButton(CONTEXT_ACTION_LABEL_UNEQUIP_BAG, function()
-					local index = C_Container.ContainerIDToInventoryID(bagID);
-					PickupBagFromSlot(index);
-					PutItemInBackpack();
-				end);
+				if (bagID > 0) then
+					rootDescription:CreateDivider();
+					rootDescription:CreateButton(CONTEXT_ACTION_LABEL_UNEQUIP_BAG, function()
+						local index = C_Container.ContainerIDToInventoryID(bagID);
+						PickupBagFromSlot(index);
+						PutItemInBackpack();
+					end);
+				end
+			end);
+			if not InputUtil.IsGamepadUIEnabled() then
+				gamepadBagButton:Hide();
 			end
-		end);
+		end
 	end
+	local gamepadkeyRingButton = GamepadBagBar and GamepadBagBar:GetBagButton(KEYRING_CONTAINER);
+	if gamepadkeyRingButton then
+		gamepadkeyRingButton.isCollapsed = true;
+	end
+
 
 	self:SetParent(ContainerFrameCombinedBags);
 	self:ClearAllPoints();
@@ -467,37 +487,8 @@ function GamepadCharacterReagentBagMixin:BagSlotOnClick(button, down)
 	if CursorHasItem() then
 		self:PutItemInBag();
 	else
-		ToggleBag(self:GetBagID());
+		PickupBagFromSlot(self:GetID());
 	end
-end
-
-GamepadKeyRingMixin = {}
-
-function GamepadKeyRingMixin:OnLoad()
-	-- This does not currently exist in Camelot
-	--self:SetID(KEYRING_CONTAINER);
-	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
-end
-
-function GamepadKeyRingMixin:OnClick(button, down)
-	-- Disabled until Key Ring is actually active.
-	--[[
-	if (CursorHasItem()) then
-		PutKeyInKeyRing();
-	else
-		ToggleBag(KEYRING_CONTAINER);
-	end
-	]]
-end
-
-function GamepadKeyRingMixin:OnEnter()
-	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GameTooltip:SetText(KEYRING, HIGHLIGHT_FONT_COLOR.r, HIGHLIGHT_FONT_COLOR.g, HIGHLIGHT_FONT_COLOR.b);
-	GameTooltip:AddLine();
-end
-
-function GamepadKeyRingMixin:OnLeave()
-	GameTooltip:Hide();
 end
 
 BagBarExpandToggleMixin = {};

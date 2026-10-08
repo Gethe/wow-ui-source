@@ -133,6 +133,9 @@ function KeyRingMixin:TriggerTutorial()
 			TriggerTutorial(50); --TUTORIAL_KEYRING
 			SetButtonPulse(self, 60, 1);
 			SetCVar("showKeyring", 1);
+			if InputUtil.IsGamepadUIEnabled() then
+				STARTING_BAG_INDEX = KEYRING_CONTAINER;
+			end
 		end
 	end
 end
@@ -209,4 +212,31 @@ end
 
 function KeyRingMixin:GetSlotAtlases()
 	return "UI-HUD-ActionBar-IconFrame-Small", "UI-HUD-ActionBar-IconFrame-Small", "UI-HUD-ActionBar-IconFrame-Small";
+end
+
+GamepadKeyRingMixin = CreateFromMixins(KeyRingMixin);
+
+function GamepadKeyRingMixin:BagSlotOnLoad()
+	-- We don't want to be registered to the MainMenuBarBagManager
+	self:RegisterEvent("ITEM_PUSH");
+	self:SetBagID(KEYRING_CONTAINER);
+	self:OnLoadInternal();
+end
+
+function GamepadKeyRingMixin:GetBagID()
+	return KEYRING_CONTAINER;
+end
+
+function GamepadKeyRingMixin:BagSlotOnClick(button, down)
+	if CursorHasItem() then
+		PutKeyInKeyRing();
+	end
+end
+
+function GamepadKeyRingMixin:OnClick(button, down)
+	-- Only here to prevent base object behavior
+end
+
+function GamepadKeyRingMixin:UpdateOrientation(isHorizontal)
+	-- Only here to prevent base object behavior
 end

@@ -31,6 +31,7 @@ do
 		self:RegisterEvent("CHANNEL_ROSTER_UPDATE");
 		self:RegisterEvent("VOICE_CHAT_LOGIN");
 		self:RegisterEvent("VOICE_CHAT_LOGOUT");
+		self:RegisterEvent("VOICE_CHAT_ACTIVE_VOICE_PROVIDER_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_JOINED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED");
@@ -127,6 +128,8 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:OnVoiceChatLogin(...);
 	elseif event == "VOICE_CHAT_LOGOUT" then
 		self:OnVoiceChatLogout();
+	elseif event == "VOICE_CHAT_ACTIVE_VOICE_PROVIDER_CHANGED" then
+		self:OnActiveVoiceProviderChanged(...);
 	elseif event == "VOICE_CHAT_CHANNEL_JOINED" then
 		self:OnVoiceChannelJoined(...);
 	elseif event == "VOICE_CHAT_CHANNEL_ACTIVATED" then
@@ -283,6 +286,17 @@ end
 
 function ChannelFrameMixin:OnVoiceChatLogout()
 	self.queuedVoiceChannelCommands = nil;
+end
+
+function ChannelFrameMixin:OnActiveVoiceProviderChanged(voiceProviderID)
+	if not C_VoiceChat.IsSpeakForMeActive() and not GetCVarBool("speechToText") then
+		return;
+	end
+
+	-- Discord does not support Speak for Me or transcription.
+	local isDiscord = voiceProviderID == Enum.VoiceProviderID.Discord;
+	ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_SERVICE_SWITCHING:format(isDiscord and VOICE_CHAT_SERVICE_DISCORD or VOICE_CHAT_SERVICE_LEGACY));
+	ChatFrameUtil.DisplaySystemMessageInPrimary(isDiscord and VOICE_CHAT_TTS_STT_DISABLED or VOICE_CHAT_TTS_STT_ENABLED);
 end
 
 function ChannelFrameMixin:QueueVoiceChannelCommand(cmd)

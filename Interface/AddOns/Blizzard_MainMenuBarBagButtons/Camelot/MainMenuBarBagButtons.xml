@@ -22,8 +22,11 @@
 	</ItemButton>
 	
 	<ItemButton name="GamepadBagSlotButtonTemplate" virtual="true">
+		<Size x="37" y="37"/>
 		<KeyValues>
 			<KeyValue key="buttonContext" value="ButtonContext_OpenBagDropdownSettings" type="string"/>
+			<KeyValue key="normalAndPushedTextureWidth" value="37" type="number"/>
+			<KeyValue key="normalAndPushedTextureHeight" value="37" type="number"/>
 		</KeyValues>
 		<Frames>
 			<DropdownButton parentKey="BagDropdownButton" enableMouse="false">
@@ -90,7 +93,6 @@
 		<Size x="215" y="50"/>
 		<Frames>
 			<ItemButton name="GamepadBackpackButton" parentKey="BackpackButton" parentArray="BagButtonArray" mixin="GamepadBackpackButtonMixin" inherits="MainMenuBarBackpackButtonBase, GamepadBagSlotButtonTemplate">
-				<Size x="40" y="40"/>
 				<KeyValues>
 					<KeyValue key="bagIcon" value="Interface\Icons\ui-hud-actionbar-bag" type="string"/>
 				</KeyValues>
@@ -99,63 +101,33 @@
 				<KeyValues>
 					<KeyValue key="slotName" value="BAG0SLOT" type="string"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.BackpackButton" relativePoint="LEFT"/>
-				</Anchors>
 			</ItemButton>
 			<ItemButton parentKey="Bag1SlotButton" parentArray="BagButtonArray" mixin="GamepadBagSlotButtonMixin" inherits="ShapedBagSlotButtonTemplate, GamepadBagSlotButtonTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="BAG1SLOT" type="string"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Bag0SlotButton" relativePoint="LEFT"/>
-				</Anchors>
 			</ItemButton>
 			<ItemButton parentKey="Bag2SlotButton" parentArray="BagButtonArray" mixin="GamepadBagSlotButtonMixin" inherits="ShapedBagSlotButtonTemplate, GamepadBagSlotButtonTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="BAG2SLOT" type="string"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Bag1SlotButton" relativePoint="LEFT"/>
-				</Anchors>
 			</ItemButton>
 			<ItemButton parentKey="Bag3SlotButton" parentArray="BagButtonArray" mixin="GamepadBagSlotButtonMixin" inherits="ShapedBagSlotButtonTemplate, GamepadBagSlotButtonTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="BAG3SLOT" type="string"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Bag2SlotButton" relativePoint="LEFT"/>
-				</Anchors>
 			</ItemButton>
 			<ItemButton parentKey="ReagentBag0SlotButton" parentArray="BagButtonArray" mixin="GamepadCharacterReagentBagMixin" inherits="ShapedBagSlotButtonTemplate, GamepadBagSlotButtonTemplate">
 				<KeyValues>
 					<KeyValue key="slotName" value="REAGENTBAG0SLOT" type="string"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.Bag3SlotButton" relativePoint="LEFT"/>
-				</Anchors>
 			</ItemButton>
-			<CheckButton parentKey="KeyRingButton" mixin="GamepadKeyRingMixin">
-				<Size x="18" y="39"/>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.ReagentBag0SlotButton" relativePoint="LEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnClick method="OnClick"/>
-					<OnEnter method="OnEnter"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-Button-KeyRing">
-					<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
-				</NormalTexture>
-				<HighlightTexture file="Interface\Buttons\UI-Button-KeyRing-Highlight" alphaMode="ADD">
-					<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
-				</HighlightTexture>
-				<PushedTexture file="Interface\Buttons\UI-Button-KeyRing-Down">
-					<TexCoords left="0" right="0.5625" top="0" bottom="0.609375"/>
-				</PushedTexture>
-			</CheckButton>
+			<ItemButton parentKey="KeyRingButton" parentArray="BagButtonArray" mixin="GamepadKeyRingMixin" inherits="ShapedBagSlotButtonTemplate, GamepadBagSlotButtonTemplate">
+				<KeyValues>
+					<KeyValue key="slotName" value="KEYRING" type="string"/>
+					<KeyValue key="bagIcon" value="Interface/ICONS/ui-hud-actionbar-keyring" type="string"/>
+				</KeyValues>
+			</ItemButton>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

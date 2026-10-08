@@ -1,6 +1,7 @@
 VoiceChatTranscriptionButtonMixin = {};
 
 function VoiceChatTranscriptionButtonMixin:OnLoad()
+	self:RegisterEvent("VOICE_CHAT_ACTIVE_VOICE_PROVIDER_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_REMOVED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
 	self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED");
@@ -12,7 +13,9 @@ function VoiceChatTranscriptionButtonMixin:OnLoad()
 end
 
 function VoiceChatTranscriptionButtonMixin:OnEvent(event, ...)
-	if event == "VOICE_CHAT_CHANNEL_REMOVED" then
+	if event == "VOICE_CHAT_ACTIVE_VOICE_PROVIDER_CHANGED" then
+		self:Update();
+	elseif event == "VOICE_CHAT_CHANNEL_REMOVED" then
 		self:OnVoiceChannelRemoved(...);
 	elseif event == "VOICE_CHAT_CHANNEL_ACTIVATED" then
 		self:OnVoiceChannelActivated(...);
@@ -174,6 +177,10 @@ function VoiceChatTranscriptionButtonMixin:ShowTooltip()
 end
 
 function VoiceChatTranscriptionButtonMixin:ShouldEnable()
+	if C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord then
+		return false;
+	end
+
 	if not C_VoiceChat.IsTranscriptionAllowed() then
 		return false;
 	end

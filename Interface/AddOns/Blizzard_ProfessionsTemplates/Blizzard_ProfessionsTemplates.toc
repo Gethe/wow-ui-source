@@ -8,7 +8,6 @@ Blizzard_Professions.lua
 Blizzard_ProfessionsRecipeLoader.lua
 Blizzard_ProfessionsTransaction.lua
 Blizzard_ProfessionsTemplates.lua
-[Game]\Blizzard_ProfessionsTemplates.lua	[AllowLoadGameType camelot]
 Blizzard_ProfessionsTemplates.xml
 Blizzard_ProfessionsRecipeList.lua
 Blizzard_ProfessionsRecipeList.xml

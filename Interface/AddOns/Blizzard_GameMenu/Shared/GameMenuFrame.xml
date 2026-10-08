@@ -4,10 +4,11 @@
 	<Button name="GameMenuFrameButtonTemplate" inherits="MainMenuFrameButtonTemplate" virtual="true">
 	</Button>
 
-	<Frame name="GameMenuFrame" mixin="GameMenuFrameMixin" inherits="MainMenuFrameTemplate, CallbackRegistrantTemplate" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
+	<Frame name="GameMenuFrame" mixin="GameMenuFrameMixin, FocusFramesInterfaceMixin" inherits="MainMenuFrameTemplate, CallbackRegistrantTemplate" toplevel="true" frameStrata="DIALOG" enableMouse="true" hidden="true" parent="UIParent">
 		<KeyValues>
 			<KeyValue key="buttonTemplate" value="GameMenuFrameButtonTemplate" type="string"/>
 			<KeyValue key="dialogHeaderFont" value="GameFontNormalMed1" type="string"/>
+			<KeyValue key="layoutType" value="DialogFrameWithHeaderTemplate" type="string"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -40,6 +41,10 @@
 					</Layer>
 				</Layers>
 			</Frame>
+			<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameLevel="505"/>
+			<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
+			<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
+			<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
 		</Frames>
 	</Frame>
 </Ui>

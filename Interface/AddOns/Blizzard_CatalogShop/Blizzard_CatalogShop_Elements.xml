@@ -626,6 +626,20 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollForwards" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="GamepadPreviousCategoryIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_LEFT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+			</Frame>
+			<Frame parentKey="GamepadNextCategoryIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+			</Frame>
 		</Frames>
 	</Frame>
 

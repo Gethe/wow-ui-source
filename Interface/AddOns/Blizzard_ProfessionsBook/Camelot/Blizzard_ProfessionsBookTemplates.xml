@@ -61,6 +61,7 @@
 					<KeyValue key="overrideWidth" value="441" type="number"/>
 					<KeyValue key="overrideFillAnchorLeft" value="2" type="number"/>
 					<KeyValue key="overrideMaskRightOffset" value="-7" type="number"/>
+					<KeyValue key="ownerManagesEvents" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT" x="-40" y="0"/>
@@ -178,6 +179,7 @@
 					<KeyValue key="overrideWidth" value="190" type="number"/>
 					<KeyValue key="overrideFillAnchorLeft" value="2" type="number"/>
 					<KeyValue key="overrideMaskRightOffset" value="-5" type="number"/>
+					<KeyValue key="ownerManagesEvents" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" x="0" y="-47"/>

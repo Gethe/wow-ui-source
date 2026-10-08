@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="DruidComboPointBarTemplate" inherits="ClassResourceBarTemplate" mixin="DruidComboPointBarMixin, TargetBoundComboPointBarMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="powerToken" value="COMBO_POINTS" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.ComboPoints" type="global"/>
+			<KeyValue key="tooltip1" value="COMBO_POINTS_POWER" type="global"/>
+			<KeyValue key="tooltip2" value="COMBO_POINTS_DRUID_TOOLTIP" type="global"/>
+			<!--These KV's point to a rogue template and mixin because their implementation is intended to be used for all combo point users.-->
+			<KeyValue key="resourcePointTemplate" value="RogueComboPointTemplate" type="string"/>
+			<KeyValue key="resourcePointMixin" value="RogueComboPointMixin" type="global"/>
+			<KeyValue key="shouldShowBarFunc" value="DruidComboPointBarMixin.ShouldShowComboPointBar" type="global"/>
+			<KeyValue key="spacing" value="4" type="number"/>
+			<KeyValue key="class" value="DRUID" type="string"/>
+		</KeyValues>
+	</Frame>
+</Ui>

@@ -992,6 +992,7 @@ Interface\AddOns\Blizzard_CatalogShop\Blizzard_CatalogShop_Details.lua
 Interface\AddOns\Blizzard_CatalogShop\Blizzard_CatalogShop_Elements.lua
 Interface\AddOns\Blizzard_CatalogShop\Blizzard_CatalogShop_Elements.xml
 Interface\AddOns\Blizzard_CatalogShop\Blizzard_CatalogShop_ErrorLookup.lua
+Interface\AddOns\Blizzard_CatalogShop\Blizzard_CatalogShop_Gamepad.lua
 Interface\AddOns\Blizzard_CatalogShop\Blizzard_CatalogShop_Header.lua
 Interface\AddOns\Blizzard_CatalogShop\Blizzard_CatalogShop_Header.xml
 Interface\AddOns\Blizzard_CatalogShop\Blizzard_CatalogShop_Inbound.lua
@@ -1531,6 +1532,7 @@ Interface\AddOns\Blizzard_DurabilityFrame\DurabilityFrame.xml
 Interface\AddOns\Blizzard_EditMode\Blizzard_EditMode.toc
 Interface\AddOns\Blizzard_EditMode\Camelot\EditModeManagerOverrides.lua
 Interface\AddOns\Blizzard_EditMode\Camelot\EditModePresetLayoutConstants.lua
+Interface\AddOns\Blizzard_EditMode\Camelot\EditModeSystemTemplates.lua
 Interface\AddOns\Blizzard_EditMode\Camelot\EditModeUtil.lua
 Interface\AddOns\Blizzard_EditMode\Cata\EditModeManagerOverrides.lua
 Interface\AddOns\Blizzard_EditMode\Mainline\EditModeManagerOverrides.lua
@@ -2242,6 +2244,7 @@ Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Blizzard_LFGVanilla_Browse.lu
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Blizzard_LFGVanilla_Listing.lua
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Blizzard_LFGVanilla_Minimap.lua
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Blizzard_LFGVanilla_ParentFrame.lua
+Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Blizzard_LFGVanilla_VoiceChat.lua
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Classic\Blizzard_LFGVanilla_Browse.xml
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Classic\Blizzard_LFGVanilla_Listing.xml
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Classic\Blizzard_LFGVanilla_ParentFrame.xml
@@ -2445,7 +2448,10 @@ Interface\AddOns\Blizzard_IME\IME.xml
 Interface\AddOns\Blizzard_InspectUI\Blizzard_InspectUI.toc
 Interface\AddOns\Blizzard_InspectUI\Camelot\Blizzard_InspectUI.lua
 Interface\AddOns\Blizzard_InspectUI\Camelot\Blizzard_InspectUI.xml
-Interface\AddOns\Blizzard_InspectUI\Camelot\Blizzard_InspectUI_Overrides.lua
+Interface\AddOns\Blizzard_InspectUI\Camelot\InspectGuildFrame.lua
+Interface\AddOns\Blizzard_InspectUI\Camelot\InspectGuildFrame.xml
+Interface\AddOns\Blizzard_InspectUI\Camelot\InspectPVPFrame.lua
+Interface\AddOns\Blizzard_InspectUI\Camelot\InspectPVPFrame.xml
 Interface\AddOns\Blizzard_InspectUI\Camelot\InspectPaperDollFrame.xml
 Interface\AddOns\Blizzard_InspectUI\Mainline\Blizzard_InspectUI.lua
 Interface\AddOns\Blizzard_InspectUI\Mainline\Blizzard_InspectUI.xml
@@ -2530,6 +2536,7 @@ Interface\AddOns\Blizzard_LandingSoulbinds\Blizzard_LandingSoulbinds.toc
 Interface\AddOns\Blizzard_LandingSoulbinds\Blizzard_LandingSoulbinds_Bootstrap.lua
 Interface\AddOns\Blizzard_LegacyChallengeTracker\Blizzard_LegacyChallengeTracker.lua
 Interface\AddOns\Blizzard_LegacyChallengeTracker\Blizzard_LegacyChallengeTracker.toc
+Interface\AddOns\Blizzard_LegacySystem\Blizzard_LegacyAchievementOverrides.lua
 Interface\AddOns\Blizzard_LegacySystem\Blizzard_LegacyChallengeButton.lua
 Interface\AddOns\Blizzard_LegacySystem\Blizzard_LegacyChallengeCategoryList.lua
 Interface\AddOns\Blizzard_LegacySystem\Blizzard_LegacyChallengeCategoryList.xml
@@ -3050,7 +3057,6 @@ Interface\AddOns\Blizzard_ProfessionsTemplates\Blizzard_ProfessionsTransaction.l
 Interface\AddOns\Blizzard_ProfessionsTemplates\Camelot\Blizzard_Professions.lua
 Interface\AddOns\Blizzard_ProfessionsTemplates\Camelot\Blizzard_ProfessionsRecipeSchematicForm.xml
 Interface\AddOns\Blizzard_ProfessionsTemplates\Camelot\Blizzard_ProfessionsRecipeSchematicFormOverride.lua
-Interface\AddOns\Blizzard_ProfessionsTemplates\Camelot\Blizzard_ProfessionsTemplates.lua
 Interface\AddOns\Blizzard_ProfessionsTemplates\Mainline\Blizzard_ProfessionsRecipeSchematicForm.xml
 Interface\AddOns\Blizzard_Professions\Blizzard_Professions.toc
 Interface\AddOns\Blizzard_Professions\Blizzard_ProfessionsCrafterOrderPage.lua
@@ -3207,6 +3213,7 @@ Interface\AddOns\Blizzard_SettingsDefinitions_Frame\AdvancedOptions.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Blizzard_SettingsDefinitions_Frame.toc
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\AccessibilityOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\AudioOverrides.lua
+Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\ColorblindOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\ControlsOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\InterfaceOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\KeybindingsOverrides.lua
@@ -3283,7 +3290,9 @@ Interface\AddOns\Blizzard_Settings_Shared\Blizzard_SettingsPanel.xml
 Interface\AddOns\Blizzard_Settings_Shared\Blizzard_SettingsRegistrar.lua
 Interface\AddOns\Blizzard_Settings_Shared\Blizzard_Settings_PreferredPlaySettings.lua
 Interface\AddOns\Blizzard_Settings_Shared\Blizzard_Settings_Shared.toc
+Interface\AddOns\Blizzard_Settings_Shared\Camelot\AudioOverrides.lua
 Interface\AddOns\Blizzard_Settings_Shared\Camelot\LanguagesOverrides.lua
+Interface\AddOns\Blizzard_Settings_Shared\Camelot\NewDefinitions.lua
 Interface\AddOns\Blizzard_Settings_Shared\Mainline\AudioOverrides.lua
 Interface\AddOns\Blizzard_Settings_Shared\Mainline\Blizzard_SettingsPanelTemplates.xml
 Interface\AddOns\Blizzard_Settings_Shared\Mainline\GraphicsOverrides.lua
@@ -3808,6 +3817,7 @@ Interface\AddOns\Blizzard_StaticPopup_Game\Mainline\StaticPopupSpecial.xml
 Interface\AddOns\Blizzard_StaticPopup_Game\Mists\StaticPopupGlyphs.lua
 Interface\AddOns\Blizzard_StaticPopup_Game\Wrath\StaticPopupGlyphs.lua
 Interface\AddOns\Blizzard_StaticPopup_Glue\Blizzard_StaticPopup_Glue.toc
+Interface\AddOns\Blizzard_StaticPopup_Glue\Camelot\GlueDialogDefs.lua
 Interface\AddOns\Blizzard_StaticPopup_Glue\GlueDialog.lua
 Interface\AddOns\Blizzard_StaticPopup_Glue\GlueDialog.xml
 Interface\AddOns\Blizzard_StaticPopup_Glue\GlueDialogDefs.lua
@@ -4237,9 +4247,13 @@ Interface\AddOns\Blizzard_UIWidgets\Blizzard_UIWidgetTopCenterFrame.xml
 Interface\AddOns\Blizzard_UIWidgets\Blizzard_UIWidgets.toc
 Interface\AddOns\Blizzard_UIWidgets\Blizzard_WidgetsUtil.lua
 Interface\AddOns\Blizzard_UnitFrame\Blizzard_UnitFrame.toc
-Interface\AddOns\Blizzard_UnitFrame\Camelot\ComboFrameOverrides.lua
+Interface\AddOns\Blizzard_UnitFrame\Camelot\ComboFrame.lua
+Interface\AddOns\Blizzard_UnitFrame\Camelot\ComboFrame.xml
+Interface\AddOns\Blizzard_UnitFrame\Camelot\DruidComboPointBar.xml
 Interface\AddOns\Blizzard_UnitFrame\Camelot\PlayerFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Camelot\PlayerFrameTemplates.xml
+Interface\AddOns\Blizzard_UnitFrame\Camelot\RogueComboPointBar.xml
+Interface\AddOns\Blizzard_UnitFrame\Camelot\TargetBoundComboPointBar.lua
 Interface\AddOns\Blizzard_UnitFrame\Camelot\TargetFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Camelot\TargetFrameTemplates.xml
 Interface\AddOns\Blizzard_UnitFrame\Camelot\TargetFrameUtils.lua
@@ -4258,12 +4272,11 @@ Interface\AddOns\Blizzard_UnitFrame\Mainline\ClassPowerBar.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\ClassPowerBar.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\ClassResourceBarTemplate.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\ClassResourceBarTemplate.xml
-Interface\AddOns\Blizzard_UnitFrame\Mainline\ComboFrame.lua
-Interface\AddOns\Blizzard_UnitFrame\Mainline\ComboFrame.xml
-Interface\AddOns\Blizzard_UnitFrame\Mainline\ComboFrameOverrides.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\CompactArenaFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\CompactArenaFrame.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\CompactUnitFrameOptions.lua
+Interface\AddOns\Blizzard_UnitFrame\Mainline\DruidComboPoint.lua
+Interface\AddOns\Blizzard_UnitFrame\Mainline\DruidComboPoint.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\DruidComboPointBar.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\DruidComboPointBar.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\EssenceFramePlayer.lua
@@ -4289,6 +4302,8 @@ Interface\AddOns\Blizzard_UnitFrame\Mainline\PlayerFrame.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\PlayerFrame.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\PlayerFrameTemplates.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\PowerBarColorUtil.lua
+Interface\AddOns\Blizzard_UnitFrame\Mainline\RogueComboPoint.lua
+Interface\AddOns\Blizzard_UnitFrame\Mainline\RogueComboPoint.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\RogueComboPointBar.lua
 Interface\AddOns\Blizzard_UnitFrame\Mainline\RogueComboPointBar.xml
 Interface\AddOns\Blizzard_UnitFrame\Mainline\RuneFrame.lua

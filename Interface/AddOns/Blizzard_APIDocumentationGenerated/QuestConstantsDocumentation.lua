@@ -142,6 +142,17 @@ local QuestConstants =
 			},
 		},
 		{
+			Name = "QuestInfoLuaConsts",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "QUEST_INFO_ELITE_ID", Type = "number", Value = 1 },
+				{ Name = "QUEST_INFO_DUNGEON_ID", Type = "number", Value = 81 },
+				{ Name = "QUEST_INFO_PVP_ID", Type = "number", Value = 41 },
+				{ Name = "QUEST_INFO_RAID_ID", Type = "number", Value = 62 },
+			},
+		},
+		{
 			Name = "QuestLogConstsMainlineCamelot",
 			Type = "Constants",
 			Values =

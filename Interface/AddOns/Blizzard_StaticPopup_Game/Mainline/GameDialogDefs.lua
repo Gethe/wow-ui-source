@@ -1110,13 +1110,17 @@ StaticPopupDialogs["RENAME_PET"] = {
 	hideOnEscape = 1
 };
 
+local function AbandonSkill(skillLine)
+	C_SkillInfo.AbandonSkill(skillLine);
+	EventRegistry:TriggerEvent("Professions.SkillAbandoned", skillLine);
+end
+
 StaticPopupDialogs["UNLEARN_SKILL"] = {
 	text = UNLEARN_SKILL,
 	button1 = UNLEARN,
 	button2 = CANCEL,
 	OnAccept = function(dialog, skillLine)
-		C_SkillInfo.AbandonSkill(skillLine);
-		HideUIPanel(ProfessionsFrame);
+		AbandonSkill(skillLine);
 	end,
 	OnShow = function(dialog, data)
 		dialog:GetButton1():Disable();
@@ -1129,8 +1133,7 @@ StaticPopupDialogs["UNLEARN_SKILL"] = {
 	EditBoxOnEnterPressed = function(editBox, skillLine)
 		local dialog = editBox:GetParent();
 		if dialog:GetButton1():IsEnabled() then
-			C_SkillInfo.AbandonSkill(skillLine);
-			HideUIPanel(ProfessionsFrame);
+			AbandonSkill(skillLine);
 			dialog:Hide();
 		end
 	end,
@@ -1155,8 +1158,7 @@ StaticPopupDialogs["UNLEARN_SKILL_GAMEPAD"] = {
 	button1 = UNLEARN,
 	button2 = CANCEL,
 	OnAccept = function(dialog, skillLine)
-		C_SkillInfo.AbandonSkill(skillLine);
-		HideUIPanel(ProfessionsFrame);
+		AbandonSkill(skillLine);
 	end,
 	OnShow = function(dialog, data)
 		dialog:GetButton1():Disable();
@@ -1564,4 +1566,28 @@ StaticPopupDialogs["SET_CUSTOM_TITLE_FRIEND_NAME"] = {
 		dialog:Hide();
 	end,
 	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
+};
+
+StaticPopupDialogs["VOICE_CHAT_JOIN_GROUP"] = {
+	text = "",
+	button1 = VOICE_CHAT_JOIN_GROUP_BUTTON,
+	button2 = CANCEL,
+	OnShow = function(dialog)
+		local isDiscord = C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord;
+		local hasUnsupportedFeatures = GetCVarBool("remoteTextToSpeech") or GetCVarBool("speechToText");
+		local dialogText = VOICE_CHAT_JOIN_GROUP_TEXT;
+		if isDiscord and hasUnsupportedFeatures then
+			dialogText = dialogText .. "\n\n" .. VOICE_CHAT_JOIN_GROUP_DISCORD_TEXT;
+		end
+		dialog:SetText(dialogText);
+	end,
+	OnAccept = function(dialog)
+		-- The leader can change the party voice mode while this popup is open.
+		local isDiscord = C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord;
+		ChannelFrame:TryJoinVoiceChannelByType(isDiscord and Enum.ChatChannelType.DiscordParty or Enum.ChatChannelType.PrivateParty, true);
+	end,
+	timeout = 0,
+	showAlert = 1,
+	hideOnEscape = 1,
+	whileDead = 1,
 };

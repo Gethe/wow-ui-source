@@ -85,7 +85,6 @@ function GroupTargeting:StartTargeting(inContainer, extraContainers)
 	RaidTargetingManager:SetActive(true);
 	self.opening = true;
 	SmartNavigation:HandlePanelOpen(inContainer, extraContainers);
-	SmartNavigation:SetContinuousRowWrapping(inContainer, true);
 	SmartNavigation:SetWrapping(inContainer, true);
 	SmartNavigation:SetUseGridNavigation(inContainer, true);
 	self:SetStartTarget();

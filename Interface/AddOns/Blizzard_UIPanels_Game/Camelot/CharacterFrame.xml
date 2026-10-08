@@ -432,7 +432,7 @@
 						<Texture atlas="UI-Character-Info-Stat-BG" useAtlasSize="true"/>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture name="$parentStoneBg" parentKey="StoneBg" atlas="UI-Character-Info-Stat-StoneBG" useAtlasSize="true">
+						<Texture name="$parentStoneBg" parentKey="StoneBg" atlas="UI-Character-Info-Stat-StoneBG3" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPLEFT"/>
 							</Anchors>

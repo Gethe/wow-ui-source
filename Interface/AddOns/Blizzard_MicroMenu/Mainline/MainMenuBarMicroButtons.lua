@@ -104,6 +104,9 @@ local function DisableMicroButtons(disableMainMenu, disableShop, disabledTooltip
 	AchievementMicroButton.disabledTooltip = disabledTooltip;
 	AchievementMicroButton:Disable();
 
+	LegacyMicroButton.disabledTooltip = disabledTooltip;
+	LegacyMicroButton:Disable();
+
 	EJMicroButton.disabledTooltip = disabledTooltip;
 	EJMicroButton:Disable();
 
@@ -160,6 +163,9 @@ local function EnableMicroButtons()
 
 	AchievementMicroButton:Enable();
 	AchievementMicroButton:UpdateMicroButton();
+
+	LegacyMicroButton:Enable();
+	LegacyMicroButton:UpdateMicroButton();
 
 	EJMicroButton:Enable();
 	EJMicroButton:UpdateMicroButton();
@@ -671,6 +677,7 @@ function ProfessionMicroButtonMixin:OnLoad()
 	self:RegisterEvent("UPDATE_BINDINGS");
 	LoadMicroButtonTextures(self, "Professions");
 	self.tooltipText = MicroButtonTooltipText(PROFESSIONS_BUTTON, "TOGGLEPROFESSIONBOOK");
+	self:RegisterToggledFrameEvents();
 end
 
 function ProfessionMicroButtonMixin:OnClick(button, down)
@@ -679,8 +686,18 @@ function ProfessionMicroButtonMixin:OnClick(button, down)
 	end
 end
 
+function ProfessionMicroButtonMixin:GetToggledFrame()
+	return ProfessionsBookFrame;
+end
+
+function ProfessionMicroButtonMixin:RegisterToggledFrameEvents()
+	-- ProfessionsBookFrame calls UpdateMicroButtons from its own OnShow/OnHide.
+	-- But other game modes use a different toggled frame and need to register for them.
+end
+
 function ProfessionMicroButtonMixin:UpdateMicroButton()
-	if ( ProfessionsBookFrame and ProfessionsBookFrame:IsShown() ) then
+	local toggledFrame = self:GetToggledFrame();
+	if toggledFrame and toggledFrame:IsShown() then
 		self:SetPushed();
 	else
 		self:SetNormal();
@@ -1436,9 +1453,13 @@ function LFDMicroButtonMixin:OnLoad()
 	self.disabledTooltip = self.groupFinderDisabledTooltip;
 end
 
+function LFDMicroButtonMixin:IsVanillaStyleGroupFinder()
+	return C_LFGList.GetPremadeGroupFinderStyle() == Enum.PremadeGroupFinderStyle.Vanilla;
+end
+
 function LFDMicroButtonMixin:CanPlayerUseGroupFinder()
 	-- The Vanilla-style group finder only exposes premade groups, so it is gated on premade access instead.
-	if C_LFGList.GetPremadeGroupFinderStyle() == Enum.PremadeGroupFinderStyle.Vanilla then
+	if self:IsVanillaStyleGroupFinder() then
 		return C_LFGInfo.CanPlayerUsePremadeGroup();
 	end
 
@@ -1448,6 +1469,10 @@ end
 function LFDMicroButtonMixin:GetGroupFinderDisabledTooltip()
 	local canUse, failureReason = self:CanPlayerUseGroupFinder();
 	return canUse and FEATURE_UNAVAILBLE_PLAYER_IS_NEUTRAL or failureReason;
+end
+
+function LFDMicroButtonMixin:GetToggledFrame()
+	return PVEFrame;
 end
 
 function LFDMicroButtonMixin:IsActive()
@@ -1491,7 +1516,8 @@ function LFDMicroButtonMixin:UpdateMicroButton()
 		self.factionGroup = nil;
 	end
 
-	if ( PVEFrame and PVEFrame:IsShown() ) then
+	local toggledFrame = self:GetToggledFrame();
+	if toggledFrame and toggledFrame:IsShown() then
 		self:SetPushed();
 	else
 		if not self:IsActive() then

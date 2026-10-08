@@ -74,10 +74,6 @@ function GameMenuFrameMixin:OnShow()
 
 	NarrationUtil.NarrateCurrentScreen(NARRATION_CONTEXT_GAME_MENU);
 
-	if InputUtil.IsGamepadUIEnabled() then
-		self.gamepadFooter:ShowAndActivateBindings();
-	end
-
 	EventRegistry:TriggerEvent("GameMenuFrame.Shown");
 end
 
@@ -90,7 +86,6 @@ function GameMenuFrameMixin:OnHide()
 
 	if InputUtil.IsGamepadUIEnabled() then
 		self:ResetGamepadButtons();
-		self.gamepadFooter:HideAndDeactivateBindings();
 	end
 
 	if CanAutoSetGamePadCursorControl(false) then
@@ -296,6 +291,14 @@ end
 function GameMenuFrameMixin:SmartNavigationCloseHandler()
 	self:CloseMenu();
 	return true;
+end
+
+function GameMenuFrameMixin:FocusGamepad()
+	self.gamepadFooter:ShowAndActivateBindings();
+end
+
+function GameMenuFrameMixin:UnfocusGamepad()
+	self.gamepadFooter:HideAndDeactivateBindings();
 end
 
 function GameMenuFrameMixin:RegisterForTransitions()

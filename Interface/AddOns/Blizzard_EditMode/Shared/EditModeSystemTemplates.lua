@@ -1233,6 +1233,74 @@ function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
 	return true;
 end
 
+EditModeGamepadMainActionBarSystemMixin = {};
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		return;
+	end
+
+	if not self:HasSetting(setting) then
+		return;
+	end
+
+	if setting == Enum.EditModeGamepadMainActionBarSetting.Compact then
+		self:UpdateSystemSettingCompact();
+	elseif setting == Enum.EditModeGamepadMainActionBarSetting.ShowEmptyBars then
+		self:UpdateSystemSettingShowEmptyBars();
+	elseif setting == Enum.EditModeGamepadMainActionBarSetting.ShowButtonPrompts then
+		self:UpdateSystemSettingShowButtonPrompts();
+	elseif setting == Enum.EditModeGamepadMainActionBarSetting.ShowHighlight then
+		self:UpdateSystemSettingShowHighlight();
+	elseif setting == Enum.EditModeGamepadMainActionBarSetting.ShouldExpand then
+		self:UpdateSystemSettingShouldExpand();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSettingCompact()
+	local val = self:GetSettingValueBool(Enum.EditModeGamepadMainActionBarSetting.Compact);
+	local oldVal = self:SetUseCompactLayout(val);
+	if oldVal ~= val then
+		self:RefreshCompactLayout();
+	end
+end
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSettingShowEmptyBars()
+	local val = self:GetSettingValueBool(Enum.EditModeGamepadMainActionBarSetting.ShowEmptyBars);
+	local oldVal = self:SetShowEmptyBars(val);
+	if oldVal ~= val then
+		self:RefreshSecondaryActionbarVisibility();
+	end
+end
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSettingShowButtonPrompts()
+	local val = self:GetSettingValueBool(Enum.EditModeGamepadMainActionBarSetting.ShowButtonPrompts);
+	local oldVal = self:SetShowButtonPrompts(val);
+	if oldVal ~= val then
+		self:RefreshActiveActionBar();
+	end
+end
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSettingShowHighlight()
+	local val = self:GetSettingValueBool(Enum.EditModeGamepadMainActionBarSetting.ShowHighlight);
+	local oldVal = self:SetShowHighlight(val);
+	if oldVal ~= val then
+		self:RefreshActiveActionBar();
+	end
+end
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSettingShouldExpand()
+	local val = self:GetSettingValueBool(Enum.EditModeGamepadMainActionBarSetting.ShouldExpand);
+	local oldVal = self:SetShouldExpand(val);
+	if oldVal ~= val then
+		self:RefreshActiveActionBar();
+	end
+end
+
 EditModeUnitFrameSystemMixin = {};
 
 local function OpenRaidFrameSettings()

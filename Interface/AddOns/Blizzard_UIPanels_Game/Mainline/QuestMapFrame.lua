@@ -1628,7 +1628,7 @@ local function QuestLogQuests_GetTitle(displayState, info)
 		end
 	end
 
-	local prefix = QuestMapFrameOverrides.GetQuestTitlePrefix(info);
+	local prefix = QuestUtilsOverrides.GetQuestTitlePrefix(info);
 	if prefix then
 		title = prefix .. title;
 	end
@@ -1830,7 +1830,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 	local difficultyColor = GetDifficultyColor(C_PlayerInfo.GetContentDifficultyQuestForPlayer(questID));
 	SetupQuestTitleTextColor(button, difficultyColor);
 
-	local tagText = QuestMapFrameOverrides.GetQuestTagText(info);
+	local tagText = QuestUtilsOverrides.GetQuestTagText(questID);
 	button.TagText:SetShown(tagText ~= nil);
 	if tagText then
 		button.TagText:SetText(tagText);

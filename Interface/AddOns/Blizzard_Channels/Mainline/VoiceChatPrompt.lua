@@ -23,16 +23,18 @@ local raidChannelTypeToActivatedNotification =
 };
 
 function Voice_GetChannelActivatePrompt(channel)
-	local isRaid = IsChatChannelRaid(channel.channelType);
-	return isRaid and raidChannelTypeToActivatePrompt[channel.channelType] or partyChannelTypeToActivatePrompt[channel.channelType];
+	local channelType = Voice_GetChatChannelType(channel.channelType);
+	local isRaid = IsChatChannelRaid(channelType);
+	return isRaid and raidChannelTypeToActivatePrompt[channelType] or partyChannelTypeToActivatePrompt[channelType];
 end
 
 function Voice_GetChannelActivatedNotification(channel)
 	if channel.channelType == Enum.ChatChannelType.Communities then
 		return VOICE_CHAT_NOTIFICATION_CHANNEL_ACTIVATED_CUSTOM_NAME:format(ChatFrameUtil.GetCommunityAndStreamName(channel.clubId, channel.streamId));
 	else
-		local isRaid = IsChatChannelRaid(channel.channelType);
-		return isRaid and raidChannelTypeToActivatedNotification[channel.channelType] or partyChannelTypeToActivatedNotification[channel.channelType];
+		local channelType = Voice_GetChatChannelType(channel.channelType);
+		local isRaid = IsChatChannelRaid(channelType);
+		return isRaid and raidChannelTypeToActivatedNotification[channelType] or partyChannelTypeToActivatedNotification[channelType];
 	end
 end
 
@@ -124,7 +126,7 @@ local function CountActiveChannelMembers(channel)
 end
 
 function VoiceChatActivateChannelPromptMixin:ShouldPromptForChannelActivate(channel)
-	return C_ChatInfo.IsPartyChannelType(channel.channelType) and CountActiveChannelMembers(channel) > 0;
+	return C_ChatInfo.IsPartyChannelType(Voice_GetChatChannelType(channel.channelType)) and CountActiveChannelMembers(channel) > 0;
 end
 
 function VoiceChatActivateChannelPromptMixin:ActivateChannel()

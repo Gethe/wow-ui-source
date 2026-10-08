@@ -648,7 +648,6 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PetFrame:Update();
 	BuffFrame:Update();
 	DebuffFrame:Update();
-	ComboFrame_Update(ComboFrame);
 
 	PlayerFrame_UpdateRolesAssigned();
 	PlayerFrame_UpdatePlayerNameTextAnchor();
@@ -757,7 +756,6 @@ function PlayerFrame_ToPlayerArt(self)
 	PetFrame:Update();
 	BuffFrame:Update();
 	DebuffFrame:Update();
-	ComboFrame_Update(ComboFrame);
 
 	PlayerFrame_UpdateRolesAssigned();
 	PlayerFrame_UpdatePlayerNameTextAnchor();

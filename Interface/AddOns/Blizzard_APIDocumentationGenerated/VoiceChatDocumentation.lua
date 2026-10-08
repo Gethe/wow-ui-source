@@ -14,7 +14,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
@@ -24,7 +24,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
@@ -77,7 +77,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
@@ -87,7 +87,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
@@ -100,7 +100,7 @@ local VoiceChat =
 
 			Returns =
 			{
-				{ Name = "channelID", Type = "number", Nilable = true },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = true },
 			},
 		},
 		{
@@ -110,6 +110,15 @@ local VoiceChat =
 			Returns =
 			{
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = true },
+			},
+		},
+		{
+			Name = "GetActiveVoiceProviderID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "activeVoiceProviderID", Type = "VoiceProviderID", Nilable = false },
 			},
 		},
 		{
@@ -139,7 +148,7 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 
 			Returns =
@@ -240,12 +249,12 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "memberID", Type = "number", Nilable = true },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = true },
 			},
 		},
 		{
@@ -265,8 +274,8 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 
 			Returns =
@@ -282,13 +291,13 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "memberGUID", Type = "WOWGUID", Nilable = false },
 			},
 
 			Returns =
 			{
-				{ Name = "memberID", Type = "number", Nilable = true },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = true },
 			},
 		},
 		{
@@ -299,8 +308,8 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 
 			Returns =
@@ -316,8 +325,8 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 
 			Returns =
@@ -455,8 +464,8 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 
 			Returns =
@@ -487,8 +496,8 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 
 			Returns =
@@ -504,8 +513,8 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 
 			Returns =
@@ -616,12 +625,18 @@ local VoiceChat =
 
 			Arguments =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
 			Name = "Login",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "channelType", Type = "ChatChannelType", Nilable = true },
+			},
 
 			Returns =
 			{
@@ -662,6 +677,32 @@ local VoiceChat =
 			{
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
 				{ Name = "autoActivate", Type = "bool", Nilable = true },
+			},
+		},
+		{
+			Name = "RestoreActiveVoiceProvider",
+			Type = "Function",
+			Documentation = { "Changes the active voice provider to the party voice provider, or to the preferred voice provider when the party has none." },
+
+			Returns =
+			{
+				{ Name = "changed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetActiveVoiceProvider",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Changes the active voice provider without changing the preferred voice provider." },
+
+			Arguments =
+			{
+				{ Name = "voiceProviderID", Type = "VoiceProviderID", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -775,8 +816,8 @@ local VoiceChat =
 			Arguments =
 			{
 				{ Name = "textureObject", Type = "SimpleTexture", Nilable = false },
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
@@ -873,6 +914,16 @@ local VoiceChat =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "VoiceChatActiveVoiceProviderChanged",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_ACTIVE_VOICE_PROVIDER_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "voiceProviderID", Type = "VoiceProviderID", Nilable = false },
+			},
+		},
+		{
 			Name = "VoiceChatAudioCaptureEnergy",
 			Type = "Event",
 			LiteralName = "VOICE_CHAT_AUDIO_CAPTURE_ENERGY",
@@ -902,7 +953,7 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
@@ -912,7 +963,7 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
@@ -923,7 +974,7 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "channelDisplayName", Type = "cstring", Nilable = false },
 			},
 		},
@@ -935,7 +986,7 @@ local VoiceChat =
 			Payload =
 			{
 				{ Name = "status", Type = "VoiceChatStatusCode", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false },
 				{ Name = "clubId", Type = "ClubId", Nilable = true },
 				{ Name = "streamId", Type = "ClubStreamId", Nilable = true },
@@ -949,8 +1000,8 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },
 			},
 		},
@@ -962,8 +1013,8 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
@@ -974,8 +1025,8 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "speakingEnergy", Type = "number", Nilable = false },
 			},
 		},
@@ -987,8 +1038,8 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
@@ -999,8 +1050,8 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "isMutedForAll", Type = "bool", Nilable = false },
 			},
 		},
@@ -1011,8 +1062,8 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "isMutedForMe", Type = "bool", Nilable = false },
 			},
 		},
@@ -1024,8 +1075,8 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
@@ -1036,8 +1087,8 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "isSilenced", Type = "bool", Nilable = false },
 			},
 		},
@@ -1049,8 +1100,8 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "isSpeaking", Type = "bool", Nilable = false },
 			},
 		},
@@ -1062,8 +1113,8 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "message", Type = "string", Nilable = false },
 				{ Name = "language", Type = "string", Nilable = false },
 			},
@@ -1076,8 +1127,8 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "memberID", Type = "number", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
 			},
 		},
@@ -1088,7 +1139,7 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "isMuted", Type = "bool", Nilable = false },
 			},
 		},
@@ -1099,7 +1150,7 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "pushToTalkSetting", Type = "cstring", Nilable = false },
 			},
 		},
@@ -1110,7 +1161,7 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 			},
 		},
 		{
@@ -1120,7 +1171,7 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "isTranscribing", Type = "bool", Nilable = false },
 			},
 		},
@@ -1131,7 +1182,7 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "isTransmitting", Type = "bool", Nilable = false },
 			},
 		},
@@ -1142,7 +1193,7 @@ local VoiceChat =
 			SynchronousEvent = true,
 			Payload =
 			{
-				{ Name = "channelID", Type = "number", Nilable = false },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "volume", Type = "number", Nilable = false },
 			},
 		},
@@ -1171,6 +1222,12 @@ local VoiceChat =
 			{
 				{ Name = "isDeafened", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "VoiceChatDiscordSettingsUpdated",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_DISCORD_SETTINGS_UPDATED",
+			SynchronousEvent = true,
 		},
 		{
 			Name = "VoiceChatError",
@@ -1335,6 +1392,22 @@ local VoiceChat =
 			LiteralName = "VOICE_CHAT_VAD_SETTINGS_UPDATED",
 			SynchronousEvent = true,
 		},
+		{
+			Name = "VoiceChatVoiceProviderChanged",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_VOICE_PROVIDER_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "voiceProviderID", Type = "VoiceProviderID", Nilable = false },
+			},
+		},
+		{
+			Name = "VoiceChatVoiceProvidersAvailableChanged",
+			Type = "Event",
+			LiteralName = "VOICE_CHAT_VOICE_PROVIDERS_AVAILABLE_CHANGED",
+			SynchronousEvent = true,
+		},
 	},
 
 	Tables =
@@ -1400,6 +1473,18 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "VoiceProviderID",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Legacy", Type = "VoiceProviderID", EnumValue = 0 },
+				{ Name = "Discord", Type = "VoiceProviderID", EnumValue = 1 },
+			},
+		},
+		{
 			Name = "VoiceTtsStatusCode",
 			Type = "Enumeration",
 			NumValues = 14,
@@ -1441,7 +1526,7 @@ local VoiceChat =
 			Fields =
 			{
 				{ Name = "name", Type = "string", Nilable = false },
-				{ Name = "channelID", Type = "number", Nilable = false, NeverSecret = true },
+				{ Name = "channelID", Type = "VoiceChatID", Nilable = false, NeverSecret = true },
 				{ Name = "channelType", Type = "ChatChannelType", Nilable = false, NeverSecret = true },
 				{ Name = "clubId", Type = "ClubId", Nilable = false, NeverSecret = true },
 				{ Name = "streamId", Type = "ClubStreamId", Nilable = false, NeverSecret = true },
@@ -1459,7 +1544,7 @@ local VoiceChat =
 			Fields =
 			{
 				{ Name = "energy", Type = "number", Nilable = false },
-				{ Name = "memberID", Type = "number", Nilable = false },
+				{ Name = "memberID", Type = "VoiceChatID", Nilable = false },
 				{ Name = "isActive", Type = "bool", Nilable = false },
 				{ Name = "isSpeaking", Type = "bool", Nilable = false },
 				{ Name = "isMutedForAll", Type = "bool", Nilable = false },

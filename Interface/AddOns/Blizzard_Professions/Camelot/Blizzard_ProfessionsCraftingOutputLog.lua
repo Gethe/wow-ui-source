@@ -1,3 +1,3 @@
 function ProfessionsCraftingOutputLogMixin:ShouldAutoOpen()
-	return InputUtil.IsGamepadUIEnabled();
+	return false;
 end

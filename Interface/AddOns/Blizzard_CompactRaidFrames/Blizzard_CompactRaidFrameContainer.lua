@@ -166,7 +166,8 @@ function CompactRaidFrameContainerMixin:GetBounds()
 	local maxY = 0;
 	for _, list in pairs(self.frameUpdateList) do
 		for _, frame in ipairs(list) do
-			if frame:IsVisible() then
+			-- Party/Arena frames are tracked for updates but are parented elsewhere and are not laid out by this container.
+			if frame:GetParent() == self and frame:IsVisible() then
 				local left, bottom, width, height = frame:GetRect();
 				local right  = left + width;
 				local top = bottom - height;

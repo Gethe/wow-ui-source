@@ -37,6 +37,7 @@ local MajorFactionsConstants =
 			{
 				{ Name = "WORLD_STATE_RENOWN_CAP_10_0", Type = "number", Value = 19735 },
 				{ Name = "WORLD_STATE_RAPID_RENOWN_CAP_10_0", Type = "number", Value = 20851 },
+				{ Name = "PVP_RANK_POINTS_FACTION_ID", Type = "number", Value = 2800 },
 				{ Name = "PLUNDERSTORM_MAJOR_FACTION_ID", Type = "number", Value = 2593 },
 			},
 		},

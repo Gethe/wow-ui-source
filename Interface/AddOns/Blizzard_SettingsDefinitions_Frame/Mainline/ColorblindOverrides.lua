@@ -1,5 +1,9 @@
 ColorblindOverrides = {}
 
+function ColorblindOverrides.ShouldShowItemQuality(quality)
+	return true;
+end
+
 function ColorblindOverrides.CreateSettings(category, layout)
 	-- Color Overrides
 	local data = { categoryID = category:GetID(), newTagID = "panelItemQualityColorOverrides" };
@@ -9,7 +13,6 @@ function ColorblindOverrides.CreateSettings(category, layout)
 	initializer:AddSearchTags(COLORS_ITEM_QUALITY, RARITY);
 	layout:AddInitializer(initializer);
 end
-
 
 ItemQualityColorOverrideMixin = {
 	OverrideData =
@@ -49,10 +52,26 @@ ItemQualityColorOverrideMixin = {
 	};
 };
 
+local visibleOverrideData;
+
+local function GetOverrideData()
+	if not visibleOverrideData then
+		visibleOverrideData = {};
+		for _, data in ipairs(ItemQualityColorOverrideMixin.OverrideData) do
+			if ColorblindOverrides.ShouldShowItemQuality(data.qualityBase) then
+				table.insert(visibleOverrideData, data);
+			end
+		end
+	end
+
+	return visibleOverrideData;
+end
+
 function ItemQualityColorOverrideMixin:Init(initializer)
 	self.categoryID = initializer.data.categoryID;
 
-	for index, data in ipairs(ItemQualityColorOverrideMixin.OverrideData) do
+	local overrideData = GetOverrideData();
+	for _, data in ipairs(overrideData) do
 		initializer:AddSearchTags(_G["ITEM_QUALITY"..data.qualityBase.."_DESC"]);
 	end
 
@@ -88,7 +107,8 @@ function ItemQualityColorOverrideMixin:OnLoad()
 	end
 	EventRegistry:RegisterCallback("Settings.CategoryDefaulted", CategoryDefaulted);
 
-	for index, data in ipairs(ItemQualityColorOverrideMixin.OverrideData) do
+	local overrideData = GetOverrideData();
+	for index, data in ipairs(overrideData) do
 		local frame = self.ColorOverrideFramePool:Acquire();
 		frame.layoutIndex = index;
 		self:SetupColorSwatch(frame, data);

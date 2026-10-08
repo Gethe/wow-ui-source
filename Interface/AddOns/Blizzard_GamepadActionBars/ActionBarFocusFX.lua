@@ -2,12 +2,12 @@ local function IsInputIcon(object)
 	return object and object.SetPressable and object.SetTextureState;
 end
 
-local function IsActionBarHighlightEnabled(alwaysShowHighlightAnims)
+local function IsActionBarHighlightEnabled(self, alwaysShowHighlightAnims)
 	if alwaysShowHighlightAnims then
 		return true;
 	end
-	local shouldShowHighlight = CVarCallbackRegistry:GetCVarValueBool("GamepadShowActionBarHighlight");
-	return shouldShowHighlight;
+	local actionbar = self.actionBar.pagingUnitOwner:GetParent();
+	return actionbar.showHighlight;
 end
 
 --[[
@@ -22,7 +22,6 @@ local AnimStyleFactory = {
 		GlowTop = {
 			Offset = { X=0, Y=0 },
 			Size = { X=62, Y=62 },
-			-- TODO for post-BlizzCon: BlizzCon assets are Xbox only (PS will be broken).
 			Atlas = {
 				Generic = {
 					[GAMEPAD_TRIGGER_LEFT] = "gamepad-actionbar-fx-triggerL-top",
@@ -244,7 +243,7 @@ end
 function GamepadActionBarSequenceCollapseMixin:InitAnimations(alwaysShowHighlightAnims)
 	GamepadActionBarSequenceMixin.InitAnimations(self);
 
-	local showHighlightClosure = GenerateFlatClosure(IsActionBarHighlightEnabled, alwaysShowHighlightAnims);
+	local showHighlightClosure = GenerateFlatClosure(IsActionBarHighlightEnabled, self, alwaysShowHighlightAnims);
 
 	self:ForEachModifierIcon(function(inputIcon)
 		if not inputIcon.animatedGlowBottom then
@@ -300,7 +299,7 @@ end
 function GamepadActionBarSequenceExpandMixin:InitAnimations(alwaysShowHighlightAnims)
 	GamepadActionBarSequenceMixin.InitAnimations(self);
 
-	local showHighlightClosure = GenerateFlatClosure(IsActionBarHighlightEnabled, alwaysShowHighlightAnims);
+	local showHighlightClosure = GenerateFlatClosure(IsActionBarHighlightEnabled, self, alwaysShowHighlightAnims);
 
 	self:ForEachModifierIcon(function(inputIcon)
 		if not inputIcon.animatedGlowTop then
@@ -346,12 +345,15 @@ function GamepadActionBarSequenceGameplayExpandMixin:Start()
 end
 
 function GamepadActionBarSequenceGameplayExpandMixin:InitAnimations()
-	GamepadActionBarSequenceExpandMixin.InitAnimations(self);
+	GamepadActionBarSequenceExpandMixin.InitAnimations(self, false);
+
+	local showHighlightClosure = GenerateFlatClosure(IsActionBarHighlightEnabled, self, false);
+
 	self:ForEachActionBarSlot(
 		function(squareSlot)
 			table.insert(self.animationsData, {
 				Animation = squareSlot.GameplayModeSquareFocusStartAnim;
-				Condition = IsActionBarHighlightEnabled,
+				Condition = showHighlightClosure,
 				OnStart = nil,
 				OnStop = nil,
 			});
@@ -359,7 +361,7 @@ function GamepadActionBarSequenceGameplayExpandMixin:InitAnimations()
 		function(circleSlot)
 			table.insert(self.animationsData, {
 				Animation = circleSlot.GameplayModeCircleFocusStartAnim;
-				Condition = IsActionBarHighlightEnabled,
+				Condition = showHighlightClosure,
 				OnStart = nil,
 				OnStop = nil,
 			});

@@ -1,5 +1,5 @@
-local Shared = require(".Shared");
-local StaticOverrideActionBarMixin = require(".StaticOverrideActionBar");
+local Shared = import(".Shared");
+local StaticOverrideActionBarMixin = import(".StaticOverrideActionBar");
 
 GamepadShortcutsActionBarMixin = CreateFromMixins(StaticOverrideActionBarMixin);
 

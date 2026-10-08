@@ -54,7 +54,6 @@ local function SetGamepadModeCoreBindingContextActive(useGamepad)
 end
 
 local function RegisterEvents()
-	CVarCallbackRegistry:SetCVarCachable("GamepadShowEmptyActionbars");
 	CVarCallbackRegistry:SetCVarCachable("GamepadActionBarLeftRightDelay");
 	CVarCallbackRegistry:SetCVarCachable("GamepadActionBarTopBottomDelay");
 	CVarCallbackRegistry:SetCVarCachable("GamepadTargetingModifierVisualDelay");

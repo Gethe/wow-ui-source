@@ -65,6 +65,16 @@
 		</Frames>
 	</Frame>
 
+	<Frame name="EditModeGamepadMainActionBarSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeGamepadMainActionBarSystemMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="system" value="Enum.EditModeSystem.GamepadMainActionBar" type="global"/>
+			<KeyValue key="systemNameString" value="HUD_EDIT_MODE_GAMEPAD_MAIN_ACTION_BAR_LABEL" type="global"/>
+		</KeyValues>
+		<Frames>
+			<Frame inherits="EditModeSystemSelectionTemplate" setAllPoints="true" hidden="true"/>
+		</Frames>
+	</Frame>
+
 	<Frame name="EditModeUnitFrameSystemTemplate" inherits="EditModeSystemTemplate" mixin="EditModeUnitFrameSystemMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="system" value="Enum.EditModeSystem.UnitFrame" type="global"/>

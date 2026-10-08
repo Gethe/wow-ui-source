@@ -14,6 +14,10 @@ local FrameGlowTable = {
 	StackSplitTemplate = { atlas = "gamepad-uiframemetal-focus", x = 0, y = 0, x1 = 0, y1 = 0, },
 	CompactRaidFrameTemplate = { atlas = "gamepad-uiframemetal-focus", x = -18, y = 9, x1 = 10, y1 = -9, },
 	DialogFrameTemplate = { atlas = "gamepad-uiframediamondmetal-focus-large", x =-6, y = 6, x1 = 6, y1 = -6, },
+	DialogFrameWithHeaderTemplate = {
+		atlas = "gamepad-uiframediamondmetal-focus-large", x = -6, y = 6, x1 = 6, y1 = -6,
+		header = { atlas = "gamepad-uiframediamondmetal-focus-large", x = -7, y = 7, x1 = 7, y1 = -7 },
+	},
 };
 
 -- Following the implementation of the function of the same name from NineSlicePanelMixin
@@ -23,6 +27,10 @@ end
 
 function FrameGlowMixin:GetContainerFrame()
 	return self:GetParent().NineSlice or self:GetParent();
+end
+
+function FrameGlowMixin:GetHeaderFrame()
+	return self:GetParent().Header;
 end
 
 function FrameGlowMixin:OnLoad()
@@ -39,14 +47,37 @@ function FrameGlowMixin:OnLoad()
 	self:SetPoint("TOPLEFT", containerFrame, "TOPLEFT", entry.x, entry.y);
 	self:SetPoint("BOTTOMRIGHT", containerFrame, "BOTTOMRIGHT", entry.x1, entry.y1);
 
+	self.glowTextures = { self.GlowTexture };
+
+	local headerEntry = entry.header;
+	local headerFrame = headerEntry and self:GetHeaderFrame();
+	if headerFrame then
+		local headerTexture = self:CreateTexture(nil, "BACKGROUND");
+		self.HeaderGlowTexture = headerTexture;
+
+		headerTexture:SetAtlas(headerEntry.atlas);
+		headerTexture:SetPoint("TOPLEFT", headerFrame, "TOPLEFT", headerEntry.x, headerEntry.y);
+		headerTexture:SetPoint("BOTTOMRIGHT", headerFrame, "BOTTOMRIGHT", headerEntry.x1, headerEntry.y1);
+
+		table.insert(self.glowTextures, headerTexture);
+		headerFrame:SetFrameLevel(self:GetFrameLevel() + 1);
+	end
+
 	local function OnGamepadFocusStateColorChanged()
 		local value = tonumber(C_CVar.GetCVar("GamepadFocusStateColor"));
-		if ( value == 1 ) then
-			self.GlowTexture:SetVertexColor(1, 0.9, 0.4); -- Gold.
-		elseif ( value == 2 ) then
-			self.GlowTexture:SetVertexColor(0, 0, 0); -- Black.
-		elseif ( value == 3 ) then
-			self.GlowTexture:SetVertexColor(0.3, 0.5, 1); -- Blue.
+		local r, g, b;
+		if value == 1 then
+			r, g, b = 1, 0.9, 0.4; -- Gold.
+		elseif value == 2 then
+			r, g, b = 0, 0, 0; -- Black.
+		elseif value == 3 then
+			r, g, b = 0.3, 0.5, 1; -- Blue.
+		end
+
+		if r then
+			for _, texture in ipairs(self.glowTextures) do
+				texture:SetVertexColor(r, g, b);
+			end
 		end
 	end
 

@@ -547,10 +547,11 @@
 						</Texture>						
 						<Texture name="$parentBarMiddle" parentKey="BarMiddle" parentArray="BarComponents" atlas="groupfinder-ScrollLine" useAtlasSize="true">
 							<Anchors>
-								<Anchor point="LEFT" relativePoint="BOTTOMLEFT" x="0" y="80"/>
-								<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" x="0" y="80"/>
+								<Anchor point="LEFT" relativePoint="BOTTOMLEFT" x="0" y="116"/>
+								<Anchor point="RIGHT" relativePoint="BOTTOMRIGHT" x="0" y="116"/>
 							</Anchors>
 						</Texture>
+						<FontString parentKey="VoiceChatLabel" inherits="GameFontNormalSmall" text="VOICE_CHAT" justifyH="RIGHT"/>
 					</Layer>
 				</Layers>
 				<Frames>
@@ -627,6 +628,11 @@
 							</OnMouseDown>
 						</Scripts>
 					</ScrollFrame>
+					<DropdownButton parentKey="VoiceChatDropdown" name="$parentVoiceChatDropdown" inherits="WowStyle1DropdownTemplate">
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-20" y="12"/>
+						</Anchors>
+					</DropdownButton>
 				</Frames>
 				<Scripts>
 					<OnLoad function="LFGListingActivityView_OnLoad"/>

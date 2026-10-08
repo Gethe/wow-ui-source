@@ -45,12 +45,14 @@ local DelvesConstants =
 		{
 			Name = "TieredEntranceTierFlag",
 			Type = "Enumeration",
-			NumValues = 1,
-			MinValue = 1,
-			MaxValue = 1,
+			NumValues = 3,
+			MinValue = 0,
+			MaxValue = 2,
 			Fields =
 			{
+				{ Name = "None", Type = "TieredEntranceTierFlag", EnumValue = 0 },
 				{ Name = "IsLFG", Type = "TieredEntranceTierFlag", EnumValue = 1 },
+				{ Name = "DisableTraitSystem", Type = "TieredEntranceTierFlag", EnumValue = 2 },
 			},
 		},
 		{

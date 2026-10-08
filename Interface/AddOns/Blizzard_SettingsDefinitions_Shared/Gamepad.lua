@@ -186,33 +186,6 @@ local function RegisterGamepadSettings(category, layout)
 
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(ACTIONBARS_LABEL));
 	do
-		Settings.SetupCVarCheckbox(
-			category,
-			"GamepadShowActionBarButtonPrompts",
-			GAMEPAD_ACTION_BAR_INPUT_PROMPT_TOGGLE,
-			OPTIONS_TOOLTIP_GAMEPAD_ACTION_BAR_INPUT_PROMPT_TOGGLE
-		);
-
-		Settings.SetupCVarCheckbox(
-			category,
-			"GamepadShowActionBarHighlight",
-			GAMEPAD_ACTION_BAR_HIGHLIGHT_TOGGLE,
-			OPTIONS_TOOLTIP_GAMEPAD_ACTION_BAR_HIGHLIGHT_TOGGLE
-		);
-
-		Settings.SetupCVarCheckbox(
-			category,
-			"GamepadShowActionBarScaling",
-			GAMEPAD_ACTION_BAR_SCALING_TOGGLE,
-			OPTIONS_TOOLTIP_GAMEPAD_ACTION_BAR_SCALING_TOGGLE
-		);
-
-		-- Show action bars even when empty.
-		Settings.SetupCVarCheckbox(category, "GamepadShowEmptyActionbars", GAMEPAD_SHOW_EMPTY_ACTIONBARS, OPTION_TOOLTIP_GAMEPAD_SHOW_EMPTY_ACTIONBARS);
-
-		-- Compact action bar layout
-		Settings.SetupCVarCheckbox(category, "GamepadUseCompactActionBar", GAMEPAD_TOGGLE_COMPACT_ACTION_BAR, GAMEPAD_TOGGLE_COMPACT_ACTION_BAR_TOOLTIP);
-
 		local function GetGamepadPossessBarOverrideOptions()
 			local container = Settings.CreateControlTextContainer();
 

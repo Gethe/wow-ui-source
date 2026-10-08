@@ -36,7 +36,7 @@ local Discord =
 
 			Returns =
 			{
-				{ Name = "userID", Type = "DiscordID", Nilable = false },
+				{ Name = "userID", Type = "DiscordMemberOpaqueID", Nilable = false },
 			},
 		},
 		{
@@ -47,7 +47,7 @@ local Discord =
 
 			Arguments =
 			{
-				{ Name = "userID", Type = "DiscordID", Nilable = false },
+				{ Name = "userID", Type = "DiscordMemberOpaqueID", Nilable = false },
 			},
 
 			Returns =
@@ -191,6 +191,15 @@ local Discord =
 			Returns =
 			{
 				{ Name = "hasOAuth", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsVoiceEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
 		},
 		{

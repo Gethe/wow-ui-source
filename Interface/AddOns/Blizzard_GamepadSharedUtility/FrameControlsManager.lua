@@ -111,7 +111,11 @@ local function FocusFrame(self, index)
 end
 
 local function CheckForInputBinding(self)
-	if (#self.shownFrames > 0 and self.focusedFrame and (not self.focusedFrame.disableFrameFocusPagingWhenFocused)) then
+	if self.isUIFocused
+		and #self.shownFrames > 0
+		and self.focusedFrame
+		and (not self.focusedFrame.disableFrameFocusPagingWhenFocused)
+	then
 		GamepadMode.ActivateBindingGroup(self.gamepadBindings);
 	else
 		GamepadMode.DeactivateBindingGroup(self.gamepadBindings);
@@ -658,7 +662,7 @@ function GamepadFrameControlsManagerMixin:SetUIFocusState(shouldFocusUI)
 				currentActiveFrame:EndFocus();
 			end
 
-			GamepadMode.DeactivateBindingGroup(self.gamepadBindings);
+			CheckForInputBinding(self);
 
 			self:SetFallThroughCatcherActive(false);
 
