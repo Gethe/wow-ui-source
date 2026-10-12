@@ -4341,9 +4341,9 @@ function LFGListUtil_GetActiveQueueMessage(isApplication)
 	end
 
 	for i=1, GetMaxBattlefieldID() do
-		local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, _, _, isSoloQueue = GetBattlefieldStatus(i);
+		local status, mapName, teamSize, registeredMatch, suspend, _, _, _, _, _, _, isSoloQueued = GetBattlefieldStatus(i);
 		if ( status and status ~= "none" ) then
-			if not isSoloQueue or status == "active" then
+			if not isSoloQueued or status == "active" then
 				return CANNOT_DO_THIS_IN_BATTLEGROUND;
 			end
 		end
