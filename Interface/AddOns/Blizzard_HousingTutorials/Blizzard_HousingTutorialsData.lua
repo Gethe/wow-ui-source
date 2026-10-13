@@ -55,6 +55,7 @@ HousingTutorialHelpTipSystems = {
 
 HousingTutorialData = {
 	HouseFinderTutorial = {
+		PrimaryFrame = "HouseFinderFrame",
 		NeighborhoodScrollFrame = "HouseFinderFrame.NeighborhoodListFrame.ScrollFrame",
 		NeighborhoodMapFrame = "HouseFinderFrame.HouseFinderMapCanvasFrame",
 		VisitHouseButton = "HouseFinderFrame.PlotInfoFrame.VisitHouseButton",

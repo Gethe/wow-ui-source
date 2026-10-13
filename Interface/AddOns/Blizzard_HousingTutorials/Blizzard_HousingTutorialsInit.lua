@@ -13,13 +13,12 @@ end
 local activeTutorials = {};
 
 function UpdateHousingTutorials()
-	if not C_CVar.GetCVarBool("housingTutorialsEnabled") then
-		-- Don't add the watchers if we don't have tutorials enabled
-		return;
-	end
+	-- If housing tutorials are enabled, we can start them up
+	-- Otherwises, we need to stop any that were already started up
+	local tutorialsEnabled = C_CVar.GetCVarBool("housingTutorialsEnabled");
 
 	local activeTutorial = activeTutorials["HouseFinderTutorial"];
-	if CanShowHouseFinderTutorial() then
+	if tutorialsEnabled and CanShowHouseFinderTutorial() then
 		if not activeTutorial then
 			activeTutorials["HouseFinderTutorial"] = CreateFromMixins(HouseFinderWatcherMixin);
 			activeTutorial = activeTutorials["HouseFinderTutorial"];
@@ -31,7 +30,7 @@ function UpdateHousingTutorials()
 	end
 
 	activeTutorial = activeTutorials["DecorQuestTutorial"];
-	if CanShowHouseDecorQuestTutorial() then
+	if tutorialsEnabled and CanShowHouseDecorQuestTutorial() then
 		if not activeTutorial then
 			activeTutorials["DecorQuestTutorial"] = CreateFromMixins(HouseDecorQuestWatcherMixin);
 			activeTutorial = activeTutorials["DecorQuestTutorial"];
@@ -44,7 +43,7 @@ function UpdateHousingTutorials()
 	end
 
 	activeTutorial = activeTutorials["DecorTutorial"];
-	if CanShowHouseDecorTutorials() then
+	if tutorialsEnabled and CanShowHouseDecorTutorials() then
 		if not activeTutorial then
 			activeTutorials["DecorTutorial"] = CreateFromMixins(HouseDecorWatcherMixin);
 			activeTutorial = activeTutorials["DecorTutorial"];
@@ -60,7 +59,11 @@ local HousingTutorialManager = {};
 
 function HousingTutorialManager:Init()
 	UpdateHousingTutorials();
+
 	EventRegistry:RegisterFrameEventAndCallback("SETTINGS_LOADED", self.OnSettingsLoaded, self);
+	CVarCallbackRegistry:RegisterCallback("housingTutorialsEnabled", function(cvar, value)
+		UpdateHousingTutorials();
+	end);
 end
 
 function HousingTutorialManager:OnSettingsLoaded()

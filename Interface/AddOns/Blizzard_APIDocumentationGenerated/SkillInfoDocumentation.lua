@@ -22,6 +22,7 @@ local SkillInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

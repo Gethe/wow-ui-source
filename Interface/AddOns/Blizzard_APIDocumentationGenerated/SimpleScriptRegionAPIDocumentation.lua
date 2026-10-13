@@ -199,6 +199,19 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "GetRoundLayoutToNearestPixel",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetScaledRect",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -637,6 +650,17 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "SetRoundLayoutToNearestPixel",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetScript",
 			Type = "Function",
 			RequiresAssignableScript = true,
@@ -692,6 +716,7 @@ local SimpleScriptRegionAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

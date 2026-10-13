@@ -31,9 +31,9 @@ local UIEventToastConstants =
 		{
 			Name = "EventToastEventType",
 			Type = "Enumeration",
-			NumValues = 27,
+			NumValues = 28,
 			MinValue = 0,
-			MaxValue = 26,
+			MaxValue = 27,
 			Fields =
 			{
 				{ Name = "LevelUp", Type = "EventToastEventType", EnumValue = 0 },
@@ -63,6 +63,7 @@ local UIEventToastConstants =
 				{ Name = "WeeklyRewardUpgrade", Type = "EventToastEventType", EnumValue = 24 },
 				{ Name = "FlightpointDiscovered", Type = "EventToastEventType", EnumValue = 25 },
 				{ Name = "HouseUpgradeAvailable", Type = "EventToastEventType", EnumValue = 26 },
+				{ Name = "RenownFactionLeveledUp", Type = "EventToastEventType", EnumValue = 27 },
 			},
 		},
 		{
@@ -77,6 +78,7 @@ local UIEventToastConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

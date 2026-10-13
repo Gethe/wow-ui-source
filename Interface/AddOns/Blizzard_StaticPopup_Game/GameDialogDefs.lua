@@ -3257,6 +3257,32 @@ StaticPopupDialogs["REGIONAL_CHAT_DISABLED"] = {
 	exclusive = 1,
 };
 
+StaticPopupDialogs["AGE_VERIFICATION_RESTRICTED_MINOR"] = {
+	text = SOCIAL_FEATURES_UNAVAILABLE,
+	subText = SOCIAL_FEATURES_UNAVAILABLE_DESCRIPTION,
+	button1 = OKAY,
+	OnShow = function(dialog, data)
+		C_SocialRestrictions.AcknowledgeAgeVerificationRestriction();
+	end,
+	timeout = 0,
+	hideOnEscape = false,
+	exclusive = 1,
+	showAlert = 1,
+};
+
+StaticPopupDialogs["AGE_VERIFICATION_RESTRICTED_UNVERIFIED"] = {
+	text = AGE_VERIFICATION_REQUIRED,
+	subText = AGE_VERIFICATION_REQUIRED_DESCRIPTION,
+	button1 = OKAY,
+	OnShow = function(dialog, data)
+		C_SocialRestrictions.AcknowledgeAgeVerificationRestriction();
+	end,
+	timeout = 0,
+	hideOnEscape = false,
+	exclusive = 1,
+	showAlert = 1,
+};
+
 StaticPopupDialogs["CHAT_CONFIG_DISABLE_CHAT"] = {
 	text = RESTRICT_CHAT_CONFIG_DIALOG_MESSAGE,
 	button1 = RESTRICT_CHAT_CONFIG_DIALOG_DISABLE,

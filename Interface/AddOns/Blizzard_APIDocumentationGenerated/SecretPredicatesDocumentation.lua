@@ -3,6 +3,7 @@ local SecretPredicates =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 		{

@@ -85,6 +85,15 @@
 						<Anchor point="BOTTOMLEFT" x="8" y="-2"/>
 						<Anchor point="BOTTOMRIGHT" x="-8" y="-2"/>
 					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="FlashAnim" looping="REPEAT" inherits="SyncedAnimGroupTemplate">
+							<KeyValues>
+								<KeyValue key="syncKey" value="ChatAlertFlash" type="string"/>
+							</KeyValues>
+							<Alpha order="1" duration="1.0" fromAlpha="0" toAlpha="1"/>
+							<Alpha order="2" duration="1.0" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">
@@ -167,7 +176,17 @@
 					</OnClick>
 				</Scripts>
 				<NormalTexture file="Interface\ChatFrame\chat-tab-arrow"/>
-				<HighlightTexture file="Interface\ChatFrame\chat-tab-arrow-on" alphaMode="ADD"/>
+				<HighlightTexture file="Interface\ChatFrame\chat-tab-arrow-on" alphaMode="ADD">
+					<Animations>
+						<AnimationGroup parentKey="FlashAnim" looping="REPEAT" inherits="SyncedAnimGroupTemplate">
+							<KeyValues>
+								<KeyValue key="syncKey" value="ChatAlertFlash" type="string"/>
+							</KeyValues>
+							<Alpha order="1" duration="1.0" fromAlpha="0" toAlpha="1"/>
+							<Alpha order="2" duration="1.0" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
+				</HighlightTexture>
 			</Button>
 			<ScrollFrame name="$parentScrollFrame" parentKey="scrollFrame">
 				<KeyValues>
@@ -250,6 +269,15 @@
 						<Anchor point="BOTTOMLEFT" x="8"/>
 						<Anchor point="BOTTOMRIGHT" x="-8"/>
 					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="FlashAnim" looping="REPEAT" inherits="SyncedAnimGroupTemplate">
+							<KeyValues>
+								<KeyValue key="syncKey" value="ChatAlertFlash" type="string"/>
+							</KeyValues>
+							<Alpha order="1" duration="1.0" fromAlpha="0" toAlpha="1"/>
+							<Alpha order="2" duration="1.0" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
 				</Texture>
 			</Layer>
 			<Layer level="HIGHLIGHT">
@@ -291,6 +319,14 @@
 						<Texture file="Interface\PaperDollInfoFrame\UI-Character-Tab-Highlight" alphaMode="ADD" setAllPoints="true"/>
 					</Layer>
 				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="FlashAnim" looping="REPEAT">
+						<Alpha order="1" duration="0.25" fromAlpha="0" toAlpha="1"/>
+						<Alpha order="2" duration="0.5" fromAlpha="1" toAlpha="1"/>
+						<Alpha order="3" duration="0.25" fromAlpha="1" toAlpha="0"/>
+						<Alpha order="4" duration="0.5" fromAlpha="0" toAlpha="0"/>
+					</AnimationGroup>
+				</Animations>
 			</Frame>
 		</Frames>
 		<Scripts>
@@ -303,12 +339,12 @@
 				if MOVING_CHATFRAME then
 					return;
 				end
-				
+
 				local tabName = self:GetText();
 				if not tabName then
 					return;
 				end
-				
+
 				if GameTooltip then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip_SetTitle(GameTooltip, string.format(CHAT_TAB_NAME, tabName));
@@ -368,7 +404,7 @@
 				--This is a hack fix we need to do because when SetParent is called, the OnDragStop never fires for the matching OnDragStart.
 				self.dragButton = button;
 				self:SetScript("OnUpdate", FCFTab_OnUpdate);
-				
+
 				GameTooltip:Hide();
 			</OnDragStart>
 			<!--OnDragStop>
@@ -479,7 +515,15 @@
 				</Anchors>
 				<Layers>
 					<Layer level="OVERLAY">
-						<Texture parentKey="Flash" atlas="minimal-scrollbar-arrow-returntobottom" useAtlasSize="true" alphaMode="ADD" hidden="true"/>
+						<Texture parentKey="Flash" atlas="minimal-scrollbar-arrow-returntobottom" useAtlasSize="true" alphaMode="ADD" hidden="true">
+							<Animations>
+								<!-- End delays come from ChatFrameConstants.ScrollToBottomFlashInterval in ChatFrameMixin:OnLoad. -->
+								<AnimationGroup parentKey="FlashAnim" looping="REPEAT">
+									<Alpha parentKey="FadeIn" order="1" duration="0.1" fromAlpha="0" toAlpha="1"/>
+									<Alpha parentKey="FadeOut" order="2" duration="0.1" fromAlpha="1" toAlpha="0"/>
+								</AnimationGroup>
+							</Animations>
+						</Texture>
 					</Layer>
 				</Layers>
 				<Scripts>
@@ -555,6 +599,15 @@
 						<Anchor point="BOTTOMLEFT" x="8" y="7"/>
 						<Anchor point="BOTTOMRIGHT" x="-24" y="7"/>
 					</Anchors>
+					<Animations>
+						<AnimationGroup parentKey="FlashAnim" looping="REPEAT" inherits="SyncedAnimGroupTemplate">
+							<KeyValues>
+								<KeyValue key="syncKey" value="ChatAlertFlash" type="string"/>
+							</KeyValues>
+							<Alpha order="1" duration="1.0" fromAlpha="0" toAlpha="1"/>
+							<Alpha order="2" duration="1.0" fromAlpha="1" toAlpha="0"/>
+						</AnimationGroup>
+					</Animations>
 				</Texture>
 			</Layer>
 			<Layer level="ARTWORK">

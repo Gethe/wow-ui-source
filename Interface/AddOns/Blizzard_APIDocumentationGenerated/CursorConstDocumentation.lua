@@ -178,6 +178,7 @@ local CursorConst =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -47,9 +47,6 @@ end
 
 function NamePlateBaseMixin:OnSizeChanged()
 	if self.unitToken and self:IsVisible() then
-		-- Necessary to align all components back to pixel boundaries as the nameplate moves around the screen and prevent jiterring.
-		self.UnitFrame:UpdateAnchors();
-
 		self.driverFrame:OnNamePlateResized(self);
 	end
 end

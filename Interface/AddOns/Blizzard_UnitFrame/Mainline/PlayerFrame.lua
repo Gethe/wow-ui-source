@@ -29,14 +29,14 @@ function PlayerFrame_OnLoad(self)
 	healthBarTexture:AddMaskTexture(healthBarContainer.HealthBarMask);
 	healthBarTexture:SetTexelSnappingBias(0);
 	healthBarTexture:SetSnapToPixelGrid(false);
-	
+
 	local healthLossTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture();
 	healthLossTexture:AddMaskTexture(healthBarContainer.HealthBarMask);
 	healthLossTexture:SetTexelSnappingBias(0);
 	healthLossTexture:SetSnapToPixelGrid(false);
-	
+
 	tempMaxHealthLossBar:InitializeMaxHealthLossBar(healthBarContainer, healthBar, healthBarContainer.TempMaxHealthLossDivider);
-	
+
 	local tempMaxHPLossTexture = tempMaxHealthLossBar:GetStatusBarTexture();
 	tempMaxHPLossTexture:AddMaskTexture(healthBarContainer.HealthBarMask);
 	tempMaxHPLossTexture:SetTexelSnappingBias(0);
@@ -321,98 +321,31 @@ function PlayerFrame_UpdatePvPStatus()
 	local pvpIcon = playerFrameTargetContextual.PVPIcon;
 	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
 	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
-	local unitFramePvPContextualDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UnitFramePvPContextualDisabled);
-	if unitFramePvPContextualDisabled then
-		prestigePortrait:Hide();
-		prestigeBadge:Hide();
-		pvpIcon:Hide();
-		PlayerPVPTimerText:Hide();
-		PlayerPVPTimerText.timeLeft = nil;
-		return;
+
+	local displayInfo = UnitFrameUtil.GetUnitPvPIndicatorDisplayInfo("player", true);
+
+	if ((displayInfo.showPvPIcon or displayInfo.showPrestigePortrait) and PlayerFrame_CanPlayPVPUpdateSound()) then
+		PlaySound(SOUNDKIT.IG_PVP_UPDATE);
 	end
 
-	local factionGroup, factionName = UnitFactionGroup("player");
-	local activePvPBadgeContainer = nil;
+	UnitFrameUtil.UpdateUnitPvPIndicator({
+		pvpIcon = pvpIcon,
+		prestigePortrait = prestigePortrait,
+		prestigeBadge = prestigeBadge,
+	}, "player", true);
 
-	if (UnitIsPVPFreeForAll("player")) then
-		if (PlayerFrame_CanPlayPVPUpdateSound()) then
-			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
-		end
-		local honorLevel = UnitHonorLevel("player");
-		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
-		if (honorRewardInfo) then
-			prestigePortrait:SetAtlas("honorsystem-portrait-neutral", TextureKitConstants.IgnoreAtlasSize);
-			prestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
-			prestigePortrait:Show();
-			prestigeBadge:Show();
-			pvpIcon:Hide();
-			activePvPBadgeContainer = prestigePortrait;
-		else
-			prestigePortrait:Hide();
-			prestigeBadge:Hide();
-			pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-FFAIcon", TextureKitConstants.UseAtlasSize);
-			pvpIcon:Show();
-			activePvPBadgeContainer = pvpIcon;
-		end
-
-		PlayerPVPTimerText:Hide();
-		PlayerPVPTimerText.timeLeft = nil;
-	elseif (factionGroup and factionGroup ~= "Neutral" and UnitIsPVP("player")) then
-		if (PlayerFrame_CanPlayPVPUpdateSound()) then
-			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
-		end
-
-		local honorLevel = UnitHonorLevel("player");
-		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
-		if (honorRewardInfo) then
-			-- ugly special case handling for mercenary mode
-			if (UnitIsMercenary("player")) then
-				if (factionGroup == "Horde") then
-					factionGroup = "Alliance";
-				elseif (factionGroup == "Alliance") then
-					factionGroup = "Horde";
-				end
-			end
-
-			prestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, TextureKitConstants.IgnoreAtlasSize);
-			prestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
-			prestigePortrait:Show();
-			prestigeBadge:Show();
-			pvpIcon:Hide();
-			activePvPBadgeContainer = prestigePortrait;
-		else
-			prestigePortrait:Hide();
-			prestigeBadge:Hide();
-			if (factionGroup == "Horde") then
-				pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-HordeIcon", TextureKitConstants.UseAtlasSize);
-			elseif (factionGroup == "Alliance") then
-				pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-AllianceIcon", TextureKitConstants.UseAtlasSize);
-			end
-
-			-- ugly special case handling for mercenary mode
-			if (UnitIsMercenary("player")) then
-				if (factionGroup == "Horde") then
-					pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-AllianceIcon", TextureKitConstants.UseAtlasSize);
-				elseif ( factionGroup == "Alliance" ) then
-					pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-HordeIcon", TextureKitConstants.UseAtlasSize);
-				end
-			end
-
-			pvpIcon:Show();
-			activePvPBadgeContainer = pvpIcon;
-		end
-	else
-		prestigePortrait:Hide();
-		prestigeBadge:Hide();
-		pvpIcon:Hide();
-		PlayerPVPTimerText:Hide();
-		PlayerPVPTimerText.timeLeft = nil;
-	end
-
-	if activePvPBadgeContainer == prestigePortrait then
+	-- Always reposition to match whichever badge/icon is active, even while hidden below, so a later
+	-- Show() (driven elsewhere by an actual RBG timer value) uses the right anchor.
+	if (displayInfo.showPrestigePortrait) then
 		PlayerPVPTimerText:SetPoint("TOP", prestigePortrait, "BOTTOM", 0, 10);
-	elseif activePvPBadgeContainer == pvpIcon then
+	elseif (displayInfo.showPvPIcon) then
 		PlayerPVPTimerText:SetPoint("TOP", pvpIcon, "BOTTOM", 0, 2);
+	end
+
+	-- An RBG queue/match countdown doesn't apply in FFA pits, so force-hide it there even if a real timer was running.
+	if (displayInfo.isFreeForAll or not (displayInfo.showPrestigePortrait or displayInfo.showPvPIcon)) then
+		PlayerPVPTimerText:Hide();
+		PlayerPVPTimerText.timeLeft = nil;
 	end
 end
 
@@ -594,11 +527,11 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 
 	-- Update health bar
 	healthBarContainer:SetWidth(118);
-	
-	if UNIT_FRAME_SHOW_HEALTH_ONLY then 
+
+	if UNIT_FRAME_SHOW_HEALTH_ONLY then
 		healthBar:SetHeight(32);
 		healthBarContainer:SetHeight(32);
-	else 
+	else
 		healthBar:SetHeight(20);
 		healthBarContainer:SetHeight(20);
 	end
@@ -734,7 +667,7 @@ function PlayerFrame_ToPlayerArt(self)
 	if (PlayerFrame.classPowerBar) then
 		PlayerFrame.classPowerBar:Setup();
 	elseif (class == "SHAMAN") then
-		TotemFrame:Update(); 
+		TotemFrame:Update();
 	elseif (class == "DEATHKNIGHT") then
 		RuneFrame:Show();
 	end

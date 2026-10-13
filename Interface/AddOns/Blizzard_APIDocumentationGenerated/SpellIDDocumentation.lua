@@ -23,6 +23,7 @@ local SpellID =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

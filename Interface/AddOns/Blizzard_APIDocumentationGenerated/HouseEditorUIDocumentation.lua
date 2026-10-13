@@ -165,6 +165,7 @@ local HouseEditorUI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

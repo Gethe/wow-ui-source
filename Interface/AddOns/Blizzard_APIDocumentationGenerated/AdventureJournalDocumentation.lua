@@ -121,6 +121,7 @@ local AdventureJournal =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

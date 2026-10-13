@@ -45,6 +45,7 @@ local BagIndexConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

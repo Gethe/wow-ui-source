@@ -1,0 +1,10 @@
+## Title: Blizzard_Calendar
+## LoadOnDemand: 1
+## Dep: Blizzard_Plunderstorm [AllowLoadGameType plunderstorm]
+## Dep: Blizzard_FrameXMLUtil
+## Dep: Blizzard_GameMenuEsc
+Blizzard_Calendar_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_Calendar.lua
+[Family]\Blizzard_CalendarTemplates.xml
+[Family]\Blizzard_Calendar.xml
+Localization.lua

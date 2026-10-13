@@ -522,6 +522,7 @@ local HousingDecorUI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

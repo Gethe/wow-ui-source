@@ -847,6 +847,7 @@ local CatalogShop =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

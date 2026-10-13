@@ -109,6 +109,7 @@ local ScriptedAnimations =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

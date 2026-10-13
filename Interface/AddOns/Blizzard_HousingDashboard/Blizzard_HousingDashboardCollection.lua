@@ -26,8 +26,10 @@ function HousingDashboardBlueprintDetailsMixin:OnLoad()
 	self:ClearData();
 
 	self.GearDropdown:SetupMenu(function(_dropdown, rootDescription)
+		local shouldShowImport, importDisabledTooltip = self:ShouldShowContextImportOption();
 		local menuParams = {
-			shouldShowImport = self.blueprintInfo and C_HousingBlueprint.GetImportAvailability() == Enum.HousingResult.Success and C_HousingBlueprint.CanImportTypeFromCurrentLocation(self.blueprintInfo.blueprintType),
+			shouldShowImport = shouldShowImport,
+			importDisabledTooltip = importDisabledTooltip,
 			onDeleteConfirm = function() self:OnDeleteConfirmed(); end,
 		};
 		HousingBlueprintUtils.CreateBlueprintInfoContextMenu(rootDescription, self.blueprintInfo, menuParams);
@@ -35,6 +37,22 @@ function HousingDashboardBlueprintDetailsMixin:OnLoad()
 
 	FrameUtil.RegisterFrameForEvents(self, DetailsLifetimeEvents);
 	EventRegistry:RegisterCallback("HouseDropdown.HouseSelected", self.OnHouseSelected, self);
+end
+
+function HousingDashboardBlueprintDetailsMixin:ShouldShowContextImportOption()
+	if not self.blueprintInfo then
+		return false;
+	end
+
+	if C_HousingBlueprint.GetImportAvailability() ~= Enum.HousingResult.Success then
+		return false;
+	end
+
+	if not C_HousingBlueprint.CanImportTypeFromCurrentLocation(self.blueprintInfo.blueprintType) then
+		return false, HousingResultToErrorText[Enum.HousingResult.BlueprintTypeLocationInvalid];
+	end
+
+	return true;
 end
 
 function HousingDashboardBlueprintDetailsMixin:OnDeleteConfirmed()
@@ -61,6 +79,7 @@ function HousingDashboardBlueprintDetailsMixin:OnShow()
 	-- Since ContentSummary isn't inside of a layout frame with variable width, ensure it works with the width it has via anchors
 	self.ContentSummary.fixedWidth = self.ContentSummary:GetWidth();
 	self:SyncSummaryInfo();
+	self.PlaceholderText:SetShown(self.blueprintInfo == nil);
 end
 
 function HousingDashboardBlueprintDetailsMixin:IsShowingBlueprint(shareCode)
@@ -79,6 +98,8 @@ function HousingDashboardBlueprintDetailsMixin:ShowBlueprint(blueprintInfo)
 	local timeStr = GameTime_GetFormattedTime(creationDate.hour, creationDate.min, true);
 	local dateTimeStr = dateStr.." "..timeStr;
 	self.DateTimeText:SetText(HOUSING_BLUEPRINT_COLLECTION_TIMESTAMP_FMT:format(dateTimeStr));
+
+	self.PlaceholderText:Hide();
 end
 
 function HousingDashboardBlueprintDetailsMixin:ClearData()
@@ -88,6 +109,7 @@ function HousingDashboardBlueprintDetailsMixin:ClearData()
 	self.NameText:SetText(nil);
 	self.DateTimeText:SetText(nil);
 	self.GearDropdown:Hide();
+	self.PlaceholderText:Show();
 end
 
 function HousingDashboardBlueprintDetailsMixin:OnHouseSelected(houseInfoID, houseInfo)

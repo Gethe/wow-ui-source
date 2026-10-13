@@ -138,7 +138,7 @@
 							<Anchor point="LEFT" relativePoint="CENTER" x="5" y="0"/>
 						</Anchors>
 						<KeyValues>
-							<KeyValue key="tooltipText" value="TALENT_FRAME_DROP_DOWN_EXPORT_CLIPBOARD" type="global"/>
+							<KeyValue key="tooltipText" value="HOUSING_BLUEPRINT_EXPORT_CLIPBOARD_TOOLTIP" type="global"/>
 							<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
 						</KeyValues>
 					</Button>

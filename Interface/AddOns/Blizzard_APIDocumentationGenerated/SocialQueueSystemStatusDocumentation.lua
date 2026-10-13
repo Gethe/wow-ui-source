@@ -40,6 +40,7 @@ local SocialQueueSystemStatus =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

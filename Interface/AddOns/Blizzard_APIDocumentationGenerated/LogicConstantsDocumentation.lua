@@ -50,6 +50,7 @@ local LogicConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

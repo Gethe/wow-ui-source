@@ -327,6 +327,7 @@ local BattlepayConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

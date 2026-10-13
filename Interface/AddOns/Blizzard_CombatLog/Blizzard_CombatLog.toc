@@ -1,0 +1,8 @@
+## Title: Blizzard_CombatLog
+## LoadOnDemand: 1
+## Dep: Blizzard_CombatLogBase
+## Dep: Blizzard_CombatLogProcessor [AllowLoadGameType mainline]
+## SavedVariables: Blizzard_CombatLog_Filters, Blizzard_CombatLog_Filter_Version
+Blizzard_CombatLog_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_CombatLog.lua
+[Family]\Blizzard_CombatLog.xml

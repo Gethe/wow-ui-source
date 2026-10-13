@@ -184,7 +184,8 @@ function GroupBuffFilterEditVisualAlertMixin:DisplayForGroupBuffItem(groupBuffIt
 	self.groupBuffItem = groupBuffItem;
 	self:GetIcon():SetTexture(groupBuffItem.iconID);
 	self:GetNameLabel():SetText(groupBuffItem.name);
-	self.selectedVisual = Enum.VisualAlertType.MarchingAnts;
+	local existingVisualAlert = GetCurrentVisualAlerts()[groupBuffItem.spellID];
+	self.selectedVisual = existingVisualAlert or Enum.VisualAlertType.MarchingAnts;
 	self:SetupDropdown();
 	self:Display(isNewAlert);
 end

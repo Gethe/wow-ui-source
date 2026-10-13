@@ -890,15 +890,34 @@ function CooldownViewerSettingsMixin:SetupTabs()
 	end
 end
 
+function CooldownViewerSettingsMixin:MarkTabsSeen()
+	for i, tabButton in ipairs(self.TabButtons) do
+		-- Only tabs that can display a new tag implement MarkSeen.
+		if tabButton.MarkSeen then
+			tabButton:MarkSeen();
+		end
+	end
+end
+
 function CooldownViewerSettingsMixin:UpdateGroupBuffsTabState()
 	local groupBuffItems = C_CooldownViewer.GetGroupBuffItems();
 	local isDisabled = #groupBuffItems < GROUP_BUFFS_TAB_MIN_ITEMS;
 	local groupBuffsTab = self.GroupBuffsTab;
 
+	groupBuffsTab:SetTooltipTextSetupFunction(function(tooltip)
+		
+		if isDisabled then
+			GameTooltip_SetTitle(tooltip, COOLDOWN_VIEWER_SETTINGS_TAB_GROUP_AURAS);
+			local wrap = true;
+			GameTooltip_AddNormalLine(tooltip, COOLDOWN_VIEWER_SETTINGS_TAB_GROUP_AURAS_DISABLED_TOOLTIP, wrap);
+			return true; -- Handled
+		end
+
+		return false; -- Let the default handler take care of it
+	end);
+
 	if isDisabled then
 		if not groupBuffsTab.isTabDisabled then
-			groupBuffsTab.normalTooltipText = groupBuffsTab.tooltipText;
-			groupBuffsTab.tooltipText = COOLDOWN_VIEWER_SETTINGS_TAB_GROUP_AURAS_DISABLED_TOOLTIP;
 			groupBuffsTab.isTabDisabled = true;
 
 			if self.displayMode == "groupBuffs" then
@@ -911,7 +930,6 @@ function CooldownViewerSettingsMixin:UpdateGroupBuffsTabState()
 		groupBuffsTab.Icon:SetAlpha(0.5);
 
 	elseif groupBuffsTab.isTabDisabled then
-		groupBuffsTab.tooltipText = groupBuffsTab.normalTooltipText;
 		groupBuffsTab.isTabDisabled = false;
 
 		groupBuffsTab:SetMouseClickEnabled(true);
@@ -1208,6 +1226,8 @@ function CooldownViewerSettingsMixin:SetupScrollFrame()
 
 		self:CheckAddScrollFramePadding();
 	end);
+
+	self.ReorderMarker = self.CooldownScroll.Content.ReorderMarker;
 end
 
 function CooldownViewerSettingsMixin:SetupEventEditFrame()
@@ -1472,6 +1492,8 @@ function CooldownViewerSettingsMixin:OnShow()
 end
 
 function CooldownViewerSettingsMixin:OnHide()
+	self:MarkTabsSeen();
+
 	self:CheckSaveCurrentLayout();
 	self:GetLayoutManager():DestroyRestorePoint();
 
@@ -1842,4 +1864,15 @@ function CooldownViewerSettingsCategoryNewOptionMixin:SetNewOptionAnchor()
 		newOptionFrame:ClearAllPoints();
 		newOptionFrame:SetPoint("LEFT", self:GetTitleRegion(), "LEFT", self:GetTitleRegion():GetStringWidth() + 10, -2);
 	end
+end
+
+
+CooldownViewerSettingsTabMixin = {};
+
+function CooldownViewerSettingsTabMixin:SetTooltipTextSetupFunction(fn)
+	self.tooltipTextSetupFn = fn;
+end
+
+function CooldownViewerSettingsTabMixin:GetTooltipTextSetupFunction()
+	return self.tooltipTextSetupFn;
 end

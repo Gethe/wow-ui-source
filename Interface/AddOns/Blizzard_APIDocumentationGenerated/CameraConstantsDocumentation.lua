@@ -17,6 +17,7 @@ local CameraConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

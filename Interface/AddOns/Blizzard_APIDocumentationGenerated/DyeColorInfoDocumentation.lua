@@ -152,6 +152,7 @@ local DyeColorInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

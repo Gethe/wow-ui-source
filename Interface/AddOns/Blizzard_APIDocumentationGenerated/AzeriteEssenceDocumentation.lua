@@ -348,6 +348,7 @@ local AzeriteEssence =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

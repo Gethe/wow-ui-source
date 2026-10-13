@@ -14,6 +14,7 @@ local PartyPoseUIConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

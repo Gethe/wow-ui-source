@@ -339,6 +339,7 @@ function PrivateAuraAnchorContainerMixin:ReadContainerSettings()
 		displayLargerRoleSpecificDebuffs = containerFrame:GetAttribute("display-larger-role-specific-debuffs"),
 		dispelIndicatorOverlayType = containerFrame:GetAttribute("dispel-indicator-overlay-type"),
 		dispelIndicatorOverlayAnimation = containerFrame:GetAttribute("dispel-indicator-overlay-animation"),
+		dispelIndicatorAnimatedBorder = containerFrame:GetAttribute("dispel-indicator-animated-border"),
 		showBigDefensive = containerFrame:GetAttribute("show-big-defensive"),
 		bigDefensiveSize = containerFrame:GetAttribute("big-defensive-size"),
 		powerBarUsedHeight = containerFrame:GetAttribute("power-bar-used-height"),
@@ -1370,11 +1371,25 @@ function CompactUnitFrameDispelOverlayMixin:SetDispelType(dispelType, containerS
 		else
 			self.PulseAnim:Stop();
 		end
+
+		if containerSettings.dispelIndicatorAnimatedBorder then
+			local border = MarchingAnts_CreateForTarget(self, "CompactUnitFrameAnimatedDispelBorderTemplate", 0, 0, "AnimatedBorder");
+			border:Show();
+			border:SetColor(overlayColor);
+			border:SetGradient("VERTICAL", CreateColor(1, 1, .557), CreateColor(1, .792, .188));
+			border:SetSpeed(1.25);
+		elseif self.AnimatedBorder then
+			self.AnimatedBorder:Hide();
+		end
 	else
 		self.Gradient:SetAlpha(0);
 		self.Border:SetAlpha(0);
 		self.Background:SetAlpha(0);
 		self.PulseAnim:Stop();
+
+		if self.AnimatedBorder then
+			self.AnimatedBorder:Hide();
+		end
 	end
 end
 

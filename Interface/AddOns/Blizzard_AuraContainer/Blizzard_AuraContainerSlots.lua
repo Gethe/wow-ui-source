@@ -35,9 +35,9 @@ function AuraContainerAuraSlotManagerMixin:UnregisterAuraSlot(slotKey)
 	local auraSlot = self.auraSlotsByKey[slotKey];
 
 	if auraSlot ~= nil then
-		self:ClearAuraSlotFrame(auraSlot);
+		self:ResetFrameAssignmentForSlot(auraSlot);
 		self.auraSlotsByKey[slotKey] = nil;
-		tUnorderedRemove(self.auraSlots, auraSlot);
+		table.removevalue(self.auraSlots, auraSlot);
 		self:SignalAuraSlotsChanged();
 	end
 end
@@ -52,6 +52,21 @@ function AuraContainerAuraSlotManagerMixin:ClearAuraSlots()
 	self:SignalAuraSlotsChanged();
 end
 
+function AuraContainerAuraSlotManagerMixin:SetAuraSlotEnabled(auraSlot, enabled)
+	enabled = (enabled == true);
+
+	if auraSlot:IsEnabled() ~= enabled then
+		auraSlot:SetEnabled(enabled);
+
+		if not enabled then
+			auraSlot:ClearCandidates();
+			self:ResetFrameAssignmentForSlot(auraSlot);
+		end
+
+		self:SignalAuraSlotsChanged();
+	end
+end
+
 function AuraContainerAuraSlotManagerMixin:SignalAuraSlotsChanged()
 	self.owner:OnAuraSlotsChanged();
 end
@@ -64,6 +79,16 @@ function AuraContainerAuraSlotManagerMixin:HasAnyAuraSlots()
 	return self.auraSlots[1] ~= nil;
 end
 
+function AuraContainerAuraSlotManagerMixin:HasAnyEnabledAuraSlots()
+	for _index, auraSlot in self:EnumerateAuraSlots() do
+		if auraSlot:IsEnabled() then
+			return true;
+		end
+	end
+
+	return false;
+end
+
 function AuraContainerAuraSlotManagerMixin:GetAuraSlot(slotKey)
 	return self.auraSlotsByKey[slotKey];
 end
@@ -74,7 +99,9 @@ end
 
 function AuraContainerAuraSlotManagerMixin:RegisterAuraParseConsumers(registrar)
 	for _index, auraSlot in self:EnumerateAuraSlots() do
-		registrar:RegisterAuraParseConsumer(auraSlot:GetFilterString(), self, auraSlot);
+		if auraSlot:IsEnabled() then
+			registrar:RegisterAuraParseConsumer(auraSlot:GetFilterString(), self, auraSlot);
+		end
 	end
 end
 
@@ -87,7 +114,9 @@ function AuraContainerAuraSlotManagerMixin:AddAura(unitToken, auraData)
 	local hasMatchedFilterString = false;
 
 	for _index, auraSlot in self:EnumerateAuraSlots() do
-		candidatesChanged = self:UpdateAuraSlotCandidate(auraSlot, unitToken, auraData.auraInstanceID, auraData, hasMatchedFilterString) or candidatesChanged;
+		if auraSlot:IsEnabled() then
+			candidatesChanged = self:UpdateAuraSlotCandidate(auraSlot, unitToken, auraData.auraInstanceID, auraData, hasMatchedFilterString) or candidatesChanged;
+		end
 	end
 
 	return candidatesChanged;
@@ -98,7 +127,9 @@ function AuraContainerAuraSlotManagerMixin:UpdateAura(unitToken, auraInstanceID,
 	local hasMatchedFilterString = false;
 
 	for _index, auraSlot in self:EnumerateAuraSlots() do
-		candidatesChanged = self:UpdateAuraSlotCandidate(auraSlot, unitToken, auraInstanceID, auraData, hasMatchedFilterString) or candidatesChanged;
+		if auraSlot:IsEnabled() then
+			candidatesChanged = self:UpdateAuraSlotCandidate(auraSlot, unitToken, auraInstanceID, auraData, hasMatchedFilterString) or candidatesChanged;
+		end
 	end
 
 	return candidatesChanged;
@@ -111,7 +142,9 @@ function AuraContainerAuraSlotManagerMixin:RemoveAura(_unitToken, auraInstanceID
 	local candidatesChanged = false;
 
 	for _index, auraSlot in self:EnumerateAuraSlots() do
-		candidatesChanged = auraSlot:RemoveCandidate(auraInstanceID) or candidatesChanged;
+		if auraSlot:IsEnabled() then
+			candidatesChanged = auraSlot:RemoveCandidate(auraInstanceID) or candidatesChanged;
+		end
 	end
 
 	return candidatesChanged;
@@ -131,9 +164,9 @@ function AuraContainerAuraSlotManagerMixin:UpdateAuraSlotCandidate(auraSlot, uni
 	end
 end
 
-function AuraContainerAuraSlotManagerMixin:RefreshDirtyAuraSlots(unitToken)
+function AuraContainerAuraSlotManagerMixin:RefreshFrameAssignments(unitToken)
 	for _index, auraSlot in self:EnumerateAuraSlots() do
-		if auraSlot:IsDirty() then
+		if auraSlot:IsEnabled() and auraSlot:IsDirty() then
 			self:RefreshAuraSlot(auraSlot, unitToken);
 		end
 	end
@@ -180,9 +213,24 @@ function AuraContainerAuraSlotManagerMixin:ClearAuraSlotFrame(auraSlot)
 	auraSlot:SetAssignedAuraData(nil);
 end
 
+function AuraContainerAuraSlotManagerMixin:ResetFrameAssignmentForSlot(auraSlot)
+	if auraSlot:HasAssignedAura() then
+		self:ClearAuraSlotFrame(auraSlot);
+	end
+
+	auraSlot:MarkDirty();
+end
+
+function AuraContainerAuraSlotManagerMixin:ResetFrameAssignments()
+	for _index, auraSlot in self:EnumerateAuraSlots() do
+		self:ResetFrameAssignmentForSlot(auraSlot);
+	end
+end
+
 AuraContainerAuraSlotMixin = {};
 
 function AuraContainerAuraSlotMixin:Init(slotKey, description)
+	self.enabled = true;
 	self.slotKey = slotKey;
 	self.auraFrame = description.auraFrame;
 	self.filterString = nil;
@@ -199,6 +247,14 @@ function AuraContainerAuraSlotMixin:Init(slotKey, description)
 	self:SetAuraComparator(description.auraComparator);
 	self:SetFilterString(description.filterString);
 	self:SetCandidateFilters(description.candidateFilters);
+end
+
+function AuraContainerAuraSlotMixin:IsEnabled()
+	return self.enabled == true;
+end
+
+function AuraContainerAuraSlotMixin:SetEnabled(enabled)
+	self.enabled = (enabled == true);
 end
 
 function AuraContainerAuraSlotMixin:GetSlotKey()
@@ -361,6 +417,10 @@ function AuraContainerAuraSlotOwnerMixin:ShouldIncludeAuraInSlot(auraSlot, unitT
 		if not AuraContainerUtil.ShouldIncludeAuraForFilterString(unitToken, auraData, auraSlot:GetFilterString()) then
 			return false;
 		end
+	end
+
+	if auraData.processedAuraType == AuraUtil.AuraUpdateChangedType.None then
+		return false;
 	end
 
 	if not AuraContainerUtil.DoesAuraPassCandidateFilters(unitToken, auraData, auraSlot:GetCandidateFilters()) then

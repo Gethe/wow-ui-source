@@ -158,6 +158,11 @@ function HousingBlueprintActionButtonMixin:OnClick()
 			end);
 		end
 		
+		if HousingFramesUtil.IsBlueprintCollectionAvailable() then
+			rootDescription:CreateButton(HOUSING_CONTROLS_BLUEPRINT_COLLECTION, function()
+				HousingFramesUtil.TryOpenBlueprintCollection();
+			end);
+		end
 	end);
 end
 
@@ -189,11 +194,11 @@ function HousingBlueprintActionButtonMixin:CheckEnabled()
 		return false, errorText;
 	end
 
-	if C_HouseEditor.IsHouseEditorActive() then
+	if C_HouseEditor.IsHouseEditorActive() and not HousingFramesUtil.IsBlueprintCollectionAvailable() then
 		return false, HOUSING_CONTROLS_BLUEPRINT_UNAVAILABLE_EDITOR;
 	end
 
-	if C_HousingBlueprint.GetExportAvailability() ~= Enum.HousingResult.Success and C_HousingBlueprint.GetImportAvailability() ~= Enum.HousingResult.Success then
+	if not HousingFramesUtil.IsBlueprintCollectionAvailable() and C_HousingBlueprint.GetExportAvailability() ~= Enum.HousingResult.Success and C_HousingBlueprint.GetImportAvailability() ~= Enum.HousingResult.Success then
 		return false, HOUSING_CONTROLS_BLUEPRINT_UNAVAILABLE_PERMISSION;
 	end
 

@@ -47,6 +47,7 @@ local DurationTextBindingShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

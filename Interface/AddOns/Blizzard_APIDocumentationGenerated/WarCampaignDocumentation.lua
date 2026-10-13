@@ -209,6 +209,7 @@ local WarCampaign =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

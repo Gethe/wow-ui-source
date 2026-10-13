@@ -16,6 +16,9 @@ CombatAudioAlertConstants =
 		PLAYER_HEALTH_VOICE_CVAR = {name = "CAAPlayerHealthVoice", playSample = true, categoryType = Enum.CombatAudioAlertCategory.PlayerHealth},
 		PLAYER_HEALTH_VOLUME_CVAR = {name = "CAAPlayerHealthVolume", playSample = true, categoryType = Enum.CombatAudioAlertCategory.PlayerHealth},
 
+		PULSE_PLAYER_HEALTH_PCT_CVAR = {name = "CAAPulsePlayerHealthPercent", refreshEvents = true},
+		PULSE_PLAYER_HEALTH_VOLUME_CVAR = {name = "CAAPulsePlayerHealthVolume", refreshPulseVolume = true},
+
 		SAY_TARGET_NAME_CVAR = {name = "CAASayTargetName", refreshEvents = true},
 		SAY_IF_TARGETED_CVAR = {name = "CAASayIfTargeted", refreshEvents = true},
 		TARGET_DEATH_BEHAVIOR_CVAR = {name = "CAATargetDeathBehavior"},
@@ -69,6 +72,13 @@ CombatAudioAlertConstants =
 
 	PARTY_HEALTH_UPDATE_MIN_SECONDS = 1;
 	PARTY_HEALTH_UPDATE_MAX_SECONDS = 5;
+
+	-- Tier used to preview the pulse volume when nothing is currently pulsing.
+	HEALTH_PULSE_SAMPLE_PERCENT = 50;
+	HEALTH_PULSE_SAMPLE_SECONDS = 3;
+
+	-- Slider drags write their cvar on every step, so wait for the drag to settle before previewing it.
+	SAMPLE_SETTLE_SECONDS = 0.2;
 
 	ALLOW_OVERLAP_NO = false;
 	ALLOW_OVERLAP_YES = true;

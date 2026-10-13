@@ -437,6 +437,7 @@ local SecretPredicateAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

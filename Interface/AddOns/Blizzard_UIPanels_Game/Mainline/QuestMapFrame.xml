@@ -2,6 +2,40 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Texture name="QuestLogHighlightTextureTemplate" alphaMode="ADD" alpha="0.4" virtual="true"/>
 
+	<Frame name="StoryTooltipTemplate" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate" virtual="true">
+		<Size x="10" y="10"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Title" inherits="GameFontHighlightMedium">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ProgressLabel" inherits="GameFontNormal" text="STORY_PROGRESS">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="ProgressCount" inherits="GameFontHighlightSmall">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ProgressLabel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Line1" parentArray="Lines" inherits="GameFontHighlight">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ProgressCount" relativePoint="BOTTOM" x="0" y="-12"/>
+						<Anchor point="LEFT" x="10" y="0"/>
+					</Anchors>
+				</FontString>
+				<Texture parentArray="CheckMarks" inherits="GreenCheckMarkTemplate">
+					<Anchors>
+						<Anchor point="RIGHT" relativeKey="$parent.Line1" relativePoint="LEFT" x="-4" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
 	<Button name="QuestLogPathButtonTemplate" frameLevel="10" hidden="true" virtual="true">
 		<Size x="16" y="24"/>
 		<Layers>
@@ -578,39 +612,6 @@
 										<Texture parentKey="Shadow" atlas="questlog-frame-gradient-bottom" useAtlasSize="true">
 											<Anchors>
 												<Anchor point="BOTTOM" y="4"/>
-											</Anchors>
-										</Texture>
-									</Layer>
-								</Layers>
-							</Frame>
-							<Frame parentKey="StoryTooltip" frameStrata="TOOLTIP" clampedToScreen="true" hidden="true" inherits="TooltipBackdropTemplate">
-								<Size x="10" y="10"/>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString parentKey="Title" inherits="GameFontHighlightMedium">
-											<Anchors>
-												<Anchor point="TOPLEFT" x="10" y="-10"/>
-											</Anchors>
-										</FontString>
-										<FontString parentKey="ProgressLabel" inherits="GameFontNormal" text="STORY_PROGRESS">
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="0" y="-11"/>
-											</Anchors>
-										</FontString>
-										<FontString parentKey="ProgressCount" inherits="GameFontHighlightSmall">
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeKey="$parent.ProgressLabel" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-											</Anchors>
-										</FontString>
-										<FontString parentKey="Line1" parentArray="Lines" inherits="GameFontHighlight">
-											<Anchors>
-												<Anchor point="TOP" relativeKey="$parent.ProgressCount" relativePoint="BOTTOM" x="0" y="-12"/>
-												<Anchor point="LEFT" x="10" y="0"/>
-											</Anchors>
-										</FontString>
-										<Texture parentArray="CheckMarks" inherits="GreenCheckMarkTemplate">
-											<Anchors>
-												<Anchor point="RIGHT" relativeKey="$parent.Line1" relativePoint="LEFT" x="-4" y="-1"/>
 											</Anchors>
 										</Texture>
 									</Layer>

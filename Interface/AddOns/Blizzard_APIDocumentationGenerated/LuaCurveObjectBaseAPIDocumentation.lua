@@ -56,6 +56,7 @@ local LuaCurveObjectBaseAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

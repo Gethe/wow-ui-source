@@ -3,6 +3,7 @@ local GlyphConstants =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

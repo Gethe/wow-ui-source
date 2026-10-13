@@ -3,7 +3,7 @@
 -- *****************************************************************************************************
 
 local showingEmberCourtHelpTip = false;
-	
+
 local function AcknowledgeEmberCourtHelpTip()
 	if showingEmberCourtHelpTip then
 		HelpTip:Acknowledge(UIParent, EMBER_COURT_MAP_HELPTIP);
@@ -66,9 +66,9 @@ function ScenarioObjectiveTrackerMixin:InitModule()
 	end
 	self.ObjectivesBlock:Init();
 	self.ObjectivesBlock:Reset();
-	
+
 	self.spellFramePool = CreateFramePool("FRAME", self.ObjectivesBlock, "ScenarioSpellFrameTemplate");
-	
+
 	self:SetupWidgetContainers();
 
 	self.shouldShowCriteria = C_Scenario.ShouldShowCriteria();
@@ -82,7 +82,7 @@ local SCENARIO_TRACKER_WIDGET_SET = 252;
 local SCENARIO_TRACKER_TOP_WIDGET_SET = 514;
 
 local function WidgetsLayoutWithOffset(widgetContainerFrame, sortedWidgets, containerOffset)
-	local containerBlock = widgetContainerFrame:GetParent(); 
+	local containerBlock = widgetContainerFrame:GetParent();
 	DefaultWidgetLayout(widgetContainerFrame, sortedWidgets);
 
 	if widgetContainerFrame:HasAnyWidgetsShowing() then
@@ -99,7 +99,7 @@ function ScenarioObjectiveTrackerMixin:SetupWidgetContainers()
 	self.TopWidgetContainerBlock.WidgetContainer:SetScript("OnSizeChanged", GenerateClosure(self.MarkDirty, self));
 
 	self.BottomWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_WIDGET_SET, WidgetsLayoutWithOffset);
-	self.TopWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_TOP_WIDGET_SET, WidgetsLayoutWithOffset);	
+	self.TopWidgetContainerBlock.WidgetContainer:RegisterForWidgetSet(SCENARIO_TRACKER_TOP_WIDGET_SET, WidgetsLayoutWithOffset);
 end
 
 function ScenarioObjectiveTrackerMixin:OnEvent(event, ...)
@@ -113,7 +113,7 @@ function ScenarioObjectiveTrackerMixin:OnEvent(event, ...)
 	elseif event == "SCENARIO_UPDATE" then
 		local newStage = ...;
 		self:SetHasNewStage(newStage);
-		self:MarkDirty();		
+		self:MarkDirty();
 	elseif event == "SCENARIO_CRITERIA_UPDATE" or event == "SCENARIO_SPELL_UPDATE" then
 		self:MarkDirty();
 	elseif event == "SCENARIO_CRITERIA_SHOW_STATE_UPDATE" then
@@ -198,7 +198,7 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 	if self:IsSliding() then
 		self:EndSlide();
 	end
-	
+
 	local stageName, stageDescription, numCriteria, _, _, _, _, numSpells, allSpellInfo, weightedProgress, _, widgetSetID = C_Scenario.GetStepInfo();
 
 	local inChallengeMode = (scenarioType == LE_SCENARIO_TYPE_CHALLENGE_MODE);
@@ -220,12 +220,17 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 				end
 			end
 		end
-		-- play sound if not the first stage
-		if currentStage > 1 and currentStage <= numStages then
+		-- play the scenario's start sound on the first stage, the stage transition sound after that
+		if currentStage == 1 then
+			local displayInfo = C_ScenarioInfo.GetDisplayInfo();
+			if displayInfo and displayInfo.startSoundKitID then
+				PlaySound(displayInfo.startSoundKitID);
+			end
+		elseif currentStage <= numStages then
 			PlaySound(SOUNDKIT.UI_SCENARIO_STAGE_END);
 		end
 	end
-	
+
 	local stageBlock = self.StageBlock;
 	local provingGroundsActive = self.ProvingGroundsBlock:IsActive();
 
@@ -242,7 +247,7 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 		if self.currentStage ~= currentStage or self.scenarioID ~= scenarioID then
 			self.currentStage = currentStage;
 			self.scenarioID = scenarioID;
-			stageBlock:UpdateStageBlock(scenarioID, scenarioType, widgetSetID, textureKit, flags, currentStage, stageName, numStages);
+			stageBlock:UpdateStageBlock(scenarioID, widgetSetID, textureKit, flags, currentStage, stageName, numStages);
 		end
 		stageBlock:UpdateWidgetRegistration();
 	end
@@ -258,8 +263,8 @@ function ScenarioObjectiveTrackerMixin:LayoutContents()
 		self.Header.Text:SetText(GetZoneText());
 	else
 		self.Header.Text:SetText(scenarioName);
-	end	
-	
+	end
+
 	-- On slide out only need the StageBlock
 	if slidingState == ObjectiveTrackerSlidingState.SlideOut then
 		stageBlock:SetupStageTransition(hasNewStage, scenarioCompleted);
@@ -330,7 +335,7 @@ function ScenarioObjectiveTrackerMixin:SlideInContents()
 		adjustModule = true,
 		duration = self.slideDuration,
 	};
-	self:Slide(slideInfo);	
+	self:Slide(slideInfo);
 end
 
 function ScenarioObjectiveTrackerMixin:SetStageBlockModelScenesShown(shown)
@@ -360,7 +365,7 @@ function ScenarioObjectiveTrackerMixin:OnEndSlide(slideOut, finished)
 		self:MarkDirty();	-- Need to still call MarkDirty even if the slideout didn't finish
 		return;
 	end
-	
+
 	if slideOut then
 		local name, currentStage, numStages = C_Scenario.GetInfo();
 		local hasNewStage = currentStage and currentStage <= numStages;
@@ -395,7 +400,7 @@ function ScenarioObjectiveTrackerMixin:UpdateCriteria(numCriteria)
 				line = objectivesBlock:AddObjective(criteriaIndex, criteriaString, nil, nil, OBJECTIVE_DASH_STYLE_HIDE, OBJECTIVE_TRACKER_COLOR["Complete"]);
 				line.Icon:Show();
 				line.Icon:SetAtlas("ui-questtracker-tracker-check", false);
-				if existingLine and (not line.state or line.state == ObjectiveTrackerAnimLineState.Present) then	
+				if existingLine and (not line.state or line.state == ObjectiveTrackerAnimLineState.Present) then
 					line:SetState(ObjectiveTrackerAnimLineState.Completing);
 				end
 			else
@@ -408,11 +413,11 @@ function ScenarioObjectiveTrackerMixin:UpdateCriteria(numCriteria)
 			if criteriaInfo.isWeightedProgress and not criteriaInfo.completed then
 				objectivesBlock:AddProgressBar(criteriaIndex, self.progressBarLineSpacing);
 			end
-			
+
 			-- timer
 			if criteriaInfo.duration > 0 and criteriaInfo.elapsed <= criteriaInfo.duration then
 				objectivesBlock:AddTimerBar(criteriaInfo.duration, GetTime() - criteriaInfo.elapsed);
-			end		
+			end
 		end
 	end
 end
@@ -433,9 +438,9 @@ function ScenarioObjectiveTrackerMixin:AddSpells(allSpellInfo)
 	if not allSpellInfo then
 		return;
 	end
-	
+
 	local objectivesBlock = self.ObjectivesBlock;
-	
+
 	for index, spellInfo in ipairs(allSpellInfo) do
 		local spellFrame = self.spellFramePool:Acquire();
 		spellFrame.SpellName:SetText(spellInfo.spellName);
@@ -443,7 +448,7 @@ function ScenarioObjectiveTrackerMixin:AddSpells(allSpellInfo)
 		local offsetX = -5;
 		local offsetY = (index == 1 and -5) or 0;
 		objectivesBlock:AddCustomRegion(spellFrame, offsetX, offsetY);
-	end	
+	end
 end
 
 function ScenarioObjectiveTrackerMixin:UpdateSpellCooldowns()
@@ -498,32 +503,27 @@ local textureKitOffsets = {
 	["thewarwithin-scenario"] = {normalBGX = 0, normalBGY = 0, finalBGX = 3, finalBGY = -2},
 	["delves-scenario"] = {normalBGX = -2, normalBGY = 1, finalBGX = -2, finalBGY = 1},
 	["midnight-scenario"] = {normalBGX = -6, normalBGY = 0, finalBGX = -22, finalBGY = 0},
+	["legioninvasion"] = {normalBGX = 0, normalBGY = 0, finalBGX = -10, finalBGY = 3},
 };
 
 local defaultOffsets = {normalBGX = 0, normalBGY = 0, finalBGX = -10, finalBGY = 3};
 
-function ScenarioObjectiveTrackerStageMixin:GetBGAtlases(scenarioType, textureKit)
-	local normalBGAtlas, finalBGAtlas;
-	if scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION then
-		normalBGAtlas = "legioninvasion-ScenarioTrackerToast";
-		finalBGAtlas = nil;
-	else
-		normalBGAtlas = textureKit.."-trackerheader";
-		finalBGAtlas = textureKit.."-trackerheader-final-filigree";
+function ScenarioObjectiveTrackerStageMixin:GetBGAtlases(textureKit)
+	local normalBGAtlas = textureKit.."-trackerheader";
+	local finalBGAtlas = textureKit.."-trackerheader-final-filigree";
 
-		if not C_Texture.GetAtlasInfo(normalBGAtlas) then
-			normalBGAtlas = "evergreen-scenario-trackerheader";
-			finalBGAtlas = "evergreen-scenario-trackerheader-final-filigree";
-		elseif not C_Texture.GetAtlasInfo(finalBGAtlas) then
-			finalBGAtlas = nil;
-		end
+	if not C_Texture.GetAtlasInfo(normalBGAtlas) then
+		normalBGAtlas = "evergreen-scenario-trackerheader";
+		finalBGAtlas = "evergreen-scenario-trackerheader-final-filigree";
+	elseif not C_Texture.GetAtlasInfo(finalBGAtlas) then
+		finalBGAtlas = nil;
 	end
 
 	return normalBGAtlas, finalBGAtlas;
 end
 
-function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, scenarioType, widgetSetID, textureKit, flags, currentStage, stageName, numStages)
-	local normalBGAtlas, finalBGAtlas = self:GetBGAtlases(scenarioType, textureKit);
+function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, widgetSetID, textureKit, flags, currentStage, stageName, numStages)
+	local normalBGAtlas, finalBGAtlas = self:GetBGAtlases(textureKit);
 
 	local stageTextWidth = textureKit == "evergreen-scenario" and 210 or 172;
 	if bit.band(flags, SCENARIO_FLAG_SUPRESS_STAGE_TEXT) == SCENARIO_FLAG_SUPRESS_STAGE_TEXT then
@@ -563,19 +563,17 @@ function ScenarioObjectiveTrackerStageMixin:UpdateStageBlock(scenarioID, scenari
 		self.FinalBG:SetAtlas(finalBGAtlas, true);
 	end
 
-	if scenarioType == LE_SCENARIO_TYPE_LEGION_INVASION then
+	if textureKit == "legioninvasion" then
 		self.Stage:SetTextColor(0.753, 1, 0);
-		self.NormalBG:SetPoint("TOPLEFT", 0, 0);
-		self.FinalBG:SetPoint("TOPLEFT", -10, 3);
 	else
 		self.Stage:SetTextColor(1, 0.914, 0.682);
-		local offsets = textureKitOffsets[textureKit] or defaultOffsets;
-		self.NormalBG:SetPoint("TOPLEFT", offsets.normalBGX, offsets.normalBGY);
-		self.FinalBG:SetPoint("TOPLEFT", offsets.finalBGX, offsets.finalBGY);
 	end
+	local offsets = textureKitOffsets[textureKit] or defaultOffsets;
+	self.NormalBG:SetPoint("TOPLEFT", offsets.normalBGX, offsets.normalBGY);
+	self.FinalBG:SetPoint("TOPLEFT", offsets.finalBGX, offsets.finalBGY);
 
 	local displayInfo = C_ScenarioInfo.GetDisplayInfo();
-	if displayInfo then
+	if displayInfo and displayInfo.themeColor then
 		self.ThemeOverlay:Show();
 		self.ThemeOverlay:SetVertexColor(displayInfo.themeColor:GetRGB());
 	else
@@ -616,9 +614,9 @@ function ScenarioObjectiveTrackerStageMixin:UpdateWidgetRegistration()
 	else
 		self.Name:Show();
 		self.Stage:Show();
-		self.NormalBG:Show();		
+		self.NormalBG:Show();
 	end
-	
+
 	CheckEmberCourtHelpTip(widgetSetID);
 end
 
@@ -730,14 +728,14 @@ ScenarioObjectiveTrackerChallengeModeMixin = { };
 
 function ScenarioObjectiveTrackerChallengeModeMixin:OnLoad()
 	self:RegisterEvent("CHALLENGE_MODE_DEATH_COUNT_UPDATED");
-	
+
 	self.StartedDepleted:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(self.StartedDepleted, "ANCHOR_RIGHT");
 		GameTooltip:SetText(CHALLENGE_MODE_DEPLETED_KEYSTONE, 1, 1, 1);
 		GameTooltip:AddLine(CHALLENGE_MODE_KEYSTONE_DEPLETED_AT_START, nil, nil, nil, true);
 		GameTooltip:Show();
 	end);
-	
+
 	self.TimesUpLootStatus:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(self.TimesUpLootStatus, "ANCHOR_RIGHT");
 		GameTooltip:SetText(CHALLENGE_MODE_TIMES_UP, 1, 1, 1);
@@ -752,16 +750,16 @@ function ScenarioObjectiveTrackerChallengeModeMixin:OnLoad()
 			line = CHALLENGE_MODE_TIMES_UP_LOOT;
 		end
 		GameTooltip:AddLine(line, nil, nil, nil, true);
-		GameTooltip:Show();	
+		GameTooltip:Show();
 	end);
-	
+
 	self.DeathCount:SetScript("OnEnter", function()
 		GameTooltip:SetOwner(self.DeathCount, "ANCHOR_LEFT");
 		GameTooltip:SetText(CHALLENGE_MODE_DEATH_COUNT_TITLE:format(self.deathCount), 1, 1, 1);
 		GameTooltip:AddLine(CHALLENGE_MODE_DEATH_COUNT_DESCRIPTION:format(SecondsToClock(self.timeLost)));
-		GameTooltip:Show();	
+		GameTooltip:Show();
 	end);
-	
+
 	self.affixPool = CreateFramePool("FRAME", self, "ScenarioChallengeModeAffixTemplate");
 end
 
@@ -838,7 +836,7 @@ function ScenarioObjectiveTrackerChallengeModeMixin:SetUpAffixes(affixes)
 			affixFrame:SetPoint("LEFT", prevAffixFrame, "RIGHT", spacing, 0);
 		else
 			local num = #affixes;
-			local leftPoint = 28 + (spacing * (num - 1)) + (frameWidth * num);		
+			local leftPoint = 28 + (spacing * (num - 1)) + (frameWidth * num);
 			affixFrame:SetPoint("TOPLEFT", self, "TOPRIGHT", -leftPoint, distance);
 		end
 		affixFrame:SetUp(affixID);
@@ -878,7 +876,7 @@ ScenarioObjectiveTrackerProvingGroundsMixin = { };
 
 function ScenarioObjectiveTrackerProvingGroundsMixin:OnLoad()
 	self:RegisterEvent("PROVING_GROUNDS_SCORE_UPDATE");
-	
+
 	self.CountdownAnimFrame.Anim:SetScript("OnFinished", GenerateClosure(self.OnAnimFinished, self));
 end
 
@@ -971,7 +969,7 @@ function ScenarioRewardsFrameMixin:AddReward(label, texture, font)
 		frame:SetPoint("TOPLEFT", self.RewardsTop, "BOTTOMLEFT", 25, 0);
 	end
 	self.lastFrame = frame;
-	
+
 	frame.Count:Hide();
 	frame.Label:SetFontObject(font);
 	frame.Label:SetText(label);
@@ -980,20 +978,20 @@ function ScenarioRewardsFrameMixin:AddReward(label, texture, font)
 	if frame.Anim:IsPlaying() then
 		frame.Anim:Stop();
 	end
-	frame.Anim:Play();	
+	frame.Anim:Play();
 end
 
 function ScenarioRewardsFrameMixin:DisplayRewards(xp, money)
 	if not self.framePool then
 		self.framePool = CreateFramePool("FRAME", self, "ObjectiveTrackerRewardFrameTemplate");
 	end
-	
+
 	self.framePool:ReleaseAll();
 	self.lastFrame = nil;
 
 	if xp > 0 and not GameRulesUtil.IsPlayerAtEffectiveMaxLevel() then
 		self:AddReward(xp, "Interface\\Icons\\XP_Icon", "NumberFontNormal");
-	end	
+	end
 	if money > 0 then
 		self:AddReward(GetMoneyString(money), "Interface\\Icons\\inv_misc_coin_01", "GameFontHighlight");
 	end
@@ -1057,7 +1055,7 @@ function ScenarioTrackerProgressBarMixin:OnGet(isNew, criteriaIndex)
 			end
 		end
 	end
-	
+
 	-- percentage, value 0 - 100
 	local percentage;
 	if criteriaIndex then
@@ -1085,10 +1083,10 @@ function ScenarioTrackerProgressBarMixin:PlayFlareAnim(oldPercentage)
 	if delta <= 1 then
 		return;
 	end
-	
+
 	local width = self.Bar:GetWidth();
 	local offset = width * (oldPercentage/ 100) - 12;
-	
+
 	local flare1, flare2;
 	if delta < 10 then
 		flare1 = self.SmallFlare1;
@@ -1136,7 +1134,7 @@ function ScenarioSpellButtonMixin:SetSpell(spellInfo)
 	self.Icon:SetTexture(spellInfo.spellIcon);
 	self:UpdateCooldown();
 end
-		
+
 function ScenarioSpellButtonMixin:UpdateCooldown()
 	local cooldownInfo = C_Spell.GetSpellCooldown(self.spellID);
 	if cooldownInfo then

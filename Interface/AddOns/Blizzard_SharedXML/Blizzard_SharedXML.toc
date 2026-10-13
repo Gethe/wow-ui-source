@@ -233,3 +233,5 @@ Shared\Localization.lua [AllowLoadGameType mainline]
 ListTemplates.lua
 ListTemplates.xml
 MoneyFormatter.lua
+MarchingAnts.lua
+MarchingAnts.xml

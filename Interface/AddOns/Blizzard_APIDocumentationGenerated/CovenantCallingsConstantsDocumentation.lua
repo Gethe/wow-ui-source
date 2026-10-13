@@ -24,6 +24,7 @@ local CovenantCallingsConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

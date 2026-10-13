@@ -1,7 +1,6 @@
 ## Title: Blizzard API Documentation Generated
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
-## AllowLoad: Both
 ## Dependencies: Blizzard_APIDocumentation
 
 # Start documentation files here
@@ -172,6 +171,7 @@ InstanceDocumentation.lua
 InstanceEncounterDocumentation.lua
 InstanceLeaverInfoDocumentation.lua
 InterfaceFileManifestDocumentation.lua
+IntlDocumentation.lua
 InvasionInfoDocumentation.lua
 IslandsInfoDocumentation.lua
 IslandsQueueUIDocumentation.lua
@@ -204,7 +204,10 @@ LuaCurveObjectBaseAPIDocumentation.lua
 LuaDurationClockAPIDocumentation.lua
 LuaDurationManualClockAPIDocumentation.lua
 LuaDurationObjectAPIDocumentation.lua
-LuaTableUtilDocumentation.lua
+LuaLocaleContextAPIDocumentation.lua
+LuaMathExtensionsDocumentation.lua
+LuaStringExtensionsDocumentation.lua
+LuaTableExtensionsDocumentation.lua
 MacOptionsDocumentation.lua
 MailInfoDocumentation.lua
 MajorFactionsDocumentation.lua
@@ -350,6 +353,7 @@ TargetScriptDocumentation.lua
 TaxiMapDocumentation.lua
 TextureUtilsDocumentation.lua
 ThreatDocumentation.lua
+TimedSignalMapAPIDocumentation.lua
 TimerunningUIDocumentation.lua
 TitleDocumentation.lua
 TooltipComparisonDocumentation.lua
@@ -388,6 +392,7 @@ VignetteInfoDocumentation.lua
 VoiceChatDocumentation.lua
 WarCampaignDocumentation.lua
 WarbandSceneInfoDocumentation.lua
+WeatherScriptDocumentation.lua
 WeeklyRewardsDocumentation.lua
 WorldLootObjectDocumentation.lua
 WorldSafeLocsUIInternalDocumentation.lua
@@ -488,6 +493,7 @@ HousingLayoutUITypesDocumentation.lua
 HousingUISharedDocumentation.lua
 ImageSharingConstantsDocumentation.lua
 InputConstantsDocumentation.lua
+IntlSharedTypesDocumentation.lua
 ItemConstantsDocumentation.lua
 ItemConstants_MainlineDocumentation.lua
 ItemConstants_SharedDocumentation.lua
@@ -503,6 +509,7 @@ LootConstantsDocumentation.lua
 LossOfControlConstantsDocumentation.lua
 LuaCurveObjectConstantsDocumentation.lua
 LuaDurationObjectSharedDocumentation.lua
+LuaValuePredicatesDocumentation.lua
 MacroConstantsDocumentation.lua
 MajorFactionsConstantsDocumentation.lua
 MapConstantsDocumentation.lua
@@ -577,6 +584,7 @@ TalentAndGlyphConstantsDocumentation.lua
 TalentConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
+TimedSignalMapSharedDocumentation.lua
 TimerConstantsDocumentation.lua
 TimerunningConstantsDocumentation.lua
 TooltipConstantsDocumentation.lua
@@ -613,6 +621,7 @@ VectorSharedDocumentation.lua
 VignetteConstantsDocumentation.lua
 VisualAlertConstantsDocumentation.lua
 WarbandSceneInfoConstantsDocumentation.lua
+WeatherConstantsDocumentation.lua
 WeeklyRewardsSharedDocumentation.lua
 WorldElapsedTimerConstantsDocumentation.lua
 WowCSConstantsDocumentation.lua

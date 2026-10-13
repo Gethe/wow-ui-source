@@ -1748,6 +1748,12 @@
 <Binding name="HOUSING_LAYOUTCAMERA_ZOOM_OUT" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorLayoutMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
 	HousingFramesUtil.ZoomLayoutCamera(false);
 </Binding>
+<Binding name="HOUSING_LAYOUTFLOOR_UP" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorLayoutMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
+	HousingFramesUtil.MoveLayoutCameraFloor(true);
+</Binding>
+<Binding name="HOUSING_LAYOUTFLOOR_DOWN" category="BINDING_HEADER_HOUSING_SYSTEM" bindingContext="HousingEditorLayoutMode" searchTags="BINDING_TAG_HOUSE,BINDING_TAG_HOUSING,BINDING_TAG_LAYOUT">
+	HousingFramesUtil.MoveLayoutCameraFloor(false);
+</Binding>
 
 
 	<!-- Hidden bindings -->

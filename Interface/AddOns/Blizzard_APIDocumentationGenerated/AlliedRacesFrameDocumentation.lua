@@ -92,6 +92,7 @@ local AlliedRacesFrame =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

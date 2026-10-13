@@ -75,6 +75,7 @@ local SocialUI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

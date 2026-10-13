@@ -823,6 +823,23 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsMacroActionWithShowTooltip",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the given action button contains a macro with an explicit #showtooltip directive." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isMacroActionWithShowTooltip", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnBarOrSpecialBar",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",
@@ -1081,6 +1098,7 @@ local ActionBarFrame =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

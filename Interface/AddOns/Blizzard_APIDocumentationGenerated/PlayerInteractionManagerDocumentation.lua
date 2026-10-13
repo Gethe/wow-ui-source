@@ -118,6 +118,7 @@ local PlayerInteractionManager =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

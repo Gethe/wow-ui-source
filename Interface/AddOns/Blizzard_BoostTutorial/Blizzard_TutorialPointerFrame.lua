@@ -185,7 +185,7 @@ function NPE_TutorialPointerFrame:_GetFrame(parentFrame)
 		frame = table.remove(self.FramePool);
 	else
 		self.FrameCount = self.FrameCount + 1;
-		frame = CreateFrame("frame", "NPE_PointerFrame_" .. self.FrameCount, UIParent, "TutorialPointerFrame");
+		frame = CreateFrame("frame", "NPE_PointerFrame_" .. self.FrameCount, UIParent, "NPETutorialPointerFrame");
 	end
 
 	if (not parentFrame.hasHookedScriptsForNPE) then

@@ -316,6 +316,7 @@ local Transmog =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

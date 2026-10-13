@@ -737,6 +737,7 @@ local CurrencyInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -6,6 +6,8 @@ local DefaultBarArtInfo = {r = 0, g = 0, b = 1};
 function ClassNameplateAlternatePowerBarBaseMixin:Initialize()
 	self:SetScale(self.scale or 1);
 
+	PixelUtil.SetRoundLayoutToNearestPixelRecursively(self, true);
+
 	AlternatePowerBarBaseMixin.Initialize(self);
 end
 
@@ -39,6 +41,6 @@ function ClassNameplateAlternatePowerBarBaseMixin:OnOptionsUpdated()
 end
 
 function ClassNameplateAlternatePowerBarBaseMixin:OnSizeChanged()
-	PixelUtil.SetHeight(self, NamePlateSetupOptions.healthBarHeight);
+	self:SetHeight(NamePlateSetupOptions.healthBarHeight);
 	self.Border:UpdateSizes();
 end

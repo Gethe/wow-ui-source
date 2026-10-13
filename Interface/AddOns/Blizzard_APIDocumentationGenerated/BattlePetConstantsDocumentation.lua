@@ -69,6 +69,7 @@ local BattlePetConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

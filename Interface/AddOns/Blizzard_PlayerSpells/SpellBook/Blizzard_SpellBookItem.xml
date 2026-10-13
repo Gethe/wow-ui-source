@@ -117,6 +117,15 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+					<!-- Override the FlyoutButtonTemplate's default action bar shadow with the spellbook-specific shadow -->
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="BorderShadow" atlas="spellbook-item-iconframe-shadow">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-12" y="3"/>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-8"/>
+							</Anchors>
+						</Texture>
+					</Layer>
 					<!-- Cooldown frame texture is ARTWORK sublevel 0 -->
 					<Layer level="ARTWORK" textureSubLevel="-1">
 						<Texture parentKey="Icon">
@@ -248,7 +257,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
-						</Anchors>		
+						</Anchors>
 					</Cooldown>
 					<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate" useParentLevel="true" drawLayer="BACKGROUND" >
 						<Anchors>

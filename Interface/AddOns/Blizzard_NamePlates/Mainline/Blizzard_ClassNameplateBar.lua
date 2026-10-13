@@ -133,6 +133,8 @@ function ClassNameplateManaBar:OnLoad()
 	ClassNameplateBar.OnLoad(self);
 
 	self.Border:SetVertexColor(0, 0, 0, 1);
+
+	PixelUtil.SetRoundLayoutToNearestPixelRecursively(self, true);
 end
 
 function ClassNameplateManaBar:OnEvent(event, ...)
@@ -235,7 +237,7 @@ function ClassNameplateManaBar:SetupBar()
 				-- No prediction color set, default to mana prediction color
 				predictionColor = POWERBAR_PREDICTION_COLOR_MANA;
 			end
-	
+
 			self.ManaCostPredictionBar:SetVertexColor(predictionColor:GetRGBA());
 		end
 	end
@@ -276,7 +278,7 @@ function ClassNameplateManaBar:OnOptionsUpdated()
 end
 
 function ClassNameplateManaBar:OnSizeChanged() -- override
-	PixelUtil.SetHeight(self, NamePlateSetupOptions.healthBarHeight);
+	self:SetHeight(NamePlateSetupOptions.healthBarHeight);
 	self.Border:UpdateSizes();
 end
 

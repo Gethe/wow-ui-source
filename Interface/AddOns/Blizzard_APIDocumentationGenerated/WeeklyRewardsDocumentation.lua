@@ -346,6 +346,7 @@ local WeeklyRewards =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

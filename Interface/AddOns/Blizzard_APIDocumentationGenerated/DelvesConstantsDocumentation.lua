@@ -19,15 +19,16 @@ local DelvesConstants =
 		{
 			Name = "CurioRarity",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 5,
 			MinValue = 1,
-			MaxValue = 4,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Common", Type = "CurioRarity", EnumValue = 1 },
 				{ Name = "Uncommon", Type = "CurioRarity", EnumValue = 2 },
 				{ Name = "Rare", Type = "CurioRarity", EnumValue = 3 },
 				{ Name = "Epic", Type = "CurioRarity", EnumValue = 4 },
+				{ Name = "EpicTier2", Type = "CurioRarity", EnumValue = 5 },
 			},
 		},
 		{
@@ -55,9 +56,9 @@ local DelvesConstants =
 		{
 			Name = "TieredEntranceType",
 			Type = "Enumeration",
-			NumValues = 5,
+			NumValues = 7,
 			MinValue = 0,
-			MaxValue = 4,
+			MaxValue = 6,
 			Fields =
 			{
 				{ Name = "Invalid", Type = "TieredEntranceType", EnumValue = 0 },
@@ -65,6 +66,8 @@ local DelvesConstants =
 				{ Name = "Sites", Type = "TieredEntranceType", EnumValue = 2 },
 				{ Name = "WorldTier", Type = "TieredEntranceType", EnumValue = 3 },
 				{ Name = "Lairs", Type = "TieredEntranceType", EnumValue = 4 },
+				{ Name = "Placeholder_5", Type = "TieredEntranceType", EnumValue = 5 },
+				{ Name = "Placeholder_6", Type = "TieredEntranceType", EnumValue = 6 },
 			},
 		},
 		{
@@ -101,6 +104,8 @@ local DelvesConstants =
 				{ Name = "DELVES_NORMAL_KEY_CURRENCY_ID", Type = "number", Value = 3028 },
 				{ Name = "DELVES_COMPANION_INFO_SELECTION_CHARACTER_DATA_ELEMENT_ID", Type = "number", Value = 13 },
 				{ Name = "DELVES_COMPANION_TOOLTIP_WIDGET_SET_ID", Type = "number", Value = 1331 },
+				{ Name = "DELVES_COMPANION_BRANN_CREATURE_ID", Type = "number", Value = 210759 },
+				{ Name = "DELVES_COMPANION_VALEERA_CREATURE_ID", Type = "number", Value = 248567 },
 			},
 		},
 		{
@@ -115,6 +120,7 @@ local DelvesConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

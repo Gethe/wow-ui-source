@@ -34,6 +34,7 @@ local SpellDiminishConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

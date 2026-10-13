@@ -15,19 +15,47 @@ local function ExportDisplayElement(displayElement)
 	return element, securecopy(options);
 end
 
+local function FindDisplayElement(displayElements, element)
+	for index, displayElement in ipairs(displayElements) do
+		local existingElement = UnpackDisplayElement(displayElement);
+		if existingElement == element then
+			return index;
+		end
+	end
+end
+
+local function AddDisplayElement(displayElements, element, options)
+	assertf(FindDisplayElement(displayElements, element) == nil, "Display element '%s' has already been added.", element:GetDebugName());
+	table.insert(displayElements, PackDisplayElement(element, options));
+end
+
+local function RemoveDisplayElement(displayElements, element)
+	local index = FindDisplayElement(displayElements, element);
+
+	if index then
+		table.remove(displayElements, index);
+	end
+end
+
+local function PlayAnimationGroups(animationGroups)
+	for _index, displayElement in ipairs(animationGroups) do
+		local animationGroup = UnpackDisplayElement(displayElement);
+		animationGroup:Play();
+	end
+end
+
+local function StopAnimationGroups(animationGroups)
+	for _index, displayElement in ipairs(animationGroups) do
+		local animationGroup = UnpackDisplayElement(displayElement);
+		animationGroup:Stop();
+	end
+end
+
 local function GetStatusBarInterpolationForUpdateMode(interpolation, updateMode)
 	if updateMode == Enum.CustomAuraButtonUpdateMode.Update then
 		return interpolation;
 	else
 		return Enum.StatusBarInterpolation.Immediate;
-	end
-end
-
-local function RequireObjectType(requiredType)
-	return function(object)
-		if not object:IsObjectType(requiredType) then
-			error(string.format("bad object '%s' in function call (expected object type '%s', got '%s')", object:GetDebugName(), requiredType, object:GetObjectType()));
-		end
 	end
 end
 
@@ -38,7 +66,7 @@ function CustomAuraButtonSharedMixin:GetApplicationBar()
 end
 
 function CustomAuraButtonSharedMixin:SetApplicationBar(statusBar, options)
-	AuraContainerUtil.ValidateInboundScriptObject(statusBar, self, RequireObjectType("StatusBar"));
+	AuraContainerUtil.ValidateInboundScriptObject(statusBar, self, AuraContainerUtil.RequireObjectType("StatusBar"));
 	options = C_AuraContainerUtil.ProcessCustomAuraButtonApplicationBarOptions(securecopy(options) or {});
 
 	statusBar = AuraContainerUtil.InitializeInboundScriptObject(statusBar);
@@ -57,7 +85,7 @@ function CustomAuraButtonSharedMixin:GetApplicationCount()
 end
 
 function CustomAuraButtonSharedMixin:SetApplicationCount(fontString, options)
-	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, RequireObjectType("FontString"));
+	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, AuraContainerUtil.RequireObjectType("FontString"));
 	options = C_AuraContainerUtil.ProcessCustomAuraButtonApplicationCountOptions(securecopy(options));
 
 	fontString = AuraContainerUtil.InitializeInboundScriptObject(fontString);
@@ -82,7 +110,7 @@ function CustomAuraButtonSharedMixin:GetDispelTypeTexture(index)
 end
 
 function CustomAuraButtonSharedMixin:AddDispelTypeTexture(texture, options)
-	AuraContainerUtil.ValidateInboundScriptObject(texture, self, RequireObjectType("Texture"));
+	AuraContainerUtil.ValidateInboundScriptObject(texture, self, AuraContainerUtil.RequireObjectType("Texture"));
 	options = C_AuraContainerUtil.ProcessCustomAuraButtonDispelTypeTextureOptions(securecopy(options));
 
 	texture = AuraContainerUtil.InitializeInboundScriptObject(texture);
@@ -91,21 +119,13 @@ function CustomAuraButtonSharedMixin:AddDispelTypeTexture(texture, options)
 	texture:AddSecretAspect(Enum.SecretAspect.TexCoords);
 	texture:AddSecretAspect(Enum.SecretAspect.Shown);
 
-	table.insert(self.dispelTypeTextures, PackDisplayElement(texture, options));
+	AddDisplayElement(self.dispelTypeTextures, texture, options);
 
 	self:UpdateAuraDisplay();
-
-	local index = #self.dispelTypeTextures;
-	return index;
 end
 
-function CustomAuraButtonSharedMixin:RemoveDispelTypeTexture(index)
-	local dispelTypeTextures = self.dispelTypeTextures;
-
-	if dispelTypeTextures[index] then
-		table.remove(dispelTypeTextures, index);
-		self:UpdateAuraDisplay();
-	end
+function CustomAuraButtonSharedMixin:RemoveDispelTypeTexture(texture)
+	RemoveDisplayElement(self.dispelTypeTextures, texture);
 end
 
 function CustomAuraButtonSharedMixin:ClearDispelTypeTextures()
@@ -117,7 +137,7 @@ function CustomAuraButtonSharedMixin:GetDispelTypeText()
 end
 
 function CustomAuraButtonSharedMixin:SetDispelTypeText(fontString, options)
-	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, RequireObjectType("FontString"));
+	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, AuraContainerUtil.RequireObjectType("FontString"));
 	options = C_AuraContainerUtil.ProcessCustomAuraButtonDispelTypeTextOptions(securecopy(options));
 
 	fontString = AuraContainerUtil.InitializeInboundScriptObject(fontString);
@@ -137,7 +157,7 @@ function CustomAuraButtonSharedMixin:GetDurationCooldown()
 end
 
 function CustomAuraButtonSharedMixin:SetDurationCooldown(cooldown)
-	AuraContainerUtil.ValidateInboundScriptObject(cooldown, self, RequireObjectType("Cooldown"));
+	AuraContainerUtil.ValidateInboundScriptObject(cooldown, self, AuraContainerUtil.RequireObjectType("Cooldown"));
 
 	cooldown = AuraContainerUtil.InitializeInboundScriptObject(cooldown);
 	cooldown:AddSecretAspect(Enum.SecretAspect.Cooldown);
@@ -156,7 +176,7 @@ function CustomAuraButtonSharedMixin:GetDurationText()
 end
 
 function CustomAuraButtonSharedMixin:SetDurationText(fontString, options)
-	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, RequireObjectType("FontString"));
+	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, AuraContainerUtil.RequireObjectType("FontString"));
 	options = C_AuraContainerUtil.ProcessCustomAuraButtonDurationTextOptions(securecopy(options));
 
 	fontString = AuraContainerUtil.InitializeInboundScriptObject(fontString);
@@ -202,7 +222,7 @@ function CustomAuraButtonSharedMixin:GetDurationBar()
 end
 
 function CustomAuraButtonSharedMixin:SetDurationBar(statusBar, options)
-	AuraContainerUtil.ValidateInboundScriptObject(statusBar, self, RequireObjectType("StatusBar"));
+	AuraContainerUtil.ValidateInboundScriptObject(statusBar, self, AuraContainerUtil.RequireObjectType("StatusBar"));
 	options = C_AuraContainerUtil.ProcessCustomAuraButtonDurationBarOptions(securecopy(options));
 
 	statusBar = AuraContainerUtil.InitializeInboundScriptObject(statusBar);
@@ -221,7 +241,7 @@ function CustomAuraButtonSharedMixin:GetIcon()
 end
 
 function CustomAuraButtonSharedMixin:SetIcon(texture)
-	AuraContainerUtil.ValidateInboundScriptObject(texture, self, RequireObjectType("Texture"));
+	AuraContainerUtil.ValidateInboundScriptObject(texture, self, AuraContainerUtil.RequireObjectType("Texture"));
 
 	texture = AuraContainerUtil.InitializeInboundScriptObject(texture);
 
@@ -234,30 +254,87 @@ function CustomAuraButtonSharedMixin:ClearIcon()
 end
 
 function CustomAuraButtonSharedMixin:AddPandemicRegion(region)
-	AuraContainerUtil.ValidateInboundScriptObject(region, self, RequireObjectType("Region"));
+	AuraContainerUtil.ValidateInboundScriptObject(region, self, AuraContainerUtil.RequireObjectType("Region"));
 
 	region = AuraContainerUtil.InitializeInboundScriptObject(region);
 	region:AddSecretAspect(Enum.SecretAspect.Shown);
 
-	table.insert(self.pandemicRegions, PackDisplayElement(region));
+	AddDisplayElement(self.pandemicRegions, region);
 
 	self:UpdateAuraDisplay();
-
-	local index = #self.pandemicRegions;
-	return index;
 end
 
-function CustomAuraButtonSharedMixin:RemovePandemicRegion(index)
-	local pandemicRegions = self.pandemicRegions;
-
-	if pandemicRegions[index] then
-		table.remove(pandemicRegions, index);
-		self:UpdateAuraDisplay();
-	end
+function CustomAuraButtonSharedMixin:RemovePandemicRegion(region)
+	RemoveDisplayElement(self.pandemicRegions, region);
 end
 
 function CustomAuraButtonSharedMixin:ClearPandemicRegions()
 	self.pandemicRegions = {};
+end
+
+function CustomAuraButtonSharedMixin:AddPandemicEnterAnimation(animationGroup)
+	animationGroup = AuraContainerUtil.InitializeInboundAnimationGroup(animationGroup, self);
+	AddDisplayElement(self.pandemicEnterAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:RemovePandemicEnterAnimation(animationGroup)
+	RemoveDisplayElement(self.pandemicEnterAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:ClearPandemicEnterAnimations()
+	self.pandemicEnterAnimations = {};
+end
+
+function CustomAuraButtonSharedMixin:AddPandemicActiveAnimation(animationGroup)
+	animationGroup = AuraContainerUtil.InitializeInboundAnimationGroup(animationGroup, self);
+	AddDisplayElement(self.pandemicActiveAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:RemovePandemicActiveAnimation(animationGroup)
+	RemoveDisplayElement(self.pandemicActiveAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:ClearPandemicActiveAnimations()
+	self.pandemicActiveAnimations = {};
+end
+
+function CustomAuraButtonSharedMixin:AddPandemicLeaveAnimation(animationGroup)
+	animationGroup = AuraContainerUtil.InitializeInboundAnimationGroup(animationGroup, self);
+	AddDisplayElement(self.pandemicLeaveAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:RemovePandemicLeaveAnimation(animationGroup)
+	RemoveDisplayElement(self.pandemicLeaveAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:ClearPandemicLeaveAnimations()
+	self.pandemicLeaveAnimations = {};
+end
+
+function CustomAuraButtonSharedMixin:AddAuraAssignedAnimation(animationGroup)
+	animationGroup = AuraContainerUtil.InitializeInboundAnimationGroup(animationGroup, self);
+	AddDisplayElement(self.auraAssignedAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:RemoveAuraAssignedAnimation(animationGroup)
+	RemoveDisplayElement(self.auraAssignedAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:ClearAuraAssignedAnimations()
+	self.auraAssignedAnimations = {};
+end
+
+function CustomAuraButtonSharedMixin:AddAuraShownAnimation(animationGroup)
+	animationGroup = AuraContainerUtil.InitializeInboundAnimationGroup(animationGroup, self);
+	AddDisplayElement(self.auraShownAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:RemoveAuraShownAnimation(animationGroup)
+	RemoveDisplayElement(self.auraShownAnimations, animationGroup);
+end
+
+function CustomAuraButtonSharedMixin:ClearAuraShownAnimations()
+	self.auraShownAnimations = {};
 end
 
 function CustomAuraButtonSharedMixin:GetSpellName()
@@ -265,7 +342,7 @@ function CustomAuraButtonSharedMixin:GetSpellName()
 end
 
 function CustomAuraButtonSharedMixin:SetSpellName(fontString)
-	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, RequireObjectType("FontString"));
+	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, AuraContainerUtil.RequireObjectType("FontString"));
 
 	fontString = AuraContainerUtil.InitializeInboundScriptObject(fontString);
 	fontString:AddSecretAspect(Enum.SecretAspect.Text);
@@ -279,24 +356,25 @@ function CustomAuraButtonSharedMixin:ClearSpellName()
 	self.spellName = nil;
 end
 
--- Deprecated aliases to match PTR naming; will be removed after 12.1.
-
-function CustomAuraButtonSharedMixin:GetAuraBorder()
-	return self:GetDispelTypeTexture(1);
+function CustomAuraButtonSharedMixin:GetCasterName()
+	return ExportDisplayElement(self.casterName);
 end
 
-function CustomAuraButtonSharedMixin:SetAuraBorder(texture, options)
-	self:ClearDispelTypeTextures();
-	self:AddDispelTypeTexture(texture, options);
+function CustomAuraButtonSharedMixin:SetCasterName(fontString, options)
+	AuraContainerUtil.ValidateInboundScriptObject(fontString, self, AuraContainerUtil.RequireObjectType("FontString"));
+	options = C_AuraContainerUtil.ProcessCustomAuraButtonCasterNameOptions(securecopy(options));
+
+	fontString = AuraContainerUtil.InitializeInboundScriptObject(fontString);
+	fontString:AddSecretAspect(Enum.SecretAspect.Text);
+	fontString:AddSecretAspect(Enum.SecretAspect.Shown);
+
+	self.casterName = PackDisplayElement(fontString, options);
+	self:UpdateAuraDisplay();
 end
 
-function CustomAuraButtonSharedMixin:ClearAuraBorder()
-	self:ClearDispelTypeTextures();
+function CustomAuraButtonSharedMixin:ClearCasterName()
+	self.casterName = nil;
 end
-
-CustomAuraButtonSharedMixin.GetAuraSymbol = CustomAuraButtonSharedMixin.GetDispelTypeText;
-CustomAuraButtonSharedMixin.SetAuraSymbol = CustomAuraButtonSharedMixin.SetDispelTypeText;
-CustomAuraButtonSharedMixin.ClearAuraSymbol = CustomAuraButtonSharedMixin.ClearDispelTypeText;
 
 CustomAuraButtonInboundMixin = CreateFromMixins(CustomAuraButtonSharedMixin);
 CustomAuraButtonPrivateMixin = CreateFromMixins(AuraButtonPrivateMixin, CustomAuraButtonSharedMixin);
@@ -306,16 +384,19 @@ function CustomAuraButtonPrivateMixin:OnLoad_Intrinsic()
 
 	self.dispelTypeTextures = {};
 	self.pandemicRegions = {};
+	self.pandemicEnterAnimations = {};
+	self.pandemicActiveAnimations = {};
+	self.pandemicLeaveAnimations = {};
+	self.auraAssignedAnimations = {};
+	self.auraShownAnimations = {};
 	self.pandemicStartTime = nil;
 	self.pandemicEndTime = nil;
+	self.pandemicUpdateSignal = AuraButtonTimedSignalMap:RegisterCallback(function() self:UpdatePandemicDisplay(); end);
+	self.isPandemicDisplayActive = false;
 
 	-- Retain the duration text binding across reconfiguration; replacing it
 	-- would require explicitly disabling the previous active binding.
 	self.durationTextBinding = C_DurationUtil.CreateDurationTextBinding();
-end
-
-function CustomAuraButtonPrivateMixin:OnUpdate(_elapsedTime)
-	self:ApplyPandemicRegions();
 end
 
 function CustomAuraButtonPrivateMixin:OnAuraInstanceAssigned(unitToken, auraData)
@@ -340,11 +421,13 @@ function CustomAuraButtonPrivateMixin:ApplyApplicationBar(_unitToken, auraData, 
 
 	if statusBar then
 		local applications = auraData and auraData.applications or 0;
+		local minApplications = options.minApplications;
 		local maxApplications = options.maxApplications;
 		local interpolation = GetStatusBarInterpolationForUpdateMode(options.interpolation, updateMode);
 
-		statusBar:SetMinMaxValues(0, math.max(maxApplications, 1));
+		statusBar:SetMinMaxValues(minApplications, math.max(maxApplications, 1));
 		statusBar:SetValue(applications, interpolation);
+		statusBar:SetShown(applications >= minApplications);
 	end
 end
 
@@ -512,11 +595,11 @@ function CustomAuraButtonPrivateMixin:HasAnyDurationDisplay()
 	return (self.durationCooldown or self.durationText or self.durationBar) ~= nil;
 end
 
-function CustomAuraButtonPrivateMixin:ApplyDurationCooldown(_unitToken, _auraData, auraDuration)
+function CustomAuraButtonPrivateMixin:ApplyDurationCooldown(_unitToken, _auraData, auraDuration, updateMode)
 	local cooldown = UnpackDisplayElement(self.durationCooldown);
 
 	if cooldown then
-		local clearIfZero = false;
+		local clearIfZero = (updateMode ~= Enum.CustomAuraButtonUpdateMode.Update);
 		cooldown:SetCooldownFromDurationObject(auraDuration, clearIfZero);
 	end
 end
@@ -542,7 +625,7 @@ end
 function CustomAuraButtonPrivateMixin:ApplyDuration(unitToken, auraData, updateMode)
 	if self:HasAnyDurationDisplay() then
 		local auraDuration = self:GetAuraDuration();
-		self:ApplyDurationCooldown(unitToken, auraData, auraDuration);
+		self:ApplyDurationCooldown(unitToken, auraData, auraDuration, updateMode);
 		self:ApplyDurationText(unitToken, auraData, auraDuration);
 		self:ApplyDurationBar(unitToken, auraData, auraDuration, updateMode);
 	end
@@ -556,6 +639,40 @@ function CustomAuraButtonPrivateMixin:ApplyIcon(_unitToken, auraData)
 	end
 end
 
+function CustomAuraButtonPrivateMixin:ApplyCasterName(_unitToken, auraData)
+	local fontString, options = UnpackDisplayElement(self.casterName);
+
+	if fontString then
+		local casterGUID = auraData and auraData.casterGUID or nil;
+		local casterName, casterRealm;
+
+		if casterGUID then
+			casterName, casterRealm = UnitNameFromGUID(casterGUID);
+		end
+
+		if casterName and casterName ~= UNKNOWNOBJECT then
+			if options.showRealmName and casterRealm and casterRealm ~= "" then
+				casterName = string.join("-", casterName, casterRealm);
+			end
+
+			if options.useClassColors then
+				local _className, classFilename, _classID = UnitClassFromGUID(casterGUID);
+				if classFilename then
+					local classColor = RAID_CLASS_COLORS[classFilename];
+					if classColor then
+						casterName = classColor:WrapTextInColorCode(casterName);
+					end
+				end
+			end
+
+			fontString:SetText(casterName);
+			fontString:Show();
+		else
+			fontString:Hide();
+		end
+	end
+end
+
 function CustomAuraButtonPrivateMixin:ApplySpellName(_unitToken, auraData)
 	local fontString = UnpackDisplayElement(self.spellName);
 
@@ -564,17 +681,27 @@ function CustomAuraButtonPrivateMixin:ApplySpellName(_unitToken, auraData)
 	end
 end
 
-function CustomAuraButtonPrivateMixin:ApplyPandemicRegions()
-	local isInPandemicTime = self:IsInPandemicWindow();
+function CustomAuraButtonPrivateMixin:ApplyAuraAssignmentAnimations(_unitToken, auraData, updateMode)
+	if updateMode == Enum.CustomAuraButtonUpdateMode.Assignment then
+		StopAnimationGroups(self.auraAssignedAnimations);
 
-	for _index, pandemicRegion in ipairs(self.pandemicRegions) do
-		local region, _options = UnpackDisplayElement(pandemicRegion);
-		region:SetShown(isInPandemicTime);
+		if auraData ~= nil then
+			PlayAnimationGroups(self.auraAssignedAnimations);
+		end
 	end
 end
 
 function CustomAuraButtonPrivateMixin:ApplyVisibility(_unitToken, auraData)
-	self:SetShown(secretwrap(auraData ~= nil));
+	local wasAuraShown = self:IsShown();
+	local isAuraShown = auraData ~= nil;
+
+	self:SetShown(secretwrap(isAuraShown));
+
+	if isAuraShown and not wasAuraShown then
+		PlayAnimationGroups(self.auraShownAnimations);
+	elseif not isAuraShown then
+		StopAnimationGroups(self.auraShownAnimations);
+	end
 end
 
 function CustomAuraButtonPrivateMixin:ApplyAuraInstance(unitToken, auraData, updateMode)
@@ -586,8 +713,10 @@ function CustomAuraButtonPrivateMixin:ApplyAuraInstance(unitToken, auraData, upd
 	self:ApplyDispelTypeText(unitToken, auraData);
 	self:ApplyDuration(unitToken, auraData, updateMode);
 	self:ApplyIcon(unitToken, auraData);
+	self:ApplyCasterName(unitToken, auraData);
 	self:ApplySpellName(unitToken, auraData);
-	self:ApplyPandemicRegions();
+	self:ApplyPandemicDisplay(unitToken, auraData, updateMode);
+	self:ApplyAuraAssignmentAnimations(unitToken, auraData, updateMode);
 	self:ApplyVisibility(unitToken, auraData);
 end
 
@@ -597,7 +726,10 @@ end
 end
 
 function CustomAuraButtonPrivateMixin:HasAnyPandemicDisplay()
-	return self.pandemicRegions[1] ~= nil;
+	return self.pandemicRegions[1] ~= nil
+		or self.pandemicEnterAnimations[1] ~= nil
+		or self.pandemicActiveAnimations[1] ~= nil
+		or self.pandemicLeaveAnimations[1] ~= nil;
 end
 
 function CustomAuraButtonPrivateMixin:IsInPandemicWindow()
@@ -609,39 +741,75 @@ function CustomAuraButtonPrivateMixin:IsInPandemicWindow()
 	return false;
 end
 
-function CustomAuraButtonPrivateMixin:UpdatePandemicWindow(unitToken, auraData)
-	self.pandemicStartTime = nil;
-	self.pandemicEndTime = nil;
+function CustomAuraButtonPrivateMixin:EnterPandemicWindow()
+	PlayAnimationGroups(self.pandemicEnterAnimations);
+	PlayAnimationGroups(self.pandemicActiveAnimations);
+end
 
-	if auraData and auraData.auraType == AuraContainerAuraDataType.Aura and self:HasAnyPandemicDisplay() then
-		local extendedDuration = C_UnitAuras.GetRefreshExtendedDuration(unitToken, auraData.auraInstanceID);
+function CustomAuraButtonPrivateMixin:LeavePandemicWindow()
+	StopAnimationGroups(self.pandemicActiveAnimations);
+	PlayAnimationGroups(self.pandemicLeaveAnimations);
+end
 
-		if extendedDuration then
-			local baseDuration = C_UnitAuras.GetAuraBaseDuration(unitToken, auraData.auraInstanceID);
-			local carriedOverToNewCast = baseDuration and (extendedDuration - baseDuration) or 0;
-			local hasPandemicWindow = (carriedOverToNewCast > 0);
+function CustomAuraButtonPrivateMixin:ApplyPandemicDisplay(_unitToken, auraData, updateMode)
+	local wasPandemicDisplayActive = self.isPandemicDisplayActive;
+	local isPandemicDisplayActive = self:IsInPandemicWindow();
 
-			if hasPandemicWindow then
-				self.pandemicStartTime = auraData.expirationTime - carriedOverToNewCast;
-				self.pandemicEndTime = auraData.expirationTime;
-			end
+	self.isPandemicDisplayActive = isPandemicDisplayActive;
+
+	for _index, pandemicRegion in ipairs(self.pandemicRegions) do
+		local region, _options = UnpackDisplayElement(pandemicRegion);
+		region:SetShown(isPandemicDisplayActive);
+	end
+
+	if updateMode == Enum.CustomAuraButtonUpdateMode.Assignment then
+		-- Assignment represents a new display lifecycle. Stop any active
+		-- animation retained from the previous aura, then start it again only
+		-- if the newly assigned aura is already inside its pandemic window.
+
+		StopAnimationGroups(self.pandemicActiveAnimations);
+
+		if auraData ~= nil and isPandemicDisplayActive then
+			self:EnterPandemicWindow();
+		end
+
+		return;
+	end
+
+	if auraData ~= nil and isPandemicDisplayActive ~= wasPandemicDisplayActive then
+		if isPandemicDisplayActive then
+			self:EnterPandemicWindow();
+		else
+			self:LeavePandemicWindow();
 		end
 	end
-
-	self:UpdateOnUpdateMode();
 end
 
-function CustomAuraButtonPrivateMixin:ShouldEnableOnUpdate()
-	if self:HasAnyPandemicDisplay() then
-		-- Secret wrapping here because if pandemic regions are configured then
-		-- the enablement of our OnUpdate script is inferred (partly) through
-		-- presence of an aura.
-		return secretwrap(self.pandemicStartTime ~= nil);
+function CustomAuraButtonPrivateMixin:UpdatePandemicWindow(unitToken, auraData)
+	local pandemicStartTime, pandemicEndTime = AuraContainerUtil.GetPandemicWindow(unitToken, auraData);
+	local pandemicUpdateSignal = self.pandemicUpdateSignal;
+
+	self.pandemicStartTime = pandemicStartTime;
+	self.pandemicEndTime = pandemicEndTime;
+
+	if pandemicStartTime then
+		local timeNow = GetTime();
+
+		if timeNow < pandemicStartTime then
+			AuraButtonTimedSignalMap:SignalAt(pandemicUpdateSignal, pandemicStartTime);
+		elseif timeNow < pandemicEndTime then
+			AuraButtonTimedSignalMap:SignalAt(pandemicUpdateSignal, pandemicEndTime);
+		else
+			AuraButtonTimedSignalMap:CancelSignal(pandemicUpdateSignal);
+		end
+	else
+		AuraButtonTimedSignalMap:CancelSignal(pandemicUpdateSignal);
 	end
-
-	return false;
 end
 
-function CustomAuraButtonPrivateMixin:UpdateOnUpdateMode()
-	self:SetOnUpdateMode(self:ShouldEnableOnUpdate() and Enum.OnUpdateMode.RunWhenVisible or Enum.OnUpdateMode.Disabled);
+function CustomAuraButtonPrivateMixin:UpdatePandemicDisplay()
+	local unitToken, auraData = self:GetAuraInstance();
+
+	self:UpdatePandemicWindow(unitToken, auraData);
+	self:ApplyPandemicDisplay(unitToken, auraData, Enum.CustomAuraButtonUpdateMode.Update);
 end

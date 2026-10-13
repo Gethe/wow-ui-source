@@ -104,6 +104,13 @@ NewSettings["12.1.0"] = {
 	"accessibilityScreenNarrationEnabled",
 };
 
+NewSettings["12.1.5"] = {
+	"minimapShowPlayerCoords",
+	"coordsByTenths",
+	"CAAPulsePlayerHealthPercent",
+	"raidFramesDispelIndicatorAnimatedBorder",
+};
+
 NewSettingsPredicates["enableConnectToPhotoSharing"] = function()
 	return C_PhotoSharing.IsEnabled();
 end

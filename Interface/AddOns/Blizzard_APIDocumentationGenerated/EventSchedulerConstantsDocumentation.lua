@@ -14,6 +14,7 @@ local EventSchedulerConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

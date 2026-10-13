@@ -25,6 +25,7 @@ local UnitAuraConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

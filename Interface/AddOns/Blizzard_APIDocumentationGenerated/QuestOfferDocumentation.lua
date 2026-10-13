@@ -114,6 +114,7 @@ local QuestOffer =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

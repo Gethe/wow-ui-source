@@ -44,6 +44,7 @@ local GameRulesConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

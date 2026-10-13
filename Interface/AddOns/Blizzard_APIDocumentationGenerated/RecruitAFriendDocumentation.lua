@@ -466,6 +466,7 @@ local RecruitAFriend =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

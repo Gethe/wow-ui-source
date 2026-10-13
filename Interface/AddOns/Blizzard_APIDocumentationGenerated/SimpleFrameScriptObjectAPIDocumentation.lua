@@ -313,6 +313,7 @@ local SimpleFrameScriptObjectAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

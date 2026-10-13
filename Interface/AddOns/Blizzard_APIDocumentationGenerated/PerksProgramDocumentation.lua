@@ -463,6 +463,7 @@ local PerksProgram =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -1120,6 +1120,7 @@ local Spell =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

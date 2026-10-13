@@ -1584,6 +1584,7 @@ local QuestLog =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -76,6 +76,7 @@ local HousingFixturePointFrameAPI =
 			Type = "CallbackType",
 		},
 	},
+
 	Predicates =
 	{
 	},

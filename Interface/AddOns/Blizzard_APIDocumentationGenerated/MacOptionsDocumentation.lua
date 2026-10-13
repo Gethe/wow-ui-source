@@ -93,6 +93,7 @@ local MacOptions =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

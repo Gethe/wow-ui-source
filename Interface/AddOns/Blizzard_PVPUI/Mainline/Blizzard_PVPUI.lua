@@ -2709,8 +2709,8 @@ function TrainingGroundsFrameMixin:InitializeQueueButton()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local queueOption = self:GetSelectedQueueOption();
 		if queueOption then
-			if queueOption == "RandomTrainingGround" then
-				C_PvP.JoinRandomTrainingGroundBattleground();
+			if queueOption == "RandomTrainingGroundBG" then
+				C_PvP.JoinRandomTrainingGroundBG();
 			elseif queueOption == "RandomTrainingGroundArena" then
 				C_PvP.JoinRandomTrainingGroundArena();
 			else
@@ -2903,7 +2903,7 @@ end
 
 function BonusTrainingGroundListMixin:TrySelectFirstQueueOptionIfNoneSelected()
 	if not self:GetSelectedQueueOption() then
-		self:SetSelectedQueueOption(self.RandomTrainingGroundButton.queueOption);
+		self:SetSelectedQueueOption(self.RandomTrainingGroundBGButton.queueOption);
 	end
 end
 
@@ -2916,8 +2916,8 @@ end
 TrainingGroundActivityButtonMixin = CreateFromMixins(PVPCasualActivityButtonMixin);
 
 local queueOptionToRewardGetter = {
-	["RandomTrainingGround"] = C_PvP.GetRandomTrainingGroundRewards;
-	["RandomTrainingGroundArena"] = C_PvP.GetRandomTrainingGroundRewards;
+	["RandomTrainingGroundBG"] = C_PvP.GetRandomTrainingGroundBGRewards;
+	["RandomTrainingGroundArena"] = C_PvP.GetRandomTrainingGroundArenaRewards;
 };
 
 function TrainingGroundActivityButtonMixin:OnLoad()

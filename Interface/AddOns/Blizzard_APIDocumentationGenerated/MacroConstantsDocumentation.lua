@@ -12,6 +12,7 @@ local MacroConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

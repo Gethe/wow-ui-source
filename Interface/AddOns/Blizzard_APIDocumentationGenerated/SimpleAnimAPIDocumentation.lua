@@ -22,6 +22,7 @@ local SimpleAnimAPI =
 		{
 			Name = "GetElapsed",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -61,6 +62,7 @@ local SimpleAnimAPI =
 		{
 			Name = "GetProgress",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -106,6 +108,7 @@ local SimpleAnimAPI =
 		{
 			Name = "GetSmoothProgress",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -194,6 +197,7 @@ local SimpleAnimAPI =
 		{
 			Name = "IsDelaying",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -207,6 +211,7 @@ local SimpleAnimAPI =
 		{
 			Name = "IsDone",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -220,6 +225,7 @@ local SimpleAnimAPI =
 		{
 			Name = "IsPaused",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -233,6 +239,7 @@ local SimpleAnimAPI =
 		{
 			Name = "IsPlaying",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -246,6 +253,7 @@ local SimpleAnimAPI =
 		{
 			Name = "IsStopped",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryAnimationProgress } },
 
 			Arguments =
 			{
@@ -333,6 +341,7 @@ local SimpleAnimAPI =
 			Type = "Function",
 			CheckAllowChangeParent = true,
 			SecretArguments = "AllowedWhenUntainted",
+			ChecksForbiddenAspects = { { Argument = "parent", Aspect = Enum.ForbiddenAspect.AddAnimations } },
 
 			Arguments =
 			{
@@ -473,6 +482,7 @@ local SimpleAnimAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

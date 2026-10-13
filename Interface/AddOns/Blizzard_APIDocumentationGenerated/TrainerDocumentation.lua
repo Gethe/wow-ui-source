@@ -46,6 +46,7 @@ local Trainer =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -11,6 +11,7 @@ local EditModeManagerConstants_Mainline =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

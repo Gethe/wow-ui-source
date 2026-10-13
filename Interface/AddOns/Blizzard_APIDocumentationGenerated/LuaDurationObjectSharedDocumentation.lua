@@ -15,6 +15,7 @@ local LuaDurationObjectShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

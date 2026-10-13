@@ -1618,10 +1618,22 @@ local SimpleFrameAPI =
 	Tables =
 	{
 		{
+			Name = "CreateRegionParams",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "drawLayer", Type = "DrawLayer", Nilable = true },
+				{ Name = "templateName", Type = "cstring", Nilable = true },
+				{ Name = "subLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "FrameEventCallbackType",
 			Type = "CallbackType",
 		},
 	},
+
 	Predicates =
 	{
 	},

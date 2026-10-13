@@ -1710,6 +1710,7 @@ local AuctionHouse =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

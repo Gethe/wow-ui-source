@@ -31,23 +31,23 @@ local PERFORMANCEBAR_MEDIUM_LATENCY = 600;
 --Textures
 function LoadMicroButtonTextures(self, name, color)
 	local prefix = "UI-HUD-MicroMenu-";
-	self.textureName = name; 
+	self.textureName = name;
 	self:SetNormalAtlas(prefix..name.."-Up");
 	self:SetPushedAtlas(prefix..name.."-Down");
 	self:SetDisabledAtlas(prefix..name.."-Disabled");
 	self:SetHighlightAtlas(prefix..name.."-Mouseover");
 
-	if(color) then 
-		local normalTexture = self:GetNormalTexture(); 
+	if(color) then
+		local normalTexture = self:GetNormalTexture();
 		normalTexture:SetVertexColor(color.r, color.g, color.b);
 
-		local pushedTexture = self:GetPushedTexture(); 
+		local pushedTexture = self:GetPushedTexture();
 		pushedTexture:SetVertexColor(color.r, color.g, color.b);
 
-		local disabledTexture = self:GetDisabledTexture(); 
+		local disabledTexture = self:GetDisabledTexture();
 		disabledTexture:SetVertexColor(color.r, color.g, color.b);
-		
-		local highlightTexture = self:GetHighlightTexture(); 
+
+		local highlightTexture = self:GetHighlightTexture();
 		highlightTexture:SetVertexColor(color.r, color.g, color.b);
 	end
 end
@@ -70,13 +70,13 @@ local MICRO_BUTTONS_DISABLED = false;
 
 -- Disables all microbuttons
 --	Arg disables main menu button or store button and optionally sets an error tooltip
--- 
+--
 local function DisableMicroButtons(disableMainMenu, disableShop, disabledTooltip)
 	MICRO_BUTTONS_DISABLED = true;
 
 	CharacterMicroButton.disabledTooltip = disabledTooltip;
 	CharacterMicroButton:Disable();
-	
+
 	ProfessionMicroButton.disabledTooltip = disabledTooltip;
 	ProfessionMicroButton:Disable();
 
@@ -215,7 +215,7 @@ end
 
 function MicroButtonPulseStop(self)
 	UIFrameFlashStop(self.FlashBorder);
-	if(self.FlashContent) then 
+	if(self.FlashContent) then
 		UIFrameFlashStop(self.FlashContent);
 	end
 	g_flashingMicroButtons[self] = nil;
@@ -416,40 +416,40 @@ function MainMenuBarMicroButtonMixin:OnEnter()
 
 	--The shadow is baked into the highlight texture so we shouldn't show the normal texture while the highlight is happening
 	local normalTexture = self:GetNormalTexture();
-	if(normalTexture) then 
-		normalTexture:SetAlpha(0); 
-	end 
+	if(normalTexture) then
+		normalTexture:SetAlpha(0);
+	end
 end
 
 function MainMenuBarMicroButtonMixin:OnLeave()
 	GameTooltip:Hide();
 
 	local normalTexture = self:GetNormalTexture();
-	if(normalTexture) then 
+	if(normalTexture) then
 		normalTexture:SetAlpha(1);
 	end
-end 
+end
 
 
 function MainMenuBarMicroButtonMixin:SetPushed()
-	self.Background:Hide(); 
-	self.PushedBackground:Show(); 
+	self.Background:Hide();
+	self.PushedBackground:Show();
 
 	self:SetButtonState("PUSHED", true);
 	self:SetHighlightAtlas("UI-HUD-MicroMenu-"..self.textureName.."-Down", "ADD");
 
 	--Need to duplicate the down texture for highlight when the button is pushed, ADD is to bright and BLEND is too dark, so decrease the alpha
 	local highlightTexture = self:GetHighlightTexture();
-	highlightTexture:SetAlpha(.50); 
+	highlightTexture:SetAlpha(.50);
 end
 
 function MainMenuBarMicroButtonMixin:SetNormal()
 	self:SetButtonState("NORMAL");
 	self:SetHighlightAtlas("UI-HUD-MicroMenu-"..self.textureName.."-Mouseover", "BLEND");
 	local highlightTexture = self:GetHighlightTexture();
-	highlightTexture:SetAlpha(1); 
-	self.Background:Show(); 
-	self.PushedBackground:Hide(); 
+	highlightTexture:SetAlpha(1);
+	self.Background:Show();
+	self.PushedBackground:Hide();
 end
 
 function MainMenuBarMicroButtonMixin:OnShow()
@@ -506,7 +506,7 @@ function CharacterMicroButtonMixin:OnClick()
 
 	if ( KeybindFrames_InQuickKeybindMode() ) then
 		self:QuickKeybindButtonOnClick(button);
-	else 
+	else
 		if ( self.down ) then
 			self.down = nil;
 			UpdateMicroButtons();
@@ -524,7 +524,7 @@ function CharacterMicroButtonMixin:OnClick()
 		ToggleCharacter("PaperDollFrame");
 	end
 	end
-end 
+end
 
 function CharacterMicroButtonMixin:OnEnable()
 	self:SetAlpha(1);
@@ -589,12 +589,12 @@ end
 function CharacterMicroButtonMixin:SetPushed()
 	CharacterMicroButton:SetButtonState("PUSHED", true);
 	self.PushedShadow:Show();
-	self.Background:Hide(); 
-	self.PushedBackground:Show(); 
+	self.Background:Hide();
+	self.PushedBackground:Show();
 	self.PortraitMask:ClearAllPoints();
 	self.PortraitMask:SetPoint("CENTER", 2, -2);
 
-	self.Portrait:ClearAllPoints(); 
+	self.Portrait:ClearAllPoints();
 	self.Portrait:SetPoint("TOPLEFT", 7, -7);
 	self.Portrait:SetPoint("BOTTOMRIGHT", -6, 5);
 end
@@ -602,13 +602,13 @@ end
 function CharacterMicroButtonMixin:SetNormal()
 	CharacterMicroButton:SetButtonState("NORMAL");
 	self.PushedShadow:Hide();
-	self.Background:Show(); 
-	self.PushedBackground:Hide(); 
+	self.Background:Show();
+	self.PushedBackground:Hide();
 
 	self.PortraitMask:ClearAllPoints();
 	self.PortraitMask:SetPoint("CENTER", 0, 0);
 
-	self.Portrait:ClearAllPoints(); 
+	self.Portrait:ClearAllPoints();
 	self.Portrait:SetPoint("TOPLEFT", 7, -7);
 	self.Portrait:SetPoint("BOTTOMRIGHT", -7, 7);
 end
@@ -728,7 +728,7 @@ function PlayerSpellsMicroButtonMixin:GetAnyTalentAlert()
 		alert = "TALENT_MICRO_BUTTON_UNSPENT_TALENTS";
 	else
 		return nil;
-	end	
+	end
 
 	local suggestedTab = IsPlayerInitialSpec() and PlayerSpellsUtil.FrameTabs.ClassSpecializations or PlayerSpellsUtil.FrameTabs.ClassTalents;
 
@@ -1098,7 +1098,7 @@ function GuildMicroButtonMixin:SetPushed()
 	self.HighlightEmblem:SetPoint("CENTER", 1, 1);
 
 	MainMenuBarMicroButtonMixin.SetPushed(self);
-end 
+end
 
 function GuildMicroButtonMixin:SetNormal()
 	self.Emblem:ClearAllPoints();
@@ -1789,6 +1789,7 @@ function MainMenuMicroButtonMixin:OnLoad()
 
 	self.updateInterval = 0;
 	self:RegisterForClicks("AnyUp");
+	EventRegistry:RegisterCallback("NewSettingSeen", self.UpdateNotificationIcon, self);
 end
 
 function MainMenuMicroButtonMixin:OnUpdate(elapsed)
@@ -1818,12 +1819,12 @@ function MainMenuMicroButtonMixin:OnUpdate(elapsed)
 		self:SetPushedAtlas(prefix..textureKit.."-Down");
 		self:SetDisabledAtlas(prefix..textureKit..disabledPostfix);
 
-		if(self:GetButtonState() == "NORMAL") then 
+		if(self:GetButtonState() == "NORMAL") then
 			self:SetHighlightAtlas(prefix..textureKit..highlightPostfix, "BLEND");
-		else 
+		else
 			self:SetHighlightAtlas(prefix..textureKit.."-Down", "ADD");
-		end 
-	
+		end
+
 		local bandwidthIn, bandwidthOut, latencyHome, latencyWorld = GetNetStats();
 		local latency = latencyHome > latencyWorld and latencyHome or latencyWorld;
 		if ( latency > PERFORMANCEBAR_MEDIUM_LATENCY ) then

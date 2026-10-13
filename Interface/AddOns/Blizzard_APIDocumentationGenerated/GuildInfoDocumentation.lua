@@ -678,6 +678,7 @@ local GuildInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

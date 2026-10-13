@@ -15,6 +15,7 @@ local SimpleAnimScaleLineAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

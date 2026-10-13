@@ -21,6 +21,7 @@ local HouseEditorLayoutModeShownEvents =
 	"HOUSING_LAYOUT_ROOM_RECEIVED",
 	"HOUSING_LAYOUT_ROOM_MOVED",
 	"HOUSING_LAYOUT_OCCUPIED_FLOOR_RANGE_CHANGED",
+	"HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED",
 	"HOUSING_LAYOUT_ROOM_SNAPPED",
 	"HOUSING_LAYOUT_ROOM_MOVE_INVALID",
 };
@@ -84,8 +85,11 @@ function HouseEditorLayoutModeMixin:OnEvent(event, ...)
 			self:GetParent():TryShowHouseStorageTab(tabEnum);
 		end
 		self:UpdateShownInstructions();
-	elseif event == "HOUSING_LAYOUT_ROOM_SELECTION_CHANGED" or event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
+	elseif event == "HOUSING_LAYOUT_ROOM_SELECTION_CHANGED" then
 		self:UpdateShownInstructions();
+	elseif event == "HOUSING_LAYOUT_DRAG_TARGET_CHANGED" then
+		self:UpdateShownInstructions();
+		self:UpdateFloorInstructions();
 	elseif event == "HOUSING_LAYOUT_ROOM_RECEIVED" then
 		local playAddedSound = ...;
 		-- Check that we haven't temporarily paused room add sounds, or that we're past the pause end time
@@ -100,9 +104,12 @@ function HouseEditorLayoutModeMixin:OnEvent(event, ...)
 		if (self.previousHighestFloor and self.previousHighestFloor < highestFloor)
 			or (self.previousLowestFloor and self.previousLowestFloor > lowestFloor) then
 			PlaySound(SOUNDKIT.HOUSING_FLOOR_ADDED);
+			self:UpdateFloorInstructions();
 		end
 		self.previousHighestFloor = highestFloor;
 		self.previousLowestFloor = lowestFloor;
+	elseif event == "HOUSING_LAYOUT_VIEWED_FLOOR_CHANGED" then
+		self:UpdateFloorInstructions();
 	elseif event == "HOUSING_LAYOUT_ROOM_SNAPPED" then
 		PlaySound(SOUNDKIT.HOUSING_ROOM_MOVE_SNAP);
 	elseif event == "HOUSING_LAYOUT_ROOM_MOVE_INVALID" then
@@ -114,6 +121,7 @@ function HouseEditorLayoutModeMixin:OnShow()
 	self.previousLowestFloor = C_HousingLayout.GetLowestOccupiedFloorIndex();
 	self.previousHighestFloor = C_HousingLayout.GetHighestOccupiedFloorIndex();
 	self:UpdateShownInstructions();
+	self:UpdateFloorInstructions();
 	self:UpdateKeybinds();
 	FrameUtil.RegisterFrameForEvents(self, HouseEditorLayoutModeShownEvents);
 	self:GetParent():ShowHouseStorage();
@@ -157,9 +165,9 @@ function HouseEditorLayoutModeMixin:StartRoomAddSoundPause()
 end
 
 function HouseEditorLayoutModeMixin:UpdateShownInstructions()
-	local isRoomSelected = C_HousingLayout.HasAnySelections();
-	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isRoomSelected);
-	self:SetInstructionShown(self.Instructions.SelectedInstructions, isRoomSelected);
+	local isAnythingSelected = C_HousingLayout.HasAnySelections();
+	self:SetInstructionShown(self.Instructions.UnselectedInstructions, not isAnythingSelected);
+	self:SetInstructionShown(self.Instructions.SelectedInstructions, isAnythingSelected);
 	self.Instructions:UpdateLayout();
 end
 
@@ -167,6 +175,24 @@ function HouseEditorLayoutModeMixin:SetInstructionShown(instructionSet, shouldSh
 	for _, instruction in ipairs(instructionSet) do
 		instruction:SetShown(shouldShow);
 	end
+end
+
+function HouseEditorLayoutModeMixin:UpdateFloorInstructions()
+	local currentFloor = C_HousingLayout.GetViewedFloor();
+	local canGoUp = C_HousingLayout.CanSetViewedFloor(currentFloor + 1);
+	local canGoDown = C_HousingLayout.CanSetViewedFloor(currentFloor - 1);
+
+	if (not canGoUp) and (not canGoDown) then
+		-- If can't go up OR down, then there's likely only one floor, so don't show these at all
+		self.Instructions.FloorUpInstruction:Hide();
+		self.Instructions.FloorDownInstruction:Hide();
+	else
+		self.Instructions.FloorUpInstruction:SetEnabled(canGoUp);
+		self.Instructions.FloorUpInstruction:Show();
+		self.Instructions.FloorDownInstruction:SetEnabled(canGoDown);
+		self.Instructions.FloorDownInstruction:Show();
+	end
+	self.Instructions:UpdateLayout();
 end
 
 function HouseEditorLayoutModeMixin:UpdateKeybinds()

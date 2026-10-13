@@ -1046,6 +1046,7 @@ local LFGListInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

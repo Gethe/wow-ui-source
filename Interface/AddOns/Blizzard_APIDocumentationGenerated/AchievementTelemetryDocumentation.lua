@@ -42,6 +42,7 @@ local AchievementTelemetry =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -148,14 +148,23 @@ function HousingBlueprintCollectionMixin:OnCollectionReceived(collectionInfo)
 		local groupNode = dataProvider:Insert(group);
 		groupNode:SetSortComparator(SortEntriesByTime, affectChildren, skipSort);
 
+		local isAutoSaveGroup = false;
+
 		for _, entry in ipairs(group.entries) do
 			if entry.isAutoSave then
 				numAutoBlueprints = numAutoBlueprints + 1;
+				isAutoSaveGroup = true;
 			else
 				numPlayerMadeBlueprints = numPlayerMadeBlueprints + 1;
 			end
 
 			groupNode:Insert(entry);
+		end
+
+		if isAutoSaveGroup then
+			local groupData = groupNode:GetData();
+			groupData.count = numAutoBlueprints;
+			groupData.countMax = Constants.HousingConsts.HOUSING_BLUEPRINTS_MAX_BACKUPS_PER_BNET_ACCOUNT;
 		end
 	end
 
@@ -260,7 +269,15 @@ function HousingBlueprintCollectionMixin:ShouldShowContextImportOption(blueprint
 		-- If no left-lick override, then don't show import in context menu since left-click will do it
 		return false;
 	else
-		return C_HousingBlueprint.GetImportAvailability() == Enum.HousingResult.Success and C_HousingBlueprint.CanImportTypeFromCurrentLocation(blueprintInfo.blueprintType);
+		if C_HousingBlueprint.GetImportAvailability() ~= Enum.HousingResult.Success then
+			return false;
+		end
+
+		if not C_HousingBlueprint.CanImportTypeFromCurrentLocation(blueprintInfo.blueprintType) then
+			return false, HousingResultToErrorText[Enum.HousingResult.BlueprintTypeLocationInvalid];
+		end
+
+		return true;
 	end
 end
 
@@ -281,7 +298,14 @@ end
 function HousingBlueprintCollectionGroupMixin:Init(node)
 	self.groupData = node:GetData();
 	self.node = node;
-	self.Header:SetHeaderText(self.groupData.name);
+	if self.groupData.count and self.groupData.countMax then
+		self.Header:SetHeaderText(HOUSING_BLUEPRINT_CONTENT_TYPE_HEADER_COMPARE_FMT:format(self.groupData.name, self.groupData.count, self.groupData.countMax));
+		self.Header:SetTooltipText(HOUSING_BLUEPRINT_COLLECTION_BACKUP_COUNT_TOOLTIP);
+	else
+		self.Header:SetHeaderText(self.groupData.name);
+		self.Header:SetTooltipText(nil);
+	end
+
 	self:SetCollapsed(node:IsCollapsed());
 end
 

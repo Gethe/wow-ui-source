@@ -507,6 +507,7 @@ local PetJournalInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -34,6 +34,7 @@ local SeasonInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

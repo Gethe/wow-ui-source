@@ -77,7 +77,8 @@ function PingableType_ActionButtonMixin:GetIsPingable()
 	if actionButtonInfo and actionButtonInfo.id then
 		if actionButtonInfo.actionType then
 			-- Only allow spells and items to be pinged if this action button allows different types of actions.
-			if actionButtonInfo.actionType == "spell" or actionButtonInfo.actionType == "item" then
+			local isShowTooltipMacro = actionButtonInfo.actionType == "macro" and actionButtonInfo.subType == "spell" and C_ActionBar.IsMacroActionWithShowTooltip(self.action);
+			if actionButtonInfo.actionType == "spell" or actionButtonInfo.actionType == "item" or isShowTooltipMacro then
 				isPingable = true;
 			end
 		else
@@ -99,11 +100,10 @@ function PingableType_ActionButtonMixin:GetTargetInfo()
 
 	local actionButtonInfo = self:GetActionButtonInfo();
 	if actionButtonInfo and actionButtonInfo.id then
+		local isShowTooltipMacro = actionButtonInfo.actionType == "macro" and actionButtonInfo.subType == "spell" and C_ActionBar.IsMacroActionWithShowTooltip(self.action);
 		if actionButtonInfo.actionType and actionButtonInfo.actionType == "item" then
 			targetInfo.itemID = actionButtonInfo.id;
-		else
-			-- this is under the assumption that invalid actionType has been blocked by GetIsPingable
-			-- so id passed back by Script_GetActionInfo should only be spellID
+		elseif not actionButtonInfo.actionType or actionButtonInfo.actionType == "spell" or isShowTooltipMacro then
 			targetInfo.spellID = actionButtonInfo.id;
 		end
 	end

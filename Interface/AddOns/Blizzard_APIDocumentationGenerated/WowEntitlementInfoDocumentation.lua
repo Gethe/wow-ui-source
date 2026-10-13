@@ -65,6 +65,7 @@ local WowEntitlementInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

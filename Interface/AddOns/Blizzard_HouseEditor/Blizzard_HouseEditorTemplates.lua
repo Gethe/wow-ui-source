@@ -224,6 +224,10 @@ function HouseEditorInstructionMixin:SetControlWidth(width)
 	self.InstructionText:SetWidth(width);
 end
 
+function HouseEditorInstructionMixin:SetEnabled(enabled)
+	self:SetAlpha(enabled and 1 or 0.4);
+end
+
 function HouseEditorInstructionMixin:UpdateControl()
 	local bindingText = nil;
 	if self.keybindName then

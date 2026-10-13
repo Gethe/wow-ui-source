@@ -1230,6 +1230,7 @@ local TransmogItems =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

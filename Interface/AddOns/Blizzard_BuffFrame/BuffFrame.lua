@@ -1344,3 +1344,8 @@ function ConsolidatedBuffsTooltipAurasMixin:Update()
 	self:UpdateAuraButtons();
 	self:UpdateGridLayout();
 end
+
+function ConsolidatedBuffsTooltipAurasMixin:UpdateAuraContainerAnchor()
+	-- We can use default anchors since this is always within the tooltip,
+	-- so this function doesn't have to do anything.
+end

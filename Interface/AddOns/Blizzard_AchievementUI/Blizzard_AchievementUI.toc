@@ -1,0 +1,12 @@
+## Title: Blizzard_AchievementUI
+## LoadOnDemand: 1
+## Dep: Blizzard_Plunderstorm [AllowLoadGameType plunderstorm]
+## Dep: Blizzard_FrameXMLUtil
+## AllowLoadGameType: mainline, tbc, wrath, cata, mists
+Blizzard_AchievementUI_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_AchievementUI.lua [AllowLoadGameType mainline, tbc, wrath]
+Cata\Blizzard_AchievementUI.lua [AllowLoadGameType cata, mists]
+[Family]\Blizzard_AchievementUI_Shared.lua [AllowLoadGameType classic]
+[Family]\Blizzard_AchievementUI.xml [AllowLoadGameType mainline, tbc, wrath]
+Cata\Blizzard_AchievementUI.xml [AllowLoadGameType cata, mists]
+[Family]\Localization.lua

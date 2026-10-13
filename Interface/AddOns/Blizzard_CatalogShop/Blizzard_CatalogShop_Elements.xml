@@ -711,7 +711,7 @@
 		<Frames>
 			<Frame parentKey="ProductsHeader" inherits="VerticalLayoutFrame" mixin="ProductsHeaderMixin" hyperlinksEnabled="true" enableMouse="true">
 				<KeyValues>
-					<KeyValue key="fixedWidth" value="752" type="string"/>
+					<KeyValue key="fixedWidth" value="752" type="number"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>

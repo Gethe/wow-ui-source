@@ -24,6 +24,73 @@ CHAT_SHOW_IME = false;
 
 ChatFrameUtil = {};
 
+local function PrepareFlashRegion(region)
+	region:SetAlpha(0);
+	region:Show();
+end
+
+function ChatFrameUtil.StartFlash(region, animGroup)
+	if animGroup:IsPlaying() then
+		return;
+	end
+
+	PrepareFlashRegion(region);
+	animGroup:Play();
+end
+
+function ChatFrameUtil.StopFlash(region, animGroup, showWhenDone)
+	animGroup:Stop();
+	region:SetAlpha(1);
+	region:SetShown(showWhenDone == true);
+end
+
+-- Groups tagged with the shared sync key in XML flash in lockstep, the way the
+-- "chat" syncId did for UIFrameFlash.
+function ChatFrameUtil.StartSyncedFlash(region, animGroup)
+	if animGroup:IsPlaying() then
+		return;
+	end
+
+	PrepareFlashRegion(region);
+	animGroup:PlaySynced();
+end
+
+-- Held here rather than on the tab because incoming chat messages, which can be
+-- handled from tainted addon filters, would otherwise taint the frame.
+local alertingTabs = {};
+
+local function IsTabAlertingInternal(chatTab)
+	return alertingTabs[chatTab] == true;
+end
+
+function ChatFrameUtil.SetTabAlerting(chatTab, alerting)
+	alertingTabs[chatTab] = alerting and true or nil;
+end
+
+function ChatFrameUtil.IsTabAlerting(chatTab)
+	-- secure so a tainted write for one tab doesn't spread into every later reader
+	return securecallfunction(IsTabAlertingInternal, chatTab);
+end
+
+-- Kept off the tab for the same reason as the alerting state, and because these
+-- feed UIFrameFade, which would carry any taint on into the shared FADEFRAMES.
+local tabMouseOverAlphas = {};
+local tabNoMouseAlphas = {};
+
+local function GetTabAlphasInternal(chatTab)
+	return tabMouseOverAlphas[chatTab], tabNoMouseAlphas[chatTab];
+end
+
+function ChatFrameUtil.SetTabAlphas(chatTab, mouseOverAlpha, noMouseAlpha)
+	tabMouseOverAlphas[chatTab] = mouseOverAlpha;
+	tabNoMouseAlphas[chatTab] = noMouseAlpha;
+end
+
+function ChatFrameUtil.GetTabAlphas(chatTab)
+	-- secure so a tainted write for one tab doesn't spread into every later reader
+	return securecallfunction(GetTabAlphasInternal, chatTab);
+end
+
 function ChatFrameUtil.ForEachChatFrame(func)
 	for _, frameName in pairs(CHAT_FRAMES) do
 		local frame = _G[frameName];

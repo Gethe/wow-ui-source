@@ -159,7 +159,7 @@ function HousingBlueprintContentSummaryMixin:IsContentImportable()
 	-- If insufficient budget, convey that in the most precise way
 	if FlagsUtil.IsSet(self.blueprintContentInfo.blockingRequirementFlags, Enum.HousingBlueprintUnmetRequirementFlags.InsufficientBudget) then
 		local insufficientBudgetTypes = self.BudgetsContainer:GetInsufficientBudgetTypes();
-		local numInsufficientTypes = CountTable(insufficientBudgetTypes);
+		local numInsufficientTypes = table.count(insufficientBudgetTypes);
 		if numInsufficientTypes > 1 then
 			disabledTooltip = ERR_HOUSING_BLUEPRINT_REQUIREMENT_BUDGETS;
 		elseif insufficientBudgetTypes[Enum.HousingBudgetType.RoomPlacement] then

@@ -37,6 +37,7 @@ local MinimapConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

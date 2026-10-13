@@ -227,6 +227,7 @@ local ChatConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 		{

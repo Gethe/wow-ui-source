@@ -107,12 +107,15 @@ end
 function GenericTraitFrameMixin:SetTreeID(traitTreeID)
 	self.traitTreeID = traitTreeID;
 
+	-- Apply the new tree's layout (pan offset, size, etc.) before SetConfigID below can trigger
+	-- LoadTalentTree/LoadTalentTreeInternal while the frame is already visible. Otherwise buttons
+	-- for the new tree would be positioned using the previous tree's basePanOffset, leaving the
+	-- tree looking off-center.
+	local layout = GenericTraitUtil.GetFrameLayoutInfo(traitTreeID);
+	self:ApplyLayout(layout);
+
 	local configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
 	self:SetConfigID(configID);
-
-	local treeID = self.traitTreeID;
-	local layout = GenericTraitUtil.GetFrameLayoutInfo(treeID);
-	self:ApplyLayout(layout);
 
 	EventRegistry:TriggerEvent("GenericTraitFrame.SetTreeID", traitTreeID, configID);
 end

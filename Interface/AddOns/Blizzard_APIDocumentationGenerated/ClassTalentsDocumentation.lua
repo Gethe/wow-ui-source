@@ -516,6 +516,7 @@ local ClassTalents =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

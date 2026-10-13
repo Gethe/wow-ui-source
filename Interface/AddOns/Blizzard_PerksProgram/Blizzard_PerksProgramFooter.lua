@@ -85,7 +85,7 @@ function PerksProgramFooterFrameMixin:UpdateCartButtons(numCartItems)
 	self.RemoveFromCartButton:SetShown(not cartShown and cartableItem and itemInCart);
 end
 
-function PerksProgramFooterFrameMixin:OnProductSelected(data)
+function PerksProgramFooterFrameMixin:OnProductSelected(data, skipTelemetry)
 	local newProduct = not self.selectedProductInfo or self.selectedProductInfo.perksVendorItemID ~= data.perksVendorItemID or self.selectedProductInfo.isCartData;
 	self.selectedProductInfo = data;
 
@@ -130,14 +130,6 @@ function PerksProgramFooterFrameMixin:UpdateMountControls(categoryID, newProduct
 		else
 			self.TogglePlayerPreview:SetPoint("LEFT", self.RotateButtonContainer, "LEFT", -18, 0);
 		end
-
-		if mountSpecialCheckboxEnabled then
-			PerksProgramFrame:SetMountSpecialPreviewOnClick(showMountSpecialCheckbox);
-			self.ToggleMountSpecial:SetChecked(showMountSpecialCheckbox);
-		else
-			PerksProgramFrame:SetMountSpecialPreviewOnClick(false);
-			self.ToggleMountSpecial:SetChecked(false);
-		end
 	end
 end
 
@@ -164,16 +156,6 @@ function PerksProgramFooterFrameMixin:UpdateTransmogControls(categoryID, newProd
 			hideArmor = hideArmorSetting;
 		end
 		self.ToggleHideArmor:SetChecked(hideArmor);
-
-		if attackCheckboxEnabled and showAttackAnimation then
-			if newProduct then
-				PerksProgramFrame:PlayerSetAttackAnimationOnClick(showAttackAnimation);
-				self.ToggleAttackAnimation:SetChecked(showAttackAnimation);
-			else
-				local attackAnimationSetting = PerksProgramFrame:GetAttackAnimationSetting();
-				PerksProgramFrame:PlayerSetAttackAnimationOnClick(attackAnimationSetting);
-			end
-		end
 	end
 end
 

@@ -136,7 +136,7 @@
 
 	<Frame name="CooldownViewerSettingsBarCategoryTemplate" inherits="CooldownViewerSettingsCategoryTemplate" mixin="CooldownViewerSettingsBarCategoryMixin" virtual="true"/>
 
-	<Frame name="CooldownViewerSettingsTabTemplate" inherits="LargeSideTabButtonTemplate" parentArray="TabButtons" virtual="true"/>
+	<Frame name="CooldownViewerSettingsTabTemplate" inherits="LargeSideTabButtonTemplate" mixin="CooldownViewerSettingsTabMixin" parentArray="TabButtons" virtual="true"/>
 
 	<Frame name="CooldownViewerSettingsTabWithNewOptionTemplate" inherits="CooldownViewerSettingsTabTemplate, NewDefinitionsCheckerTemplate" mixin="CooldownViewerSettingsTabWithNewOptionMixin" virtual="true">
 		<Layers>
@@ -239,6 +239,21 @@
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 						</Anchors>
+						<Frames>
+							<Frame parentKey="ReorderMarker" mixin="CooldownViewerSettingsReorderMarkerMixin" hidden="true">
+								<Size x="8" y="52"/>
+								<Layers>
+									<Layer level="ARTWORK">
+										<Texture parentKey="Texture" file="Interface\ChatFrame\UI-ChatFrame-DockHighlight" alphaMode="ADD">
+											<Size x="52" y="52"/>
+											<Anchors>
+												<Anchor point="CENTER"/>
+											</Anchors>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+						</Frames>
 					</Frame>
 				</ScrollChild>
 			</ScrollFrame>
@@ -267,19 +282,6 @@
 					<Anchor point="BOTTOMRIGHT" x="-3" y="4"/>
 				</Anchors>
 			</Button>
-			<Frame parentKey="ReorderMarker" mixin="CooldownViewerSettingsReorderMarkerMixin" hidden="true">
-				<Size x="8" y="52"/>
-				<Layers>
-					<Layer level="ARTWORK">
-						<Texture parentKey="Texture" file="Interface\ChatFrame\UI-ChatFrame-DockHighlight" alphaMode="ADD">
-							<Size x="52" y="52"/>
-							<Anchors>
-								<Anchor point="CENTER"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

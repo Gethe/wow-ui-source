@@ -87,6 +87,7 @@ local FrameAPINamePlate =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 		{

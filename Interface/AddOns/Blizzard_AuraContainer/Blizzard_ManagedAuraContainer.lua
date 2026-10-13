@@ -4,9 +4,9 @@ AuraContainerDirtyFlag =
 	-- Re-read aura data from the active sources.
 	ParseAuras = bit.lshift(1, 0),
 	 -- Clear existing aura-to-frame ownership before frames are rebound.
-	ResetAuraFrames = bit.lshift(1, 1),
+	ResetFrameAssignments = bit.lshift(1, 1),
 	-- Match the current aura data to aura frames.
-	RefreshAuraFrames = bit.lshift(1, 2),
+	RefreshFrameAssignments = bit.lshift(1, 2),
 	-- Update frame state that does not require rebinding auras.
 	RefreshAuraFrameDisplay = bit.lshift(1, 3),
 	-- Rebuild the frame groups used as layout input.
@@ -23,10 +23,10 @@ AuraContainerDirtyMask =
 	All = Flags_CreateMaskFromTable(AuraContainerDirtyFlag),
 
 	-- Rebuild all aura data and reset frame ownership.
-	FullAuraRebuild = Flags_CreateMask(AuraContainerDirtyFlag.ParseAuras, AuraContainerDirtyFlag.ResetAuraFrames, AuraContainerDirtyFlag.RebuildLayoutGroups),
+	FullAuraRebuild = Flags_CreateMask(AuraContainerDirtyFlag.ParseAuras, AuraContainerDirtyFlag.ResetFrameAssignments, AuraContainerDirtyFlag.RebuildLayoutGroups),
 
 	-- Match auras to frames again.
-	AuraFrameAssignments = Flags_CreateMask(AuraContainerDirtyFlag.RefreshAuraFrames),
+	FrameAssignments = Flags_CreateMask(AuraContainerDirtyFlag.RefreshFrameAssignments),
 
 	-- Refresh display-only state on existing frames. Intended for cases where
 	-- containers need to propagate settings to aura frames for updates but
@@ -42,18 +42,26 @@ AuraContainerDirtyMask =
 
 ManagedAuraContainerSharedMixin = CreateFromMixins(AuraContainerSharedMixin);
 
-function ManagedAuraContainerSharedMixin:UpdateAllAuras()
-	self:MarkDirty(AuraContainerDirtyMask.FullAuraRebuild);
+function ManagedAuraContainerSharedMixin:IsEditModePreviewEnabled()
+	return self.editModePreviewEnabled == true;
+end
 
-	if self:IsEnabled() then
-		self:RefreshItemEnchantments();
-	else
-		local refreshResult = self.itemEnchantmentManager:ClearActiveItemEnchantments();
-		local dirtyFlags = self:ProcessItemEnchantmentRefreshResult(refreshResult);
-		if dirtyFlags ~= AuraContainerDirtyFlag.None then
-			self:MarkDirty(dirtyFlags);
+function ManagedAuraContainerSharedMixin:SetEditModePreviewEnabled(enabled)
+	enabled = (enabled == true);
+
+	if self.editModePreviewEnabled ~= enabled then
+		local wasUsingEditModeSource = self:ShouldUseEditModeSource();
+
+		self.editModePreviewEnabled = enabled;
+
+		if self:ShouldUseEditModeSource() ~= wasUsingEditModeSource then
+			self:UpdateAllAuras();
 		end
 	end
+end
+
+function ManagedAuraContainerSharedMixin:UpdateAllAuras()
+	self:MarkDirty(AuraContainerDirtyMask.FullAuraRebuild);
 end
 
 ManagedAuraContainerInboundMixin = CreateFromMixins(AuraContainerInboundMixin, ManagedAuraContainerSharedMixin);
@@ -66,8 +74,8 @@ function ManagedAuraContainerPrivateMixin:OnLoad_Intrinsic()
 
 	self:SetDirtyPhases({
 		{ flag = AuraContainerDirtyFlag.ParseAuras, handler = function() return self:ProcessParseAuras(); end, },
-		{ flag = AuraContainerDirtyFlag.ResetAuraFrames, handler = function() return self:ProcessResetAuraFrames(); end, },
-		{ flag = AuraContainerDirtyFlag.RefreshAuraFrames, handler = function() return self:ProcessRefreshAuraFrames(); end, },
+		{ flag = AuraContainerDirtyFlag.ResetFrameAssignments, handler = function() return self:ProcessResetFrameAssignments(); end, },
+		{ flag = AuraContainerDirtyFlag.RefreshFrameAssignments, handler = function() return self:ProcessRefreshFrameAssignments(); end, },
 		{ flag = AuraContainerDirtyFlag.RefreshAuraFrameDisplay, handler = function() return self:ProcessRefreshAuraFrameDisplay(); end, },
 		{ flag = AuraContainerDirtyFlag.RebuildLayoutGroups, handler = function() return self:ProcessRebuildLayoutGroups(); end, },
 		{ flag = AuraContainerDirtyFlag.ApplyLayout, handler = function() return self:ProcessApplyLayout(); end, },
@@ -120,7 +128,7 @@ end
 function ManagedAuraContainerPrivateMixin:ShouldRegisterForUnitAuraEvents()
 	-- Only process UNIT_AURA or private aura events if we've got things to
 	-- render them into.
-	return self.auraGroupManager:HasAnyAuraGroups() or self.auraSlotManager:HasAnyAuraSlots();
+	return self.auraGroupManager:HasAnyEnabledAuraGroups() or self.auraSlotManager:HasAnyEnabledAuraSlots();
 end
 
 function ManagedAuraContainerPrivateMixin:ShouldRegisterForPrivateAuraEvents()
@@ -132,15 +140,20 @@ function ManagedAuraContainerPrivateMixin:ShouldIncludePrivateAuraSource()
 end
 
 function ManagedAuraContainerPrivateMixin:ShouldUseEditModeSource()
-	return self.useEditModeSource;
+	return self.editModePreviewEnabled and self.useEditModeSource;
 end
 
 function ManagedAuraContainerPrivateMixin:SetUseEditModeSource(useEditModeSource)
 	useEditModeSource = useEditModeSource == true;
 
 	if self.useEditModeSource ~= useEditModeSource then
+		local wasUsingEditModeSource = self:ShouldUseEditModeSource();
+
 		self.useEditModeSource = useEditModeSource;
-		self:UpdateAllAuras();
+
+		if self:ShouldUseEditModeSource() ~= wasUsingEditModeSource then
+			self:UpdateAllAuras();
+		end
 	end
 end
 
@@ -161,6 +174,7 @@ end
 function ManagedAuraContainerPrivateMixin:OnAuraGroupsChanged()
 	self:UpdateEventRegistrations();
 	self:RebuildAuraParseFilters();
+	self:UpdateAllAuras();
 end
 
 function ManagedAuraContainerPrivateMixin:InitializeAuraGroupFrame(_auraGroup, auraFrame, unitToken, auraData)
@@ -184,6 +198,11 @@ function ManagedAuraContainerPrivateMixin:ClearAuraGroups()
 	self.auraGroupManager:ClearAuraGroups();
 end
 
+function ManagedAuraContainerPrivateMixin:SetAuraGroupEnabled(auraGroup, enabled)
+	self.auraGroupManager:SetAuraGroupEnabled(auraGroup, enabled);
+	self:UpdateAllAuras();
+end
+
 function ManagedAuraContainerPrivateMixin:HasAuraGroup(groupKey)
 	return self.auraGroupManager:HasAuraGroup(groupKey);
 end
@@ -196,13 +215,10 @@ function ManagedAuraContainerPrivateMixin:EnumerateAuraGroups()
 	return self.auraGroupManager:EnumerateAuraGroups();
 end
 
-function ManagedAuraContainerPrivateMixin:RefreshDirtyAuraGroups()
-	return self.auraGroupManager:RefreshDirtyAuraGroups(self:GetUnit());
-end
-
 function ManagedAuraContainerPrivateMixin:OnAuraSlotsChanged()
 	self:UpdateEventRegistrations();
 	self:RebuildAuraParseFilters();
+	self:UpdateAllAuras();
 end
 
 function ManagedAuraContainerPrivateMixin:InitializeAuraSlotFrame(_auraSlot, auraFrame, unitToken, auraData)
@@ -231,6 +247,11 @@ function ManagedAuraContainerPrivateMixin:ClearAuraSlots()
 	self.auraSlotManager:ClearAuraSlots();
 end
 
+function ManagedAuraContainerPrivateMixin:SetAuraSlotEnabled(auraSlot, enabled)
+	self.auraSlotManager:SetAuraSlotEnabled(auraSlot, enabled);
+	self:UpdateAllAuras();
+end
+
 function ManagedAuraContainerPrivateMixin:HasAuraSlot(slotKey)
 	return self.auraSlotManager:HasAuraSlot(slotKey);
 end
@@ -243,12 +264,9 @@ function ManagedAuraContainerPrivateMixin:EnumerateAuraSlots()
 	return self.auraSlotManager:EnumerateAuraSlots();
 end
 
-function ManagedAuraContainerPrivateMixin:RefreshDirtyAuraSlots()
-	return self.auraSlotManager:RefreshDirtyAuraSlots(self:GetUnit());
-end
-
 function ManagedAuraContainerPrivateMixin:OnItemEnchantmentsChanged()
 	self:UpdateEventRegistrations();
+	self:RequestFrameAssignmentRefresh();
 end
 
 function ManagedAuraContainerPrivateMixin:InitializeItemEnchantmentFrame(_itemEnchantment, auraFrame, unitToken, auraData)
@@ -277,12 +295,21 @@ function ManagedAuraContainerPrivateMixin:ClearItemEnchantments()
 	self.itemEnchantmentManager:ClearItemEnchantments();
 end
 
+function ManagedAuraContainerPrivateMixin:SetItemEnchantmentEnabled(itemEnchantment, enabled)
+	self.itemEnchantmentManager:SetItemEnchantmentEnabled(itemEnchantment, enabled);
+	self:UpdateAllAuras();
+end
+
 function ManagedAuraContainerPrivateMixin:HasItemEnchantment(itemEnchantmentSlot)
 	return self.itemEnchantmentManager:HasItemEnchantment(itemEnchantmentSlot);
 end
 
 function ManagedAuraContainerPrivateMixin:HasAnyItemEnchantments()
 	return self.itemEnchantmentManager:HasAnyItemEnchantments();
+end
+
+function ManagedAuraContainerPrivateMixin:HasAnyEnabledItemEnchantments()
+	return self.itemEnchantmentManager:HasAnyEnabledItemEnchantments();
 end
 
 function ManagedAuraContainerPrivateMixin:GetItemEnchantment(itemEnchantmentSlot)
@@ -301,31 +328,20 @@ function ManagedAuraContainerPrivateMixin:SetItemEnchantmentSortMethod(sortMetho
 	self.itemEnchantmentManager:SetSortMethod(sortMethod, sortDirection);
 end
 
-function ManagedAuraContainerPrivateMixin:RefreshItemEnchantments()
-	local refreshResult = self.itemEnchantmentManager:RefreshItemEnchantments();
-	local dirtyFlags = self:ProcessItemEnchantmentRefreshResult(refreshResult);
-
-	if dirtyFlags ~= AuraContainerDirtyFlag.None then
-		self:MarkDirty(dirtyFlags);
-	end
-
-	return refreshResult;
-end
-
-function ManagedAuraContainerPrivateMixin:ProcessItemEnchantmentRefreshResult(refreshResult)
-	return self:ProcessAuraFrameRefreshResult(refreshResult);
+function ManagedAuraContainerPrivateMixin:RequestFrameAssignmentRefresh()
+	self:MarkDirty(AuraContainerDirtyMask.FrameAssignments);
 end
 
 function ManagedAuraContainerPrivateMixin:ShouldRegisterForItemEnchantmentEvents()
-	return self.itemEnchantmentManager:HasAnyItemEnchantments();
+	return self.itemEnchantmentManager:HasAnyEnabledItemEnchantments();
 end
 
 function ManagedAuraContainerPrivateMixin:OnWeaponEnchantChanged()
-	self:RefreshItemEnchantments();
+	self:RequestFrameAssignmentRefresh();
 end
 
 function ManagedAuraContainerPrivateMixin:OnWeaponSlotChanged()
-	self:RefreshItemEnchantments();
+	self:RequestFrameAssignmentRefresh();
 end
 
 function ManagedAuraContainerPrivateMixin:ProcessUnitAuraUpdate(unitToken, unitAuraUpdateInfo, auraSource)
@@ -343,7 +359,7 @@ function ManagedAuraContainerPrivateMixin:ProcessUnitAuraUpdate(unitToken, unitA
 
 	if unitAuraUpdateInfo.addedAuras ~= nil then
 		for _index, auraData in ipairs(unitAuraUpdateInfo.addedAuras) do
-			self:PrepareAuraData(auraData, auraSource);
+			self:PrepareAuraData(unitToken, auraData, auraSource);
 			self:SetCachedAuraData(auraData);
 
 			if auraGroupManager then
@@ -386,7 +402,7 @@ function ManagedAuraContainerPrivateMixin:ProcessUnitAuraUpdate(unitToken, unitA
 	end
 
 	if aurasChanged then
-		self:MarkDirty(AuraContainerDirtyMask.AuraFrameAssignments);
+		self:RequestFrameAssignmentRefresh();
 	end
 end
 
@@ -482,18 +498,18 @@ function ManagedAuraContainerPrivateMixin:FetchAuraDataByAuraInstanceID(unitToke
 	local auraData = auraSource:GetAuraDataByAuraInstanceID(unitToken, auraInstanceID);
 
 	if auraData ~= nil then
-		self:PrepareAuraData(auraData, auraSource);
+		self:PrepareAuraData(unitToken, auraData, auraSource);
 	end
 
 	return auraData;
 end
 
-function ManagedAuraContainerPrivateMixin:PrepareAuraData(auraData, auraSource)
-	auraSource:ApplySourceMetadata(auraData);
-	self:ApplyAuraMetadata(auraData);
+function ManagedAuraContainerPrivateMixin:PrepareAuraData(unitToken, auraData, auraSource)
+	auraSource:ApplySourceMetadata(unitToken, auraData);
+	self:ApplyAuraMetadata(unitToken, auraData, auraSource);
 end
 
-function ManagedAuraContainerPrivateMixin:ApplyAuraMetadata(_auraData)
+function ManagedAuraContainerPrivateMixin:ApplyAuraMetadata(_unitToken, _auraData, _auraSource)
 	-- Override in the container to add container-specific aura metadata before
 	-- group membership is checked. This is a good place to apply calls to
 	-- AuraUtil.ProcessAura (and store the result on the aura data itself).
@@ -503,7 +519,7 @@ function ManagedAuraContainerPrivateMixin:ParseAllAuras()
 	self:ClearCachedAuraData();
 	self.auraGroupManager:ClearAllAuras();
 	self.auraSlotManager:ClearAuraSlotCandidates();
-	
+
 	if not self:IsEnabled() then
 		return;
 	end
@@ -529,18 +545,16 @@ end
 
 function ManagedAuraContainerPrivateMixin:ProcessParseAuras()
 	self:ParseAllAuras();
-
-	return AuraContainerDirtyFlag.RefreshAuraFrames;
+	return AuraContainerDirtyFlag.RefreshFrameAssignments;
 end
 
-function ManagedAuraContainerPrivateMixin:ProcessResetAuraFrames()
-	self:ResetAuraFrames();
-
-	return AuraContainerDirtyFlag.RefreshAuraFrames;
+function ManagedAuraContainerPrivateMixin:ProcessResetFrameAssignments()
+	self:ResetFrameAssignments();
+	return AuraContainerDirtyFlag.RefreshFrameAssignments;
 end
 
-function ManagedAuraContainerPrivateMixin:ProcessRefreshAuraFrames()
-	local refreshResult = self:RefreshAuraFrames();
+function ManagedAuraContainerPrivateMixin:ProcessRefreshFrameAssignments()
+	local refreshResult = self:RefreshFrameAssignments();
 	return self:ProcessAuraFrameRefreshResult(refreshResult);
 end
 
@@ -574,17 +588,22 @@ function ManagedAuraContainerPrivateMixin:ProcessApplyLayout()
 	return AuraContainerDirtyFlag.None;
 end
 
-function ManagedAuraContainerPrivateMixin:ResetAuraFrames()
-	-- This is primarily intended for managers that implement pooled groups
-	-- rather than fixed assignments. Hence, no work is done here for slot
-	-- or enchantments.
-	self.auraGroupManager:ResetAuraFrames();
-	self:OnAuraFramesReset();
+function ManagedAuraContainerPrivateMixin:ResetFrameAssignments()
+	self.auraGroupManager:ResetFrameAssignments();
+	self.auraSlotManager:ResetFrameAssignments();
+	self.itemEnchantmentManager:ResetFrameAssignments();
+	self:OnFrameAssignmentsReset();
 end
 
-function ManagedAuraContainerPrivateMixin:RefreshAuraFrames()
-	local refreshResult = self:RefreshDirtyAuraGroups();
-	refreshResult = FlagsUtil.Combine(refreshResult, self:RefreshDirtyAuraSlots(), FlagsUtilConstants.CombineShouldSet);
+function ManagedAuraContainerPrivateMixin:RefreshFrameAssignments()
+	local refreshResult = AuraContainerFrameRefreshResult.None;
+
+	if self:IsEnabled() then
+		refreshResult = FlagsUtil.Combine(refreshResult, self.auraGroupManager:RefreshFrameAssignments(self:GetUnit()), FlagsUtilConstants.CombineShouldSet);
+		refreshResult = FlagsUtil.Combine(refreshResult, self.auraSlotManager:RefreshFrameAssignments(self:GetUnit()), FlagsUtilConstants.CombineShouldSet);
+		refreshResult = FlagsUtil.Combine(refreshResult, self.itemEnchantmentManager:RefreshFrameAssignments(), FlagsUtilConstants.CombineShouldSet);
+	end
+
 	return refreshResult;
 end
 
@@ -600,6 +619,6 @@ function ManagedAuraContainerPrivateMixin:ApplyLayout()
 	-- Override to position and size aura frames.
 end
 
-function ManagedAuraContainerPrivateMixin:OnAuraFramesReset()
+function ManagedAuraContainerPrivateMixin:OnFrameAssignmentsReset()
 	-- Override in the container to reset state after frame ownership is cleared.
 end

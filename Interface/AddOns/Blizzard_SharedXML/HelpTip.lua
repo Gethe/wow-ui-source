@@ -11,7 +11,7 @@
 		offsetY	= 0,
 		cvar, cvarValue,						-- cvar to set when closed by user or from HelpTip:Acknowledge()
 		cvarBitfield, bitfieldFlag,				-- cvarbitfield to set when closed by user or from HelpTip:Acknowledge()
-		onHideCallback, callbackArg,			-- callback whenever the helptip is closed:  onHideCallback(acknowledged, callbackArg)
+		onHideCallback, callbackArg,			-- callback whenever the helptip is closed:  onHideCallback(acknowledged, callbackArg, hideReason)
 		onAcknowledgeCallback					-- callback whenever the helptip is closed by the user clicking its button: onAcknowledgeCallback(callbackArg)
 		checkCVars = false,						-- on: helptip will only be shown if the cvar or cvarBitfield is not set
 		autoEdgeFlipping = false,				-- on: will flip helptip to opposite edge based on relative region's center vs helptip's center during OnUpdate
@@ -141,9 +141,10 @@ HelpTip.supressHelpTips = {};
 
 do
 	local function HelpTipReset(framePool, frame)
+		frame:Reset();
+		frame:SetParent(nil);
 		frame:ClearAllPoints();
 		frame:Hide();
-		frame:Reset();
 	end
 
 	HelpTip.framePool = CreateFramePool("FRAME", nil, "HelpTipTemplate", HelpTipReset);
@@ -215,8 +216,9 @@ function HelpTip:CanShow(info)
 
 	-- priority
 	if info.system and info.systemPriority then
+		local text = nil;
 		for frame in self.framePool:EnumerateActive() do
-			if frame.info.system == info.system and frame.info.systemPriority then
+			if frame:MatchesSystem(info.system, text) and frame.info.systemPriority then
 				if info.systemPriority > frame.info.systemPriority then
 					frame:Close();
 					-- by design there can only be one such frame, no need to keep going
@@ -313,7 +315,8 @@ end
 
 function HelpTip:IsShowingAnyInSystem(system)
 	for frame in self.framePool:EnumerateActive() do
-		if frame.info.system == system then
+		local text = nil;
+		if frame:MatchesSystem(system, text) then
 			return true;
 		end
 	end
@@ -338,7 +341,8 @@ function HelpTip:AcknowledgeSystem(system, text)
 end
 
 function HelpTip:Release(helpTip)
-	self.framePool:Release(helpTip);
+	local canFailToFindObject = true;
+	self.framePool:Release(helpTip, canFailToFindObject);
 end
 
 function HelpTip:IsPointVertical(point)
@@ -390,55 +394,18 @@ function HelpTipTemplateMixin:OnLoad()
 end
 
 function HelpTipTemplateMixin:OnShow()
-	self:RegisterEvent("UI_SCALE_CHANGED");
-	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
-end
-
-local function AssertMissingInfo(infoText)
-	return string.format("Missing info table for helptip: %s", infoText);
+	-- because OnShow can be deferred, check that this is still an active helptip
+	if self.info then
+		self:RegisterEvent("UI_SCALE_CHANGED");
+		self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+		self:Layout();
+	end
 end
 
 function HelpTipTemplateMixin:OnHide()
 	self:UnregisterEvent("UI_SCALE_CHANGED");
 	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
-	
-	local info = self.info;
-	assertsafe(info, AssertMissingInfo, self.lastInfoText);
-
-	local relativeRegion = self.relativeRegion;
-	if relativeRegion then
-		FrameWatcher:StopWatchingFrame(relativeRegion);
-	end
-
-	if info then
-		if not self.acknowledged and info.acknowledgeOnHide then
-			self:HandleAcknowledge();
-		end
-	end
-
-	local hideReason = self:GetHideReason();
-	self:SetHideReason(nil);
-
-	-- Have to release before doing callbacks or reentry could happen because of deferred OnShow/OnHide
-	local acknowledged = self.acknowledged;
-	HelpTip:Release(self);
-
-	if info then
-		local appendFrame = info.appendFrame;
-		if appendFrame then
-			appendFrame:Hide();
-			appendFrame:ClearAllPoints();
-			appendFrame:SetParent(UIParent);
-		end
-
-		if info.onHideCallback then
-			info.onHideCallback(acknowledged, info.callbackArg, hideReason);
-		end
-
-		if acknowledged and info.onAcknowledgeCallback then
-			info.onAcknowledgeCallback(info.callbackArg);
-		end
-	end
+	self:Close();
 end
 
 function HelpTipTemplateMixin:OnEvent()
@@ -447,8 +414,28 @@ end
 
 -- this exists because OnHide can be deferred
 function HelpTipTemplateMixin:Close()
-	self.closed = true;
-	self:Hide();
+	local info = self.info;
+	if info then
+		if not self.acknowledged and info.acknowledgeOnHide then
+			self:HandleAcknowledge();
+		end
+
+		-- Clear out info before doing callbacks
+		self.info = nil;
+
+		if info.onHideCallback then
+			info.onHideCallback(self.acknowledged, info.callbackArg, self:GetHideReason());
+		end
+		if self.acknowledged and info.onAcknowledgeCallback then
+			info.onAcknowledgeCallback(info.callbackArg);
+		end
+	end
+
+	if self:IsShown() then
+		self:Hide();
+	else
+		HelpTip:Release(self);
+	end
 end
 
 function HelpTipTemplateMixin:OnUpdate()
@@ -528,7 +515,6 @@ function HelpTipTemplateMixin:Init(parent, info, relativeRegion)
 	end
 
 	self:AnchorAndRotate();
-	self:Layout();
 	self:CheckWatchRelativeRegion();
 end
 
@@ -632,6 +618,9 @@ function HelpTipTemplateMixin:Layout()
 		height = (height + appendFrame:GetHeight()) - anchorOffset;
 	end
 
+	-- store on helptip so it can be cleared in Reset
+	self.appendedFrame = appendFrame;
+
 	if pointInfo.arrowRotation == HelpTip.ArrowRotation.Left or pointInfo.arrowRotation == HelpTip.ArrowRotation.Right then
 		height = max(height, HelpTip.minimumHeight);
 	end
@@ -697,20 +686,36 @@ end
 
 function HelpTipTemplateMixin:Reset()
 	self.info = nil;
-	self.relativeRegion = nil;
-	self.closed = false;
 	self.acknowledged = false;
 	self.CloseButton:Hide();
 	self.OkayButton:Hide();
+
+	local relativeRegion = self.relativeRegion;
+	if relativeRegion then
+		FrameWatcher:StopWatchingFrame(relativeRegion);
+		self.relativeRegion = nil;
+	end
+
+	local appendedFrame = self.appendedFrame;
+	if appendedFrame then
+		appendedFrame:Hide();
+		appendedFrame:ClearAllPoints();
+		appendedFrame:SetParent(nil);
+		self.appendedFrame = nil;
+	end
+
+	self:ClearHideReason();
+
 	-- flippity flip settings
 	self.appliedTargetPoint = nil;
 	self.flippedTargetPoint = nil;
 	self.appliedAlignment = nil;
+
 	self:SetScript("OnUpdate", nil);
 end
 
 function HelpTipTemplateMixin:Matches(parent, text)
-	if self.closed then
+	if not self.info then
 		return false;
 	end
 	local textMatched = not text or self.info.text == text;
@@ -718,7 +723,7 @@ function HelpTipTemplateMixin:Matches(parent, text)
 end
 
 function HelpTipTemplateMixin:MatchesSystem(system, text)
-	if self.closed then
+	if not self.info then
 		return false;
 	end
 	local textMatched = not text or self.info.text == text;
@@ -740,5 +745,12 @@ function HelpTipTemplateMixin:GetHideReason()
 end
 
 function HelpTipTemplateMixin:SetHideReason(reason)
-	self.hideReason = reason;
+	-- only allow the first one per helptip
+	if not self.hideReason then
+		self.hideReason = reason;
+	end
+end
+
+function HelpTipTemplateMixin:ClearHideReason()
+	self.hideReason = nil;
 end

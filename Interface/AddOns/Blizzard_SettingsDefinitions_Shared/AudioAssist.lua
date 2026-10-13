@@ -316,6 +316,44 @@ local function Register()
 				InitCAAOption(initializer);
 			end
 
+			-- Pulse Your Health
+			do
+				local function GetPulsePercentOptions()
+					local container = Settings.CreateControlTextContainer();
+					for index, percentInfo in CombatAudioAlertUtil.EnumeratePulseHealthPercentInfo() do
+						container:Add(index - 1, percentInfo.str);
+					end
+					return container:GetData();
+				end
+
+				local setting = Settings.RegisterCVarSetting(category, "CAAPulsePlayerHealthPercent", Settings.VarType.Number, CAA_PULSE_PLAYER_HEALTH_LABEL);
+				local pulsePlayerHealthInitializer = Settings.CreateDropdown(category, setting, GetPulsePercentOptions, CAA_PULSE_PLAYER_HEALTH_TOOLTIP);
+				InitCAAOption(pulsePlayerHealthInitializer);
+
+				local function PulsePlayerHealthOptionsModifiable()
+					return GetCVarNumberOrDefault("CAAPulsePlayerHealthPercent") > 0;
+				end
+
+				-- Pulse Your Health Volume
+				local function GetValue()
+					return C_CombatAudioAlert.GetCategoryVolume(Enum.CombatAudioAlertCategory.PlayerHealthPulse);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetCategoryVolume(Enum.CombatAudioAlertCategory.PlayerHealthPulse, value);
+				end
+
+				local volumeSetting = Settings.RegisterProxySetting(category, "PROXY_CAA_PULSE_PLAYER_HEALTH_VOLUME",
+					Settings.VarType.Number, CAA_VOLUME_LABEL, Constants.TTSConstants.TTSVolumeDefault, GetValue, SetValue);
+
+				local volumeOptions = Settings.CreateSliderOptions(Constants.TTSConstants.TTSVolumeMin, Constants.TTSConstants.TTSVolumeMax, 1);
+				volumeOptions:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+
+				local volumeInitializer = Settings.CreateSlider(category, volumeSetting, volumeOptions, CAA_PULSE_PLAYER_HEALTH_VOLUME_TOOLTIP);
+				InitCAAOption(volumeInitializer);
+				volumeInitializer:SetParentInitializer(pulsePlayerHealthInitializer, PulsePlayerHealthOptionsModifiable);
+			end
+
 			local function GetPercentOptions()
 				local container = Settings.CreateControlTextContainer();
 				for index, percentInfo in CombatAudioAlertUtil.EnumeratePercentInfo() do

@@ -405,7 +405,7 @@ function BankUtil_IsAccountBankDepositRefundable(itemLocation)
 		return false;
 	end
 
-	return (BankFrame:GetActiveBankType() == Enum.BankType.Account) and C_Item.CanBeRefunded(itemLocation);
+	return (BankFrame:GetActiveBankType() == Enum.BankType.Account) and C_Bank.CanUseBank(Enum.BankType.Account) and C_Item.CanBeRefunded(itemLocation);
 end
 
 function BankPanelItemButtonMixin:HandleItemPickup()

@@ -161,9 +161,9 @@ function CooldownViewerItemDataMixin:UpdateLinkedSpell(spellID)
 end
 
 function CooldownViewerItemDataMixin:UpdateFromSpellCategory(spellID, baseSpellID, spellCategory, itemID)
-	local cooldownInfo = self:GetCooldownInfo();
-	if cooldownInfo and spellCategory and cooldownInfo.spellCategoryID == spellCategory then
-		if itemID then
+	if itemID and spellCategory and spellCategory ~= 0 then
+		local cooldownInfo = self:GetCooldownInfo();
+		if cooldownInfo and cooldownInfo.spellCategoryID == spellCategory then
 			spellID = baseSpellID or spellID;
 			local overrideSpellID = baseSpellID and spellID;
 
@@ -626,6 +626,15 @@ function CooldownViewerItemDataMixin:GetNameText()
 	return "";
 end
 
+local function AddSpellFilterData(tags, spellID)
+	if spellID then
+		local spellName = C_Spell.GetSpellName(spellID);
+		if spellName then
+			table.insert(tags, spellName);
+		end
+	end
+end
+
 function CooldownViewerItemDataMixin:BuildFilterString()
 	local tags = {};
 	local itemLocation = self:GetItemLocation();
@@ -645,14 +654,15 @@ function CooldownViewerItemDataMixin:BuildFilterString()
 	end
 
 	local spellCategoryTitle = self:GetSpellCategoryTooltipTitle();
-	if  spellCategoryTitle then
+	if spellCategoryTitle then
 		table.insert(tags, spellCategoryTitle);
 	end
 
-	local spellID = self:GetBaseSpellID();
-	if spellID then
-		local spellName = C_Spell.GetSpellName(spellID);
-		table.insert(tags, spellName);
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo then
+		AddSpellFilterData(tags, cooldownInfo.spellID);
+		AddSpellFilterData(tags, cooldownInfo.overrideSpellID);
+		AddSpellFilterData(tags, cooldownInfo.overrideTooltipSpellID);
 	end
 
 	return table.concat(tags, " ");

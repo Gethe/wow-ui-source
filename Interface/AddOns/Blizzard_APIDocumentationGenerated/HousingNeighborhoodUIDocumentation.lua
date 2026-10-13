@@ -415,6 +415,7 @@ local HousingNeighborhoodUI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

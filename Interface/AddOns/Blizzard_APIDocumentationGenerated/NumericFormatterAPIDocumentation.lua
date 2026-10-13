@@ -32,6 +32,7 @@ local NumericFormatterAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

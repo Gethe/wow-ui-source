@@ -1010,6 +1010,7 @@ local ArtifactUI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

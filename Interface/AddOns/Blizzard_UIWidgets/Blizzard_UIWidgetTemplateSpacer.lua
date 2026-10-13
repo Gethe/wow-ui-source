@@ -11,6 +11,6 @@ UIWidgetTemplateSpacerMixin = CreateFromMixins(UIWidgetBaseTemplateMixin);
 
 function UIWidgetTemplateSpacerMixin:Setup(widgetInfo, widgetContainer)
 	UIWidgetBaseTemplateMixin.Setup(self, widgetInfo, widgetContainer);
-	self:SetWidth(Clamp(widgetInfo.widgetWidth, 1, widgetInfo.widgetWidth));
-	self:SetHeight(Clamp(widgetInfo.widgetHeight, 1, widgetInfo.widgetHeight));
+	self:SetWidth(math.max(widgetInfo.widgetWidth, 1));
+	self:SetHeight(math.max(widgetInfo.widgetHeight, 1));
 end

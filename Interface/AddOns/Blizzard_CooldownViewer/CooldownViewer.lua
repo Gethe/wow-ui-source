@@ -166,6 +166,8 @@ function CooldownViewerItemMixin:OnSpellUpdateIconEvent()
 end
 
 function CooldownViewerItemMixin:OnUnitAuraRemovedEvent()
+	-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraRemovedEvent");
+
 	if self:GetAuraSpellID() == self:GetLinkedSpell() then
 		-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraRemovedEvent", "AuraSpell %s matches linked spell, clearing linked spell.", tostring(self:GetAuraSpellID()));
 		self:SetLinkedSpell(nil);
@@ -176,6 +178,7 @@ function CooldownViewerItemMixin:OnUnitAuraRemovedEvent()
 end
 
 function CooldownViewerItemMixin:OnUnitAuraUpdatedEvent()
+	-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraUpdatedEvent");
 	self:RefreshData();
 
 	-- Because active state may not have changed it's still required to check for pandemic time updates.
@@ -186,6 +189,7 @@ function CooldownViewerItemMixin:OnUnitAuraAddedEvent(unitAuraUpdateInfo)
 	-- If an aura was added and its spell matches the base, override, or a linked spell then the item needs to be refreshed.
 	for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
 		if self:NeedsAddedAuraUpdate(aura) then
+			-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraRemovedEvent");
 			self:RefreshData();
 			break;
 		end
@@ -364,21 +368,12 @@ function CooldownViewerItemMixin:NeedsCooldownUpdate(spellID, baseSpellID, spell
 		return true;
 	end
 
-	if self:UpdateLinkedSpell(spellID) then
-		-- CDMDebugGetDebugger():LogCooldownItem(self, "NeedsCooldownUpdate", "Linked spell was updated to %s, refreshing item.", tostring(self:GetLinkedSpell()));
-		return true;
-	end
-
 	local itemBaseSpellID = self:GetBaseSpellID();
-
-	if spellID == itemBaseSpellID then
-		return true;
-	end
 
 	-- Depending on the order of overrides being applied and removed, the item may already have a
 	-- different override spell than the spell being updated. But if the base spell is the same, the
 	-- item should still respond to the event.
-	if baseSpellID == itemBaseSpellID then
+	if spellID == itemBaseSpellID or baseSpellID == itemBaseSpellID then
 		return true;
 	end
 
@@ -404,7 +399,7 @@ function CooldownViewerItemMixin:NeedsAddedAuraUpdate(auraInfo)
 
 	local spellID = auraInfo.spellId;
 	if self:UpdateLinkedSpell(spellID) then
-		--CDMDebugGetDebugger():LogCooldownItem(self, "NeedsAddedAuraUpdate", "Linked spell was updated to %s, refreshing item.", tostring(self:GetLinkedSpell()));
+		-- CDMDebugGetDebugger():LogCooldownItem(self, "NeedsAddedAuraUpdate", "Linked spell was updated to %s, refreshing item.", tostring(self:GetLinkedSpell()));
 		return true;
 	end
 
@@ -443,6 +438,8 @@ function CooldownViewerItemMixin:ResetCooldownData()
 	CooldownViewerItemDataMixin.ResetCooldownData(self);
 
 	self.alertsByEvent = {};
+	self.allowAvailableAlert = nil;
+	self.availableAlertTriggerTime = nil;
 	self.pandemicAlertTriggerTime = nil;
 	self.pandemicStartTime = nil;
 	self.pandemicEndTime = nil;
@@ -484,7 +481,7 @@ function CooldownViewerItemMixin:RefreshOnUpdateRegistration()
 end
 
 function CooldownViewerItemMixin:NeedsTargetUpdateRegistration()
-	return self.needsRangeCheck == true or self:GetAuraDataUnit() == "target";
+	return self:GetCooldownID() ~= nil and self.needsRangeCheck == true or self:GetAuraDataUnit() == "target";
 end
 
 function CooldownViewerItemMixin:RefreshTargetUpdateRegistration()
@@ -534,18 +531,16 @@ function CooldownViewerItemMixin:CheckSetPandemicAlertTriggerTime(auraData, time
 	auraData = auraData or self:GetAuraDataCached();
 	timeNow = timeNow or GetTime();
 	local isActive = auraData and (auraData.expirationTime > timeNow);
-	if isActive then
-		-- If the related spell could be cast again right now, what would the new duration be? This informs the pandemic-time alert.
-		local extendedDuration = C_UnitAuras.GetRefreshExtendedDuration(self:GetAuraDataUnit(), auraData.auraInstanceID, self:GetSpellID());
-		local baseDuration = C_UnitAuras.GetAuraBaseDuration(self:GetAuraDataUnit(), auraData.auraInstanceID, self:GetSpellID());
-		local carriedOverToNewCast = (extendedDuration and baseDuration) and (extendedDuration - baseDuration) or 0;
-		local allowPandemicAlert = carriedOverToNewCast > 0 and self:CanTriggerAlertType(Enum.CooldownViewerAlertEventType.PandemicTime);
+	if isActive and self:CanTriggerAlertType(Enum.CooldownViewerAlertEventType.PandemicTime) then
+		local carriedOverDuration = C_UnitAuras.GetRefreshCarryOverDuration(self:GetAuraDataUnit(), auraData.auraInstanceID, self:GetSpellID()) or 0;
+		local allowPandemicAlert = carriedOverDuration > 0;
 
 		if allowPandemicAlert then
-			self:SetPandemicAlertTriggerTime(timeNow, auraData.expirationTime - carriedOverToNewCast, auraData.expirationTime);
+			self:SetPandemicAlertTriggerTime(timeNow, auraData.expirationTime - carriedOverDuration, auraData.expirationTime);
 		end
 
-		-- CDMDebugGetDebugger():LogCooldown(self:GetSpellID(), "CheckSetPandemicAlertTriggerTime:Pandemic", "Start: %.2f, Duration: %.2f, active: %s, extended: %.2f", (auraData.expirationTime - auraData.duration) , auraData.duration, tostring(isActive), (extendedDuration or 0));
+		-- CDMDebugGetDebugger():LogCooldownItem(self, "CheckSetPandemicAlertTriggerTime", "Spell[%d], AuraSpell[%d] Duration[%.2f] AStart[%.2f]: PEnd[%.2f] - PStart[%.2f] = Carry[%.2f], NextAllowedAlert[%.2f]", self:GetSpellID(), auraData.spellId, auraData.duration, auraData.expirationTime - auraData.duration, auraData.expirationTime, auraData.expirationTime - carriedOverDuration, carriedOverDuration, (self.nextAvailableTimeToPlayPandemicAlert or 0));
+		-- CDMDebugGetDebugger():LogCooldownItem(self, "CheckSetPandemicAlertTriggerTime", "Callstack:\n%s", debugstack());
 
 		return allowPandemicAlert;
 	end
@@ -557,8 +552,6 @@ function CooldownViewerItemMixin:SetPandemicAlertTriggerTime(timeNow, pandemicSt
 	self.pandemicAlertTriggerTime = pandemicStartTime;
 	self.pandemicStartTime = pandemicStartTime;
 	self.pandemicEndTime = pandemicEndTime;
-
-	-- CDMDebugGetDebugger():LogCooldown(self:GetSpellID(), "SetPandemicAlertTriggerTime", "PStart: %.2f, PEnd: %.2f, nextAvailable: %.2f", (pandemicStartTime or 0), (pandemicEndTime or 0), (self.nextAvailableTimeToPlayPandemicAlert or 0));
 
 	self:CheckPandemicTimeDisplay(timeNow);
 	self:RefreshOnUpdateRegistration();
@@ -1019,13 +1012,13 @@ end
 
 function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromEquippedItem(timeNow)
 	if not self:IsUsingVisualDataSource_Any() then
-		local equipSlot = self:GetEquipSlot(); -- TODO: Support potions as well, this won't just be equipslot
+		local equipSlot = self:GetEquipSlot();
 		if equipSlot then
-			local startTime, duration, enable = GetInventoryItemCooldown("player", equipSlot);
+			local startTime, duration, enable, isOnGCD = GetInventoryItemCooldown("player", equipSlot);
 			local endTime = startTime + duration;
 			self.cooldownIsActive = endTime > timeNow;
-			self.cooldownEnabled = enable;
-			self.isOnGCD = false;
+			self.cooldownEnabled = enable == 1;
+			self.isOnGCD = isOnGCD;
 
 			if self.cooldownIsActive and self.cooldownEnabled then
 				self:AddVisualDataSource_Item();
@@ -1045,6 +1038,8 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromEquippedIte
 			self.cooldownPaused = false;
 			self.cooldownDesaturated = self.isOnActualCooldown;
 			self.cooldownPlayFlash = self.isOnActualCooldown;
+
+			-- CDMDebugGetDebugger():LogCooldownItem(self, "CheckCacheCooldownValuesFromEquippedItem", "Start: %.2f, Duration: %.2f, active: %s, gcd: %s, availableAlertTime: %.2f", self.cooldownStartTime or 0, self.cooldownDuration or 0, tostring(self.cooldownIsActive), tostring(self.isOnGCD), self.availableAlertTriggerTime or 0);
 		end
 	end
 end
@@ -1294,15 +1289,17 @@ function CooldownViewerBuffItemMixin:NeedsTargetUpdateRegistration()
 	-- target change cannot affect it. In every other case (auraDataUnit == "target", or nil
 	-- meaning no active aura yet) the item must remain registered so it can pick up a target aura
 	-- on the next selection.
-	return self:GetAuraDataUnit() ~= "player";
+	return self:GetCooldownID() ~= nil and self:GetAuraDataUnit() ~= "player";
 end
 
 function CooldownViewerBuffItemMixin:OnCooldownIDSet()
 	CooldownViewerItemMixin.OnCooldownIDSet(self);
+	self:RefreshTargetUpdateRegistration();
 end
 
 function CooldownViewerBuffItemMixin:ResetCooldownData()
 	CooldownViewerItemMixin.ResetCooldownData(self);
+	self:RefreshTargetUpdateRegistration();
 end
 
 function CooldownViewerBuffItemMixin:IsExpired()

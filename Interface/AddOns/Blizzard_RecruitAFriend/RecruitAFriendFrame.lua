@@ -1,6 +1,9 @@
 local RECRUIT_HEIGHT = 34;
 local DIVIDER_HEIGHT = 16;
 
+local PLAYER_FACTION_GROUP, PLAYER_FACTION_NAME = UnitFactionGroup("player");
+local PLAYER_REALM_NAME = GetRealmName();
+
 RecruitAFriendSystemMixin = {};
 
 -- We temporarily have two RecruitAFriendFrames, one for the new Social UI and one for the legacy friend list
@@ -237,6 +240,28 @@ local function SortRecruitsByWoWAccount(a, b)
 	end
 end
 
+local function BuildRecruitNameText(accountInfo)
+	local nameText = FriendsListUtil.GetFriendAccountNameText(accountInfo);
+
+	local gameAccountInfo = accountInfo.gameAccountInfo;
+	local characterName = FriendsFrame_GetFormattedCharacterName(gameAccountInfo.characterName, nil, gameAccountInfo.clientProgram, gameAccountInfo.timerunningSeasonID);
+	if characterName == "" then
+		return nameText;
+	end
+
+	local isSameRealmAndFaction = (gameAccountInfo.realmID and gameAccountInfo.realmID > 0) and (gameAccountInfo.factionName == PLAYER_FACTION_GROUP);
+	local isPlayingWoW = (gameAccountInfo.clientProgram == BNET_CLIENT_WOW);
+	local canCooperate = isPlayingWoW and isSameRealmAndFaction;
+
+	local shouldShowCannotCooperateLabel = not canCooperate and CVarCallbackRegistry:GetCVarValueBool("colorblindMode");
+	if shouldShowCannotCooperateLabel then
+		characterName = characterName .. CANNOT_COOPERATE_LABEL;
+	end
+
+	local characterNameColorCode = canCooperate and FRIENDS_WOW_NAME_COLOR_CODE or FRIENDS_OTHER_NAME_COLOR_CODE;
+	return nameText .. " " .. characterNameColorCode .. PARENS_TEMPLATE:format(characterName) .. FONT_COLOR_CODE_CLOSE;
+end
+
 local function ProcessAndSortRecruits(recruits)
 	local seenAccounts = {};
 
@@ -253,7 +278,8 @@ local function ProcessAndSortRecruits(recruits)
 		if accountInfo and accountInfo.gameAccountInfo and not accountInfo.gameAccountInfo.isWowMobile then
 			recruitInfo.isOnline = accountInfo.gameAccountInfo.isOnline;
 			recruitInfo.characterName = accountInfo.gameAccountInfo.characterName;
-			recruitInfo.nameText, recruitInfo.nameColor = FriendsFrame_GetBNetAccountNameAndStatus(accountInfo);
+			recruitInfo.nameText = BuildRecruitNameText(accountInfo);
+			recruitInfo.nameColor = accountInfo.gameAccountInfo.isOnline and FRIENDS_BNET_NAME_COLOR or FRIENDS_GRAY_COLOR;
 			recruitInfo.plainName = BNet_GetBNetAccountName(accountInfo);
 		else
 			-- We have no presence info for them yet...we will get an update when we do
@@ -1491,9 +1517,6 @@ end
 function RecruitAFriendRecruitmentFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
-
-local PLAYER_REALM_NAME = GetRealmName();
-local _, PLAYER_FACTION_NAME = UnitFactionGroup("player");
 
 function RecruitAFriendRecruitmentFrameMixin:UpdateRecruitmentInfo(recruitmentInfo, recruitsAreMaxed)
 	if recruitmentInfo then

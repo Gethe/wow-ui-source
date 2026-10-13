@@ -27,11 +27,32 @@ function CombatAudioAlertManagerMixin:OnLoad()
 		end
 	end
 
-	local function CheckPlaySample(_owner, categoryType)
-		if not SettingsPanel:CheckIsSettingDefaults() then
-			self:PlaySample(categoryType);
-		end
+	-- Sliders write their cvar on every step of a drag, so wait for it to settle and preview only the value that was landed on.
+	local function CreateSettledCVarCallback(onSettled)
+		local settleTimer;
+		return function(_owner, value)
+			if SettingsPanel:CheckIsSettingDefaults() then
+				return;
+			end
+
+			if settleTimer then
+				settleTimer:Cancel();
+			end
+
+			settleTimer = C_Timer.NewTimer(CombatAudioAlertConstants.SAMPLE_SETTLE_SECONDS, function()
+				settleTimer = nil;
+				onSettled(value);
+			end);
+		end;
 	end
+
+	local CheckPlaySample = CreateSettledCVarCallback(function(categoryType)
+		self:PlaySample(categoryType);
+	end);
+
+	local CheckRefreshPulseVolume = CreateSettledCVarCallback(function()
+		self:RefreshHealthPulseVolume();
+	end);
 
 	local function CheckRefreshThrottles()
 		if not SettingsPanel:CheckIsSettingDefaults() then
@@ -60,18 +81,30 @@ function CombatAudioAlertManagerMixin:OnLoad()
 		if cvarInfo.refreshThrottles then
 			CVarCallbackRegistry:RegisterCallback(cvarInfo.name, CheckRefreshThrottles);
 		end
+
+		if cvarInfo.refreshPulseVolume then
+			CVarCallbackRegistry:RegisterCallback(cvarInfo.name, CheckRefreshPulseVolume);
+		end
 	end
 
 	EventRegistry:RegisterCallback("Settings.Defaulted", OnSettingsDefaulted);
 	EventRegistry:RegisterCallback("Settings.CategoryDefaulted", OnSettingsDefaulted);
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	self:RegisterEvent("PLAYER_LEAVING_WORLD");
 	self:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED");
 	self:RegisterEvent("VOICE_CHAT_TTS_PLAYBACK_FINISHED");
+	self:RegisterEvent("PLAYER_LOGOUT");
 end
 
 function CombatAudioAlertManagerMixin:OnEvent(event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		self:Init();
+
+		-- Init only does this on the first entry, but health can have changed across a loading screen.
+		self:UpdateHealthPulse();
+	elseif event == "PLAYER_LEAVING_WORLD" or event == "PLAYER_LOGOUT" then
+		-- The pulse sound kits loop and outlive both a loading screen and a UI reload, so the handle has to be stopped here.
+		self:StopHealthPulse();
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		self:UpdateSpecSpecificSettings();
 	elseif event == "PLAYER_IN_COMBAT_CHANGED" then
@@ -260,6 +293,8 @@ function CombatAudioAlertManagerMixin:RefreshEvents(isInit)
 
 	self:UpdateSpecSpecificSettings(isInit);
 
+	self:UpdateHealthPulse();
+
 	if isInit and addonTable.IsEnabled() then
 		if self:IsInPartyHealthMode() then
 			self:RefreshAllPartyHealthUnits();
@@ -294,6 +329,9 @@ function CombatAudioAlertManagerMixin:SetCategoryVolume(categoryType, newVolume)
 	local currentVolume = C_CombatAudioAlert.GetCategoryVolume(categoryType);
 	if newVolume ~= currentVolume then
 		C_CombatAudioAlert.SetCategoryVolume(categoryType, newVolume);
+	elseif categoryType == Enum.CombatAudioAlertCategory.PlayerHealthPulse then
+		-- The pulse has no spoken sample, so preview it the same way a volume change does.
+		self:RefreshHealthPulseVolume();
 	else
 		self:PlaySample(categoryType);
 	end
@@ -309,6 +347,16 @@ end
 
 function CombatAudioAlertManagerMixin:IsSayPlayerHealthEnabled()
 	return (addonTable.GetCAACVarValueNumber("PLAYER_HEALTH_PCT_CVAR") > 0);
+end
+
+function CombatAudioAlertManagerMixin:IsPulsePlayerHealthEnabled()
+	return (addonTable.GetCAACVarValueNumber("PULSE_PLAYER_HEALTH_PCT_CVAR") > 0);
+end
+
+function CombatAudioAlertManagerMixin:GetPulsePlayerHealthPercent()
+	-- The cvar can hold an out of range value, in which case there is no threshold to pulse at.
+	local percentInfo = CombatAudioAlertUtil.GetCurrentPulseHealthPercentInfo();
+	return percentInfo and percentInfo.percentVal or 0;
 end
 
 function CombatAudioAlertManagerMixin:IsSayTargetNameEnabled()
@@ -429,7 +477,7 @@ function CombatAudioAlertManagerMixin:RegisterForUnitHealth()
 				table.insert(unitHealthUnits, unit);
 			end
 		end
-	elseif self:IsSayPlayerHealthEnabled() then
+	elseif self:IsSayPlayerHealthEnabled() or self:IsPulsePlayerHealthEnabled() then
 		table.insert(unitHealthUnits, "player");
 	end
 
@@ -683,6 +731,10 @@ function CombatAudioAlertManagerMixin:ProcessUnitHealthChange(unit)
 		return;
 	end
 
+	if unit == "player" then
+		self:UpdateHealthPulse();
+	end
+
 	if self:IsInPartyHealthMode() and self:IsPartyUnit(unit) then
 		self:ProcessPartyUnitHealthChange(unit);
 		return;
@@ -694,24 +746,113 @@ function CombatAudioAlertManagerMixin:ProcessUnitHealthChange(unit)
 
 	local threshold = self:GetUnitHealthThreshold(unit);
 
-	local currentBand = self:GetPercentageBand(healthPercent, threshold);
-	local lastBand = self:GetPercentageBand(self.lastUnitHealthPercent[unit], threshold);
+	-- The unit may only be watched because of the health pulse, in which case there is nothing to announce.
+	if threshold > 0 then
+		local currentBand = self:GetPercentageBand(healthPercent, threshold);
+		local lastBand = self:GetPercentageBand(self.lastUnitHealthPercent[unit], threshold);
 
-	local announcePercentage = self:GetAnnouncePercentage(healthPercent, currentBand, lastBand, threshold);
-	if announcePercentage then
-		local shouldAnnounce = self:CheckShouldAnnouncePercent(unit, announcePercentage);
-		if shouldAnnounce then
-			--print("ANNOUNCING healthPercent = "..healthPercent.." accouncing = "..announcePercentage);
-			local healthInfo = self:GetUnitHealthInfo(unit, announcePercentage);
-			if healthInfo.soundEnum then
-				self:PlayCombatStateSound(healthInfo.soundEnum, Enum.CombatAudioAlertCategory.TargetHealth);
-			else
-				addonTable:TrySpeakText(healthInfo);
+		local announcePercentage = self:GetAnnouncePercentage(healthPercent, currentBand, lastBand, threshold);
+		if announcePercentage then
+			local shouldAnnounce = self:CheckShouldAnnouncePercent(unit, announcePercentage);
+			if shouldAnnounce then
+				--print("ANNOUNCING healthPercent = "..healthPercent.." accouncing = "..announcePercentage);
+				local healthInfo = self:GetUnitHealthInfo(unit, announcePercentage);
+				if healthInfo.soundEnum then
+					self:PlayCombatStateSound(healthInfo.soundEnum, Enum.CombatAudioAlertCategory.TargetHealth);
+				else
+					addonTable:TrySpeakText(healthInfo);
+				end
 			end
 		end
 	end
 
 	self.lastUnitHealthPercent[unit] = healthPercent;
+end
+
+function CombatAudioAlertManagerMixin:UpdateHealthPulse()
+	local pulseEnabled = addonTable.IsEnabled() and self:IsPulsePlayerHealthEnabled();
+	local soundKitID;
+
+	if pulseEnabled and not self:ShouldConsiderUnitDead("player") then
+		local healthPercent = self:GetUnitHealthPercent("player");
+		if healthPercent < self:GetPulsePlayerHealthPercent() then
+			soundKitID = CombatAudioAlertUtil.GetPulseHealthSoundKit(healthPercent);
+		end
+	end
+
+	-- A running volume sample is left to finish out on its own unless a real pulse needs to take over.
+	if not soundKitID and pulseEnabled and self.healthPulseSampleTimer then
+		return;
+	end
+
+	self:CancelHealthPulseSampleTimer();
+	self:SetHealthPulseSoundKit(soundKitID);
+end
+
+function CombatAudioAlertManagerMixin:SetHealthPulseSoundKit(soundKitID)
+	if soundKitID == self.healthPulseSoundKitID then
+		return;
+	end
+
+	self:StopHealthPulse();
+
+	if soundKitID then
+		local playSoundParams = {
+			soundKitID = soundKitID,
+			uiSoundSubType = "Voice",
+			volumeOverride = C_CombatAudioAlert.GetCategoryVolume(Enum.CombatAudioAlertCategory.PlayerHealthPulse) * .01
+		};
+
+		local success, soundHandle = C_Sound.PlaySoundWithOptions(playSoundParams);
+		if success then
+			self.healthPulseSoundKitID = soundKitID;
+			self.healthPulseSoundHandle = soundHandle;
+		end
+	end
+end
+
+function CombatAudioAlertManagerMixin:StopHealthPulse()
+	self:CancelHealthPulseSampleTimer();
+
+	if self.healthPulseSoundHandle then
+		StopSound(self.healthPulseSoundHandle);
+	end
+
+	self.healthPulseSoundKitID = nil;
+	self.healthPulseSoundHandle = nil;
+end
+
+function CombatAudioAlertManagerMixin:StartHealthPulseSampleTimer()
+	self:CancelHealthPulseSampleTimer();
+
+	self.healthPulseSampleTimer = C_Timer.NewTimer(CombatAudioAlertConstants.HEALTH_PULSE_SAMPLE_SECONDS, function()
+		self.healthPulseSampleTimer = nil;
+		self:StopHealthPulse();
+	end);
+end
+
+function CombatAudioAlertManagerMixin:CancelHealthPulseSampleTimer()
+	if self.healthPulseSampleTimer then
+		self.healthPulseSampleTimer:Cancel();
+		self.healthPulseSampleTimer = nil;
+	end
+end
+
+-- The sound kits loop, so the only way to apply a new volume is to restart whatever is playing. If nothing is pulsing, play a short sample so the new volume can still be heard.
+function CombatAudioAlertManagerMixin:RefreshHealthPulseVolume()
+	if not addonTable.IsEnabled() then
+		return;
+	end
+
+	local isSample = (self.healthPulseSoundKitID == nil) or (self.healthPulseSampleTimer ~= nil);
+	local soundKitID = self.healthPulseSoundKitID or CombatAudioAlertUtil.GetPulseHealthSoundKit(CombatAudioAlertConstants.HEALTH_PULSE_SAMPLE_PERCENT);
+
+	self:StopHealthPulse();
+	self:SetHealthPulseSoundKit(soundKitID);
+
+	if isSample and self.healthPulseSoundHandle then
+		self:StartHealthPulseSampleTimer();
+	end
 end
 
 function CombatAudioAlertManagerMixin:ProcessTargetChange()

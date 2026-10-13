@@ -1,7 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 	<ScopedModifier addToSecureEnv="true">
-		<Button name="GlueDialogButtonTemplate" inherits="GlueButtonTemplate, UserScaledFrameTemplate" mixin="GlueDialogButtonMixin, StaticPopupElementMixin" registerForClicks="LeftButtonUp" virtual="true">
+		<Button name="GlueDialogButtonTemplate" inherits="GlueButtonTemplate" registerForClicks="LeftButtonUp" virtual="true"/>
+
+		<Button name="GlueDialogButtonUserScaledTemplate" inherits="GlueButtonTemplate, UserScaledFrameTemplate" mixin="GlueDialogButtonMixin, StaticPopupElementMixin" registerForClicks="LeftButtonUp" virtual="true">
 			<KeyValues>
 				<KeyValue key="baseWidth" value="200" type="number"/>
 				<KeyValue key="baseHeight" value="30" type="number"/>
@@ -72,9 +74,9 @@
 							<FontStringHeader1 inherits="UserScaledFontGlueNormalLarge" spacing="4"/>
 							<FontStringHeader2 inherits="UserScaledFontGlueHighlight" spacing="4"/>
 						</SimpleHTML>
-						<Button inherits="GlueDialogButtonTemplate" id="1" parentKey="Button1"/>
-						<Button inherits="GlueDialogButtonTemplate" id="2" parentKey="Button2"/>
-						<Button inherits="GlueDialogButtonTemplate" id="3" parentKey="Button3"/>
+						<Button inherits="GlueDialogButtonUserScaledTemplate" id="1" parentKey="Button1"/>
+						<Button inherits="GlueDialogButtonUserScaledTemplate" id="2" parentKey="Button2"/>
+						<Button inherits="GlueDialogButtonUserScaledTemplate" id="3" parentKey="Button3"/>
 
 						<Frame parentKey="Spinner" inherits="SpinnerTemplate" hidden="true">
 							<Size x="30" y="30"/>

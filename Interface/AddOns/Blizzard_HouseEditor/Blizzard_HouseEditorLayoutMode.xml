@@ -127,6 +127,20 @@
 								<KeyValue key="layoutIndex" value="4" type="number"/>
 							</KeyValues>
 						</Frame>
+						<Frame parentKey="FloorUpInstruction" inherits="HouseEditorInstructionTemplate">
+							<KeyValues>
+								<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_LAYOUTFLOOR_UP" type="global"/>
+								<KeyValue key="keybindName" value="HOUSING_LAYOUTFLOOR_UP" type="string"/>
+								<KeyValue key="layoutIndex" value="5" type="number"/>
+							</KeyValues>
+						</Frame>
+						<Frame parentKey="FloorDownInstruction" inherits="HouseEditorInstructionTemplate">
+							<KeyValues>
+								<KeyValue key="instructionText" value="BINDING_NAME_HOUSING_LAYOUTFLOOR_DOWN" type="global"/>
+								<KeyValue key="keybindName" value="HOUSING_LAYOUTFLOOR_DOWN" type="string"/>
+								<KeyValue key="layoutIndex" value="6" type="number"/>
+							</KeyValues>
+						</Frame>
 					</Frames>
 				</Frame>
 				<Button parentKey="LayoutDragUnderlay" frameStrata="LOW" registerForClicks="LeftButtonUp" setAllPoints="true">

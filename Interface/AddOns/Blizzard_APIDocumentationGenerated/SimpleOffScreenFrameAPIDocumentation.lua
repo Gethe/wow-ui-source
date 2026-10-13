@@ -120,6 +120,7 @@ local SimpleOffScreenFrameAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

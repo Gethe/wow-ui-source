@@ -492,6 +492,7 @@ local SimpleButtonAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

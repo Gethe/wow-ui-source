@@ -53,6 +53,7 @@ local SimpleStatusBarConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

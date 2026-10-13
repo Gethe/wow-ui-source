@@ -657,22 +657,22 @@ function NamePlateBorderTemplateMixin:UpdateSizes()
 	local upwardExtendHeightPixels = self.upwardExtendHeightPixels or borderSize;
 	local upwardExtendHeightMinPixels = self.upwardExtendHeightMinPixels or minPixels;
 
-	PixelUtil.SetWidth(self.Left, borderSize, minPixels);
-	PixelUtil.SetPoint(self.Left, "TOPRIGHT", self, "TOPLEFT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
-	PixelUtil.SetPoint(self.Left, "BOTTOMRIGHT", self, "BOTTOMLEFT", 0, -borderSize, 0, minPixels);
+	self.Left:SetWidth(borderSize, minPixels);
+	self.Left:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
+	self.Left:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", 0, -borderSize, 0, minPixels);
 
-	PixelUtil.SetWidth(self.Right, borderSize, minPixels);
-	PixelUtil.SetPoint(self.Right, "TOPLEFT", self, "TOPRIGHT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
-	PixelUtil.SetPoint(self.Right, "BOTTOMLEFT", self, "BOTTOMRIGHT", 0, -borderSize, 0, minPixels);
+	self.Right:SetWidth(borderSize, minPixels);
+	self.Right:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
+	self.Right:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 0, -borderSize, 0, minPixels);
 
-	PixelUtil.SetHeight(self.Bottom, borderSize, minPixels);
-	PixelUtil.SetPoint(self.Bottom, "TOPLEFT", self, "BOTTOMLEFT", 0, 0);
-	PixelUtil.SetPoint(self.Bottom, "TOPRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	self.Bottom:SetHeight(borderSize, minPixels);
+	self.Bottom:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 0);
+	self.Bottom:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 0);
 
 	if self.Top then
-		PixelUtil.SetHeight(self.Top, borderSize, minPixels);
-		PixelUtil.SetPoint(self.Top, "BOTTOMLEFT", self, "TOPLEFT", 0, 0);
-		PixelUtil.SetPoint(self.Top, "BOTTOMRIGHT", self, "TOPRIGHT", 0, 0);
+		self.Top:SetHeight(borderSize, minPixels);
+		self.Top:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 0);
+		self.Top:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 0);
 	end
 end
 

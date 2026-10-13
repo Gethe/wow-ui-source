@@ -1177,6 +1177,7 @@ function QuestLogScrollFrameMixin:OnLoad()
 	self.campaignHeaderMinimalFramePool = CreateFramePool("BUTTON", contentsFrame, "CampaignHeaderMinimalTemplate");
 	self.covenantCallingsHeaderFramePool = CreateFramePool("BUTTON", contentsFrame, "CovenantCallingsHeaderTemplate");
 	self.CampaignTooltip = CreateFrame("Frame", nil, UIParent, "CampaignTooltipTemplate");
+	self.StoryTooltip = CreateFrame("Frame", nil, UIParent, "StoryTooltipTemplate");
 
 	self.SearchBox.Instructions:SetText(SEARCH_QUEST_LOG);
 
@@ -2331,6 +2332,10 @@ function QuestMapLog_GetCampaignTooltip()
 	return QuestScrollFrame.CampaignTooltip;
 end
 
+function QuestMapLog_GetStoryTooltip()
+	return QuestScrollFrame.StoryTooltip;
+end
+
 -- *****************************************************************************************************
 -- ***** POPUP DETAIL FRAME
 -- *****************************************************************************************************
@@ -2393,7 +2398,7 @@ function StoryHeaderMixin:GetButtonType()
 end
 
 function StoryHeaderMixin:ShowTooltip()
-	local tooltip = QuestScrollFrame.StoryTooltip;
+	local tooltip = QuestMapLog_GetStoryTooltip();
 	local mapID = QuestMapFrame:GetParent():GetMapID();
 	local storyAchievementID, storyMapID = C_QuestLog.GetZoneStoryInfo(mapID);
 	local maxWidth = 0;

@@ -1365,77 +1365,8 @@ function CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, bar, amount,
 	return bar, true;
 end
 
-local roles = {"TANK", "HEALER", "DAMAGER"};
-local frameToRole = {};
-local function GetUnitFrameRole(frame)
-	local role = UnitGroupRolesAssigned(frame.unit);
-	if EditModeManagerFrame:IsEditModeActive() and role == "NONE" then
-		if not frameToRole[frame] then
-			frameToRole[frame] = roles[math.random(#roles)];
-		end
-
-		return frameToRole[frame];
-	end
-
-	return role;
-end
-
-local raidRoleAtlases =
-{
-	["MAINTANK"] = "RaidFrame-Icon-MainTank",
-	["MAINASSIST"] = "RaidFrame-Icon-MainAssist"
-};
-
-local function GetUnitFrameRaidRole(frame)
-	local raidID = UnitInRaid(frame.unit);
-	if raidID then
-		local role = select(10, GetRaidRosterInfo(raidID));
-		return role;
-	end
-
-	return nil;
-end
-
 function CompactUnitFrame_UpdateRoleIcon(frame)
-	if not frame.roleIcon then
-		return;
-	end
-
-	local size = frame.roleIcon:GetHeight();	--We keep the height so that it carries from the set up, but we decrease the width to 1 to allow room for things anchored to the role (e.g. name).
-
-	if ( UnitInVehicle(frame.unit) and UnitHasVehicleUI(frame.unit) ) then
-		frame.roleIcon:SetAtlas("RaidFrame-Icon-Vehicle");
-		frame.roleIcon:Show();
-		frame.roleIcon:SetSize(size, size);
-		return;
-	end
-
-	if frame.optionTable.displayRaidRoleIcon then
-		local raidRole = GetUnitFrameRaidRole(frame);
-		if raidRole then
-			local raidRoleAtlas = raidRoleAtlases[raidRole];
-			if raidRoleAtlas then
-				frame.roleIcon:SetAtlas(raidRoleAtlas);
-				frame.roleIcon:Show();
-				frame.roleIcon:SetSize(size, size);
-				return;
-			end
-		end
-	end
-
-	local role = GetUnitFrameRole(frame);
-	if frame.optionTable.displayRoleIcon and role and role ~= "NONE" then
-		local roleAtlas = GetMicroIconForRole(role);
-		if roleAtlas then
-			frame.roleIcon:SetAtlas(roleAtlas);
-			frame.roleIcon:Show();
-			frame.roleIcon:SetSize(size, size);
-			return;
-		end
-	end
-
-	frame.roleIcon:Hide();
-	frame.roleIcon:SetSize(1, size);
+	UnitFrameUtil.UpdateUnitFrameRoleIcon(frame);
 end
 
 function CompactUnitFrame_UpdateReadyCheck(frame)
@@ -1774,6 +1705,10 @@ end
 
 function CompactUnitFrame_GetOptionDispelIndicatorOverlayAnimation(frame)
 	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.dispelIndicatorOverlayAnimation;
+end
+
+function CompactUnitFrame_GetOptionDispelIndicatorAnimatedBorder(frame)
+	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.dispelIndicatorAnimatedBorder;
 end
 
 function CompactUnitFrame_GetOptionShowBigDefensive(frame)
@@ -2382,6 +2317,7 @@ function ContainerPrivateAuraBehaviorMixin:SetPrivateAuraAnchorSettings()
 	self:SetAttribute("display-larger-role-specific-debuffs", CompactUnitFrame_GetOptionDisplayLargerRoleSpecificDebuffs(self));
 	self:SetAttribute("dispel-indicator-overlay-type", CompactUnitFrame_GetOptionDispelIndicatorOverlayType(self));
 	self:SetAttribute("dispel-indicator-overlay-animation", CompactUnitFrame_GetOptionDispelIndicatorOverlayAnimation(self));
+	self:SetAttribute("dispel-indicator-animated-border", CompactUnitFrame_GetOptionDispelIndicatorAnimatedBorder(self));
 	self:SetAttribute("show-big-defensive", CompactUnitFrame_GetOptionShowBigDefensive(self));
 	self:SetAttribute("big-defensive-size", self:GetBigDefensiveAuraSize());
 	self:SetAttribute("debuff-size", self:GetDebuffAuraSize());

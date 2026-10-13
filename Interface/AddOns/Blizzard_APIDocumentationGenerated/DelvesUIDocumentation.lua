@@ -608,6 +608,7 @@ local DelvesUI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

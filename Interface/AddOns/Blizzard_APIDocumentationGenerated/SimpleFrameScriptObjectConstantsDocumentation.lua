@@ -78,6 +78,7 @@ local SimpleFrameScriptObjectConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 		{

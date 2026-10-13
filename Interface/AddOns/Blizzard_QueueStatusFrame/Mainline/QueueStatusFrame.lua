@@ -851,11 +851,19 @@ local function GetDisplayNameFromCategory(category)
 			return instanceName;
 		end
 
-		-- We should be able to get the name from the LFG record, but use the brawl name as a fallback
+		-- We should be able to get the name from the LFG record if in queue, but we also need to check the active instance.
+		-- First, see if we can use the active brawl name.
 		local brawlInfo;
 		if (C_PvP.IsInBrawl()) then
 			brawlInfo = C_PvP.GetActiveBrawlInfo();
 		else
+			-- One last try for the ACTIVE instance name if we aren't in a brawl.
+			instanceName = C_LFGInfo.GetActiveLFGDungeonName();
+			if instanceName then
+				return instanceName;
+			end
+
+			-- Last resort, get current *available* brawl if there is one.
 			brawlInfo = C_PvP.GetAvailableBrawlInfo();
 		end
 		if (brawlInfo and brawlInfo.canQueue and brawlInfo.name) then
@@ -1344,7 +1352,7 @@ local function LeaveQueueWithMatchReadyCheck(idx)
 end
 
 function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
-	local status, mapName, teamSize, registeredMatch, _, _, _, _, asGroup, _, _, isSoloQueue  = GetBattlefieldStatus(idx);
+	local status, mapName, teamSize, registeredMatch, _, _, _, _, asGroup, _, _, isSoloQueued  = GetBattlefieldStatus(idx);
 
 	local name = mapName;
 	if ( name and status == "active" ) then
@@ -1357,7 +1365,7 @@ function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
 			LeaveQueueWithMatchReadyCheck(idx);
 		end);
 
-		if IsInGroup() and not UnitIsGroupLeader("player") and not isSoloQueue then
+		if IsInGroup() and not UnitIsGroupLeader("player") and not isSoloQueued then
 			button:SetEnabled(false);
 		end
 	elseif ( status == "locked" ) then

@@ -140,6 +140,15 @@
 								<Anchor point="CENTER" relativeKey="$parent.QuestIconBg" x="0.5" />
 							</Anchors>
 						</Texture>
+						<MaskTexture parentKey="CircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Exclamation" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Exclamation" x="0" y="0"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Exclamation"/>
+							</MaskedTextures>
+						</MaskTexture>
 					</Layer>
 					<Layer level="ARTWORK" textureSubLevel="2">
 						<Texture parentKey="QuestIconBadgeBorder" atlas="AutoQuest-badgeborder" useAtlasSize="true">

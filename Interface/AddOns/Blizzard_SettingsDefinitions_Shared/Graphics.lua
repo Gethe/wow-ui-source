@@ -209,7 +209,7 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	local function GetSpellDensityOptions()
 		local container = Settings.CreateControlTextContainer();
 		local cvar = settingSpellDensity.cvar;
-		-- These match the enum values of SPELL_VISUAL_KIT_DENSITY.
+		-- These match the enum values of SPELL_VISUAL_DENSITY.
 		--AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_SFX_DENSITY_PERF, VIDEO_OPTIONS_SFX_DENSITY_PERF_TOOLTIP);
 		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_SFX_DENSITY_MIN, VIDEO_OPTIONS_SFX_DENSITY_MIN_TOOLTIP);
 		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_SFX_DENSITY_REDUCED, VIDEO_OPTIONS_SFX_DENSITY_REDUCED_TOOLTIP);
