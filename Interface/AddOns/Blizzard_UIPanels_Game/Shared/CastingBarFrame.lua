@@ -196,7 +196,7 @@ function CastingBarMixin:OnUpdate(elapsed)
 
 	if ( self.casting or self.reverseChanneling or self.channeling ) then
 		if ( self.Spark ) then
-			local sparkPosition = (self.value / self.maxValue) * self:GetWidth();
+			local sparkPosition = (math.max(0, self.value) / self.maxValue) * self:GetWidth();
 			self.Spark:SetPoint("CENTER", self, "LEFT", sparkPosition, self.Spark.offsetY or 0);
 		end
 	end
@@ -1369,15 +1369,24 @@ function PlayerCastingBarMixin:OnLoad()
 	local showShieldNo = false;
 	CastingBarMixin.OnLoad(self, "player", showTradeSkills, showShieldNo);
 	self.Icon:Hide();
-end
 
-function PlayerCastingBarMixin:OnShow()
-	CastingBarMixin.OnShow(self);
-	ManagedFrameMixin.OnShow(self); 
+	if InputUtil.IsGamepadUIEnabled() then
+		self.isManagedFrame = false;
+		self.isBottomManagedFrame = false;
+	end
 end
 
 function PlayerCastingBarMixin:IsAttachedToPlayerFrame()
 	return self.attachedToPlayerFrame;
+end
+
+PlayerCastingBarFrameMixin = {};
+
+function PlayerCastingBarFrameMixin:OnShow()
+	CastingBarMixin.OnShow(self);
+	if self.isManagedFrame then
+		ManagedFrameMixin.OnShow(self);
+	end
 end
 
 -- Alternate Player Casting Bar for use over frames whose content triggers contextual player casts

@@ -1,8 +1,13 @@
-
 function BaseActionButtonMixin:UpdateButtonArt()
 	if (not self.SlotArt or not self.SlotBackground) then
 		return;
 	end
+	local parent = self:GetParent();
+	self.SlotArt:SetAtlas("ui-hud-actionbar-iconframe-slot");
+	self.SlotArt:SetDesaturated(false);
+	self.SlotArt:SetAlpha(1.0);
+	self.SlotArt:SetPoint("TOPLEFT", parent, "TOPLEFT", 0, 0);
+	self.SlotArt:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 0, 0);
 
 	if (self.bar and not self.bar.hideBarArt) then
 		self.SlotArt:Show();

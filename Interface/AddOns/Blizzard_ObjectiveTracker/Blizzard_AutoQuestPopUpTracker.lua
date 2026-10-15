@@ -1,4 +1,10 @@
 local questItems = { };
+local centeredAutoQuestPopup;
+
+local function PlayCenteredAutoQuestPopupAnimation(popup)
+	popup.Contents.Shine.Flash:Play();
+	popup.Contents.IconShine.Flash:Play();
+end
 
 AutoQuestPopupTrackerMixin = { };
 
@@ -12,12 +18,52 @@ end
 
 function AutoQuestPopupTrackerMixin:AddAutoQuestObjectives()
 	if SplashFrame:IsShown() then
+		if centeredAutoQuestPopup then
+			centeredAutoQuestPopup:Hide();
+		end
 		return;
 	end
 
+	-- WoWHack specific handling to move the auto quest popup to be centered above the PersonalGrowingResourceDisplayMixin
+	-- If you're removing this, remove all instances of centeredAutoQuestPopup with it.
+	-- This essentially moves the auto quest popup to be centered above the PersonalResourceDisplay
+	-- and centers it on the screen for better visibility.
+	local centeredQuestID;
+	local centeredQuestTitle;
+	local canCenterCompletionPopup = C_GameRules.IsWoWHack() and PersonalGrowingResourceDisplay and PersonalGrowingResourceDisplay:IsShown();
+	if canCenterCompletionPopup then
+		for i = 1, GetNumAutoQuestPopUps() do
+			local questID, popUpType = GetAutoQuestPopUp(i);
+			if not centeredQuestID and popUpType == "COMPLETE" and self:ShouldDisplayAutoQuest(questID) and C_QuestInfoSystem.GetQuestClassification(questID) ~= Enum.QuestClassification.Campaign then
+				local questTitle = C_QuestLog.GetTitleForQuestID(questID);
+				if questTitle and questTitle ~= "" then
+					centeredQuestID = questID;
+					centeredQuestTitle = questTitle;
+				end
+			end
+		end
+	end
+
+	if centeredQuestID then
+		if not centeredAutoQuestPopup then
+			centeredAutoQuestPopup = CreateFrame("Frame", nil, UIParent, "AutoQuestPopUpBlockTemplate");
+			centeredAutoQuestPopup:Init();
+			centeredAutoQuestPopup.parentModule = self;
+			centeredAutoQuestPopup.SlideIn = PlayCenteredAutoQuestPopupAnimation;
+			centeredAutoQuestPopup:SetFrameStrata("DIALOG");
+		end
+		centeredAutoQuestPopup:Show();
+		centeredAutoQuestPopup:Update(centeredQuestTitle, centeredQuestID, "COMPLETE");
+		centeredAutoQuestPopup:ClearAllPoints();
+		centeredAutoQuestPopup:SetPoint("BOTTOM", PersonalGrowingResourceDisplay, "TOP", -25, 20);
+	elseif centeredAutoQuestPopup then
+		centeredAutoQuestPopup:Hide();
+	end
+	-- WoWHack specific handling end
+
 	for i = 1, GetNumAutoQuestPopUps() do
 		local questID, popUpType = GetAutoQuestPopUp(i);
-		if self:ShouldDisplayAutoQuest(questID) then
+		if not (questID == centeredQuestID and popUpType == "COMPLETE") and self:ShouldDisplayAutoQuest(questID) then
 			local questTitle = C_QuestLog.GetTitleForQuestID(questID);
 			if questTitle and questTitle ~= "" then
 				local block = self:GetBlock(MakeBlockKey(questID, popUpType), "AutoQuestPopUpBlockTemplate");
@@ -41,6 +87,9 @@ end
 
 function AutoQuestPopupTrackerMixin:RemoveAutoQuestPopUp(questID)
 	RemoveAutoQuestPopUp(questID);
+	if centeredAutoQuestPopup and centeredAutoQuestPopup.questID == questID then
+		centeredAutoQuestPopup:Hide();
+	end
 	if GetNumAutoQuestPopUps() == 0 then
 		wipe(questItems);
 	end
@@ -131,15 +180,18 @@ end
 
 function AutoQuestPopupBlockMixin:UpdateExclamationIcon(itemID, popUpType)
 	local icon = self.Contents.Exclamation;
+	local circleMask = self.Contents.CircleMask;
 	local texture = itemID and select(10, C_Item.GetItemInfo(itemID));
 	if texture then
 		icon:SetTexCoord(0.078125, 0.921875, 0.078125, 0.921875);
 		icon:SetSize(35, 35);
 		icon:SetTexture(texture);
+		circleMask:Show();
 	else
 		icon:SetTexture("Interface\\QuestFrame\\AutoQuest-Parts");
 		icon:SetTexCoord(0.13476563, 0.17187500, 0.01562500, 0.53125000);
 		icon:SetSize(19, 33);
+		circleMask:Hide();
 	end
 end
 

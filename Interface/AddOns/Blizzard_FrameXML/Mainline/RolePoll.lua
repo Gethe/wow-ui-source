@@ -1,5 +1,7 @@
 function RolePollPopup_OnLoad(self)
 	self:RegisterEvent("ROLE_POLL_BEGIN");
+
+	RolePollPopup_RegisterForTransitions(self);
 end
 
 function RolePollPopup_OnEvent(self, event, ...)
@@ -15,18 +17,19 @@ function RolePollPopup_Show(self)
 	PlaySound(SOUNDKIT.READY_CHECK);
 	FlashClientIcon();
 	local canBeTank, canBeHealer, canBeDamager = UnitGetAvailableRoles("player");
-	if ( canBeTank ) then
-		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonTank);
+	local softAllowAnyRole = AreClassRolesSoftSuggestions();
+	if ( canBeTank or softAllowAnyRole ) then
+		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonTank, canBeTank);
 	else
 		RolePollPopupRoleButton_Disable(RolePollPopupRoleButtonTank);
 	end
-	if ( canBeHealer ) then
-		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonHealer);
+	if ( canBeHealer or softAllowAnyRole ) then
+		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonHealer, canBeHealer);
 	else
 		RolePollPopupRoleButton_Disable(RolePollPopupRoleButtonHealer);
 	end
-	if ( canBeDamager ) then
-		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonDPS);
+	if ( canBeDamager or softAllowAnyRole ) then
+		RolePollPopupRoleButton_Enable(RolePollPopupRoleButtonDPS, canBeDamager);
 	else
 		RolePollPopupRoleButton_Disable(RolePollPopupRoleButtonDPS);
 	end
@@ -35,6 +38,10 @@ function RolePollPopup_Show(self)
 	RolePollPopup_UpdateChecked(self);
 	
 	StaticPopupSpecial_Show(RolePollPopup);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupShown(self);
+	end
 end
 
 function RolePollPopup_UpdateChecked(self)
@@ -49,14 +56,53 @@ function RolePollPopup_UpdateChecked(self)
 	end
 end
 
-function RolePollPopupRoleButton_Enable(button)
+function RolePollPopup_SetupGamepad(self)
+	local function Accept()
+		RolePollPopupAcceptButton:Click();
+	end
+
+	local accept = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, Accept, ACCEPT);
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "RollPollFooter");
+	self.footer:AddStandardSelectPrompt();
+	self.footer:AddPromptedBinding(accept);
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+
+	function RolePollPopup.UnfocusGamepad(self)
+		self.footer:HideAndDeactivateBindings();
+	end
+
+	function RolePollPopup.FocusGamepad(self)
+		self.footer:ShowAndActivateBindings();
+	end
+
+	self.skipGamepadAutoFocus = true;
+end
+
+function RolePollPopup_InitializeGamepad(self)
+	RolePollPopupCloseButton:Hide();
+	RolePollPopupAcceptButton:Hide();
+
+	-- Size down to account for missing 'Accept' button
+	RolePollPopup:SetHeight(138);
+end
+
+function RolePollPopup_RegisterForTransitions(self)
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(RolePollPopup_SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(RolePollPopup_InitializeGamepad, self));
+end
+
+function RolePollPopupRoleButton_Enable(button, isRecommended)
 	button:Enable();
-	local showDisabled = false;
+	local showDisabled = not isRecommended;
 	button:SetNormalAtlas(GetIconForRoleEnum(button.role, showDisabled), TextureKitConstants.IgnoreAtlasSize);
 	button.checkButton:Enable();
 	button.checkButton:Show();
 	
 	button.permDisabled = false;
+	button.isRecommended = isRecommended;
 end
 
 function RolePollPopupRoleButton_Disable(button)
@@ -67,6 +113,7 @@ function RolePollPopupRoleButton_Disable(button)
 	button.checkButton:Hide();
 	
 	button.permDisabled = true;
+	button.isRecommended = false;
 end
 
 function RolePollPopupRoleButtonCheckButton_OnClick(self, button)
@@ -85,6 +132,12 @@ function RolePollPopupAccept_OnClick(self, button)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	UnitSetRoleEnum("player", self:GetParent().role);
 	StaticPopupSpecial_Hide(self:GetParent());
+end
+
+function RolePollPopup_OnHide(self)
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupHide(self);
+	end
 end
 
 function RoleChangedFrame_OnLoad(self)

@@ -99,6 +99,11 @@ function GameEvent.HandleAlertRegionalChatDisabled(_dispatcher, _event)
 	StaticPopup_Show("REGIONAL_CHAT_DISABLED");
 end
 
+function GameEvent.HandleAlertAgeVerificationRestricted(_dispatcher, _event)
+	local isMinor = C_SocialRestrictions.IsAgeVerificationRestrictedMinor();
+	StaticPopup_Show(isMinor and "AGE_VERIFICATION_RESTRICTED_MINOR" or "AGE_VERIFICATION_RESTRICTED_UNVERIFIED");
+end
+
 function GameEvent.HandleAreaSpiritHealerInRange(_dispatcher, _event)
 	AcceptAreaSpiritHeal();
 	StaticPopup_Show("AREA_SPIRIT_HEAL");
@@ -154,6 +159,10 @@ end
 
 function GameEvent.HandlePlayerCamping(_dispatcher, _event)
 	StaticPopup_Show("CAMP");
+end
+
+function GameEvent.HandleShardTransferEvent(_dispatcher, _event)
+	StaticPopup_Hide("SHARD_TRANSFER_IMMINENT_EVENT");
 end
 
 function GameEvent.HandlePlayerControlLost(_dispatcher, _event)
@@ -302,13 +311,13 @@ function GameEvent.HandlePlayerEnteringWorld(_dispatcher, _event, isInitialLogin
 	UpdateMicroButtons();
 
 	UpdateUIParentPosition();
-	
+
 	if C_Commentator.IsSpectating() then
 		Commentator_LoadUI();
 	end
 
 	if Kiosk.IsEnabled() then
-		KioskFrame_HandlePlayerEnteringWorld(isInitialLogin, isUIReload);
+		Kiosk_HandlePlayerEnteringWorld(isInitialLogin, isUIReload);
 	end
 end
 

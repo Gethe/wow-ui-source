@@ -1,0 +1,10 @@
+## Title: Blizzard_EnvironmentCleanup
+## Dep: Blizzard_FrameXML
+## Dep: Blizzard_ActionBar
+## Dep: Blizzard_UIPanels_Game
+## Dep: Blizzard_ScriptErrorsFrame
+## Dep: Blizzard_UnitFrame
+## Dep: Blizzard_ChatFrame [AllowLoadGameType mainline]
+## OptionalDep: Blizzard_RestrictedAddOnEnvironment
+## LoadFirst: 1
+[Family]\EnvironmentCleanup.lua

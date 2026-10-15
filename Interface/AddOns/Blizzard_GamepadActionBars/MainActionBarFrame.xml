@@ -1,0 +1,143 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="GamepadMainActionBarFrame" inherits="EditModeGamepadMainActionBarSystemTemplate" parentKey="GamepadMainActionBarFrame" parent="UIParent" mixin="GamepadMainActionBarFrameMixin" hidden="true">
+		<Size x="656" y="202"/>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+		<Frames>
+			<Frame name="$parentPageUnit" parentKey="PageUnit" inherits="GamepadActionBarPageUnitTemplate">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-1">
+						<Texture parentKey="LeftShoulderBackground" atlas="gamepad-targeting-left-shoulder-bg" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TopCenteredAnchor" relativePoint="CENTER" x="-108" y="42"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RightShoulderBackground" atlas="gamepad-targeting-right-shoulder-bg" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.TopCenteredAnchor" relativePoint="CENTER" x="108" y="42"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="LeftShoulderIcon">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.LeftShoulderBackground"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RightShoulderIcon">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.RightShoulderBackground"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="LeftShoulderHighlight" atlas="gamepad-targeting-left-shoulder-pressed" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.LeftShoulderBackground"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="RightShoulderHighlight" atlas="gamepad-targeting-right-shoulder-pressed" useAtlasSize="true" hidden="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.RightShoulderBackground"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame name="$parentFriendlyTargetingActionBar" parentKey="FriendlyTargetingActionBar" enableMouse="true" inherits="GamepadActionBarTemplate" mixin="GamepadFriendlyTargetingActionBarMixin" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.TopCenteredAnchor"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="DisplayName" value="Friendly Target Action Bar" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentHostileTargetingActionBar" parentKey="HostileTargetingActionBar" enableMouse="true" inherits="GamepadActionBarTemplate" mixin="GamepadHostileTargetingActionBarMixin" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.TopCenteredAnchor"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="DisplayName" value="Hostile Target Action Bar" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
+					<Frame name="$parentShortcutsActionBar" parentKey="ShortcutsActionBar" enableMouse="true" inherits="GamepadActionBarTemplate" mixin="GamepadShortcutsActionBarMixin" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.TopCenteredAnchor"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="DisplayName" value="Shortcuts Action Bar" type="string"/>
+						</KeyValues>
+						<Scripts>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
+					<CheckButton name="$parentLeftClassAction" parentKey="LeftClassAction" inherits="GamepadClassActionButtonTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.BottomCenteredAnchor" x="-138" y="-50"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="shoulderButton" type="global" value="GAMEPAD_SHOULDER_LEFT"/>
+							<KeyValue key="triggerButton" type="global" value="GAMEPAD_TRIGGER_LEFT"/>
+							<KeyValue key="inputPromptKey" type="string" value="LeftInputPrompt"/>
+						</KeyValues>
+					</CheckButton>
+					<CheckButton name="$parentRightClassAction" parentKey="RightClassAction" inherits="GamepadClassActionButtonTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.BottomCenteredAnchor" x="138" y="-50"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="shoulderButton" type="global" value="GAMEPAD_SHOULDER_RIGHT"/>
+							<KeyValue key="triggerButton" type="global" value="GAMEPAD_TRIGGER_RIGHT"/>
+							<KeyValue key="inputPromptKey" type="string" value="RightInputPrompt"/>
+						</KeyValues>
+					</CheckButton>
+					<!--
+						These aren't in the class action button template since that would cause them
+						to show up on top of flyouts. Additionally they're not anchored to their
+						buttons since that would cause them to move when buttons get pressed.
+					-->
+					<Frame parentKey="LeftInputPrompt" inherits="InputPromptTwoIconTemplate" hidden="true">
+						<Size x="72" y="24"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.BottomCenteredAnchor" x="-138" y="-80"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="Icon1" type="global" value="GAMEPAD_SHOULDER_LEFT"/>
+							<KeyValue key="Icon2" type="global" value="GAMEPAD_TRIGGER_LEFT"/>
+						</KeyValues>
+					</Frame>
+					<Frame parentKey="RightInputPrompt" inherits="InputPromptTwoIconTemplate" hidden="true">
+						<Size x="72" y="24"/>
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent.BottomCenteredAnchor" x="138" y="-80"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="Icon1" type="global" value="GAMEPAD_SHOULDER_RIGHT"/>
+							<KeyValue key="Icon2" type="global" value="GAMEPAD_TRIGGER_RIGHT"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

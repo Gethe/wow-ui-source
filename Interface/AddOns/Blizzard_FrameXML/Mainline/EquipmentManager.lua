@@ -9,7 +9,7 @@ local EQUIP_ITEM = 1;
 local UNEQUIP_ITEM = 2;
 local SWAP_ITEM = 3;
 
-for i = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
+for i = KEYRING_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS do
 	EQUIPMENTMANAGER_BAGSLOTS[i] = {};
 end
 
@@ -18,7 +18,7 @@ EquipmentManager = CreateFrame("FRAME");
 function EquipmentManager_UpdateFreeBagSpace ()
 	local bagSlots = EQUIPMENTMANAGER_BAGSLOTS;
 
-	for i = BACKPACK_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS + C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Character) do
+	for i = KEYRING_CONTAINER, NUM_TOTAL_EQUIPPED_BAG_SLOTS + C_Bank.FetchNumPurchasedBankTabs(Enum.BankType.Character) do
 		local _, bagType = C_Container.GetContainerNumFreeSlots(i);
 		local freeSlots = C_Container.GetContainerFreeSlots(i);
 		if ( freeSlots ) then
@@ -102,7 +102,7 @@ function EquipmentManager_EquipContainerItem (action)
 		return false;
 	end
 
-	if ( not C_PaperDollInfo.CanCursorCanGoInSlot(action.invSlot) ) then
+	if ( not C_PaperDollInfo.CursorCanGoInSlot(action.invSlot) ) then
 		return false;
 	elseif ( IsInventoryItemLocked(action.invSlot) ) then
 		return false;
@@ -119,7 +119,7 @@ end
 function EquipmentManager_EquipInventoryItem (action)
 	ClearCursor();
 	PickupInventoryItem(action.slot);
-	if ( not C_PaperDollInfo.CanCursorCanGoInSlot(action.invSlot) ) then
+	if ( not C_PaperDollInfo.CursorCanGoInSlot(action.invSlot) ) then
 		return false;
 	elseif ( IsInventoryItemLocked(action.invSlot) ) then
 		return false;

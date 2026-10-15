@@ -1,6 +1,7 @@
 ## Title: Blizzard_TutorialManager
 ## Dep: middleclass
 ## Dep: Blizzard_Dispatcher
+## Dep: Blizzard_TutorialTemplates
 ## Dep: Blizzard_HelpPlate
 
 Blizzard_TutorialQueue.lua
@@ -14,3 +15,4 @@ Blizzard_TutorialEffects.xml
 Blizzard_TutorialBase.lua
 Blizzard_TutorialHelper.lua
 Blizzard_TutorialManager.lua
+[Game]/Blizzard_TutorialManagerOverrides.lua		[AllowLoadGameType camelot]

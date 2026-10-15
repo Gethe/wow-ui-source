@@ -23,6 +23,7 @@ local VisualAlertConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

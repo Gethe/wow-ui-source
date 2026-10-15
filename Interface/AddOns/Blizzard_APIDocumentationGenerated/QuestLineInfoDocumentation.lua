@@ -158,6 +158,7 @@ local QuestLineInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

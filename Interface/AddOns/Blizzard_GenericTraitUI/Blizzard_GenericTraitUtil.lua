@@ -17,12 +17,21 @@ local GenericTraitFrameLayoutOptions = {
 		ShowInset = false,
 		HeaderOffset = { x = 0, y = -30 },
 		CurrencyOffset = { x = 0, y = -20 },
+		CurrencyTextOffset = { x = 0, y = -3 },
+		CurrencyTextOverrides = {
+			Color = nil, -- override in layout
+			Font = nil, -- override in layout
+			IconWidth = nil, -- override in layout
+			IconHeight = nil, -- override in layout
+		},
 		CurrencyBackgroundAtlas = "dragonriding-talents-currencybg",
+		UseCurrencyTooltip = false,
 		PanOffset = { x = 0, y = 0 },
 		ButtonPurchaseFXIDs = { 150, 142, 143 },
-		CloseButtonOffset = { x = -9, y = -9 },
+		CloseButtonOffset = { x = -6, y = -8 },
 		PanelArea = "left",
 		HideCurrencyDisplay = false,
+		HideUndiscoveredNodes = false, -- Only show nodes that are learned or reachable from a learned node.
 	},
 
 	Skyriding = {
@@ -64,6 +73,21 @@ local GenericTraitFrameLayoutOptions = {
 	AltarOfCorrosion = {
 		HeaderSize = { Width = 500, Height = 120 },
 	},
+
+	CamelotLegacy = {
+		Title = "Legacy Talents",
+		TitleDividerShown = false,
+		FrameSize = { Width = 850, Height = 750 },
+		CurrencyOffset = { x = 100, y = 50 },
+		PanOffset = { x = -20, y = -20 },
+		ButtonPurchaseFXIDs = {},
+	},
+};
+
+local TextureKitOverrides = {
+	thewarwithin = {
+		CloseButtonOffset = { x = -9, y = -9 },
+	},
 };
 
 local GenericTraitFrameLayouts = {
@@ -86,6 +110,9 @@ local GenericTraitFrameLayouts = {
 
 	-- Altar of Corrosion
 	[1191] = GenericTraitFrameLayoutOptions.AltarOfCorrosion,
+
+	-- Camelot Legacy Talents
+	[1118] = GenericTraitFrameLayoutOptions.CamelotLegacy,
 };
 
 local GenericTraitFrameTutorials = {
@@ -118,6 +145,8 @@ local GenericTraitCurrencyTutorials = {
 	},
 };
 
+local DefaultTraitLayout = GenericTraitFrameLayoutOptions.Default;
+
 GenericTraitUtil = {};
 
 function GenericTraitUtil.GetEdgeTemplateType(edgeVisualStyle)
@@ -133,15 +162,31 @@ function GenericTraitUtil.GetFrameLayoutInfo(treeID)
 	if treeInfo then
 		layoutInfo.Title = treeInfo.titleText;
 		layoutInfo.NineSliceTextureKit = layoutInfo.NineSliceTextureKit or treeInfo.uiTextureKit;
+
+		local kitOverrides = treeInfo.uiTextureKit and TextureKitOverrides[treeInfo.uiTextureKit];
+		if kitOverrides then
+			MergeTable(layoutInfo, kitOverrides);
+		end
+
 		if not layoutInfo.BackgroundAtlas and treeInfo.uiTextureKit then
 			layoutInfo.BackgroundAtlas = bgAtlasFormatStr:format(treeInfo.uiTextureKit);
 		end
 	end
-	return setmetatable(layoutInfo, {__index = GenericTraitFrameLayoutOptions.Default});
+	return setmetatable(layoutInfo, {__index = DefaultTraitLayout});
 end
 
 function GenericTraitUtil.AddFrameLayoutInfo(treeID, frameLayoutInfo)
 	GenericTraitFrameLayouts[treeID] = frameLayoutInfo;
+end
+
+-- Returns every treeID GenericTraitFrame has a custom layout for, sorted ascending.
+function GenericTraitUtil.GetKnownTreeIDs()
+	local treeIDs = {};
+	for treeID in pairs(GenericTraitFrameLayouts) do
+		table.insert(treeIDs, treeID);
+	end
+	table.sort(treeIDs);
+	return treeIDs;
 end
 
 function GenericTraitUtil.GetFrameTutorialInfo(treeID)
@@ -150,4 +195,8 @@ end
 
 function GenericTraitUtil.GetCurrencyTutorialInfo(treeID)
 	return GenericTraitCurrencyTutorials[treeID];
+end
+
+function GenericTraitUtil.SetDefaultLayout(layoutInfo)
+	DefaultTraitLayout = layoutInfo;
 end

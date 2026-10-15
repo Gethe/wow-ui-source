@@ -226,6 +226,11 @@ end
 function TalentButtonCapstoneWithTrackMixin:OnEnter()
 	self:LoadPipSpellsAndShowTooltip();
 	self:OnEnterVisuals();
+
+	local talentFrame = self:GetTalentFrame();
+	if talentFrame and talentFrame.OnEnterDisplayCallback then
+		talentFrame.OnEnterDisplayCallback(self);
+	end
 end
 
 function TalentButtonCapstoneWithTrackMixin:GetPipSpellIDs()

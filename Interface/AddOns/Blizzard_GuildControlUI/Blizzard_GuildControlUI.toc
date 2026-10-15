@@ -1,8 +1,5 @@
-## Title: Blizzard Guild Control UI
-## Author: Blizzard Entertainment
+## Title: Blizzard_GuildControlUI
 ## LoadOnDemand: 1
-## AllowLoad: Game
-## AllowLoadGameType: mainline, classic
 Blizzard_GuildControlUI_Bootstrap.lua [Bootstrap]
 Blizzard_GuildControlUI.lua
 Blizzard_GuildControlUI.xml

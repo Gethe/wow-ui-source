@@ -1,0 +1,66 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+
+	<Frame name="LargeSideTabButtonTemplate" mixin="SidePanelTabButtonMixin" virtual="true">
+		<!--<KeyValues>
+			<KeyValue key="fillToInterior" value="false" type="boolean"/>
+			<KeyValue key="interiorExtent" value="50" type="number"/>
+		</KeyValues>-->
+		<!-- Size is set in SidePanelTabButtonMixin:InitializeSizeForTabArt because Camelot tabs are wider -->
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="common-sidetab" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<!-- Anchored in SidePanelTabButtonMixin:InitializeIconAnchoring because Camelot tabs are wider -->
+				</Texture>
+				<MaskTexture parentKey="Mask" atlas="common-sidetab-mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="common-sidetab-selected" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="TabGlow" atlas="common-sidetab-selected" useAtlasSize="true" alpha="0" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="HighlightTexture" atlas="common-sidetab-hover" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="TabGlowAnimation" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha childKey="TabGlow" duration="0.9" order="1" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="TabGlow" duration="0.9" order="2" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+	
+</Ui>

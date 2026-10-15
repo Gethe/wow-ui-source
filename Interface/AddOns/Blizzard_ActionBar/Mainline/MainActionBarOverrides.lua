@@ -6,11 +6,11 @@ function MainActionBarMixin:UpdateEndCaps(overrideHideEndCaps)
 	if ( factionGroup and factionGroup ~= "Neutral" ) then
 
 		if ( factionGroup == "Alliance" ) then
-			self.EndCaps.LeftEndCap:SetAtlas("ui-hud-actionbar-gryphon-left");
-			self.EndCaps.RightEndCap:SetAtlas("ui-hud-actionbar-gryphon-right");
+			self.EndCaps.LeftEndCap.Texture:SetAtlas("ui-hud-actionbar-gryphon-left");
+			self.EndCaps.RightEndCap.Texture:SetAtlas("ui-hud-actionbar-gryphon-right");
 		elseif ( factionGroup == "Horde" ) then
-			self.EndCaps.LeftEndCap:SetAtlas("ui-hud-actionbar-wyvern-left");
-			self.EndCaps.RightEndCap:SetAtlas("ui-hud-actionbar-wyvern-right");
+			self.EndCaps.LeftEndCap.Texture:SetAtlas("ui-hud-actionbar-wyvern-left");
+			self.EndCaps.RightEndCap.Texture:SetAtlas("ui-hud-actionbar-wyvern-right");
 		end
 
 		showEndCaps = true;

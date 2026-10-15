@@ -1,4 +1,5 @@
 ## Title: Blizzard_HelpPlate
 ## AllowLoad: Both
 Blizzard_HelpPlate.lua
+[Game]/HelpPlateOverrides.lua [AllowLoadGameType camelot]
 Blizzard_HelpPlate.xml

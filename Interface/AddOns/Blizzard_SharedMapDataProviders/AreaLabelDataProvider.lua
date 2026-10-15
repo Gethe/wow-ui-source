@@ -74,8 +74,16 @@ function AreaLabelFrameMixin:OnUpdate()
 	if map:IsCanvasMouseFocus() then
 		local name, description;
 		local mapID = map:GetMapID();
-		local normalizedCursorX, normalizedCursorY = map:GetNormalizedCursorPosition();
-		local positionMapInfo = C_Map.GetMapInfoAtPosition(mapID, normalizedCursorX, normalizedCursorY);		
+		local normalizedCursorX, normalizedCursorY;
+
+		local useGamepadCursorInput = InputUtil.IsGamepadUIEnabled() and (map:HasGamepadCursorInput() or not map:IsCanvasMouseFocusOrPinFocus());
+		if useGamepadCursorInput then
+			normalizedCursorX, normalizedCursorY = map:GetNormalizedGamepadCursorPosition();
+		else
+			normalizedCursorX, normalizedCursorY = map:GetNormalizedCursorPosition();
+		end
+
+		local positionMapInfo = C_Map.GetMapInfoAtPosition(mapID, normalizedCursorX, normalizedCursorY);
 		if positionMapInfo and positionMapInfo.mapID ~= mapID then
 			name = positionMapInfo.name;
 			local playerMinLevel, playerMaxLevel, petMinLevel, petMaxLevel = C_Map.GetMapLevels(positionMapInfo.mapID);
@@ -98,29 +106,29 @@ function AreaLabelFrameMixin:OnUpdate()
 				end
 			end
 
-			local _, _, _, _, locked = C_PetJournal.GetPetLoadOutInfo(Enum.PetbattleSlot.Slot_0);
-			if not locked and GetCVarBool("showTamers") then --don't show pet levels for people who haven't unlocked battle petting
-				if petMinLevel and petMaxLevel and petMinLevel > 0 and petMaxLevel > 0 then
-					local teamLevel = C_PetJournal.GetPetTeamAverageLevel();
-					local color;
-					if teamLevel then
-						if teamLevel < petMinLevel then
-							--add 2 to the min level because it's really hard to fight higher level pets
-							color = GetRelativeDifficultyColor(teamLevel, petMinLevel + 2);
-						elseif teamLevel > petMaxLevel then
-							color = GetRelativeDifficultyColor(teamLevel, petMaxLevel);
+			local petBattlesDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.PetBattlesDisabled);
+			if not petBattlesDisabled then
+				local _, _, _, _, locked = C_PetJournal.GetPetLoadOutInfo(Enum.PetbattleSlot.Slot_0);
+				if not locked and GetCVarBool("showTamers") then --don't show pet levels for people who haven't unlocked battle petting
+					if petMinLevel and petMaxLevel and petMinLevel > 0 and petMaxLevel > 0 then
+						local teamLevel = C_PetJournal.GetPetTeamAverageLevel();
+						local color;
+						if teamLevel then
+							if teamLevel < petMinLevel then
+								--add 2 to the min level because it's really hard to fight higher level pets
+								color = GetRelativeDifficultyColor(teamLevel, petMinLevel + 2);
+							elseif teamLevel > petMaxLevel then
+								color = GetRelativeDifficultyColor(teamLevel, petMaxLevel);
+							else
+								--if your team is in the level range, no need to call the function, just make it yellow
+								color = QuestDifficultyColors["difficult"];
+							end
 						else
-							--if your team is in the level range, no need to call the function, just make it yellow
-							color = QuestDifficultyColors["difficult"];
+							--If you unlocked pet battles but have no team, level ranges are meaningless so make them grey
+							color = QuestDifficultyColors["header"];
 						end
-					else
-						--If you unlocked pet battles but have no team, level ranges are meaningless so make them grey
-						color = QuestDifficultyColors["header"];
-					end
 					color = RGBTableToColorCode(color);
 
-					local petBattlesDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.PetBattlesDisabled);
-					if not petBattlesDisabled then
 						if petMinLevel ~= petMaxLevel then
 							description = WORLD_MAP_WILDBATTLEPET_LEVEL..color.."("..petMinLevel.."-"..petMaxLevel..")"..FONT_COLOR_CODE_CLOSE;
 						else

@@ -19,6 +19,15 @@ function SharedReportFrameMixin:OnHide()
 	if not self.enteringScreenshotMode then 
 		self:Reset();
 	end
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
+end
+
+function SharedReportFrameMixin:OnShow()
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
 end
 
 function SharedReportFrameMixin:OnTakeScreenshotClicked()

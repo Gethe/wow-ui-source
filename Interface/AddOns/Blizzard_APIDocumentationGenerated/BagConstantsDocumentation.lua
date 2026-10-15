@@ -5,7 +5,7 @@ local BagConstants =
 		{
 			Name = "BagFlag",
 			Type = "Enumeration",
-			NumValues = 28,
+			NumValues = 27,
 			MinValue = 1,
 			MaxValue = 134217728,
 			Fields =
@@ -32,7 +32,6 @@ local BagConstants =
 				{ Name = "PreferNeutralPriorityBags", Type = "BagFlag", EnumValue = 524288 },
 				{ Name = "AsymmetricSwap", Type = "BagFlag", EnumValue = 1048576 },
 				{ Name = "PreferReagentBags", Type = "BagFlag", EnumValue = 2097152 },
-				{ Name = "IgnoreSoulbound", Type = "BagFlag", EnumValue = 4194304 },
 				{ Name = "IgnoreReagentBags", Type = "BagFlag", EnumValue = 8388608 },
 				{ Name = "LookInAccountBankOnly", Type = "BagFlag", EnumValue = 16777216 },
 				{ Name = "HasRefund", Type = "BagFlag", EnumValue = 33554432 },
@@ -61,6 +60,7 @@ local BagConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

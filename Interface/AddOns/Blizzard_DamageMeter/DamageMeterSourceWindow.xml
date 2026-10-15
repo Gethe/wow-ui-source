@@ -37,6 +37,9 @@
 				<Anchors>
 					<!-- Anchored dynamically in lua-->
 				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="30" bottom="0"/>
+				</HitRectInsets>
 				<NormalTexture atlas="damagemeters-scalehandle"/>
 				<HighlightTexture atlas="damagemeters-scalehandle-hover"/>
 				<PushedTexture atlas="damagemeters-scalehandle-pressed"/>

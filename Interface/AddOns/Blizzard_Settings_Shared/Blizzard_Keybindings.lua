@@ -92,7 +92,8 @@ function KeybindListener:ProcessInput(input)
 	end
 
 	local key = GetConvertedKeyOrButton(input);
-	if IsKeyPressIgnoredForBinding(key) then
+	local modifierKeysBindable = GetCVarBool("simpleKeybinds") and C_GameRules.IsGameRuleActive(Enum.GameRule.AllowSimpleKeybindOption);
+	if IsKeyPressIgnoredForBinding(key) and not (modifierKeysBindable and IsMetaKey(key)) then
 		return false;
 	end
 
@@ -273,6 +274,19 @@ local KeyBindingFrameBindingTemplateEvents = {
 	"UPDATE_BINDINGS",
 };
 
+local function BindingUsesModifier(binding)
+	if not binding then
+		return false;
+	end
+
+	-- If simple bindings are off, don't display anything
+	if not (GetCVarBool("simpleKeybinds") and C_GameRules.IsGameRuleActive(Enum.GameRule.AllowSimpleKeybindOption)) then
+		return false;
+	end
+
+	return IsMetaKey(binding);
+end
+
 function KeyBindingFrameBindingTemplateMixin:OnLoad()
 	self.Label:SetScript("OnEnter", function()
 		if self.Label:IsTruncated() then
@@ -286,6 +300,16 @@ function KeyBindingFrameBindingTemplateMixin:OnLoad()
 		if self.Label:IsTruncated() then
 			SettingsTooltip:Hide();
 		end
+	end);
+
+	self.ModifierWarning:SetScript("OnEnter", function()
+		SettingsTooltip:SetOwner(self.ModifierWarning, "ANCHOR_RIGHT");
+		SettingsTooltip:AddLine(SETTINGS_SIMPLE_KEYBIND_WARNING);
+		SettingsTooltip:Show();
+	end);
+
+	self.ModifierWarning:SetScript("OnLeave", function()
+		SettingsTooltip:Hide();
 	end);
 
 	self.cbrHandles = Settings.CreateCallbackHandleContainer();
@@ -312,7 +336,7 @@ end
 function KeyBindingFrameBindingTemplateMixin:DetermineHighlightFrame()
 	local bindingIndex = self.initializer.data.bindingIndex;
 	local action = GetBinding(bindingIndex);
-	
+
 	local actionButton = string.match(action, "^ACTIONBUTTON(%d+)");
 	if actionButton then
 		return GetActionButtonForID(actionButton);
@@ -321,13 +345,13 @@ function KeyBindingFrameBindingTemplateMixin:DetermineHighlightFrame()
 	local multiActionBar, multiActionButton = string.match(action, "^MULTIACTIONBAR(%d+)BUTTON(%d+)");
 	if multiActionBar and multiActionButton then
 		local bars = {
-			MultiBarBottomLeft, 
+			MultiBarBottomLeft,
 			MultiBarBottomRight,
-			MultiBarRight, 		
-			MultiBarLeft, 		
-			MultiBar5, 			
-			MultiBar6, 			
-			MultiBar7, 			
+			MultiBarRight,
+			MultiBarLeft,
+			MultiBar5,
+			MultiBar6,
+			MultiBar7,
 		};
 		local bar = bars[tonumber(multiActionBar)];
 		if bar.actionButtons then
@@ -367,6 +391,7 @@ end
 function KeyBindingFrameBindingTemplateMixin:UpdateBindingState(initializer)
 	local bindingIndex = initializer.data.bindingIndex;
 	local action, category, binding1, binding2 = GetBinding(bindingIndex);
+	self.ModifierWarning:SetShown(BindingUsesModifier(binding1) or BindingUsesModifier(binding2));
 
 	for index, button in ipairs(self.Buttons) do
 		button:SetSelected(initializer.selectedIndex == index);
@@ -419,7 +444,7 @@ function KeyBindingFrameBindingTemplateMixin:Init(initializer)
 			Settings.InitTooltip(KEY_BINDING_NAME_AND_KEY:format(bindingName, GetBindingText(key)), KEY_BINDING_TOOLTIP);
 		end
 	end
-	
+
 	for index, button in ipairs(self.Buttons) do
 		button:SetScript("OnClick", function(button, buttonName, down)
 			if buttonName == "LeftButton" then
@@ -434,7 +459,10 @@ function KeyBindingFrameBindingTemplateMixin:Init(initializer)
 			elseif buttonName == "RightButton" then
 				local unbindKey = select(index, GetBindingKey(action));
 				if unbindKey then
-					SetBinding(unbindKey, nil, C_KeyBindings.GetBindingContextForAction(action));
+					local bindingContext = C_KeyBindings.GetBindingContextForAction(action);
+					if SetBinding(unbindKey, "NONE", bindingContext) then
+						EventRegistry:TriggerEvent("Settings.UpdateKeybinds");
+					end
 					SettingsTooltip:Hide();
 					SettingsPanel:ClearOutputText();
 				end
@@ -458,6 +486,24 @@ function KeyBindingFrameBindingTemplateMixin:Init(initializer)
 		self.highlightHandle:Unregister();
 	end
 	self.highlightHandle = ActionButtonBindingHighlightCallbackRegistry:RegisterCallbackWithHandle(action, self.OnHighlightBinding, self);
+
+	local function SetNavigateCallback(button, direction)
+		SmartNavigation_AddJumpNavigationOverride(button, direction, function()
+			local next = SmartNavigation:GetButtonInfoInDirection(self, direction);
+			return next and next.button;
+		end);
+	end
+
+	local cursorAnchor = CreateAnchor("RIGHT", self, "LEFT", 30);
+	SmartNavigation_MarkFrameFocusable(self);
+	SmartNavigation_SetCustomCursorAnchorPointForFrame(self, cursorAnchor);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(self, SMART_NAV_INPUT_DIRECTION.RIGHT, self.Button1);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(self.Button1, SMART_NAV_INPUT_DIRECTION.RIGHT, self.Button2);
+	SmartNavigation_AddIgnoreInputNavigationOverride(self.Button2, SMART_NAV_INPUT_DIRECTION.RIGHT);
+	SetNavigateCallback(self.Button1, SMART_NAV_INPUT_DIRECTION.UP);
+	SetNavigateCallback(self.Button1, SMART_NAV_INPUT_DIRECTION.DOWN);
+	SetNavigateCallback(self.Button2, SMART_NAV_INPUT_DIRECTION.UP);
+	SetNavigateCallback(self.Button2, SMART_NAV_INPUT_DIRECTION.DOWN);
 end
 
 function KeyBindingFrameBindingTemplateMixin:ReparentBindingsToInputBlocker(inputBlocker)
@@ -530,7 +576,7 @@ function CreateKeybindingEntryInitializer(bindingIndex, search)
 		if result then
 			return result;
 		end
-	
+
 		local bindingIndex = self.data.bindingIndex;
 		for actionIndex = 1, 2 do
 			local bindingText = self:GetBindingText(bindingIndex, actionIndex):upper();

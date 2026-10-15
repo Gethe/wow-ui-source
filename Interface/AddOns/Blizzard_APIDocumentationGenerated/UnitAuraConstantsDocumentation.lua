@@ -20,11 +20,12 @@ local UnitAuraConstants =
 			Type = "Constants",
 			Values =
 			{
-				{ Name = "HIDDEN_GROUP_BUFF_LIST_SIZE", Type = "number", Value = 32 },
-				{ Name = "GROUP_BUFF_VISUAL_ALERT_LIST_SIZE", Type = "number", Value = 32 },
+				{ Name = "HIDDEN_GROUP_BUFF_LIST_SIZE", Type = "number", Value = 128 },
+				{ Name = "GROUP_BUFF_VISUAL_ALERT_LIST_SIZE", Type = "number", Value = 128 },
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

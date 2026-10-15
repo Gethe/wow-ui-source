@@ -39,6 +39,10 @@ local function GetQuestTypeIconMarkupStringFromTagData(tagID, worldQuestType, te
 	local atlasName = QuestUtils_GetQuestTagAtlas(tagID, worldQuestType);
 
 	if atlasName then
+		if QuestUtil.IsQuestTagIconHidden() then
+			return text;
+		end
+
 		-- Use reasonable defaults if nothing is specified
 		iconWidth = iconWidth or 20;
 		iconHeight = iconHeight or 20;
@@ -58,6 +62,10 @@ end
 -- Quest Utils API
 
 QuestUtil = {};
+
+function QuestUtil.IsQuestTagIconHidden()
+	return QuestUtilsOverrides.questTagIconHidden;
+end
 
 local function GetWorldQuestAtlasInfo(questID, tagInfo, inProgress)
 	-- NOTE: In-progress no longer matters, the center icon remains the same for world quests, even when active
@@ -338,11 +346,11 @@ function QuestUtil.SetupWorldQuestButton(button, info, inProgress, selected, isC
 end
 
 function QuestUtil.IsShowingQuestDetails(questID)
-	return QuestLogPopupDetailFrame_IsShowingQuest(questID);
+	return QuestLogPopupDetailFrame:IsShowingQuest(questID);
 end
 
 function QuestUtil.OpenQuestDetails(questID)
-	QuestLogPopupDetailFrame_Show(questID);
+	QuestLogPopupDetailFrame:ShowQuest(questID);
 end
 
 function QuestUtil.ShareQuest(questID)

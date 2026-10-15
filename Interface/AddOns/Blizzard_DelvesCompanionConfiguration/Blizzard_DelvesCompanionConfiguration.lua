@@ -17,7 +17,8 @@ local curioRarityToItemQuality = {
 	[Enum.CurioRarity.Common] = Enum.ItemQuality.Common,
     [Enum.CurioRarity.Uncommon] = Enum.ItemQuality.Uncommon,
     [Enum.CurioRarity.Rare] = Enum.ItemQuality.Rare,
-    [Enum.CurioRarity.Epic] = Enum.ItemQuality.Epic
+    [Enum.CurioRarity.Epic] = Enum.ItemQuality.Epic,
+	[Enum.CurioRarity.EpicTier2] = Enum.ItemQuality.Epic
 };
 
 local function GetCompanionCurrentLevel()

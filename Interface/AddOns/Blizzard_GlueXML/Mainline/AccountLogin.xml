@@ -71,7 +71,7 @@
 						<Texture parentKey="GameLogo">
 							<Size x="256" y="128"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="3" y="-7"/>
+								<Anchor point="TOPLEFT" x="3" y="-2"/>
 							</Anchors>
 						</Texture>
 						<Texture name="WorldOfWarcraftRating" hidden="true">
@@ -83,9 +83,10 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="AccountEditBox" mixin="AccountLoginEditBoxMixin" autoFocus="false" parentArray="ManualLoginRegions" letters="320" inherits="AccountLoginBackdropTemplate">
+					<EditBox parentKey="AccountEditBox" mixin="AccountEditBoxMixin" autoFocus="false" parentArray="ManualLoginRegions" letters="320" inherits="AccountLoginBackdropTemplate">
 						<Size x="320" y="50"/>
 						<Anchors>
+							<!--Potential anchor overrides in AccountEditBoxMixin:AdjustAnchor()-->
 							<Anchor point="CENTER" x="0" y="50"/>
 						</Anchors>
 						<Layers>
@@ -230,6 +231,9 @@
 						</Scripts>
 					</Button>
 					<Frame name="ServerAlertFrame" hidden="true" inherits="CollapsibleServerAlertTemplate">
+						<KeyValues>
+							<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="10" y="-130"/>
 						</Anchors>
@@ -243,7 +247,7 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<Frame parentKey="Background">
+							<Frame parentKey="Background" inherits="DefaultDialogPanelTemplate">
 								<Size x="275" y="265"/>
 								<Anchors>
 									<Anchor point="CENTER" x="0" y="-20"/>
@@ -313,6 +317,7 @@
 							<OnLoad function="WoWAccountSelect_OnLoad"/>
 							<OnKeyDown function="WoWAccountSelect_OnKeyDown"/>
 							<OnShow function="WoWAccountSelect_OnShow"/>
+							<OnHide function="WoWAccountSelect_OnHide"/>
 						</Scripts>
 					</Frame>
 					<Frame parentKey="CaptchaEntryDialog" toplevel="true" setAllPoints="true" hidden="true" enableMouse="true" enableKeyboard="true" frameStrata="FULLSCREEN_DIALOG">
@@ -502,7 +507,7 @@
 							<KeyValue key="narrationLabel" value="NARRATION_ACCOUNT_DROPDOWN_NAME" type="global"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="2" y="-2"/>
+							<Anchor point="TOP" relativeKey="$parent.AccountEditBox" relativePoint="BOTTOM" x="0" y="-2"/>
 						</Anchors>
 					</DropdownButton>
 					<Frame parentKey="BlackBars" setAllPoints="true">
@@ -556,3 +561,4 @@
 		</Scripts>
 	</Frame>
 </Ui>
+

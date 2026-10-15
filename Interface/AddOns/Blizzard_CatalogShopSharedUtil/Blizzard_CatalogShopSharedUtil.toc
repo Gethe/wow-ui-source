@@ -4,3 +4,4 @@
 
 Blizzard_CatalogShop_Constants.lua
 Blizzard_CatalogShop_SharedUtil.lua
+Blizzard_CatalogShop_VCUtil.lua

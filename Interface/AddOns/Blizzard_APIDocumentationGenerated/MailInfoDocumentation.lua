@@ -115,6 +115,12 @@ local MailInfo =
 			},
 		},
 		{
+			Name = "MailOpenAllCanceled",
+			Type = "Event",
+			LiteralName = "MAIL_OPEN_ALL_CANCELED",
+			SynchronousEvent = true,
+		},
+		{
 			Name = "MailSendInfoUpdate",
 			Type = "Event",
 			LiteralName = "MAIL_SEND_INFO_UPDATE",
@@ -172,6 +178,7 @@ local MailInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

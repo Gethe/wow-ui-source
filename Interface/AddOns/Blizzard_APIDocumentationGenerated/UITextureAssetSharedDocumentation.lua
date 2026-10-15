@@ -3,6 +3,7 @@ local UITextureAssetShared =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

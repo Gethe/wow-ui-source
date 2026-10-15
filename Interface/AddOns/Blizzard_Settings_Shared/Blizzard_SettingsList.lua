@@ -38,9 +38,17 @@ function CreateSettingsListSearchCategoryInitializer(category)
 	return Settings.CreateElementInitializer("SettingsListSearchCategoryTemplate", data);
 end
 
-SettingsListMixin = {};
+SettingsListMixin = CreateFromMixins(CallbackRegistryMixin);
+
+SettingsListMixin:GenerateCallbackEvents(
+	{
+		"OnSettingsUpdated",
+	}
+);
 
 function SettingsListMixin:OnLoad()
+	CallbackRegistryMixin.OnLoad(self);
+
 	local verticalPad = 10;
 	local padLeft, padRight = 25, 0;
 	local spacing = 9;
@@ -68,13 +76,13 @@ function SettingsListMixin:OnLoad()
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
-	local scrollBoxAnchors = 
+	local scrollBoxAnchors =
 	{
 		CreateAnchor("TOPLEFT", self.Header, "BOTTOMLEFT", -15, -2),
 		CreateAnchor("BOTTOMRIGHT", -20, -2);
 	};
 	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.ScrollBox, self.ScrollBar, scrollBoxAnchors, scrollBoxAnchors);
-	
+
 	ScrollUtil.AddResizableChildrenBehavior(self.ScrollBox);
 end
 
@@ -138,6 +146,7 @@ function SettingsListMixin:Display(initializers)
 	end
 
 	securecallfunction(self.ScrollBox.SetDataProvider, self.ScrollBox, dataProvider);
+	self:TriggerEvent(self.Event.OnSettingsUpdated);
 end
 
 function SettingsListMixin:ScrollToElementByName(name)

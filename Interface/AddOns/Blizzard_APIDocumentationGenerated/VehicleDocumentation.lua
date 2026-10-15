@@ -121,6 +121,7 @@ local Vehicle =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

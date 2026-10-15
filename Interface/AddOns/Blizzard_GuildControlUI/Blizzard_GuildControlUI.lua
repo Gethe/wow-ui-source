@@ -12,6 +12,9 @@ function ResetDiscordSettings()
 end
 
 function GuildControlUI_OnShow(self)
+	self.numSkipUpdates = 0;
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+
 	if GuildControlUI.selectedTab == 4 then
 		ResetDiscordSettings()
 	end
@@ -32,21 +35,21 @@ function GuildControlUI_SetupSelected(selected)
 		GuildControlUIRankOrderFrame:Hide();
 		GuildControlUIRankBankFrame:Hide();
 		GuildControlUIRankDiscordFrame:Hide();
-		if tab == 1 then	
-			GuildControlUIRankOrderFrame:Show();		
+		if tab == 1 then
+			GuildControlUIRankOrderFrame:Show();
 			GuildControlUI.currFrame = GuildControlUI.orderFrame;
 			GuildControlUI.rankUpdate = GuildControlUI_RankOrder_Update;
-		elseif tab == 2 then		
+		elseif tab == 2 then
 			GuildControlUI.currFrame = GuildControlUI.rankPermFrame;
 			GuildControlUI.rankUpdate = GuildControlUI_RankPermissions_Update;
 			GuildControlUIRankSettingsFrame:Show();
 			GuildControlUI.rankUpdate(GuildControlUI.currFrame);
-		elseif tab == 3 then		
+		elseif tab == 3 then
 			GuildControlUI.currFrame = GuildControlUI.bankTabFrame;
 			GuildControlUI.rankUpdate = GuildControlUI_BankTabPermissions_Update;
 			GuildControlUIRankBankFrame:Show();
 			GuildControlUI.rankUpdate(GuildControlUI.currFrame);
-		elseif tab == 4 then		
+		elseif tab == 4 then
 			GuildControlUI.currFrame = GuildControlUI.discordFrame;
 			GuildControlUI.rankUpdate = GuildControlUI_Discord_Update;
 			GuildControlUIRankDiscordFrame:Show();
@@ -56,7 +59,7 @@ function GuildControlUI_SetupSelected(selected)
 	end
 
 	SetSelected(selected);
-	
+
 	GuildControlUI.dropdown:SetWidth(159);
 	GuildControlUI.dropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_GUILD_PERMISSIONS");
@@ -101,7 +104,7 @@ function GuildControlUI_OnLoad(self)
 			buttonText:SetText(_G["GUILDCONTROL_OPTION"..i]);
 		end
 	end
-	
+
 	self.currentRank = 2;
 	GuildControlSetRank(2);
 
@@ -165,8 +168,8 @@ function GuildControlUI_BankTabPermissions_Update(self)
 	if numTabs < MAX_BUY_GUILDBANK_TABS then
 		canBuyTab = true;
 		numTabs = numTabs + 1;
-	end	
-	
+	end
+
 	local scrollFrame = self.scrollFrame;
 	scrollFrame:SetPoint("BOTTOMRIGHT",-28 ,8);
 	local buttonWidth = scrollFrame:GetWidth();
@@ -206,7 +209,7 @@ function GuildControlUI_BankTabPermissions_Update(self)
 			local isViewable, canDeposit, _, numWithdrawals = GetGuildBankTabPermissions(index);	-- returns permissions for the selected rank
 			button:Show();
 			local ownedTab = button.owned;
-			ownedTab.tabName:SetText(name);	
+			ownedTab.tabName:SetText(name);
 			ownedTab.tabIcon:SetTexture(icon);
 			ownedTab.viewCB:SetChecked(isViewable);
 			ownedTab.depositCB:SetChecked(canDeposit);
@@ -279,16 +282,16 @@ function GuildControlRankDiscord_OnLoad(self)
 	self:RegisterEvent("DISCORD_SERVER_LIST_UPDATE");
 	self:RegisterEvent("DISCORD_GUILD_LOBBY_UPDATE");
 
-	self:SetScript("OnEvent", 
+	self:SetScript("OnEvent",
 		function(self, event)
 			GuildControlUI.rankUpdate(GuildControlUI.currFrame);
 		end
 	);
 
-	self.channelButton:SetScript("OnClick", 
+	self.channelButton:SetScript("OnClick",
 		function(self)
 			if ( GuildControlUI.selectedDiscordChannel ~= -1) then
-				C_Discord.GuildLink(GuildControlUI.selectedDiscordServer, GuildControlUI.selectedDiscordChannel); 
+				C_Discord.GuildLink(GuildControlUI.selectedDiscordServer, GuildControlUI.selectedDiscordChannel);
 			end
 		end
 	);
@@ -312,7 +315,7 @@ function GuildControlUI_Discord_Update(self)
 	local isUserOAuthed = C_Discord.IsUserOAuthed();
 
 	local isGuildChannelLinked, linkedChannelName, linkedServerName = C_Discord.GetGuildLinkStatus();
-	
+
 	GuildControlUI_Discord_HideAll(self);
 
 	self:Show();
@@ -322,7 +325,7 @@ function GuildControlUI_Discord_Update(self)
 			-- show "your all linked" with an unlink button
 			local linkFrame = _G["DiscordLinkFrame"];
 			if( not linkFrame ) then
-				linkFrame = CreateFrame("Frame", "DiscordLinkFrame", self, "DiscordLinkedTemplate"); -- TODO_DISCORD: try defining this frame in the XML with hidden=true and unhiding it here
+				linkFrame = CreateFrame("Frame", "DiscordLinkFrame", self, "DiscordLinkedTemplate");
 				linkFrame:SetPoint("TOPLEFT", 0, 0);
 			end
 			local serverName = string.format(DISCORD_GUILD_LINKED_SERVER, linkedServerName);
@@ -331,7 +334,7 @@ function GuildControlUI_Discord_Update(self)
 			linkFrame.linkedServer:SetText(serverName);
 			linkFrame.linkedChannel:SetText(channelName);
 			GuildControlDiscord_SetGuildSettingsCheckboxes(linkFrame);
-			linkFrame.SeparateStream.Button:SetScript("OnClick", 
+			linkFrame.SeparateStream.Button:SetScript("OnClick",
 				function(self)
 					C_Discord.SetGuildSetting(Enum.DiscordGuildSettings.SeparateStream, self:GetChecked());
 				end
@@ -347,7 +350,7 @@ function GuildControlUI_Discord_Update(self)
 
 			local function SetServerSelected(index)
 				GuildControlUI.selectedDiscordServer = index;
-				C_Discord.GetServerLinkableChannels(index); 
+				C_Discord.GetServerLinkableChannels(index);
 				GuildControlUI_Discord_Update(GuildControlUI.currFrame);
 			end
 
@@ -409,7 +412,7 @@ function GuildControlUI_Discord_Update(self)
 	end
 end
 
-function GuildControlUI_RankPermissions_Update(self)	
+function GuildControlUI_RankPermissions_Update(self)
 	local currentRank = self:GetParent().currentRank;
 	-- if currentRank doesn't apply, reset to first available
 	if ( currentRank < 2 or currentRank > GuildControlGetNumRanks() ) then
@@ -427,9 +430,9 @@ function GuildControlUI_RankPermissions_Update(self)
 			checkbox:SetChecked(flags[i]);
 		end
 	end
-	
+
 	self.OfficerCheckbox:SetChecked(flags[self.OfficerCheckbox:GetID()]);
-	
+
 	-- enable the gold/day editbox if at least one of Guild Bank Repair and Withdraw Gold are unchecked
 	if ( flags[15] or flags[16] ) then
 		self.goldBox.mask:Hide();
@@ -443,12 +446,12 @@ function GuildControlUI_RankPermissions_Update(self)
 	else
 		if ( self.goldBox:HasFocus() ) then
 			self.goldBox:ClearFocus();
-		end	
+		end
 		self.goldBox.mask:Show();
 		self.goldBox:SetText(GetGuildBankWithdrawGoldLimit());
 		self.goldBox:SetTextColor(GRAY_FONT_COLOR.r, GRAY_FONT_COLOR.g, GRAY_FONT_COLOR.b);
 	end
-	
+
 	-- disable the Authenticate checkbox for the last rank ,or if a rank has members and the option is unchecked
 	checkbox = _G[prefix.."18"];
 	if ( currentRank == GuildControlGetNumRanks() ) then
@@ -464,8 +467,8 @@ function GuildControlUI_RankPermissions_Update(self)
 		checkbox:Enable();
 		checkbox.tooltipFrame.tooltip = nil;
 	end
-	
-	
+
+
 end
 
 GUILD_OFFICER_PERMISSION_STRINGS = {
@@ -524,7 +527,7 @@ function GuildControlRankBank_OnLoad(self)
 end
 
 
-function GuildControlUI_RankOrder_Update(self)	
+function GuildControlUI_RankOrder_Update(self)
 	local numRanks = GuildControlGetNumRanks();
 	if numRanks == MAX_GUILDRANKS then
 		self.newButton:Hide();
@@ -532,8 +535,8 @@ function GuildControlUI_RankOrder_Update(self)
 	else
 		self.newButton:Show();
 		--self.dupButton:Show();
-	end	
-	
+	end
+
 	local prefix = self:GetName().."Rank";
 	for i=1, numRanks do
 		local rankFrame = _G[prefix..i];
@@ -596,7 +599,7 @@ function GuildControlUI_RankOrder_Update(self)
 			end
 		end
 	end
-	--hide removed ransk	
+	--hide removed ransk
 	for i=numRanks+1, MAX_GUILDRANKS do
 		local rankFrame = _G[prefix..i];
 		if rankFrame then

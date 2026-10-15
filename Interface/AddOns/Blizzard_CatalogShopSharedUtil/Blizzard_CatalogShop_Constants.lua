@@ -1,6 +1,6 @@
 
 
-CatalogShopConstants = 
+CatalogShopConstants =
 {
 	ScrollViewType =
 	{
@@ -31,6 +31,7 @@ CatalogShopConstants =
 	{
 		Header = "CatalogShopSectionHeaderTemplate",
 		HeaderPersonalized = "CatalogShopSectionHeaderOptOutLinkTemplate",
+		HeaderSectionGroupBYOB = "CatalogShopSectionHeaderTemplate",
 		Wide = "WideCatalogShopProductCardTemplate",
 		WideCardToken = "WideWoWTokenCatalogShopCardTemplate",
 		WideCardSubscription = "WideSubscriptionCatalogShopCardTemplate",
@@ -46,6 +47,7 @@ CatalogShopConstants =
 		SmallDecor = "SmallCatalogShopDecorCardTemplate",
 		SmallRoom = "SmallCatalogShopRoomCardTemplate",
 		SmallExteriorType = "SmallCatalogShopExteriorTypeCardTemplate",
+		SmallBYOB = "SmallCatalogShopBYOBCardTemplate",
 
 		Details = "DetailsCatalogShopProductCardTemplate",
 		DetailsServices = "DetailsCatalogShopServicesCardTemplate",
@@ -91,6 +93,7 @@ CatalogShopConstants =
 		Services = "Services",
 		Token = "WoW Token",
 		Bundle = "Bundle",
+		BYOB = "BYOB",
 		Subscription = "Subscription",
 		TradersTenders = "Tender",
 		Decor = "Decor",
@@ -118,7 +121,7 @@ CatalogShopConstants =
 		MissingLicenseCaptionText = CATALOG_SHOP_MISSING_LICENSE_ITEM,
 	},
 
-	DefaultCameraTag = 
+	DefaultCameraTag =
 	{
 		Primary = "primary",
 	},
@@ -164,5 +167,127 @@ CatalogShopConstants =
 		Services = "services",
 		Featured = "featured",
 		Housing = "housing",
+	},
+
+	VCIcon =
+	{
+		Default = "plunderstorm-icon-kills",
+		Hearthsteel = "hearthsteel-icon-32x32",
+		Talebound = "talebound-icon-currency"
 	}
 };
+
+BYOBInterface =
+{
+	-- indexed by selectionGroupIndex, then by productID,
+	-- returns either true or false or nil, depending on if the child product in this BYOB Bundle
+	-- has been checked by the Player
+	SelectionGroupChoices = {};
+
+	-- indexed by selectionGroupIndex, stores the required quantites for this BYOB Bundle
+	SelectionGroupRequiredQuantities = {};
+
+};
+
+local function BYOB_ResetData()
+	BYOBInterface.SelectionGroupChoices = {};
+	BYOBInterface.SelectionGroupRequiredQuantities = {};
+end
+
+-- Counts products in the selection group that are not hidden and not fully owned.
+local function BYOB_GetAvailableChoiceCount(selectionGroupInfo)
+	local availableCount = 0;
+	for _, childInfo in ipairs(selectionGroupInfo.products) do
+		local childProductInfo = CatalogShopUtil.GetProductInfo(childInfo.childProductID);
+		if childProductInfo and (not childProductInfo.isHidden) and (not childProductInfo.isFullyOwned) then
+			availableCount = availableCount + 1;
+		end
+	end
+	return availableCount;
+end
+
+local function BYOB_GetSelectionGroupChoicesForIndex(selectionGroupIndex)
+	assertsafe(selectionGroupIndex, "selectionGroupIndex is required.");
+	if BYOBInterface.SelectionGroupChoices[selectionGroupIndex] then
+		return BYOBInterface.SelectionGroupChoices[selectionGroupIndex];
+	end
+	BYOBInterface.SelectionGroupChoices[selectionGroupIndex] = {};
+	return BYOBInterface.SelectionGroupChoices[selectionGroupIndex];
+end
+
+local function BYOB_GetSelectionGroupChoiceRequiredQuantity(selectionGroupIndex)
+	assertsafe(selectionGroupIndex, "selectionGroupIndex is required.");
+	return BYOBInterface.SelectionGroupRequiredQuantities[selectionGroupIndex] or 0;
+end
+
+local function BYOB_IsProductChecked(selectionGroupIndex, productID)
+	assertsafe(selectionGroupIndex, "selectionGroupIndex is required.");
+	assertsafe(productID, "productID is required.");
+	local selectionGroupChoices = BYOB_GetSelectionGroupChoicesForIndex(selectionGroupIndex);
+	return selectionGroupChoices[productID];
+end
+
+local function BYOB_TotalProductsChecked(selectionGroupIndex)
+	assertsafe(selectionGroupIndex, "selectionGroupIndex is required.");
+	local selectionGroupChoices = BYOB_GetSelectionGroupChoicesForIndex(selectionGroupIndex);
+	local count = 0;
+	for _, isChecked in pairs(selectionGroupChoices) do
+		if isChecked then
+			count = count + 1;
+		end
+	end
+	return count;
+end
+
+local function BYOB_ChoicesCompleted(selectionGroupIndex)
+	assertsafe(selectionGroupIndex, "selectionGroupIndex is required.");
+	local requiredQuantity = BYOB_GetSelectionGroupChoiceRequiredQuantity(selectionGroupIndex);
+
+	local count = BYOB_TotalProductsChecked(selectionGroupIndex);
+	return count == requiredQuantity;
+end
+
+local function BYOB_AllChoicesCompleted()
+	local requiredQuantity = 0;
+	local count = 0;
+	for index, selectionGroupRequiredQuantities in pairs(BYOBInterface.SelectionGroupRequiredQuantities) do
+		requiredQuantity = requiredQuantity + selectionGroupRequiredQuantities;
+		count = count + BYOB_TotalProductsChecked(index);
+	end
+	return count == requiredQuantity;
+end
+
+local function BYOB_SetProductChoiceChecked(selectionGroupIndex, productID, isChecked)
+	assertsafe(selectionGroupIndex, "selectionGroupIndex is required.");
+	assertsafe(productID, "productID is required.");
+	local selectionGroupChoices = BYOB_GetSelectionGroupChoicesForIndex(selectionGroupIndex);
+	selectionGroupChoices[productID] = isChecked;
+end
+
+local function BYOB_SetSelectionGroupChoiceRequiredQuantity(selectionGroupIndex, requiredQuantity)
+	assertsafe(selectionGroupIndex, "selectionGroupIndex is required.");
+	BYOBInterface.SelectionGroupRequiredQuantities[selectionGroupIndex] = requiredQuantity;
+end
+
+local function BYOB_IsProductChoiceEnabled(selectionGroupIndex, productID)
+	assertsafe(selectionGroupIndex, "selectionGroupIndex is required.");
+	assertsafe(productID, "productID is required.");
+
+	local isEnabled = true;
+	local isChecked = BYOB_IsProductChecked(selectionGroupIndex, productID);
+	if BYOB_ChoicesCompleted(selectionGroupIndex) then
+		isEnabled = isChecked;
+	end
+	return isEnabled;
+end
+
+BYOBInterface.ResetData = BYOB_ResetData;
+BYOBInterface.GetAvailableChoiceCount = BYOB_GetAvailableChoiceCount;
+BYOBInterface.IsProductChecked = BYOB_IsProductChecked;
+BYOBInterface.TotalProductsChecked = BYOB_TotalProductsChecked;
+BYOBInterface.ChoicesCompleted = BYOB_ChoicesCompleted;
+BYOBInterface.AllChoicesCompleted = BYOB_AllChoicesCompleted;
+BYOBInterface.SetProductChoiceChecked = BYOB_SetProductChoiceChecked;
+BYOBInterface.SetSelectionGroupChoiceRequiredQuantity = BYOB_SetSelectionGroupChoiceRequiredQuantity;
+BYOBInterface.GetSelectionGroupChoiceRequiredQuantity = BYOB_GetSelectionGroupChoiceRequiredQuantity;
+BYOBInterface.IsProductChoiceEnabled = BYOB_IsProductChoiceEnabled;

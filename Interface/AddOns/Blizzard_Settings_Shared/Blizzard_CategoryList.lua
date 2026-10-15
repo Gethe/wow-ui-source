@@ -101,6 +101,9 @@ function SettingsCategoryListButtonMixin:Init(initializer)
 
 	self:SetExpanded(category:IsExpanded());
 	self:SetSelected(g_selectionBehavior:IsSelected(self));
+
+	local cursorAnchor = CreateAnchor("RIGHT", self, "LEFT", 30);
+	SmartNavigation_SetCustomCursorAnchorPointForFrame(self, cursorAnchor);
 end
 
 function SettingsCategoryListButtonMixin:SetSelected(selected)
@@ -110,7 +113,7 @@ end
 function SettingsCategoryListButtonMixin:SetExpanded(expanded)
 	local initializer = self:GetElementData();
 	initializer.data.category:SetExpanded(expanded);
-	
+
 	if expanded then
 		self.Toggle:SetNormalTexture("common-button-dropdown-open");
 		self.Toggle:SetPushedTexture("common-button-dropdown-openpressed");
@@ -169,7 +172,9 @@ SettingsCategoryListMixin = CreateFromMixins(CallbackRegistryMixin);
 
 SettingsCategoryListMixin:GenerateCallbackEvents(
 	{
+		"OnCategoryActivated",
 		"OnCategorySelected",
+		"OnCategoriesUpdated",
 	}
 );
 
@@ -185,20 +190,28 @@ function SettingsCategoryListMixin:OnLoad()
 			elementData:InitFrame(button);
 
 			if elementData:IsTemplate("SettingsCategoryListButtonTemplate") then
-				button:SetScript("OnClick", function(button, buttonName, down)
-					g_selectionBehavior:Select(button);
-					self:TriggerEvent(SettingsCategoryListMixin.Event.OnCategorySelected, elementData.data.category);
-					PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-				end);
-				
+				local function SelectCategory()
+					if not g_selectionBehavior:IsSelected(button) then
+						g_selectionBehavior:Select(button);
+						self:TriggerEvent(SettingsCategoryListMixin.Event.OnCategorySelected, elementData.data.category);
+						PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+					end
+				end
+
+				button:SetScript("OnClick", SelectCategory);
+				button.OnSmartNavSelect = SelectCategory;
+				button.OnSmartNavClick = function()
+					self:TriggerEvent(SettingsCategoryListMixin.Event.OnCategoryActivated, elementData.data.category);
+				end;
+
 				local function OnToggle(button, buttonName, down)
 					self:CreateCategories();
 				end;
-				
+
 				button.Toggle:RegisterCallback("OnClick", OnToggle, self);
 			end
 		end
-	
+
 		elementData:Factory(factory, Initializer);
 	end
 
@@ -217,12 +230,12 @@ function SettingsCategoryListMixin:OnLoad()
 	view:SetElementIndentCalculator(IndentCalculator);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
-	local scrollBoxAnchorsWithBar = 
+	local scrollBoxAnchorsWithBar =
 	{
 		CreateAnchor("TOPLEFT", -leftPad, 0),
 		CreateAnchor("BOTTOMRIGHT", -16, 0);
 	};
-	local scrollBoxAnchorsWithoutBar = 
+	local scrollBoxAnchorsWithoutBar =
 	{
 		scrollBoxAnchorsWithBar[1],
 		CreateAnchor("BOTTOMRIGHT", 0, 0);
@@ -233,6 +246,10 @@ function SettingsCategoryListMixin:OnLoad()
 		local button = self.ScrollBox:FindFrame(elementData);
 		if button then
 			button:SetSelected(selected);
+
+			if selected and SmartNavigation:IsButtonInCurrentFocusGroup(button) then
+				SmartNavigation:SelectButton(button);
+			end
 		end
 
 		if selected then
@@ -469,10 +486,45 @@ function SettingsCategoryListMixin:CreateCategories()
 
 	local dataProvider = CreateDataProvider(self.elementList);
 	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
+	self:TriggerEvent(self.Event.OnCategoriesUpdated);
 end
 
 function SettingsCategoryListMixin:RefreshNewFeatures()
 	self.ScrollBox:ForEachFrame(function(button)
 		FunctionUtil.SafeInvokeMethod(button, "RefreshNewFeature");
 	end);
+end
+
+function SettingsCategoryListMixin:GetFirstCategoryButton()
+	return self.ScrollBox:FindFrameByPredicate(function(button, elementData)
+		return elementData.frameTemplate == "SettingsCategoryListButtonTemplate";
+	end);
+end
+
+function SettingsCategoryListMixin:GetSelectedCategoryButton()
+	for _, elementData in ipairs(g_selectionBehavior:GetSelectedElementData()) do
+		if elementData.frameTemplate == "SettingsCategoryListButtonTemplate" then
+			return self.ScrollBox:FindFrame(elementData);
+		end
+	end
+end
+
+function SettingsCategoryListMixin:EnumerateCategoryButtons()
+	local frames = self.ScrollBox:GetFrames();
+	local index = 0;
+
+	local function Iterator()
+		while index < #frames do
+			index = index + 1;
+
+			local frame = frames[index];
+			local elementData = frame:GetElementData();
+
+			if elementData.frameTemplate == "SettingsCategoryListButtonTemplate" then
+				return frame;
+			end
+		end
+	end
+
+	return Iterator;
 end

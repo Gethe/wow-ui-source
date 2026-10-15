@@ -1,21 +1,23 @@
 
-MicroMenuPositionEnum = {
-	BottomLeft = 1;
-	BottomRight = 2;
-	TopLeft = 3;
-	TopRight = 4;
-};
-
 MicroMenuContainerMixin = {};
 
 function MicroMenuContainerMixin:OnLoad()
-	self:RegisterEvent("PLAYER_LEVEL_UP");
+	-- PLAYER_LEVEL_UP fires before the new level is applied, which is too early for level-gated player conditions.
+	self:RegisterEvent("PLAYER_LEVEL_CHANGED");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
+	-- Button availability can depend on game rules and world state that aren't ready when the micro menu loads.
+	self:RegisterEvent("GAME_RULES_CHANGED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
 function MicroMenuContainerMixin:OnEvent(event, ...)
-	if ( event == "PLAYER_LEVEL_UP" or event == "TRIAL_STATUS_UPDATE" ) then
+	if ( event == "PLAYER_LEVEL_CHANGED" or event == "TRIAL_STATUS_UPDATE" ) then
 		UpdateMicroButtons();
+	elseif ( event == "GAME_RULES_CHANGED" or event == "PLAYER_ENTERING_WORLD" ) then
+		if MicroMenu and MicroMenu:RefreshButtons() then
+			self:Layout();
+			UpdateMicroButtons();
+		end
 	end
 end
 
@@ -58,32 +60,7 @@ function MicroMenuContainerMixin:Layout()
 		AddFrameSize(MicroMenu);
 	end
 
-	if QueueStatusButton then
-		local includeOffsetYes = true;
-		AddFrameSize(QueueStatusButton, includeOffsetYes);
-	end
-
 	self:SetSize(math.max(width, 1), math.max(height, 1));
-end
-
-function MicroMenuContainerMixin:GetPosition()
-	local centerX, centerY = self:GetCenter();
-	local halfScreenWidth = UIParent:GetWidth() / 2;
-	local halfScreenHeight = UIParent:GetHeight() / 2;
-
-	if centerY < halfScreenHeight then
-		if centerX < halfScreenWidth then
-			return MicroMenuPositionEnum.BottomLeft;
-		else
-			return MicroMenuPositionEnum.BottomRight;
-		end
-	else
-		if centerX < halfScreenWidth then
-			return MicroMenuPositionEnum.TopLeft;
-		else
-			return MicroMenuPositionEnum.TopRight;
-		end
-	end
 end
 
 MicroMenuMixin = {};
@@ -103,6 +80,11 @@ function MicroMenuMixin:ApplyMicroMenuOverrides()
 end
 
 function MicroMenuMixin:InitializeButtons()
+	self:RefreshButtons();
+end
+
+-- Returns true if the set of buttons in the menu changed.
+function MicroMenuMixin:RefreshButtons()
 	-- Button, plus GameRule that controls whether it is shown.
 	local buttonInfos = self:GenerateButtonInfos();
 
@@ -122,15 +104,50 @@ function MicroMenuMixin:InitializeButtons()
 		return true;
 	end
 
+	local desiredButtons = {};
 	for i, buttonInfo in ipairs(buttonInfos) do
 		if ShouldButtonBeAdded(buttonInfo) then
-			self:AddButton(buttonInfo.button);
+			table.insert(desiredButtons, buttonInfo.button);
 		end
 	end
+
+	local currentButtons = self.addedButtons or {};
+	local changed = #desiredButtons ~= #currentButtons;
+	if not changed then
+		for i, button in ipairs(desiredButtons) do
+			if currentButtons[i] ~= button then
+				changed = true;
+				break;
+			end
+		end
+	end
+
+	if not changed then
+		return false;
+	end
+
+	local desiredSet = tInvert(desiredButtons);
+	for _, button in ipairs(currentButtons) do
+		if not desiredSet[button] then
+			button.layoutIndex = nil;
+			button:SetParent(UIParent);
+			button:ClearAllPoints();
+		end
+	end
+
+	self.numButtons = 0;
+	self.addedButtons = {};
+	for _, button in ipairs(desiredButtons) do
+		self:AddButton(button);
+	end
+
+	return true;
 end
 
 function MicroMenuMixin:AddButton(button)
 	self.numButtons = (self.numButtons or 0) + 1;
+	self.addedButtons = self.addedButtons or {};
+	table.insert(self.addedButtons, button);
 	button.layoutIndex = self.numButtons;
 	button:SetParent(self);
 	button:PostAddButtonCallback();
@@ -183,13 +200,13 @@ function MicroMenuMixin:UpdateHelpTicketButtonAnchor(position)
 
 	-- Update help button anchor so it stays on screen
 	local isOnBottomSideOfScreen, isOnLeftSideOfScreen;
-	if position == MicroMenuPositionEnum.BottomLeft then
+	if position == FrameUtilQuadrantEnum.BottomLeft then
 		isOnBottomSideOfScreen, isOnLeftSideOfScreen = true, true;
-	elseif position == MicroMenuPositionEnum.BottomRight then
+	elseif position == FrameUtilQuadrantEnum.BottomRight then
 		isOnBottomSideOfScreen, isOnLeftSideOfScreen = true, false;
-	elseif position == MicroMenuPositionEnum.TopLeft then
+	elseif position == FrameUtilQuadrantEnum.TopLeft then
 		isOnBottomSideOfScreen, isOnLeftSideOfScreen = false, true;
-	elseif position == MicroMenuPositionEnum.TopRight then
+	elseif position == FrameUtilQuadrantEnum.TopRight then
 		isOnBottomSideOfScreen, isOnLeftSideOfScreen = false, false;
 	end
 
@@ -198,22 +215,13 @@ function MicroMenuMixin:UpdateHelpTicketButtonAnchor(position)
 	HelpOpenWebTicketButton:SetPoint("CENTER", relativeTo, "CENTER", 0, offsetY);
 end
 
-function MicroMenuMixin:UpdateQueueStatusAnchors(position)
-	if QueueStatusButton then
-		QueueStatusButton:UpdatePosition(position, self.isHorizontal);
-	end
-
-	if QueueStatusFrame then
-		QueueStatusFrame:UpdatePosition(position, self.isHorizontal);
-	end
-end
-
 function MicroMenuMixin:UpdateFramerateFrameAnchor(position)
 	if not FramerateFrame then
 		return;
 	end
 
-	FramerateFrame:UpdatePosition(position, self.isHorizontal);
+	local defaultPosition = EditModeSystemMixin.IsInDefaultPosition(MicroMenuContainer);
+	FramerateFrame:UpdatePosition(position, self.isHorizontal, defaultPosition);
 end
 
 function MicroMenuMixin:AnchorToMenuContainer(position)
@@ -224,33 +232,24 @@ function MicroMenuMixin:AnchorToMenuContainer(position)
 	end
 
 	local point;
-	if position == MicroMenuPositionEnum.BottomLeft then
+	if position == FrameUtilQuadrantEnum.BottomLeft then
 		point = "BOTTOMLEFT";
-	elseif position == MicroMenuPositionEnum.BottomRight then
+	elseif position == FrameUtilQuadrantEnum.BottomRight then
 		point = "BOTTOMRIGHT";
-	elseif position == MicroMenuPositionEnum.TopLeft then
+	elseif position == FrameUtilQuadrantEnum.TopLeft then
 		point = "TOPLEFT";
-	elseif position == MicroMenuPositionEnum.TopRight then
+	elseif position == FrameUtilQuadrantEnum.TopRight then
 		point = "TOPRIGHT";
 	end
 	self:ClearAllPoints();
 	self:SetPoint(point, MicroMenuContainer, point, 0, 0);
 end
 
-function MicroMenuMixin:SetQueueStatusScale(scale)
-	if QueueStatusButton then
-		QueueStatusButton:SetScale(scale);
-	end
-
-	self:UpdateQueueStatusAnchors(MicroMenuContainer:GetPosition());
-end
-
 function MicroMenuMixin:Layout()
 	GridLayoutFrameMixin.Layout(self);
 
-	local position = MicroMenuContainer:GetPosition();
+	local position = FrameUtil.GetScreenQuadrant(MicroMenuContainer);
 	self:AnchorToMenuContainer(position);
-	self:UpdateQueueStatusAnchors(position);
 	self:UpdateFramerateFrameAnchor(position);
 	self:UpdateHelpTicketButtonAnchor(position);
 end

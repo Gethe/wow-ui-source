@@ -17,6 +17,24 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "AreHighResTexturesInstalled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "installed", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AreRealIDFriendsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areRealIDFriendsEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "AreTitleFriendCustomNamesEnabled",
 			Type = "Function",
 
@@ -236,6 +254,21 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "IsFriendTagSupportedForCurrentGameType",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "friendTag", Type = "BattleNetFriendTag", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isFriendTagSupportedForCurrentGameType", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SearchFriends",
 			Type = "Function",
 			HasRestrictions = true,
@@ -321,6 +354,18 @@ local BattleNet =
 			Arguments =
 			{
 				{ Name = "isAppearOffline", Type = "bool", Nilable = false, Default = true },
+			},
+		},
+		{
+			Name = "SetBlocked",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "bnetAccountID", Type = "number", Nilable = false },
+				{ Name = "block", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -463,6 +508,7 @@ local BattleNet =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

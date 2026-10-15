@@ -1,28 +1,52 @@
+INSPECTPAPERDOLLFRAME_SLOTS = {
+	"InspectHeadSlot",
+	"InspectNeckSlot",
+	"InspectShoulderSlot",
+	"InspectBackSlot",
+	"InspectChestSlot",
+	"InspectShirtSlot",
+	"InspectTabardSlot",
+	"InspectWristSlot",
+	"InspectHandsSlot",
+	"InspectWaistSlot",
+	"InspectLegsSlot",
+	"InspectFeetSlot",
+	"InspectFinger0Slot",
+	"InspectFinger1Slot",
+	"InspectTrinket0Slot",
+	"InspectTrinket1Slot",
+	"InspectMainHandSlot",
+	"InspectSecondaryHandSlot",
+};
 
-function InspectPaperDollFrame_OnLoad(self)
+InspectPaperDollFrameMixin = {};
+
+function InspectPaperDollFrameMixin:OnLoad()
 	self:RegisterEvent("UNIT_MODEL_CHANGED");
 	self:RegisterEvent("UNIT_LEVEL");
 	self:RegisterEvent("INSPECT_READY");
+
+	self:RegisterForTransitions();
 end
 
-function InspectPaperDollFrame_OnEvent(self, event, unit)
+function InspectPaperDollFrameMixin:OnEvent(event, unit)
 	if (InspectFrame:IsShown()) then
 		if ( unit and unit == InspectFrame.unit ) then
 			if ( event == "UNIT_MODEL_CHANGED" ) then
 				InspectModelFrame:RefreshUnit();
 			elseif ( event == "UNIT_LEVEL" ) then
-				InspectPaperDollFrame_SetLevel();
+				self:SetLevel();
 			end
 			return;
 		end
 		if (event == "INSPECT_READY" and InspectFrame.unit and (UnitGUID(InspectFrame.unit) == unit)) then
-			InspectPaperDollFrame_SetLevel();
-			InspectPaperDollFrame_UpdateButtons();
+			self:SetLevel();
+			self:UpdateButtons();
 		end
 	end
 end
 
-function InspectPaperDollFrame_SetLevel()
+function InspectPaperDollFrameMixin:SetLevel()
 	if (not InspectFrame.unit) then
 		return;
 	end
@@ -44,34 +68,23 @@ function InspectPaperDollFrame_SetLevel()
 		level = EFFECTIVE_LEVEL_FORMAT:format(effectiveLevel, level);
 	end
 
-	if (specName and specName ~= "") then
+	if (specName and specName ~= "" and specName ~= classDisplayName) then
 		InspectLevelText:SetFormattedText(PLAYER_LEVEL, level, classColorString, specName, classDisplayName);
 	else
 		InspectLevelText:SetFormattedText(PLAYER_LEVEL_NO_SPEC, level, classColorString, classDisplayName);
 	end
 end
 
-function InspectPaperDollFrame_UpdateButtons()
-	InspectPaperDollItemSlotButton_Update(InspectHeadSlot);
-	InspectPaperDollItemSlotButton_Update(InspectNeckSlot);
-	InspectPaperDollItemSlotButton_Update(InspectShoulderSlot);
-	InspectPaperDollItemSlotButton_Update(InspectBackSlot);
-	InspectPaperDollItemSlotButton_Update(InspectChestSlot);
-	InspectPaperDollItemSlotButton_Update(InspectShirtSlot);
-	InspectPaperDollItemSlotButton_Update(InspectTabardSlot);
-	InspectPaperDollItemSlotButton_Update(InspectWristSlot);
-	InspectPaperDollItemSlotButton_Update(InspectHandsSlot);
-	InspectPaperDollItemSlotButton_Update(InspectWaistSlot);
-	InspectPaperDollItemSlotButton_Update(InspectLegsSlot);
-	InspectPaperDollItemSlotButton_Update(InspectFeetSlot);
-	InspectPaperDollItemSlotButton_Update(InspectFinger0Slot);
-	InspectPaperDollItemSlotButton_Update(InspectFinger1Slot);
-	InspectPaperDollItemSlotButton_Update(InspectTrinket0Slot);
-	InspectPaperDollItemSlotButton_Update(InspectTrinket1Slot);
-	InspectPaperDollItemSlotButton_Update(InspectMainHandSlot);
-	InspectPaperDollItemSlotButton_Update(InspectSecondaryHandSlot);
+function InspectPaperDollFrameMixin:UpdateButtons()
+	for k,slotName in pairs(INSPECTPAPERDOLLFRAME_SLOTS) do
+		InspectPaperDollItemSlotButton_Update(_G[slotName]);
+	end
 
-	InspectPaperDollItemsFrame.InspectTalents:SetEnabled(C_Traits.HasValidInspectData());
+	if InspectPaperDollItemsFrame.InspectTalents then 
+		InspectPaperDollItemsFrame.InspectTalents:SetEnabled(C_Traits.HasValidInspectData());
+	elseif InspectPaperDollFrame.InspectTalents then
+		InspectPaperDollFrame.InspectTalents:SetEnabled(C_Traits.HasValidInspectData());
+	end
 end
 
 local factionLogoTextures = {
@@ -80,12 +93,12 @@ local factionLogoTextures = {
 	["Neutral"]		= "Interface\\Timer\\Panda-Logo",
 };
 
-function InspectPaperDollFrame_OnShow()
+function InspectPaperDollFrameMixin:OnShow()
 	InspectModelFrame:Show();
 	ButtonFrameTemplate_HideButtonBar(InspectFrame);
 	local modelCanDraw = InspectModelFrame:SetUnit(InspectFrame.unit);
-	InspectPaperDollFrame_SetLevel();
-	InspectPaperDollFrame_UpdateButtons();
+	self:SetLevel();
+	self:UpdateButtons();
 
 	-- If the paperdoll model is not available to draw (out of range), then draw the faction logo
 	if(modelCanDraw ~= true) then
@@ -108,7 +121,93 @@ function InspectPaperDollFrame_OnShow()
 	InspectModelFrameBackgroundBotRight:SetDesaturated(true);
 end
 
+local ROTATION_RAD = 3.14159;
+local PER_TICK_ZOOM = 3;
+
+function InspectPaperDollFrameMixin:RotateAndZoomCharacter(inX, inY)
+	self.rotationSpeed = inX;
+	self.zoomSpeed = inY;
+
+	if inX ~= 0 or inY ~= 0 then
+		self.stickUpdateFrame:SetScript("OnUpdate", self.stickUpdateFrame.Update);
+	else
+		self.stickUpdateFrame:SetScript("OnUpdate", nil);
+	end
+end
+
+function InspectPaperDollFrameMixin:UpdateForSticks(delta)
+	InspectModelFrame:ApplyRotation(InspectModelFrame.rotation + ROTATION_RAD * self.rotationSpeed * delta, false);
+	InspectModelFrame:OnMouseWheel(PER_TICK_ZOOM * self.zoomSpeed * delta);
+end
+
+function InspectPaperDollFrameMixin:ResetCharacter()
+	InspectModelFrame:ResetModel();
+end
+
+function InspectPaperDollFrameMixin:FocusGamepad()
+	GamepadMode.ActivateBindingGroup(self.paperDollBindings);
+	self.frameFooter:ShowAndActivateBindings();
+end
+
+function InspectPaperDollFrameMixin:UnfocusGamepad()
+	GamepadMode.DeactivateBindingGroup(self.paperDollBindings);
+	self.frameFooter:HideAndDeactivateBindings();
+end
+
+function InspectPaperDollFrameMixin:SetupGamepad()
+	-- Character Viewer Actions
+	self.zoomSpeed = 0;
+	self.rotationSpeed = 0;
+
+	-- Making separte frame to handle the stick updates as trying to use our update causes doll blanking problems.
+	self.stickUpdateFrame = CreateFrame("Frame", nil, self);
+	self.stickUpdateFrame.Update = function(_, delta)
+		self:UpdateForSticks(delta);
+	end
+
+	self.paperDollBindings = GamepadMode.CreateBindingGroup("PaperDollBindings");
+	self.paperDollBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.RotateAndZoomCharacter, self));
+
+	local paperDollZoom = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_VERTICAL, nil, FRAME_ACTION_ZOOM);
+	local paperDollRotate = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_HORIZONTAL, nil, ACTION_LABEL_ROTATE);
+	local paperDollReset = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, GenerateClosure(self.ResetCharacter, self), RESET);
+
+	local footerAnchor = CreateAnchor("TOP", InspectModelFrame, "TOP", 0, 0);
+	self.frameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "InspectPaperDollFrameFooter");
+	self.frameFooter:SetCustomAnchor(footerAnchor);
+	self.frameFooter:AddPromptedBinding(paperDollZoom);
+	self.frameFooter:AddPromptedBinding(paperDollRotate);
+	self.frameFooter:AddPromptedBinding(paperDollReset);
+	self.frameFooter:Finalize();
+end
+
+function InspectPaperDollFrameMixin:InitializeGamepad()
+	if self.InspectTalents then
+		self.InspectTalents:Hide();
+	end
+end
+
+function InspectPaperDollFrameMixin:UninitializeGamepad()
+	if self.InspectTalents then
+		self.InspectTalents:Show();
+	end
+	GamepadMode.DeactivateBindingGroup(self.paperDollBindings);
+end
+
+function InspectPaperDollFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
 function InspectPaperDollItemSlotButton_OnLoad(self)
+
+	if self.BorderFrame then
+		local level = self:GetFrameLevel();
+		self.BorderFrame:SetFrameLevel(level - 1);
+	end
+
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
 	local slotName = self:GetName();
 	local id;

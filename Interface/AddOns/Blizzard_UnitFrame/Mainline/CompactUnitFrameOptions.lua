@@ -12,6 +12,7 @@ DefaultCompactUnitFrameOptions = {
 	displayHealPrediction = true,
 	displayRoleIcon = true,
 	displayRaidRoleIcon = true,
+	displayVehicleRoleIcon = true,
 	displayDispelDebuffs = true,
 	displayBuffs = true,
 	displayDebuffs = true,
@@ -27,6 +28,7 @@ DefaultCompactUnitFrameOptions = {
 	displayInOtherPhase = true,
 	dispelIndicatorOverlayType = Enum.RaidDispelOverlayType.UseDebuffColor,
 	dispelIndicatorOverlayAnimation = false,
+	dispelIndicatorAnimatedBorder = false,
 
 	--If class colors are enabled also show the class colors for npcs in your raid frames or
 	--raid-frame-style party frames.

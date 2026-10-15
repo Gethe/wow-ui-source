@@ -171,7 +171,7 @@ function GameEvent.HandleDuelToTheDeathRequested(_dispatcher, _event, arg1)
 end
 
 function GameEvent.HandleCorpseInRange(_dispatcher, _event)
-	StaticPopup_Show("RECOVER_CORPSE");
+		StaticPopup_Show("RECOVER_CORPSE");
 end
 
 function GameEvent.HandleCorpseOutOfRange(_dispatcher, _event)

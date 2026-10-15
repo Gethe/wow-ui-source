@@ -13,12 +13,12 @@
 		</Layers>
 	</Frame>
 	<Frame name="ReadyCheckFrame" frameStrata="DIALOG" toplevel="true" parent="UIParent" hidden="true">
-		<Size x="323" y="100"/>
+		<Size x="323" y="112"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="-10"/>
 		</Anchors>
 		<Frames>
-			<Frame name="ReadyCheckListenerFrame" setAllPoints="true" hidden="true">
+			<Frame name="ReadyCheckListenerFrame" setAllPoints="true" mixin="ReadyCheckListenerFrameMixin, FocusFramesInterfaceMixin" hidden="true">
 				<KeyValues>
 					<KeyValue key="layoutType" value="PortraitFrameTemplate" type="string"/>
 				</KeyValues>
@@ -32,7 +32,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString name="ReadyCheckFrameText" inherits="GameFontNormal" justifyV="MIDDLE">
+						<FontString parentKey="Text" name="ReadyCheckFrameText" inherits="GameFontNormal" justifyV="MIDDLE">
 							<Size x="240" y="0"/>
 							<Anchors>
 								<Anchor point="TOP" x="20" y="-37"/>
@@ -67,7 +67,7 @@
 						</Anchors>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture name="ReadyCheckPortrait">
+								<Texture parentKey="Portrait" name="ReadyCheckPortrait">
 									<Size x="54" y="54"/>
 									<Anchors>
 										<Anchor point="TOPLEFT" x="0" y="3"/>
@@ -76,7 +76,7 @@
 							</Layer>
 						</Layers>
 					</Frame>
-					<Button name="ReadyCheckFrameYesButton" inherits="UIPanelButtonTemplate" text="READY">
+					<Button parentKey="YesButton" name="ReadyCheckFrameYesButton" inherits="UIPanelButtonTemplate" text="READY">
 						<Size x="119" y="24"/>
 						<Anchors>
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM" x="11" y="16"/>
@@ -89,7 +89,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="ReadyCheckFrameNoButton" inherits="UIPanelButtonTemplate" text="NOT_READY">
+					<Button parentKey="NoButton" name="ReadyCheckFrameNoButton" inherits="UIPanelButtonTemplate" text="NOT_READY">
 						<Size x="119" y="24"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOM" x="22" y="16"/>
@@ -102,12 +102,27 @@
 							</OnClick>
 						</Scripts>
 					</Button>
+					<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameLevel="505"/>
+					<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM" x="16"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM" x="16"/>
+						</Anchors>
+					</Frame>
+					<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515">
+						<Anchors>
+							<Anchor point="CENTER" relativeKey="$parent" relativePoint="BOTTOM" x="16"/>
+						</Anchors>
+					</Frame>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						PlaySound(SOUNDKIT.READY_CHECK);
-						FlashClientIcon();
-					</OnShow>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
 				</Scripts>
 			</Frame>
 		</Frames>

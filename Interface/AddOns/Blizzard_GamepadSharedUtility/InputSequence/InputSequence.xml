@@ -1,0 +1,13 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="GamepadInputSequenceTemplate" inherits="HorizontalLayoutFrame" mixin="GamepadInputSequenceMixin" virtual="true">
+		<Size x="150" y="50"/>
+		<KeyValues>
+			<KeyValue key="spacing" value="10" type="number"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

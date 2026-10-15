@@ -1,17 +1,12 @@
-local GAMETIME_DAWN = ( 5 * 60) + 30;		-- 5:30 AM
-local GAMETIME_DUSK = (21 * 60) +  0;		-- 9:00 PM
-
-
-local date = date;
 local format = format;
-local GetCVarBool = GetCVarBool;
 local max = max;
-local tonumber = tonumber;
 
 local PI = PI;
 local TWOPI = PI * 2.0;
 local cos = math.cos;
 local INVITE_PULSE_SEC	= 1.0 / (2.0*1.0);	-- mul by 2 so the pulse constant counts for half a flash
+
+GameTimeFrameMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
 local function GameTimeFrame_Refresh(self)
 	local pendingCalendarInvites = C_Calendar.GetNumPendingInvites();
@@ -28,12 +23,38 @@ local function GameTimeFrame_Refresh(self)
 		GameTimeFrame.flashInvite = false;
 		self.pendingCalendarInvites = 0;
 	end
-	GameTimeFrame_SetDate();
+	self:SetDate();
+end
+
+function GameTimeFrameMixin:OnShow()
+	if Kiosk.IsEnabled() then
+		self:Disable();
+	end
+end
+
+function GameTimeFrameMixin:GetStateSuffix()
+	if self:IsDownOver() or self:IsDown() then
+		return "down";
+	elseif self:IsOver() then
+		return "mouseover";
+	end
+
+	return "up";
+end
+
+function GameTimeFrameMixin:OnButtonStateChanged()
+	local suffix = self:GetStateSuffix();
+	local atlas = format(self.atlasFormat, self.calendarDay, suffix);
+	self.StateTexture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
 end
 
 -- GameTimeFrame functions
 
-function GameTimeFrame_OnLoad(self)
+function GameTimeFrameMixin:OnLoad()
+	self.atlasFormat = "ui-hud-calendar-%d-%s";
+	self.calendarDay = 1;
+	ButtonStateBehaviorMixin.OnLoad(self);
+
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	local inGameCalendarDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameCalendarDisabled);
 	if not inGameCalendarDisabled then
@@ -50,14 +71,21 @@ function GameTimeFrame_OnLoad(self)
 	self.pendingCalendarInvites = 0;
 	self.hour = 0;
 	self.flashTimer = 0.0;
-	GameTimeFrame_OnUpdate(self);
+	self:OnUpdate();
 end
 
-function GameTimeFrame_OnEnter(self)
+function GameTimeFrameMixin:OnEnter()
+	ButtonStateBehaviorMixin.OnEnter(self);
+
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT");
 end
 
-function GameTimeFrame_OnEvent(self, event, ...)
+function GameTimeFrameMixin:OnLeave()
+	ButtonStateBehaviorMixin.OnLeave(self);
+	GameTooltip_Hide();
+end
+
+function GameTimeFrameMixin:OnEvent(event, ...)
 	if ( event == "CALENDAR_UPDATE_PENDING_INVITES" or event == "PLAYER_ENTERING_WORLD" ) then
 		GameTimeFrame_Refresh(self);
 	elseif ( event == "CALENDAR_EVENT_ALARM" ) then
@@ -68,25 +96,7 @@ function GameTimeFrame_OnEvent(self, event, ...)
 	end
 end
 
-function GameTimeFrame_OnUpdate(self, elapsed)
-	local hour, minute = GetGameTime();
-	local time = (hour * 60) + minute;
-	if ( time ~= self.timeOfDay ) then
-		self.timeOfDay = time;
-		local minx = 0;
-		local maxx = 50/128;
-		local miny = 0;
-		local maxy = 50/64;
-		if(time < GAMETIME_DAWN or time >= GAMETIME_DUSK) then
-			minx = minx + 0.5;
-			maxx = maxx + 0.5;
-		end
-		if ( hour ~= self.hour ) then
-			self.hour = hour;
-			GameTimeFrame_SetDate();
-		end
-		GameTimeTexture:SetTexCoord(minx, maxx, miny, maxy);
-	end
+function GameTimeFrameMixin:OnUpdate(elapsed)
 	if ( GameTooltip:IsOwned(self) ) then
 		GameTooltip:ClearLines();
 		if ( GameTimeCalendarInvitesTexture:IsShown() ) then
@@ -119,7 +129,10 @@ function GameTimeFrame_OnUpdate(self, elapsed)
 	end
 end
 
-function GameTimeFrame_OnClick(self)
+function GameTimeFrameMixin:OnClick()
+	if (InputUtil.IsGamepadUIEnabled() and GamepadHudMode:IsShown()) then
+		GamepadHudMode:Hide();
+	end
 	if ( GameTimeCalendarInvitesTexture:IsShown() ) then
 		Calendar_LoadUI();
 		if ( Calendar_Show ) then
@@ -138,13 +151,13 @@ function GameTimeFrame_OnClick(self)
 	end
 end
 
-function GameTimeFrame_SetDate()
+function GameTimeFrameMixin:SetDate()
 	local currentCalendarTime = C_DateAndTime.GetCurrentCalendarTime();
-	local day = currentCalendarTime.monthDay;
-	local atlasFormat = "ui-hud-calendar-%d-%s";
+	self.calendarDay = currentCalendarTime.monthDay;
+	self:OnButtonStateChanged();
+end
 
-	GameTimeFrame:SetNormalTexture(format(atlasFormat, day, "up"));
-	GameTimeFrame:SetPushedTexture(format(atlasFormat, day, "down"));
-	GameTimeFrame:SetHighlightTexture(format(atlasFormat, day, "mouseover"));
+function GameTimeFrame_SetDate()
+	GameTimeFrame:SetDate();
 end
 

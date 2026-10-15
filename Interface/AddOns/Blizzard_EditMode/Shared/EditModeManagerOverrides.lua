@@ -30,7 +30,3 @@ end
 function EditModeManagerFrameMixin:GetRightActionBarBottomLimit()
 	return UIParent:GetBottom();
 end
-
-function EditModeManagerFrameMixin:GetBottomActionBars()
-	return { };
-end

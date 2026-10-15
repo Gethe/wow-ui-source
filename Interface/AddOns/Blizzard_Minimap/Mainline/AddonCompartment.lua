@@ -1,6 +1,6 @@
 local forceinsecure = forceinsecure;
 
-AddonCompartmentMixin = { };
+AddonCompartmentMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
 local function SortAddons(addonData1, addonData2)
 	return strcmputf8i(C_StringUtil.StripHyperlinks(addonData1.text), C_StringUtil.StripHyperlinks(addonData2.text)) < 0;
@@ -8,16 +8,7 @@ end
 
 function AddonCompartmentMixin:OnLoad()
 	self.registeredAddons = { };
-
-	self:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip_SetTitle(GameTooltip, ADDONS);
-		GameTooltip:Show();
-	end);
-
-	self:SetScript("OnLeave", function()
-		GameTooltip:Hide();
-	end);
+	ButtonStateBehaviorMixin.OnLoad(self);
 
 	self:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_ADDON_COMPARTMENT");
@@ -66,6 +57,40 @@ function AddonCompartmentMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 end
 
+function AddonCompartmentMixin:OnEnter()
+	ButtonStateBehaviorMixin.OnEnter(self);
+
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip_SetTitle(GameTooltip, ADDONS);
+	GameTooltip:Show();
+end
+
+function AddonCompartmentMixin:OnLeave()
+	ButtonStateBehaviorMixin.OnLeave(self);
+	GameTooltip:Hide();
+end
+
+function AddonCompartmentMixin:OnButtonStateChanged()
+	local atlas = self.normalAtlas;
+	if self:IsDownOver() or self:IsDown() then
+		atlas = self.pressedAtlas;
+	elseif self:IsOver() or self:IsMenuOpen() then
+		atlas = self.mouseoverAtlas;
+	end
+
+	self.StateTexture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+end
+
+function AddonCompartmentMixin:OnMenuOpened(menu)
+	DropdownButtonMixin.OnMenuOpened(self, menu); 
+	self:OnButtonStateChanged();
+end
+
+function AddonCompartmentMixin:OnMenuClosed(menu, closeReason)
+	DropdownButtonMixin.OnMenuClosed(self, menu, closeReason);
+	self:OnButtonStateChanged();
+end
+
 function AddonCompartmentMixin:OnEvent(event, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		-- RegisterAddons cannot be called OnLoad because addons are explicitly not loadable during FrameXML load
@@ -75,7 +100,7 @@ function AddonCompartmentMixin:OnEvent(event, ...)
 end
 
 function AddonCompartmentMixin:RegisterAddons()
-	local character = UnitName("player");
+	local character = UnitGUID("player");
 	for addonIndex = 1, C_AddOns.GetNumAddOns() do
 		local addonEnabled = C_AddOns.GetAddOnEnableState(addonIndex, character) == Enum.AddOnEnableState.All;
 		local addonCompartmentFunc = C_AddOns.GetAddOnMetadata(addonIndex, "AddonCompartmentFunc");

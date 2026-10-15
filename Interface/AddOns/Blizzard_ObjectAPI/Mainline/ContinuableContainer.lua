@@ -28,8 +28,16 @@ function ContinuableContainer:AddContinuable(continuable)
 		self.continuables = {};
 		self.evictableObjects = {};
 
-		self.onContinuableLoadedCallback = function()
+		self.onContinuableLoadedCallback = function(id, success)
 			self.numOutstanding = self.numOutstanding - 1;
+			if not success then
+				for i, evictableObject in ipairs(self.evictableObjects) do
+					if evictableObject:GetItemID() == id then
+						table.remove(self.evictableObjects, i);
+						break;
+					end
+				end
+			end
 			self:CheckIfSatisfied();
 		end;
 	end

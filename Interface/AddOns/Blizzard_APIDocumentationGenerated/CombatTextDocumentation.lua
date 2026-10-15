@@ -56,6 +56,7 @@ local CombatText =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

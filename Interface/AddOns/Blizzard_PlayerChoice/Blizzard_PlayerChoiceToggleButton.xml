@@ -3,6 +3,9 @@
 	
 	<Button name="PlayerChoiceToggleButtonTemplate" parent="UIParent" frameStrata="DIALOG" mixin="PlayerChoiceToggleButtonMixin" hidden="true" virtual="true">
 		<Size x="465" y="149"/>
+		<KeyValues>
+			<KeyValue key="skipTextureKitFormatting" value="false" type="boolean"/>
+		</KeyValues>
 		<Anchors>
 			<Anchor point="CENTER" y="-200" />
 		</Anchors>
@@ -87,6 +90,21 @@
 				<Translation endDelay="4.25" smoothing="NONE" childKey="Glow" duration="0.75" order="1" offsetX="360" offsetY="0"/>
 			</AnimationGroup>
 		</Animations>
+	</Button>
+
+	<Button name="TaleboundPlayerChoiceToggleButton" inherits="PlayerChoiceToggleButtonTemplate, SharedButtonTemplate" mixin="TaleboundPlayerChoiceToggleButtonMixin">
+		<Size x="130" y="40"/>
+		<KeyValues>
+			<KeyValue key="hidePowersSound" value="SOUNDKIT.UI_PLAYER_CHOICE_GENERIC_HIDE_POWERS" type="global"/>
+			<KeyValue key="showPowersSound" value="SOUNDKIT.UI_PLAYER_CHOICE_GENERIC_SHOW_POWERS" type="global"/>
+			<KeyValue key="textureKit" value="talebound" type="string"/>
+			<KeyValue key="skipTextureKitFormatting" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
 	</Button>
 
 	<Button name="GenericPlayerChoiceToggleButton" inherits="PlayerChoiceToggleButtonTemplate" mixin="GenericPlayerChoiceToggleButtonMixin">

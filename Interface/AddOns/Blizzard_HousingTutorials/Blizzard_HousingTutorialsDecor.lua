@@ -55,6 +55,13 @@ function HouseDecorQuestWatcherMixin:StopWatching()
 	end
 
 	self.isWatching = false;
+
+	if self.houseDecorTutorial then
+		self.houseDecorTutorial:Deactivate();
+		HelpTip:HideAllSystem(self.houseDecorTutorial:GetSystem());
+		self.houseDecorTutorial = nil;
+	end
+
 	EventRegistry:UnregisterCallback("HouseEditor.StateUpdated", self);
 	Dispatcher:UnregisterEvent("QUEST_LOG_UPDATE", self);
 	EventRegistry:TriggerEvent("HousingTutorials.DecorQuestComplete");
@@ -248,7 +255,21 @@ function HouseDecorWatcherMixin:StopWatching()
 		Dispatcher:UnregisterEvent(event, self);
 	end
 
-	self.HousingModesUnlocked = nil;
+	self.housingModesUnlocked = nil;
+	self.clippingAndGridTutorial = nil;
+	self.houseMarketTabTutorial = nil;
+	self.expertModeTutorial = nil;
+	self.cleanupModeTutorial = nil;
+	self.petBedTutorial = nil;
+	if self.customizationTutorial then
+		self.customizationTutorial:Deactivate();
+		self.customizationTutorial = nil;
+	end
+	if self.layoutTutorial then
+		self.layoutTutorial:Deactivate();
+		self.layoutTutorial = nil;
+	end
+
 	EventRegistry:UnregisterCallback("HousingMarketTab.VisibilityUpdated", self.OnMarketTabVisibilityUpdated, self);
 end
 

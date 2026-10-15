@@ -36,7 +36,7 @@ local Discord =
 
 			Returns =
 			{
-				{ Name = "userID", Type = "DiscordID", Nilable = false },
+				{ Name = "userID", Type = "DiscordMemberOpaqueID", Nilable = false },
 			},
 		},
 		{
@@ -47,7 +47,7 @@ local Discord =
 
 			Arguments =
 			{
-				{ Name = "userID", Type = "DiscordID", Nilable = false },
+				{ Name = "userID", Type = "DiscordMemberOpaqueID", Nilable = false },
 			},
 
 			Returns =
@@ -194,6 +194,15 @@ local Discord =
 			},
 		},
 		{
+			Name = "IsVoiceEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RefreshAuth",
 			Type = "Function",
 			HasRestrictions = true,
@@ -269,6 +278,7 @@ local Discord =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

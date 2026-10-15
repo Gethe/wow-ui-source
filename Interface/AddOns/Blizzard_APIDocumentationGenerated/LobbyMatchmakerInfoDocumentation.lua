@@ -69,6 +69,7 @@ local LobbyMatchmakerInfo =
 		{
 			Name = "RespondToQueuePop",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -140,6 +141,7 @@ local LobbyMatchmakerInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

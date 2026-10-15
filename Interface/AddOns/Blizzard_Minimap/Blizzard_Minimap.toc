@@ -1,0 +1,50 @@
+## Title: Blizzard_Minimap
+## Dep: Blizzard_ActionBar [AllowLoadGameType mainline]
+## Dep: Blizzard_EditMode [AllowLoadGameType mainline]
+## Dep: Blizzard_FrameXMLUtil
+## Dep: Blizzard_GameTooltip
+
+Shared\MinimapButtonTemplate.lua				[AllowLoadGameType classic, camelot]
+Shared\MinimapButtonTemplate.xml				[AllowLoadGameType classic, camelot]
+
+[Family]\Minimap_Overrides.lua			[AllowLoadGameType vanilla, tbc]
+[Game]\Minimap_Overrides.lua			[AllowLoadGameType wrath, cata, mists]
+[Family]\MinimapConstants.lua			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\MinimapConstants.lua				[AllowLoadGameType camelot]
+[Family]\Minimap.lua
+[Game]\Minimap.lua								[AllowLoadGameType camelot]
+[Game]\MinimapInstanceDifficulty.lua	[AllowLoadGameType camelot]
+[Game]\MinimapZoneTextButton.lua	[AllowLoadGameType camelot]
+[Family]\MinimapZoneTextButton.xml	[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\MinimapZoneTextButton.xml	[AllowLoadGameType camelot]
+[Game]\MinimapTrackingButton.lua		[AllowLoadGameType camelot]
+[Family]\MinimapTrackingButton.xml		[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\MinimapTrackingButton.xml		[AllowLoadGameType camelot]
+[Family]\MinimapMailFrameTemplate.xml	[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\MinimapMailFrameTemplate.xml	[AllowLoadGameType camelot]
+[Family]\MinimapIndicatorFrameTemplate.xml	[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\MinimapIndicatorFrameTemplate.xml	[AllowLoadGameType camelot]
+Shared\ExternalEventURLMinimapButton.lua
+Shared\ExternalEventURLMinimapButton.xml
+[Family]\Minimap.xml
+[Game]\Diel.lua									[AllowLoadGameType camelot]
+
+[Family]\MinimapTracking_Simple.lua		[AllowLoadGameType vanilla]
+[Family]\MinimapTracking_Simple.xml		[AllowLoadGameType vanilla]
+[Family]\MinimapTracking_Dropdown.lua	[AllowLoadGameType tbc, wrath, cata, mists]
+[Family]\MinimapTracking_Dropdown.xml	[AllowLoadGameType tbc, wrath, cata, mists]
+
+[Family]\GameTime_NoCalendar.lua		[AllowLoadGameType vanilla, tbc]
+[Family]\GameTime_NoCalendar.xml		[AllowLoadGameType vanilla, tbc]
+Wrath\GameTime.lua						[AllowLoadGameType wrath, cata, mists]
+Wrath\GameTime.xml						[AllowLoadGameType wrath, cata, mists]
+[Family]\GameTime.lua					[AllowLoadGameType mainline]
+[Game]\GameTimeFrame.lua				[AllowLoadGameType camelot]
+[Family]\GameTimeFrameTemplate.xml	[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\GameTimeFrameTemplate.xml		[AllowLoadGameType camelot]
+[Family]\GameTime.xml					[AllowLoadGameType mainline]
+
+[Family]\AddonCompartment.lua			[AllowLoadGameType mainline]
+[Game]\AddonCompartment.lua		[AllowLoadGameType camelot]
+[Family]\AddonCompartment.xml		[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\AddonCompartment.xml		[AllowLoadGameType camelot]

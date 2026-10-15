@@ -398,9 +398,12 @@
 			</Button>
 		</Frames>
 	</Frame>
-	
-	<Frame name="GuildControlUI" inherits="TranslucentFrameTemplate" toplevel="true" frameStrata="DIALOG" parent="UIParent" movable="true" enableMouse="true" hidden="true">
+
+	<Frame name="GuildControlUI" inherits="TranslucentFrameTemplate, GamepadBaseDialogTemplate, FocusFramesInterfaceTemplate" toplevel="true" frameStrata="DIALOG" parent="UIParent" movable="true" enableMouse="true" hidden="true">
 		<Size x="338" y="444"/>
+		<KeyValues>
+			<KeyValue key="layoutType" type="string" value="DialogFrameTemplate"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture name="$parentTopBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true">
@@ -427,7 +430,7 @@
 					<Anchor point="RIGHT" x="-9" y="0"/>
 				</Anchors>
 			</Frame>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" relativePoint="TOPRIGHT">
 						<Offset x="-7" y="-7"/>
@@ -537,7 +540,7 @@
 					<OnLoad function="GuildControlRankBank_OnLoad"/>
 				</Scripts>
 			</Frame>
-			
+
 			<!-- Discord settings -->
 			<Frame name="$parentRankDiscordFrame" hidden="true" inherits="VerticalLayoutFrame" parentKey="discordFrame">
 				<Anchors>
@@ -608,7 +611,7 @@
 					<OnLoad function="GuildControlRankDiscord_OnLoad"/>
 				</Scripts>
 			</Frame>
-			
+
 			<!-- Rank -->
 			<Frame name="$parentRankSettingsFrame" hidden="true" parentKey="rankPermFrame">
 				<Anchors>
@@ -821,16 +824,12 @@
 		</Frames>
 		<Scripts>
 			<OnEvent function="GuildControlUI_OnEvent"/>
-			<OnShow>
-				self.numSkipUpdates = 0;
-				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-			</OnShow>
-			<OnHide>
+			<OnHide inherit="prepend">
 				StaticPopup_Hide("CONFIRM_RANK_AUTHENTICATOR_REMOVE");
 				PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 			</OnHide>
-			<OnLoad function="GuildControlUI_OnLoad"/>
-			<OnShow function="GuildControlUI_OnShow"/>
+			<OnLoad function="GuildControlUI_OnLoad" inherit="prepend"/>
+			<OnShow function="GuildControlUI_OnShow" inherit="prepend"/>
 		</Scripts>
 	</Frame>
 </Ui>

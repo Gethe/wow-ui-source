@@ -36,6 +36,7 @@ local BattleNetShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

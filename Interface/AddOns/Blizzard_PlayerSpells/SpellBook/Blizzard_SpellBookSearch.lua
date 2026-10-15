@@ -73,6 +73,16 @@ local function FullSearchResultSort(reverseMatchTypeCompare, resultInfoA, result
 	local spellBookItemInfoA = resultInfoA.spellBookItemInfo;
 	local spellBookItemInfoB = resultInfoB.spellBookItemInfo;
 
+	-- Outfit entries participate in search but are not backed by spellBookItemInfo.
+	-- Use resultID as a fallback when either search result has no spellBookItemInfo.
+	if not spellBookItemInfoA or not spellBookItemInfoB then
+		if spellBookItemInfoA ~= spellBookItemInfoB then
+			return spellBookItemInfoA ~= nil;
+		end
+
+		return resultInfoA.resultID < resultInfoB.resultID;
+	end
+
 	-- Then by non-offspec
 	if spellBookItemInfoA.isOffSpec ~= spellBookItemInfoB.isOffSpec then
 		return not spellBookItemInfoA.isOffSpec;
@@ -318,7 +328,11 @@ function SpellBookSearchMixin:GetAllDisplayableSpellBookItems()
 
 	-- Add cached SpellBookItemInfo to avoid a lot of repeat C_SpellBook API calls throughout the search process
 	for _, spellBookItemData in ipairs(self.cachedSpellBookItems) do
-		spellBookItemData.spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(spellBookItemData.slotIndex, spellBookItemData.spellBank);
+		if spellBookItemData.templateKey == "OUTFIT" then
+			spellBookItemData.spellBookItemInfo = nil;
+		else
+			spellBookItemData.spellBookItemInfo = C_SpellBook.GetSpellBookItemInfo(spellBookItemData.slotIndex, spellBookItemData.spellBank);
+		end
 	end
 
 	return self.cachedSpellBookItems;

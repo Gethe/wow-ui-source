@@ -348,6 +348,10 @@ function PerksProgramModelSceneContainerFrameMixin:Init()
 	fanfareActor:SetModelByCreatureDisplayID(CelebrationCreatureID);
 	self.CelebrateModelScene:Hide();
 
+	-- Settings
+	self.mountSpecialAnimPlaying = PerksProgramFrame:GetMountSpecialPreviewSetting();
+	self.attackAnimationPlaying = PerksProgramFrame:GetAttackAnimationSetting();
+
 	-- init the player model scene by defaults
 	local data = nil;
 	local modelSceneID = PerksProgramFrame:GetDefaultModelSceneID(Enum.PerksVendorCategoryType.Transmog);
@@ -377,7 +381,7 @@ function PerksProgramModelSceneContainerFrameMixin:UpdatePlayerModel(data, force
 	end
 end
 
-function PerksProgramModelSceneContainerFrameMixin:OnProductSelected(data, forceSceneChange)
+function PerksProgramModelSceneContainerFrameMixin:OnProductSelected(data, forceSceneChange, skipTelemetry)
 	local oldData = self.currentData;
 	self.currentData = data;
 
@@ -385,15 +389,11 @@ function PerksProgramModelSceneContainerFrameMixin:OnProductSelected(data, force
 	local shouldSetupModelScene = forceSceneChange or dataHasChanged;
 
 	if shouldSetupModelScene then
+		-- ModelScene data cleanup.
+		self:CancelMountSpecialTimer();
+
 		local categoryID = self.currentData.perksVendorCategoryID;
 		local defaultModelSceneID = PerksProgramFrame:GetDefaultModelSceneID(categoryID);
-
-		local hideArmor = not(self.currentData.displayData.autodress);
-		local hideArmorSetting = PerksProgramFrame:GetHideArmorSetting();
-		if hideArmorSetting ~= nil then
-			hideArmor = hideArmorSetting;
-			PerksProgramFrame:SetHideArmorSetting(hideArmor);
-		end
 
 		if categoryID == Enum.PerksVendorCategoryType.Mount then
 			forceSceneChange = forceSceneChange or self.previousMainModelSceneID ~= defaultModelSceneID;
@@ -417,7 +417,7 @@ function PerksProgramModelSceneContainerFrameMixin:OnProductSelected(data, force
 	end
 
 	EventRegistry:TriggerEvent("PerksProgramFrame.PerksProductSelected", self.currentData.perksVendorCategoryID);
-	EventRegistry:TriggerEvent("PerksProgramModel.OnProductSelectedAfterModel", self.currentData);
+	EventRegistry:TriggerEvent("PerksProgramModel.OnProductSelectedAfterModel", self.currentData, skipTelemetry);
 end
 
 function PerksProgramModelSceneContainerFrameMixin:OnShoppingCartVisibilityUpdated(cartShown)
@@ -458,7 +458,8 @@ end
 function PerksProgramModelSceneContainerFrameMixin:OnPlayerPreviewToggled()
 	if self.currentData then
 		local forceSceneChange = true;
-		self:OnProductSelected(self.currentData, forceSceneChange);
+		local skipTelemetry = true;
+		self:OnProductSelected(self.currentData, forceSceneChange, skipTelemetry);
 	end
 end
 
@@ -470,7 +471,8 @@ end
 function PerksProgramModelSceneContainerFrameMixin:OnPlayerHideArmorToggled()
 	if self.currentData then
 		local forceSceneChange = true;
-		self:OnProductSelected(self.currentData, forceSceneChange);
+		local skipTelemetry = true;
+		self:OnProductSelected(self.currentData, forceSceneChange, skipTelemetry);
 	end
 end
 
@@ -484,7 +486,8 @@ function PerksProgramModelSceneContainerFrameMixin:OnPlayerAttackAnimationSet(va
 
 	if self.attackAnimationPlaying ~= oldValue then
 		local forceSceneChange = true;
-		self:OnProductSelected(self.currentData, forceSceneChange);
+		local skipTelemetry = true;
+		self:OnProductSelected(self.currentData, forceSceneChange, skipTelemetry);
 	end
 
 	self.playerActor:SetSpellVisualKit(nil);
@@ -580,6 +583,9 @@ function PerksProgramModelSceneContainerFrameMixin:OnItemSetSelectionUpdated(dat
 	local forceSceneChange = true;
 	self.currentData = data;
 
+	-- ModelScene data cleanup.
+	self:CancelMountSpecialTimer();
+
 	if perksVendorCategoryID == Enum.PerksVendorCategoryType.Mount then
 		local overrideCreatureDisplayInfoID = data.creatureDisplays[1];
 		self:SetupModelSceneForMounts(data, defaultModelSceneID, forceSceneChange, overrideCreatureDisplayInfoID);
@@ -623,7 +629,7 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForMounts(data
 			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.Anim);
 			actor:SetAnimation(0);
 		end
-		local showPlayer = not PerksProgramFrame:GetTogglePlayerSetting();
+		local showPlayer = not PerksProgramFrame:GetHidePlayerOnMountSetting();
 		if not disablePlayerMountPreview and not showPlayer then
 			disablePlayerMountPreview = true;
 		end
@@ -644,10 +650,8 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForMounts(data
 end
 
 function PerksProgramModelSceneContainerFrameMixin:UpdateMountSpecialAnimPlaying()
-	if self.MountSpecialTimer then
-		self.MountSpecialTimer:Cancel();
-		self.MountSpecialTimer = nil;
-	end
+	-- Cancel any existing timer.
+	self:CancelMountSpecialTimer();
 
 	local actor = self.MainModelScene:GetActorByTag(DEFAULT_MOUNT_ACTOR_TAG);
 	if actor then
@@ -668,6 +672,13 @@ function PerksProgramModelSceneContainerFrameMixin:UpdateMountSpecialAnimPlaying
 			end
 			self.MountSpecialTimer = C_Timer.NewTimer(10, MountSpecialCallback);
 		end
+	end
+end
+
+function PerksProgramModelSceneContainerFrameMixin:CancelMountSpecialTimer()
+	if self.MountSpecialTimer then
+		self.MountSpecialTimer:Cancel();
+		self.MountSpecialTimer = nil;
 	end
 end
 
@@ -849,9 +860,13 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForTransmogs(d
 
 	if displayData then
 		local camera = self.PlayerModelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
-		local tryOverrideAttackAnimations = C_PerksProgram.IsAttackAnimToggleEnabled() and self.attackAnimationPlaying or true;
+		local tryOverrideAttackAnimations = true; -- Default true, override below.
+		if (C_PerksProgram.IsAttackAnimToggleEnabled()) then
+			tryOverrideAttackAnimations = self.attackAnimationPlaying;
+		end
 		UpdateModelSceneWithDisplayData(self.playerActor, camera, displayData, data.perksVendorCategoryID, tryOverrideAttackAnimations);
 	end
+
 	UpdateDropShadow(self.PlayerModelScene.dropShadow, DropShadowSettings["TRANSMOG_PLAYER"]);
 	self.ToyOverlayFrame:Hide();
 	self.MainModelScene:Hide();

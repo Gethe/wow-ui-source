@@ -9,23 +9,17 @@ local BACKGROUND_OPACITY_MAX = 100; -- 1, 100%
 local BACKGROUND_OPACITY_STEP = 10; -- 0.1, 10%
 
 SubtitlesPreviewMixin = {};
+local SubtitlesPreviewReference = nil;
 
 function SubtitlesPreviewMixin:OnLoad()
-	EventRegistry:RegisterCallback("Settings.CategoryChanged", function(...)
-		local _, categoryData = ...;
-		if categoryData and categoryData.name == CINEMATIC_SUBTITLES_OPTIONS_HEADER then
-			self:Show();
-		else
-			self:Hide();
-		end 
-	end, self);
+	SubtitlesPreviewReference = self;
 
 	local UpdatePreviewFunc = function(...)
 		local args = {
 			subtitleBackground = GetCVarNumberOrDefault(SUBTITLES_BACKGROUND_CVAR),
 			subtitleBackgroundAlpha = (GetCVarNumberOrDefault(SUBTITLES_BACKGROUND_OPACITY_CVAR) / 100),
 		};
-	
+
 		self:UpdatePreview(args);
 	end;
 
@@ -34,14 +28,6 @@ function SubtitlesPreviewMixin:OnLoad()
 end
 
 function SubtitlesPreviewMixin:OnShow()
-	local currentCategory = SettingsPanel:GetCurrentCategory();
-	local currentCategoryName = currentCategory and currentCategory.name or nil;
-
-	if currentCategoryName and currentCategoryName ~= CINEMATIC_SUBTITLES_OPTIONS_HEADER then
-		self:Hide();
-		return;
-	end
-	
 	local args = {
 		subtitleBackground = GetCVarNumberOrDefault(SUBTITLES_BACKGROUND_CVAR),
 		subtitleBackgroundAlpha = (GetCVarNumberOrDefault(SUBTITLES_BACKGROUND_OPACITY_CVAR) / 100),
@@ -53,7 +39,7 @@ end
 
 -- NOTE: Background types are also used in Blizzard_Subtitles.lua
 function SubtitlesPreviewMixin:UpdatePreview(args)
-	if not GetCVarBool(SUBTITLES_ENABLED_CVAR) then 
+	if not GetCVarBool(SUBTITLES_ENABLED_CVAR) then
 		self:Hide();
 	else
 		self:Show();
@@ -64,7 +50,7 @@ function SubtitlesPreviewMixin:UpdatePreview(args)
 					CINEMATIC_SUBTITLES_BLACK_BACKGROUND_COLOR,
 					CINEMATIC_SUBTITLES_LIGHT_BACKGROUND_COLOR,
 				};
-		
+
 				self.PreviewFontStringBackground:SetColorTexture(backgroundTypes[args.subtitleBackground]:GetRGB());
 				if args.subtitleBackgroundAlpha then
 					self.PreviewFontStringBackground:SetAlpha(args.subtitleBackgroundAlpha);
@@ -83,6 +69,13 @@ local function Register()
 
 	-- DISPLAY header
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(CINEMATIC_SUBTITLES_DISPLAY_SUBHEADER));
+
+	-- Subtitles Preview
+	do
+		local data = { };
+		local initializer = Settings.CreatePanelInitializer("SubtitlePreviewTemplate", data);
+		layout:AddInitializer(initializer);
+	end
 
 	-- Subtitles on/off
 	local subtitlesEnabledSetting = Settings.SetupCVarCheckbox(category, SUBTITLES_ENABLED_CVAR, CINEMATIC_SUBTITLES, OPTION_TOOLTIP_CINEMATIC_SUBTITLES);
@@ -104,17 +97,17 @@ local function Register()
 				subtitleBackgroundAlpha = tonumber(C_CVar.GetCVar(SUBTITLES_BACKGROUND_OPACITY_CVAR) / 100) or BACKGROUND_OPACITY_DEFAULT,
 			};
 
-			SettingsPanel.SubtitlePreview:UpdatePreview(args);
+			SubtitlesPreviewReference:UpdatePreview(args);
 		end
 
-        local function OnHide()
-            local args = {
-                subtitleBackground = GetValue() or BACKGROUND_TYPE_DEFAULT,
-                subtitleBackgroundAlpha = tonumber(C_CVar.GetCVar(SUBTITLES_BACKGROUND_OPACITY_CVAR) / 100) or BACKGROUND_OPACITY_DEFAULT,
-            };
+		local function OnHide()
+			local args = {
+				subtitleBackground = GetValue() or BACKGROUND_TYPE_DEFAULT,
+				subtitleBackgroundAlpha = tonumber(C_CVar.GetCVar(SUBTITLES_BACKGROUND_OPACITY_CVAR) / 100) or BACKGROUND_OPACITY_DEFAULT,
+			};
 
-            SettingsPanel.SubtitlePreview:UpdatePreview(args);
-        end
+			SubtitlesPreviewReference:UpdatePreview(args);
+		end
 
 		local function GetOptions()
 			local container = Settings.CreateControlTextContainer();
@@ -148,7 +141,7 @@ local function Register()
 		local function GetValue()
 			local movieSubtitleBackgroundAlpha = C_CVar.GetCVar(SUBTITLES_BACKGROUND_OPACITY_CVAR);
 			return tonumber(movieSubtitleBackgroundAlpha);
-		end	
+		end
 
 		local function SetValue(value)
 			C_CVar.SetCVar(SUBTITLES_BACKGROUND_OPACITY_CVAR, tostring(value));
@@ -169,7 +162,7 @@ local function Register()
 
             return subtitlesEnabled and backgroundTypeValid;
         end
-        
+
         initializer:AddShownPredicate(ShownPredicate);
 	end
 

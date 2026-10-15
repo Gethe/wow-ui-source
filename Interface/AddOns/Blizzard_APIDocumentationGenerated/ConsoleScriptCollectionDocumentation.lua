@@ -116,6 +116,7 @@ local ConsoleScriptCollection =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

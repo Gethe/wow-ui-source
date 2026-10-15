@@ -231,38 +231,43 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 		local mapID = self:GetParent():GetMapID();
 		local prof1, prof2, arch, fish, cook, firstAid = GetProfessions();
 
-		rootDescription:CreateTitle(WORLD_MAP_FILTER_LABEL_SHOW);
+		local title = self:GetParent():ShouldCombineMapAndQuestMenu() and WORLD_MAP_FILTER_TITLE_SHOW_MAP or WORLD_MAP_FILTER_LABEL_SHOW;
+		rootDescription:CreateTitle(title);
 
 		local function AddFilter(parent, cvarName)
 			local filter = self:GetWorldMapFilter(cvarName);
-			local checkbox = parent:CreateCheckbox(filter:GetText(), IsFilterChecked, function() SetFilterChecked(filter); self:RefreshFilterCounter(); end, filter);
-			local tooltipText = filter:GetTooltipText();
-			if tooltipText then
-				checkbox:SetOnEnter(function(button)
-					GameTooltip:ClearAllPoints();
-					GameTooltip:SetPoint("RIGHT", button, "LEFT", -3, 0);
-					GameTooltip:SetOwner(button, "ANCHOR_PRESERVE");
-					GameTooltip_SetTitle(GameTooltip, filter:GetText());
-					GameTooltip_AddNormalLine(GameTooltip, tooltipText);
-					GameTooltip:Show();
-				end);
-				checkbox:SetOnLeave(function(button)
-					GameTooltip:Hide();
-				end);
+			if filter then
+				local checkbox = parent:CreateCheckbox(filter:GetText(), IsFilterChecked, function() SetFilterChecked(filter); self:RefreshFilterCounter(); end, filter);
+				local tooltipText = filter:GetTooltipText();
+				if tooltipText then
+					checkbox:SetOnEnter(function(button)
+						GameTooltip:ClearAllPoints();
+						GameTooltip:SetPoint("RIGHT", button, "LEFT", -3, 0);
+						GameTooltip:SetOwner(button, "ANCHOR_PRESERVE");
+						GameTooltip_SetTitle(GameTooltip, filter:GetText());
+						GameTooltip_AddNormalLine(GameTooltip, tooltipText);
+						GameTooltip:Show();
+					end);
+					checkbox:SetOnLeave(function(button)
+						GameTooltip:Hide();
+					end);
+				end
+				return checkbox;
 			end
-			return checkbox;
 		end
 
 		local function AddFilterWithNewIndicator(description, cvarName, tutorialBit)
 			local filter = AddFilter(description, cvarName);
-			filter:AddInitializer(function(button, description, menu)
-				if not GetCVarBitfield("closedInfoFramesAccountWide", tutorialBit) then
-					button.newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
-					button.newFeatureFrame:SetPoint("RIGHT", button.leftTexture1, "LEFT", 0, 0);
-				end
+			if filter then
+				filter:AddInitializer(function(button, description, menu)
+					if not GetCVarBitfield("closedInfoFramesAccountWide", tutorialBit) then
+						button.newFeatureFrame = MenuTemplates.AttachNewFeatureFrame(button);
+						button.newFeatureFrame:SetPoint("RIGHT", button.leftTexture1, "LEFT", 0, 0);
+					end
 
-				button:SetScript("OnHide", function() SetCVarBitfield("closedInfoFramesAccountWide", tutorialBit, true); end)
-			end);
+					button:SetScript("OnHide", function() SetCVarBitfield("closedInfoFramesAccountWide", tutorialBit, true); end)
+				end);
+			end
 
 			return filter;
 		end
@@ -302,6 +307,8 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 		end
 
 		AddFilter(rootDescription, "questPOI");
+		AddFilter(rootDescription, "showQuestLevel");
+		AddFilter(rootDescription, "showQuestDifficultyColor");
 		AddFilter(rootDescription, "dragonRidingRacesFilter");
 		AddFilter(rootDescription, "showDungeonEntrancesOnMap");
 		AddFilter(rootDescription, "showDelveEntrancesOnMap");
@@ -314,7 +321,32 @@ function WorldMapTrackingOptionsButtonMixin:SetupMenu()
 		if arch then
 			AddFilter(rootDescription, "digSites");
 		end
+
+		if self:GetParent():ShouldCombineMapAndQuestMenu() then
+			local function IsSelected()
+				return GetCVarBool("showQuestObjectivesInLog");
+			end
+
+			local function SetSelected()
+				SetCVar("showQuestObjectivesInLog", not IsSelected());
+				QuestLogQuests_Update();
+			end
+
+			rootDescription:QueueSpacer();
+			rootDescription:QueueDivider();
+			rootDescription:QueueSpacer();
+			rootDescription:CreateTitle(WORLD_MAP_FILTER_TITLE_SHOW_QUEST_LOG);
+			rootDescription:CreateCheckbox(QUEST_LOG_SHOW_OBJECTIVES, IsSelected, SetSelected);
+		end
 	end);
+end
+
+function WorldMapTrackingOptionsButtonMixin:BuildGameSpecificFilterTable(addFilter)
+	-- overriden for game specific implementations
+end
+
+function WorldMapTrackingOptionsButtonMixin:CanShowDungeonEntrancesOnMapFilterOption()
+	return true;
 end
 
 function WorldMapTrackingOptionsButtonMixin:BuildFilterTable()
@@ -327,26 +359,15 @@ function WorldMapTrackingOptionsButtonMixin:BuildFilterTable()
 
 	AddFilter(SHOW_QUEST_OBJECTIVES_ON_MAP_TEXT, "questPOI", QUEST_OBJECTIVES_FILTER_DESCRIPTION);
 	AddFilter(SHOW_WORLD_QUESTS_ON_MAP_TEXT, "questPOIWQ", WORLD_QUESTS_FILTER_DESCRIPTION);
-	AddFilter(SHOW_PET_BATTLES_ON_MAP_TEXT, "showTamers", PET_BATTLES_FILTER_DESCRIPTION);
-	AddFilter(SHOW_PET_BATTLES_ON_MAP_TEXT, "showTamersWQ");
 	AddFilter(SHOW_PRIMARY_PROFESSION_ON_MAP_TEXT, "primaryProfessionsFilter");
 	AddFilter(SHOW_SECONDARY_PROFESSION_ON_MAP_TEXT, "secondaryProfessionsFilter");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_ANIMA, "worldQuestFilterAnima");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_RESOURCES, "worldQuestFilterResources");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_ARTIFACT_POWER, "worldQuestFilterArtifactPower");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_PROFESSION_MATERIALS, "worldQuestFilterProfessionMaterials");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_GOLD, "worldQuestFilterGold");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_EQUIPMENT, "worldQuestFilterEquipment");
-	AddFilter(WORLD_QUEST_REWARD_FILTERS_REPUTATION, "worldQuestFilterReputation");
-	AddFilter(DRAGONRIDING_RACES_MAP_TOGGLE, "dragonRidingRacesFilter", SKYRIDING_RACES_FILTER_DESCRIPTION);
-	AddFilter(DRAGONRIDING_RACES_MAP_TOGGLE, "dragonRidingRacesFilterWQ");
-	AddFilter(SHOW_INSTANCE_ENTRANCES_ON_MAP_TEXT, "showDungeonEntrancesOnMap", INSTANCE_ENTRANCES_FILTER_DESCRIPTION);
-	AddFilter(DELVES_SHOW_ENTRACES_ON_MAP_TEXT, "showDelveEntrancesOnMap", DELVE_ENTRANCES_FILTER_DESCRIPTION);
+	if self:CanShowDungeonEntrancesOnMapFilterOption() then
+		AddFilter(SHOW_INSTANCE_ENTRANCES_ON_MAP_TEXT, "showDungeonEntrancesOnMap", INSTANCE_ENTRANCES_FILTER_DESCRIPTION);
+	end
 	AddFilter(CONTENT_TRACKING_MAP_TOGGLE, "contentTrackingFilter", TRACKED_ITEMS_FILTER_DESCRIPTION);
-	AddFilter(ARCHAEOLOGY_SHOW_DIG_SITES, "digSites", SHOW_DIGSITES_FILTER_DESCRIPTION, Enum.MinimapTrackingFilter.Digsites);
-	AddFilter(SHOW_LOCAL_STORY_OFFERS_ON_MAP_TEXT, "questPOILocalStory", LOCAL_STORIES_FILTER_DESCRIPTION);
 	AddFilter(MINIMAP_TRACKING_TRIVIAL_QUESTS, "trivialQuests", TRIVIAL_QUESTS_FILTER_DESCRIPTION, Enum.MinimapTrackingFilter.TrivialQuests, true);
-	AddFilter(MINIMAP_TRACKING_ACCOUNT_COMPLETED_QUESTS, "showAccountCompletedQuests", ACCOUNT_COMPLETED_QUESTS_FILTER_DESCRIPTION, Enum.MinimapTrackingFilter.AccountCompletedQuests, true);
+
+	self:BuildGameSpecificFilterTable(AddFilter);
 end
 
 function WorldMapTrackingOptionsButtonMixin:GetWorldMapFilters()
@@ -364,21 +385,29 @@ function WorldMapTrackingOptionsButtonMixin:OnEnter()
 end
 
 function WorldMapTrackingOptionsButtonMixin:OnMouseDown(button)
-	self.Icon:SetAtlas("Map-Filter-Button-down");
+	self.Icon:SetAtlas(self.mouseDownAtlas);
 
 	HelpTip:Acknowledge(self, ACCOUNT_COMPLETED_QUESTS_FILTER_TUTORIAL);
 end
 
 function WorldMapTrackingOptionsButtonMixin:OnMouseUp()
-	self.Icon:SetAtlas("Map-Filter-Button");
+	self.Icon:SetAtlas(self.mouseUpAtlas);
 end
 
 function WorldMapTrackingOptionsButtonMixin:Refresh()
 	self:GetParent():RefreshAllDataProviders();
 end
 
+function WorldMapTrackingOptionsButtonMixin:CanShowRefreshAccountCompletedQuestFilterTutorial()
+	return true;
+end
+
 function WorldMapTrackingOptionsButtonMixin:RefreshAccountCompletedQuestFilterTutorial()
 	HelpTip:Hide(self, ACCOUNT_COMPLETED_QUESTS_FILTER_TUTORIAL);
+
+	if not self:CanShowRefreshAccountCompletedQuestFilterTutorial() then
+		return;
+	end
 
 	local tutorialAcknowledged = GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.CompletedQuestsFilter);
 	if tutorialAcknowledged then
@@ -477,13 +506,18 @@ function WorldMapNavBarMixin:OnLoad()
 		name = WORLD,
 		OnClick = function(button)
 			local TOPMOST = true;
-			local cosmicMapInfo = MapUtil.GetMapParentInfo(self:GetParent():GetMapID(), Enum.UIMapType.Cosmic, TOPMOST);
-			if cosmicMapInfo then
-				self:GoToMap(cosmicMapInfo.mapID)
+			local topMostMapType = self:GetTopMostUIMapType();
+			local topMostMapInfo = MapUtil.GetMapParentInfo(self:GetParent():GetMapID(), topMostMapType, TOPMOST);
+			if topMostMapInfo then
+				self:GoToMap(topMostMapInfo.mapID)
 			end
 		end,
 	}
 	NavBar_Initialize(self, "NavButtonTemplate", homeData, self.home, self.overflow);
+end
+
+function WorldMapNavBarMixin:GetTopMostUIMapType()
+	return Enum.UIMapType.Cosmic;
 end
 
 function WorldMapNavBarMixin:GoToMap(mapID)
@@ -548,11 +582,22 @@ function WorldMapNavBarButtonMixin:OnClick()
 	self:GetParent():GoToMap(self.data.id)
 end
 
+local function SetCoordText(fontString, floatFormatString, integerFormatString, coordsByTenths, x, y, mapName)
+	local scaledX = x * 100;
+	local scaledY = y * 100;
+	if coordsByTenths then
+		fontString:SetFormattedText(floatFormatString, scaledX, scaledY, mapName);
+	else
+		fontString:SetFormattedText(integerFormatString, Round(scaledX), Round(scaledY), mapName);
+	end
+end
+
 WorldMapCoordsPanelMixin = { };
 
 function WorldMapCoordsPanelMixin:OnLoad()
 	CVarCallbackRegistry:RegisterCallback("worldMapShowPlayerCoords", self.CVarsUpdated, self);
 	CVarCallbackRegistry:RegisterCallback("worldMapShowCursorCoords", self.CVarsUpdated, self);
+	CVarCallbackRegistry:RegisterCallback("coordsByTenths", self.CVarsUpdated, self);
 	self:CVarsUpdated();
 end
 
@@ -564,7 +609,7 @@ function WorldMapCoordsPanelMixin:OnUpdate(elapsed)
 		local playerPosition = C_Map.GetPlayerMapPosition(mapID, "player");
 		if playerPosition then
 			local x, y = playerPosition:GetXY();
-			self.PlayerCoords.Label:SetFormattedText(WORLD_MAP_PLAYER_COORDS, x * 100, y * 100);
+			SetCoordText(self.PlayerCoords.Label, WORLD_MAP_PLAYER_COORDS, WORLD_MAP_PLAYER_COORDS_INTEGER, self.coordsByTenths, x, y);
 			shouldShowPlayer = true;
 		else
 			local playerMapID = C_Map.GetBestMapForUnit("player");
@@ -573,7 +618,8 @@ function WorldMapCoordsPanelMixin:OnUpdate(elapsed)
 				if actualPosition then
 					local x, y = actualPosition:GetXY();
 					local mapInfo = C_Map.GetMapInfo(playerMapID);
-					self.PlayerCoords.Label:SetFormattedText(WORLD_MAP_PLAYER_COORDS_MAP_NAME, x * 100, y * 100, mapInfo and mapInfo.name or UNKNOWN);
+					local mapName = mapInfo and mapInfo.name or UNKNOWN;
+					SetCoordText(self.PlayerCoords.Label, WORLD_MAP_PLAYER_COORDS_MAP_NAME, WORLD_MAP_PLAYER_COORDS_MAP_NAME_INTEGER, self.coordsByTenths, x, y, mapName);
 					shouldShowPlayer = true;
 				end
 			end
@@ -587,10 +633,20 @@ function WorldMapCoordsPanelMixin:OnUpdate(elapsed)
 	local showCursorCoords = self.showCursorCoords and self:GetParent():IsCanvasMouseFocusOrPinFocus();
 	if showCursorCoords then
 		local cursorX, cursorY = self:GetParent():GetNormalizedCursorPosition();
-		self.CursorCoords.Label:SetFormattedText(WORLD_MAP_CURSOR_COORDS, cursorX * 100, cursorY * 100);
+		SetCoordText(self.CursorCoords.Label, WORLD_MAP_CURSOR_COORDS, WORLD_MAP_CURSOR_COORDS_INTEGER, self.coordsByTenths, cursorX, cursorY);
 	end
 	if self.CursorCoords:IsShown() ~= showCursorCoords then
 		self.CursorCoords:SetShown(showCursorCoords);
+		self:Layout();
+	end
+
+	local showCrosshairCoords = self.showCursorCoords and self:GetParent():IsCanvasGamepadFocus();
+	if showCrosshairCoords then
+		local cursorX, cursorY = self:GetParent():GetNormalizedGamepadCursorPosition();
+		SetCoordText(self.CrosshairCoords.Label, WORLD_MAP_CROSSHAIR_COORDS, WORLD_MAP_CROSSHAIR_COORDS_INTEGER, self.coordsByTenths, cursorX, cursorY);
+	end
+	if self.CrosshairCoords:IsShown() ~= showCrosshairCoords then
+		self.CrosshairCoords:SetShown(showCrosshairCoords);
 		self:Layout();
 	end
 end
@@ -603,6 +659,7 @@ end
 function WorldMapCoordsPanelMixin:CVarsUpdated()
 	self.showPlayerCoords = GetCVarBool("worldMapShowPlayerCoords");
 	self.showCursorCoords = GetCVarBool("worldMapShowCursorCoords");
+	self.coordsByTenths = GetCVarBool("coordsByTenths");
 end
 
 function WorldMapCoordsPanelMixin:Refresh()

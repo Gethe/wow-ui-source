@@ -213,7 +213,7 @@ function ProfessionsCustomerOrderFormMixin:InitButtons()
 	end);
 	self.FavoriteButton:SetScript("OnLeave", GameTooltip_Hide);
 
-	self.AllocateBestQualityCheckbox.text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
+	self.AllocateBestQualityCheckbox.Text:SetText(LIGHTGRAY_FONT_COLOR:WrapTextInColorCode(PROFESSIONS_USE_BEST_QUALITY_REAGENTS));
 	self.AllocateBestQualityCheckbox:SetScript("OnClick", function(button, buttonName, down)
 		local checked = button:GetChecked();
 		local forCustomer = true;

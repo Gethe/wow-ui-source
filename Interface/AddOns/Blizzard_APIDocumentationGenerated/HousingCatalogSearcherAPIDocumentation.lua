@@ -546,6 +546,7 @@ local HousingCatalogSearcherAPI =
 			Type = "CallbackType",
 		},
 	},
+
 	Predicates =
 	{
 	},

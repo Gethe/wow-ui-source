@@ -18,10 +18,21 @@ function HousingBlueprintUtils.CreateBlueprintInfoContextMenu(rootDescription, b
 		end
 	end);
 
-	if params.shouldShowImport then
-		rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_IMPORT, function()
+	if params.shouldShowImport or params.importDisabledTooltip then
+		local importButton = rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_IMPORT, function()
 			HousingFramesUtil.ShowBlueprintImport(blueprintInfo.shareCode);
 		end);
+		importButton:SetEnabled(params.shouldShowImport);
+		if not params.shouldShowImport then
+			importButton:SetOnEnter(function(self)
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				GameTooltip_AddErrorLine(GameTooltip, params.importDisabledTooltip);
+				GameTooltip:Show();
+			end);
+			importButton:SetOnLeave(function(self)
+				GameTooltip:Hide();
+			end);
+		end
 	end
 	
 	rootDescription:CreateButton(HOUSING_BLUEPRINT_EXPORT_CHAT_LINK_BUTTON, function()
@@ -30,7 +41,7 @@ function HousingBlueprintUtils.CreateBlueprintInfoContextMenu(rootDescription, b
 			ChatFrameUtil.OpenChat(blueprintLink);
 		end
 	end);
-	rootDescription:CreateButton(TALENT_FRAME_DROP_DOWN_EXPORT_CLIPBOARD, function()
+	rootDescription:CreateButton(HOUSING_BLUEPRINT_COLLECTION_COPY_VERBOSE, function()
 		CopyToClipboard(blueprintInfo.shareCode);
 		ChatFrameUtil.DisplaySystemMessageInPrimary(HOUSING_BLUEPRINT_EXPORT_CLIPBOARD_CONFIRMATION);
 	end);

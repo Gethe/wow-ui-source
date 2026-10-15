@@ -138,6 +138,11 @@ function RefundFlowDecorButtonMixin:SetDecorInfo(decorInfo)
 	container.NameText:SetText(self.name);
 	container.RefundAmountText:SetText(self.price);
 	container.TimeRemainingText:SetText(self:FormatTimeLeft(self.timeRemainingSeconds, timeRemainingFormatter));
+
+	-- Updating the currency Icon bsed on the refunded product's currency code.
+	local atlas = CatalogShopUtil.GetAtlasByCurrencyCode(decorInfo.currencyCode);
+	container.RefundAmountIcon:SetAtlas(atlas);
+	CatalogShopRefundFrame.TotalRefundContainer.RefundAmountIcon:SetAtlas(atlas);
 end
 
 function RefundFlowDecorButtonMixin:OnEnter()

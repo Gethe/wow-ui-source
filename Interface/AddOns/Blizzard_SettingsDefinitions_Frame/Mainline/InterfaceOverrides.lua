@@ -3,6 +3,27 @@ InterfaceOverrides = {}
 function InterfaceOverrides.AdjustDisplaySettings(category)
 end
 
+
+function InterfaceOverrides.HasAssistedCombat()
+	return true;
+end
+
+function InterfaceOverrides.HasBossWarnings()
+	return true;
+end
+
+function InterfaceOverrides.HasExternalDefensives()
+	return true;
+end
+
+function InterfaceOverrides.HasCooldownViewer()
+	return true;
+end
+
+function InterfaceOverrides.HasSwingTimer()
+	return false;
+end
+
 function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 	-- TODO: As of 12.0.7, Classic Raid Frame options closely match Mainline ones.
 	-- Unfork these at a point where it's convenient, with overrides
@@ -31,7 +52,10 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 
 	-- Aggro Highlight
 	if C_CVar.GetCVar("raidFramesDisplayAggroHighlight") then
-		Settings.SetupCVarCheckbox(category, "raidFramesDisplayAggroHighlight", COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT);
+		local _, aggroInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDisplayAggroHighlight", COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAYAGGROHIGHLIGHT);
+		if aggroInitializer then
+			aggroInitializer:AddSearchTags(THREAT_TAG);
+		end
 	end
 
 	-- Class Colors
@@ -142,6 +166,10 @@ function InterfaceOverrides.CreateRaidFrameSettings(category, layout)
 		-- Dispel Overlay Flashing Animation
 		local _, dispelOverlayAnimationInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDispelIndicatorOverlayAnimation", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_FLASHING_ANIMATION, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_FLASHING_ANIMATION);
 		dispelOverlayAnimationInitializer:SetParentInitializer(dispelInitializer, IsModifiable);
+
+		-- Dispel Overlay Animated Border (MarchingAnts)
+		local _, animatedBorderInitializer = Settings.SetupCVarCheckbox(category, "raidFramesDispelIndicatorAnimatedBorder", COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_ANIMATED_BORDER, OPTION_TOOLTIP_COMPACT_UNIT_FRAME_PROFILE_DISPLAY_DISPEL_OVERLAY_ANIMATED_BORDER);
+		animatedBorderInitializer:SetParentInitializer(dispelInitializer, IsModifiable);
 	end
 
 	-- Health Text
@@ -224,34 +252,35 @@ function InterfaceOverrides.CreateHousingSettings(category, layout)
 	end
 end
 
-function InterfaceOverrides.CreateCoordinatesSettings(category, layout)
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(SETTINGS_MAP_COORDS_SECTION));
-
-	Settings.SetupCVarCheckbox(category, "worldMapShowPlayerCoords", SETTINGS_PLAYER_MAP_COORDS, SETTINGS_PLAYER_MAP_COORDS_TOOLTIP);
-	Settings.SetupCVarCheckbox(category, "worldMapShowCursorCoords", SETTINGS_CURSOR_MAP_COORDS, SETTINGS_CURSOR_MAP_COORDS_TOOLTIP);
-end
-
 -- These popups have a "Don't show this again" checkbox that the player can click to skip them in the future.
 local function ResetConfirmationPopups()
 	SetCVar("bankConfirmTabCleanUp", true);
 end
 
 function InterfaceOverrides.ShowTutorialsOnButtonClick()
-		SetCVar("closedInfoFrames", ""); -- reset the help plates too
-		SetCVar("closedInfoFramesAccountWide", "");
-		SetCVar("showNPETutorials", "1");
-		ResetTutorials();
-		TutorialFrame_ClearQueue();
-		if C_PlayerInfo.IsPlayerNPERestricted() and UnitLevel("player") == 1 then
-			SetCVar("showTutorials", 1);
-		end
+	SetCVar("skipTutorialAchievement", "1");
+	SetCVar("performedVendorTutorial", "0");
+	SetCVar("performedDeathTutorial", "0");
+	SetCVar("closedInfoFrames", ""); -- reset the help plates too
+	SetCVar("closedInfoFramesAccountWide", "");
+	SetCVar("showNPETutorials", "1");
+	ResetTutorials();
+	TutorialFrame_ClearQueue();
+	local canResetTutorials = InterfaceOverrides.CanResetTutorials();
+	if canResetTutorials and UnitLevel("player") == 1 then
+		SetCVar("showTutorials", 1);
+	end
 
-		if GetTutorialsEnabled() and C_PlayerInfo.IsPlayerNPERestricted() then
-			NPE_LoadUI();
-		end
-		TriggerTutorial(1);
-		ResetConfirmationPopups();
-		TutorialManager:ResetTutorials();
+	if GetTutorialsEnabled() and canResetTutorials then
+		NPE_LoadUI();
+	end
+	TriggerTutorial(1);
+	ResetConfirmationPopups();
+	TutorialManager:ResetTutorials();
+end
+
+function InterfaceOverrides.CanResetTutorials()
+	return C_PlayerInfo.IsPlayerNPERestricted();
 end
 
 function InterfaceOverrides.RunSettingsCallback(callback)
@@ -295,4 +324,33 @@ function InterfaceOverrides.CreateQuestSettings(category, layout)
 	local trivialQuestFilterSetting = Settings.RegisterProxySetting(category, "PROXY_TRIVIAL_QUEST_FILTERING",
 		Settings.VarType.Boolean, SETTINGS_TRIVIAL_QUEST_FILTER, Settings.Default.False, IsTrackingTrivialQuests, SetTrivialQuestTracking);
 	Settings.CreateCheckbox(category, trivialQuestFilterSetting);
+end
+
+function InterfaceOverrides.CreateToastSettings(category, layout)
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(TOAST_SETTINGS_LABEL));
+
+	Settings.SetupCVarCheckbox(category, "enableLootToasts", SHOW_ITEM_TOASTS, OPTION_TOOLTIP_SHOW_ITEM_TOASTS);
+	Settings.SetupCVarCheckbox(category, "enableCollectionToasts", SHOW_COLLECTION_TOASTS, OPTION_TOOLTIP_SHOW_COLLECTION_TOASTS);
+	Settings.SetupCVarCheckbox(category, "enableLearnedRecipeToasts", SHOW_LEARNED_RECIPE_TOASTS, OPTION_TOOLTIP_SHOW_LEARNED_RECIPE_TOASTS);
+end
+
+--This function is overriden in camelot
+function InterfaceOverrides.AdjustInGameNavigationSettings(category)
+	-- Enabling ingame navigation checkbox
+	Settings.SetupCVarCheckbox(category, "showInGameNavigation", SHOW_IN_GAME_NAVIGATION, OPTION_TOOLTIP_SHOW_IN_GAME_NAVIGATION);
+end
+
+function InterfaceOverrides.RegisterOutlineSettings(category)
+	if C_CVar.GetCVar("Outline") then
+		local function GetOptions()
+			local container = Settings.CreateControlTextContainer();
+			container:Add(0, OBJECT_NPC_OUTLINE_DISABLED);
+			container:Add(1, OBJECT_NPC_OUTLINE_MODE_ONE);
+			container:Add(2, OBJECT_NPC_OUTLINE_MODE_TWO);
+			container:Add(3, OBJECT_NPC_OUTLINE_MODE_THREE);
+			return container:GetData();
+		end
+
+		Settings.SetupCVarDropdown(category, "Outline", Settings.VarType.Number, GetOptions, OBJECT_NPC_OUTLINE, OPTION_TOOLTIP_OBJECT_NPC_OUTLINE);
+	end
 end

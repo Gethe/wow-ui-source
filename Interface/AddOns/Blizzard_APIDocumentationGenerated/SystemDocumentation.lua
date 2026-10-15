@@ -81,6 +81,28 @@ local System =
 			},
 		},
 		{
+			Name = "GlobalRegionMouseDown",
+			Type = "Event",
+			LiteralName = "GLOBAL_REGION_MOUSE_DOWN",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "region", Type = "ScriptRegion", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GlobalRegionMouseUp",
+			Type = "Event",
+			LiteralName = "GLOBAL_REGION_MOUSE_UP",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "region", Type = "ScriptRegion", Nilable = false },
+				{ Name = "button", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "InitialHotfixesApplied",
 			Type = "Event",
 			LiteralName = "INITIAL_HOTFIXES_APPLIED",
@@ -147,6 +169,24 @@ local System =
 			Name = "SearchDbLoaded",
 			Type = "Event",
 			LiteralName = "SEARCH_DB_LOADED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "ShardTransfer",
+			Type = "Event",
+			LiteralName = "SHARD_TRANSFER",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "ShardTransferCancelled",
+			Type = "Event",
+			LiteralName = "SHARD_TRANSFER_CANCELLED",
+			SynchronousEvent = true,
+		},
+		{
+			Name = "ShardTransferImminent",
+			Type = "Event",
+			LiteralName = "SHARD_TRANSFER_IMMINENT",
 			SynchronousEvent = true,
 		},
 		{
@@ -233,6 +273,7 @@ local System =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

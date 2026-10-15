@@ -15,6 +15,7 @@ local GuildInfoShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

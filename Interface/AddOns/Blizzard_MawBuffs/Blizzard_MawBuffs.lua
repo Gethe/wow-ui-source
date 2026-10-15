@@ -3,7 +3,7 @@ local MAW_BUFF_MAX_DISPLAY = 44;
 function ShouldShowMawBuffs()
 	local auraData = C_UnitAuras.GetAuraDataByIndex("player", 1, "MAW");
 	local hasMawBuff = auraData and auraData.icon;
-	return IsInJailersTower() or hasMawBuff or false;
+	return IsInJailersTower() or hasMawBuff or C_GameRules.IsWoWHack() or false;
 end
 
 MawBuffsContainerMixin = {};

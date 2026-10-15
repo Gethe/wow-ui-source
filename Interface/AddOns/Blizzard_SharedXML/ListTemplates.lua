@@ -43,6 +43,7 @@ function ListHeaderVisualMixin:SetTitleColor(useHighlight, color)
 	end
 
 	self.titleColors[useHighlight] = color;
+	self:CheckHighlightTitle(self:IsMouseMotionFocus());
 end
 
 function ListHeaderVisualMixin:CheckHighlightTitle(isMouseOver)
@@ -85,6 +86,11 @@ function ListHeaderMixin:SetClickHandler(handler)
 	self.customClickHandler = handler;
 end
 
+function ListHeaderMixin:SetTooltipText(tooltipText)
+	self.tooltipText = tooltipText;
+	self:CheckUpdateTooltip(self:IsMouseMotionFocus());
+end
+
 function ListHeaderMixin:OnEnter()
 	local isMouseOver = true;
 	self:CheckHighlightTitle(isMouseOver);
@@ -110,10 +116,15 @@ end
 function ListHeaderMixin:CheckUpdateTooltip(isMouseOver)
 	local tooltip = GetAppropriateTooltip();
 
-	if self:IsTruncated() and isMouseOver then
+	if (self:IsTruncated() or self.tooltipText) and isMouseOver then
 		tooltip:ClearAllPoints();
 		tooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_SetTitle(tooltip, self:GetTitleRegion():GetText(), nil, true);
+		if self:IsTruncated() then
+			GameTooltip_SetTitle(tooltip, self:GetTitleRegion():GetText(), nil, true);
+		end
+		if self.tooltipText then
+			GameTooltip_AddNormalLine(tooltip, self.tooltipText);
+		end
 		tooltip:Show();
 	else
 		tooltip:Hide();

@@ -1,0 +1,12 @@
+## Title: Blizzard_Calendar
+## LoadOnDemand: 1
+## OptionalDep: Blizzard_Plunderstorm
+## Dep: Blizzard_FrameXMLUtil
+## Dep: Blizzard_GameMenuEsc
+[Family]\CalendarFilterData.lua [ExcludeLoadGameType camelot, classic]
+[Game]\CalendarFilterData.lua [AllowLoadGameType camelot]
+Blizzard_Calendar_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_Calendar.lua
+[Family]\Blizzard_CalendarTemplates.xml
+[Family]\Blizzard_Calendar.xml
+Localization.lua

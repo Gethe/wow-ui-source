@@ -3,6 +3,7 @@ local _addonName, addonTable = ...;
 local stubDebugger = {
 	LogCooldown = function(...) end,
 	LogCooldownItem = function(...) end,
+	LogCooldownMessage = function(...) end,
 	CheckDisplayCooldownState = function(...) end,
 	CheckDisplayCooldownInfo = function(...) end,
 };
@@ -31,7 +32,7 @@ local function GetEditModeIcon(index)
 		EditModeIconDataProvider = CreateAndInitFromMixin(IconDataProviderMixin, IconDataProviderExtraType.Spellbook, spellIconsOnly);
 	end
 
-	return EditModeIconDataProvider:GetIconByIndex(index);
+	return EditModeIconDataProvider:GetIconByWrappedIndex(index);
 end
 
 local function GetEditModeDuration(index)
@@ -166,6 +167,8 @@ function CooldownViewerItemMixin:OnSpellUpdateIconEvent()
 end
 
 function CooldownViewerItemMixin:OnUnitAuraRemovedEvent()
+	-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraRemovedEvent");
+
 	if self:GetAuraSpellID() == self:GetLinkedSpell() then
 		-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraRemovedEvent", "AuraSpell %s matches linked spell, clearing linked spell.", tostring(self:GetAuraSpellID()));
 		self:SetLinkedSpell(nil);
@@ -176,6 +179,7 @@ function CooldownViewerItemMixin:OnUnitAuraRemovedEvent()
 end
 
 function CooldownViewerItemMixin:OnUnitAuraUpdatedEvent()
+	-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraUpdatedEvent");
 	self:RefreshData();
 
 	-- Because active state may not have changed it's still required to check for pandemic time updates.
@@ -186,6 +190,7 @@ function CooldownViewerItemMixin:OnUnitAuraAddedEvent(unitAuraUpdateInfo)
 	-- If an aura was added and its spell matches the base, override, or a linked spell then the item needs to be refreshed.
 	for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
 		if self:NeedsAddedAuraUpdate(aura) then
+			-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraRemovedEvent");
 			self:RefreshData();
 			break;
 		end
@@ -364,21 +369,12 @@ function CooldownViewerItemMixin:NeedsCooldownUpdate(spellID, baseSpellID, spell
 		return true;
 	end
 
-	if self:UpdateLinkedSpell(spellID) then
-		-- CDMDebugGetDebugger():LogCooldownItem(self, "NeedsCooldownUpdate", "Linked spell was updated to %s, refreshing item.", tostring(self:GetLinkedSpell()));
-		return true;
-	end
-
 	local itemBaseSpellID = self:GetBaseSpellID();
-
-	if spellID == itemBaseSpellID then
-		return true;
-	end
 
 	-- Depending on the order of overrides being applied and removed, the item may already have a
 	-- different override spell than the spell being updated. But if the base spell is the same, the
 	-- item should still respond to the event.
-	if baseSpellID == itemBaseSpellID then
+	if spellID == itemBaseSpellID or baseSpellID == itemBaseSpellID then
 		return true;
 	end
 
@@ -404,7 +400,7 @@ function CooldownViewerItemMixin:NeedsAddedAuraUpdate(auraInfo)
 
 	local spellID = auraInfo.spellId;
 	if self:UpdateLinkedSpell(spellID) then
-		--CDMDebugGetDebugger():LogCooldownItem(self, "NeedsAddedAuraUpdate", "Linked spell was updated to %s, refreshing item.", tostring(self:GetLinkedSpell()));
+		-- CDMDebugGetDebugger():LogCooldownItem(self, "NeedsAddedAuraUpdate", "Linked spell was updated to %s, refreshing item.", tostring(self:GetLinkedSpell()));
 		return true;
 	end
 
@@ -443,6 +439,8 @@ function CooldownViewerItemMixin:ResetCooldownData()
 	CooldownViewerItemDataMixin.ResetCooldownData(self);
 
 	self.alertsByEvent = {};
+	self.allowAvailableAlert = nil;
+	self.availableAlertTriggerTime = nil;
 	self.pandemicAlertTriggerTime = nil;
 	self.pandemicStartTime = nil;
 	self.pandemicEndTime = nil;
@@ -484,7 +482,7 @@ function CooldownViewerItemMixin:RefreshOnUpdateRegistration()
 end
 
 function CooldownViewerItemMixin:NeedsTargetUpdateRegistration()
-	return self.needsRangeCheck == true or self:GetAuraDataUnit() == "target";
+	return self:GetCooldownID() ~= nil and self.needsRangeCheck == true or self:GetAuraDataUnit() == "target";
 end
 
 function CooldownViewerItemMixin:RefreshTargetUpdateRegistration()
@@ -534,18 +532,16 @@ function CooldownViewerItemMixin:CheckSetPandemicAlertTriggerTime(auraData, time
 	auraData = auraData or self:GetAuraDataCached();
 	timeNow = timeNow or GetTime();
 	local isActive = auraData and (auraData.expirationTime > timeNow);
-	if isActive then
-		-- If the related spell could be cast again right now, what would the new duration be? This informs the pandemic-time alert.
-		local extendedDuration = C_UnitAuras.GetRefreshExtendedDuration(self:GetAuraDataUnit(), auraData.auraInstanceID, self:GetSpellID());
-		local baseDuration = C_UnitAuras.GetAuraBaseDuration(self:GetAuraDataUnit(), auraData.auraInstanceID, self:GetSpellID());
-		local carriedOverToNewCast = (extendedDuration and baseDuration) and (extendedDuration - baseDuration) or 0;
-		local allowPandemicAlert = carriedOverToNewCast > 0 and self:CanTriggerAlertType(Enum.CooldownViewerAlertEventType.PandemicTime);
+	if isActive and self:CanTriggerAlertType(Enum.CooldownViewerAlertEventType.PandemicTime) then
+		local carriedOverDuration = C_UnitAuras.GetRefreshCarryOverDuration(self:GetAuraDataUnit(), auraData.auraInstanceID, self:GetSpellID()) or 0;
+		local allowPandemicAlert = carriedOverDuration > 0;
 
 		if allowPandemicAlert then
-			self:SetPandemicAlertTriggerTime(timeNow, auraData.expirationTime - carriedOverToNewCast, auraData.expirationTime);
+			self:SetPandemicAlertTriggerTime(timeNow, auraData.expirationTime - carriedOverDuration, auraData.expirationTime);
 		end
 
-		-- CDMDebugGetDebugger():LogCooldown(self:GetSpellID(), "CheckSetPandemicAlertTriggerTime:Pandemic", "Start: %.2f, Duration: %.2f, active: %s, extended: %.2f", (auraData.expirationTime - auraData.duration) , auraData.duration, tostring(isActive), (extendedDuration or 0));
+		-- CDMDebugGetDebugger():LogCooldownItem(self, "CheckSetPandemicAlertTriggerTime", "Spell[%d], AuraSpell[%d] Duration[%.2f] AStart[%.2f]: PEnd[%.2f] - PStart[%.2f] = Carry[%.2f], NextAllowedAlert[%.2f]", self:GetSpellID(), auraData.spellId, auraData.duration, auraData.expirationTime - auraData.duration, auraData.expirationTime, auraData.expirationTime - carriedOverDuration, carriedOverDuration, (self.nextAvailableTimeToPlayPandemicAlert or 0));
+		-- CDMDebugGetDebugger():LogCooldownItem(self, "CheckSetPandemicAlertTriggerTime", "Callstack:\n%s", debugstack());
 
 		return allowPandemicAlert;
 	end
@@ -557,8 +553,6 @@ function CooldownViewerItemMixin:SetPandemicAlertTriggerTime(timeNow, pandemicSt
 	self.pandemicAlertTriggerTime = pandemicStartTime;
 	self.pandemicStartTime = pandemicStartTime;
 	self.pandemicEndTime = pandemicEndTime;
-
-	-- CDMDebugGetDebugger():LogCooldown(self:GetSpellID(), "SetPandemicAlertTriggerTime", "PStart: %.2f, PEnd: %.2f, nextAvailable: %.2f", (pandemicStartTime or 0), (pandemicEndTime or 0), (self.nextAvailableTimeToPlayPandemicAlert or 0));
 
 	self:CheckPandemicTimeDisplay(timeNow);
 	self:RefreshOnUpdateRegistration();
@@ -761,6 +755,8 @@ function CooldownViewerCooldownItemMixin:ResetCooldownData()
 	self.cooldownChargesShown = nil;
 	self.preferredTotemUpdateSlot = nil;
 	self.cachedSpellChargeInfo = nil;
+	self.cachedChargeSource = nil;
+	self.cachedSpellCastCount = nil;
 
 	if self.needsRangeCheck then
 		C_Spell.EnableSpellRangeCheck(self.rangeCheckSpellID, false);
@@ -809,7 +805,14 @@ function CooldownViewerCooldownItemMixin:OnSpellActivationOverlayGlowHideEvent(s
 	self:RefreshOverlayGlow(hideStateFromEvent);
 end
 
+function CooldownViewerCooldownItemMixin:OnSpellUpdateChargesEvent()
+	if self:RefreshSpellChargeInfo() then
+		self:RefreshCooldownOnly();
+	end
+end
+
 function CooldownViewerCooldownItemMixin:OnSpellUpdateUsesEvent(spellID, baseSpellID)
+	-- CDMDebugGetDebugger():LogCooldownItem(self, "OnSpellUpdateUsesEvent");
 	if not self:NeedSpellUseUpdate(spellID, baseSpellID) then
 		return;
 	end
@@ -982,10 +985,10 @@ end
 
 function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromSpellCooldown(timeNow)
 	if not self:HasVisualDataSource_Charges() then
-		local spellCooldownInfo = self:GetSpellCooldownInfo();
+		-- NOTE: In the case of spell category cooldowns, the spellID may not be meaningful because it's a cover spell, or has no associated cooldown.
+		local spellCooldownInfo, spellID = self:GetSpellCooldownInfo();
 
 		if self:ShouldDisplaySpellCooldown(spellCooldownInfo) then
-			local spellID = self:GetSpellID();
 			-- CDMDebugGetDebugger():CheckDisplayCooldownInfo("CheckCacheCooldownValuesFromSpellCooldown", spellID, spellCooldownInfo);
 
 			local endTime = spellCooldownInfo.startTime + spellCooldownInfo.duration;
@@ -1012,20 +1015,20 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromSpellCooldo
 			self.cooldownDesaturated = self.isOnActualCooldown;
 			self.cooldownPlayFlash = self.isOnActualCooldown;
 
-			-- CDMDebugGetDebugger():LogCooldown(spellID, "CheckCacheCooldownValuesFromSpellCooldown:ItemData", "Start: %.2f, Duration: %.2f, active: %s", self.cooldownStartTime, self.cooldownDuration, tostring(self.cooldownIsActive));
+			-- CDMDebugGetDebugger():LogCooldownItem(self, "CheckCacheCooldownValuesFromSpellCooldown:ItemData", "Start: %.2f, Duration: %.2f, active: %s", self.cooldownStartTime, self.cooldownDuration, tostring(self.cooldownIsActive));
 		end
 	end
 end
 
 function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromEquippedItem(timeNow)
 	if not self:IsUsingVisualDataSource_Any() then
-		local equipSlot = self:GetEquipSlot(); -- TODO: Support potions as well, this won't just be equipslot
+		local equipSlot = self:GetEquipSlot();
 		if equipSlot then
-			local startTime, duration, enable = GetInventoryItemCooldown("player", equipSlot);
+			local startTime, duration, enable, isOnGCD = GetInventoryItemCooldown("player", equipSlot);
 			local endTime = startTime + duration;
 			self.cooldownIsActive = endTime > timeNow;
-			self.cooldownEnabled = enable;
-			self.isOnGCD = false;
+			self.cooldownEnabled = enable == 1;
+			self.isOnGCD = isOnGCD;
 
 			if self.cooldownIsActive and self.cooldownEnabled then
 				self:AddVisualDataSource_Item();
@@ -1045,6 +1048,8 @@ function CooldownViewerCooldownItemMixin:CheckCacheCooldownValuesFromEquippedIte
 			self.cooldownPaused = false;
 			self.cooldownDesaturated = self.isOnActualCooldown;
 			self.cooldownPlayFlash = self.isOnActualCooldown;
+
+			-- CDMDebugGetDebugger():LogCooldownItem(self, "CheckCacheCooldownValuesFromEquippedItem", "Start: %.2f, Duration: %.2f, active: %s, gcd: %s, availableAlertTime: %.2f", self.cooldownStartTime or 0, self.cooldownDuration or 0, tostring(self.cooldownIsActive), tostring(self.isOnGCD), self.availableAlertTriggerTime or 0);
 		end
 	end
 end
@@ -1108,27 +1113,71 @@ function CooldownViewerCooldownItemMixin:SetCachedChargeValues(count, shown)
 	end
 end
 
+-- Utilities to see if charge info or cast count have changed
+local CHARGE_SOURCE_NONE = 0;
+local CHARGE_SOURCE_CHARGE_INFO = 1;
+local CHARGE_SOURCE_CAST_COUNT = 2;
+
+local function IsChargeInfoDirty(cooldownItem, oldChargeSource, oldChargeInfo, oldSpellCastCount)
+	local chargeSource = cooldownItem.cachedChargeSource;
+
+	if chargeSource ~= oldChargeSource then
+		return true;
+	end
+
+	-- NOTE: At this point both charge sources must be the same.
+	-- So either the old and new are both using ChargeInfo or they're both using CastCount.
+	if chargeSource == CHARGE_SOURCE_CHARGE_INFO then
+		local chargeInfo = cooldownItem.cachedSpellChargeInfo;
+
+		-- Even though only the current charges are shown, if max charges changes then the recharge swipe would need to display
+		return chargeInfo.currentCharges ~= oldChargeInfo.currentCharges or chargeInfo.maxCharges ~= oldChargeInfo.maxCharges;
+	end
+
+	return (chargeSource == CHARGE_SOURCE_CAST_COUNT) and (cooldownItem.cachedSpellCastCount ~= oldSpellCastCount);
+end
+
 function CooldownViewerCooldownItemMixin:CacheChargeValues()
-	-- Give precedence to spells set up with explicit charge info that have more than one max charge.
+	local oldChargeSource = self.cachedChargeSource;
+	local oldSpellChargeInfo = self.cachedSpellChargeInfo;
+	local oldSpellCastCount = self.cachedSpellCastCount;
+
 	local spellChargeInfo = self:GetSpellChargeInfo();
 	self.cachedSpellChargeInfo = spellChargeInfo;
+	self.cachedSpellCastCount = 0;
+	self.cachedChargeSource = CHARGE_SOURCE_NONE;
+
+	-- Give precedence to spell charge info
 	if spellChargeInfo and spellChargeInfo.maxCharges > 1 then
+		self.cachedChargeSource = CHARGE_SOURCE_CHARGE_INFO;
 		local showCharges = true;
 		self:SetCachedChargeValues(spellChargeInfo.currentCharges, showCharges);
-		return;
+
+		-- CDMDebugGetDebugger():LogCooldownItem(self, "CacheChargeValues:SCI", "Current[%d] Max[%d]", spellChargeInfo.currentCharges or -1, spellChargeInfo.maxCharges or -1);
 	end
 
 	-- Some spells are set up to show 'cast count' (also called 'use count') which can have different meanings base on the context of the spell.
-	local spellID = self:GetSpellID();
-	if spellID then
-		local charges = C_Spell.GetSpellCastCount(spellID);
-		self:SetCachedChargeValues(charges, charges > 0);
-		return;
+	if self.cachedChargeSource == CHARGE_SOURCE_NONE then
+		local spellID = self:GetSpellID();
+		if spellID then
+			self.cachedChargeSource = CHARGE_SOURCE_CAST_COUNT;
+			self.cachedSpellCastCount = C_Spell.GetSpellCastCount(spellID);
+			self:SetCachedChargeValues(self.cachedSpellCastCount, self.cachedSpellCastCount > 0);
+
+			-- CDMDebugGetDebugger():LogCooldownItem(self, "CacheChargeValues:SCC", "Current[%d]", self.cachedSpellCastCount);
+		end
 	end
 
 	-- Passing in the current charges to preserve previous behavior since neither of the above cases applied.
-	local hideCharges = false;
-	self:SetCachedChargeValues(self.cooldownChargesCount, hideCharges);
+	-- NOTE: This means there's no spellID to use.
+	if self.cachedChargeSource == CHARGE_SOURCE_NONE then
+		local hideCharges = false;
+		self:SetCachedChargeValues(self.cooldownChargesCount, hideCharges);
+
+		-- CDMDebugGetDebugger():LogCooldownItem(self, "CacheChargeValues", "No charges, there was no spell id to use");
+	end
+
+	return IsChargeInfoDirty(self, oldChargeSource, oldSpellChargeInfo, oldSpellCastCount);
 end
 
 function CooldownViewerCooldownItemMixin:IsExpired()
@@ -1186,15 +1235,16 @@ function CooldownViewerCooldownItemMixin:RefreshSpellCooldownInfo()
 end
 
 function CooldownViewerCooldownItemMixin:RefreshSpellChargeInfo()
-	self:CacheChargeValues();
+	local needsCooldownUpdate = self:CacheChargeValues();
 
 	local chargeCountFrame = self:GetChargeCountFrame();
-
 	chargeCountFrame:SetShown(self.cooldownChargesShown);
 
 	if self.cooldownChargesShown then
 		chargeCountFrame.Current:SetText(self.cooldownChargesCount);
 	end
+
+	return needsCooldownUpdate;
 end
 
 function CooldownViewerCooldownItemMixin:RefreshIconDesaturation()
@@ -1256,6 +1306,7 @@ function CooldownViewerCooldownItemMixin:RefreshOverlayGlow(desiredShowStateFrom
 end
 
 function CooldownViewerCooldownItemMixin:RefreshData()
+	-- CDMDebugGetDebugger():LogCooldownItem(self, "RefreshData");
 	self:ClearVisualDataSource();
 	self:RefreshAuraInstance();
 	self:RefreshSpellChargeInfo();
@@ -1268,8 +1319,8 @@ function CooldownViewerCooldownItemMixin:RefreshData()
 	self:RefreshActive();
 end
 
--- Lightweight path for GCD-only updates: auras, texture, icon color, border, overlay glow,
--- and charge count are unchanged by the global cooldown so they can be skipped.
+-- Lightweight update path for cooldown-only updates such as GCD.
+-- The goal is to change a minimal set of properties related to cooldowns.
 function CooldownViewerCooldownItemMixin:RefreshCooldownOnly()
 	self:ClearVisualDataSource();
 	self:RefreshSpellCooldownInfo();
@@ -1294,15 +1345,17 @@ function CooldownViewerBuffItemMixin:NeedsTargetUpdateRegistration()
 	-- target change cannot affect it. In every other case (auraDataUnit == "target", or nil
 	-- meaning no active aura yet) the item must remain registered so it can pick up a target aura
 	-- on the next selection.
-	return self:GetAuraDataUnit() ~= "player";
+	return self:GetCooldownID() ~= nil and self:GetAuraDataUnit() ~= "player";
 end
 
 function CooldownViewerBuffItemMixin:OnCooldownIDSet()
 	CooldownViewerItemMixin.OnCooldownIDSet(self);
+	self:RefreshTargetUpdateRegistration();
 end
 
 function CooldownViewerBuffItemMixin:ResetCooldownData()
 	CooldownViewerItemMixin.ResetCooldownData(self);
+	self:RefreshTargetUpdateRegistration();
 end
 
 function CooldownViewerBuffItemMixin:IsExpired()
@@ -1678,6 +1731,8 @@ function CooldownViewerMixin:OnLoad()
 	EventRegistry:RegisterCallback("CooldownViewerSettings.OnShow", self.OnViewerSettingsShownStateChange, self);
 	EventRegistry:RegisterCallback("CooldownViewerSettings.OnHide", self.OnViewerSettingsShownStateChange, self);
 
+	EventRegistry:RegisterCallback("EditMode.RefreshCooldownViewer", self.OnEditModeRefreshCooldownViewer, self);
+
 	self:UpdateShownState();
 
 	-- The edit mode selection indicator uses the bounds of the item container to more closely match the player's expectation.
@@ -1762,6 +1817,15 @@ end
 
 function CooldownViewerMixin:OnCooldownViewerEnabledCVarChanged()
 	self:UpdateShownState();
+end
+
+function CooldownViewerMixin:OnEditModeRefreshCooldownViewer(showCooldownViewer)
+	self:SetIsEditing(showCooldownViewer);
+	if showCooldownViewer then
+		self:HighlightSystem();
+	else
+		self:ClearHighlight();
+	end
 end
 
 function CooldownViewerMixin:OnEvent(event, ...)
@@ -1874,9 +1938,14 @@ end
 
 function CooldownViewerMixin:OnPlayerTargetChanged()
 	local currentTarget = UnitGUID("target");
+	-- CDMDebugGetDebugger():LogCooldownMessage("CDViewer", "OnPlayerTargetChanged", "alreadyDone[%s] currentTarget[%s] cachedTarget[%s]", tostring(self.hasDoneInitialTargetUpdate), tostring(currentTarget), tostring(self.currentTarget));
 	if not self.hasDoneInitialTargetUpdate or self.currentTarget ~= currentTarget then
 		self.hasDoneInitialTargetUpdate = true;
 		self.currentTarget = currentTarget;
+
+		-- The aura cache only expires when GetTime() advances, so a macro that retargets several times
+		-- within a single frame would otherwise keep reading the first target's auras.
+		CooldownViewer_MarkAuraCacheDirty(currentTarget);
 
 		self:RefreshActiveFramesForTargetChange();
 	end
@@ -2152,6 +2221,7 @@ function CooldownViewerCooldownMixin:OnShow()
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
 	self:RegisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
 	self:RegisterEvent("SPELL_UPDATE_USES");
+	self:RegisterEvent("SPELL_UPDATE_CHARGES");
 	self:RegisterEvent("SPELL_UPDATE_USABLE");
 	self:RegisterEvent("SPELL_RANGE_CHECK_UPDATE");
 end
@@ -2164,6 +2234,7 @@ function CooldownViewerCooldownMixin:OnHide()
 	self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_SHOW");
 	self:UnregisterEvent("SPELL_ACTIVATION_OVERLAY_GLOW_HIDE");
 	self:UnregisterEvent("SPELL_UPDATE_USES");
+	self:UnregisterEvent("SPELL_UPDATE_CHARGES");
 	self:UnregisterEvent("SPELL_UPDATE_USABLE");
 	self:UnregisterEvent("SPELL_RANGE_CHECK_UPDATE");
 end
@@ -2190,6 +2261,11 @@ function CooldownViewerCooldownMixin:OnEvent(event, ...)
 		local spellID, baseSpellID = ...;
 		for itemFrame in self.itemFramePool:EnumerateActive() do
 			itemFrame:OnSpellUpdateUsesEvent(spellID, baseSpellID);
+		end
+	elseif event == "SPELL_UPDATE_CHARGES" then
+		-- This event carries no spell, so every item has to re-read its own charge data.
+		for itemFrame in self.itemFramePool:EnumerateActive() do
+			itemFrame:OnSpellUpdateChargesEvent();
 		end
 	elseif event == "SPELL_UPDATE_USABLE" then
 		for itemFrame in self.itemFramePool:EnumerateActive() do

@@ -398,6 +398,7 @@ local EncounterJournal =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -1,0 +1,72 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="GamepadButtonIconWithTextTemplate" mixin="GamepadButtonIconWithTextMixin" registerForClicks="LeftButtonUp, LeftButtonDown" enableMouse="true" virtual="true">
+	<!-- Set this on each button so it's icon can be assigned properly -->
+		<KeyValues>
+			<KeyValue key="keyNames" value="" type="string"/>
+			<KeyValue key="textValue" value="" type="string"/>
+			<KeyValue key="startingScale" value="0.9" type="number"/>
+		</KeyValues>
+
+		<Size x="174" y="32" />
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="icon1" parentArray="Icons" hidden="true">
+					<Size x="32" y="32" />
+					<Anchors>
+						<Anchor point="LEFT" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="plus1" parentArray="PlusTextures" atlas="gamepad-symbols-plus" hidden="true">
+					<Size x="16" y="16" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.icon1" relativePoint="RIGHT" x="2" y="0" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="icon2" parentArray="Icons" hidden="true">
+					<Size x="32" y="32" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.plus1" relativePoint="RIGHT" x="2" y="0" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="plus2" parentArray="PlusTextures" atlas="gamepad-symbols-plus" hidden="true">
+					<Size x="16" y="16" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.icon2" relativePoint="RIGHT" x="2" y="0" />
+					</Anchors>
+				</Texture>
+				<Texture parentKey="icon3" parentArray="Icons" hidden="true">
+					<Size x="32" y="32" />
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.plus2" relativePoint="RIGHT" x="2" y="0" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="text" inherits="GameFontHighlightLarge" hidden="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.icon3" relativePoint="RIGHT" x="2" y="0" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick method="OnClick" />
+			<OnLoad method="OnLoad" />
+			<OnEnable method="OnEnable" />
+			<OnDisable method="OnDisable" />
+			<OnShow method="OnShow" />
+		</Scripts>
+	</Button>
+
+	<Button name="GamepadPressAndHoldButtonTemplate" inherits="GamepadButtonIconWithTextTemplate" mixin="GamepadPressAndHoldButtonMixin" registerForClicks="LeftButtonUp, LeftButtonDown" enableMouse="true" virtual="true">
+		<!-- Set this on each button so it's icon can be assigned properly -->
+		<KeyValues>
+			<KeyValue key="holdTime" value="1.5" type="number"/>
+		</KeyValues>
+
+		<Scripts>
+			<OnUpdate method="OnUpdate" />
+			<OnLoad method="OnLoad" />
+		</Scripts>
+	</Button>
+</Ui>

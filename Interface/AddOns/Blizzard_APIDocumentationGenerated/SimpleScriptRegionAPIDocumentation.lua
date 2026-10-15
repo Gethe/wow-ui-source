@@ -103,6 +103,30 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "FocusEnter",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
+
+			Arguments =
+			{
+				{ Name = "fromMouseMotion", Type = "bool", Nilable = false, Default = true },
+			},
+		},
+		{
+			Name = "FocusExit",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
+
+			Arguments =
+			{
+				{ Name = "fromMouseMotion", Type = "bool", Nilable = false, Default = true },
+			},
+		},
+		{
 			Name = "GetBottom",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -196,6 +220,19 @@ local SimpleScriptRegionAPI =
 			Returns =
 			{
 				{ Name = "right", Type = "uiUnit", Nilable = false },
+			},
+		},
+		{
+			Name = "GetRoundLayoutToNearestPixel",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -556,6 +593,30 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "MouseDown",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
+
+			Arguments =
+			{
+				{ Name = "button", Type = "cstring", Nilable = false, Default = "LeftButton" },
+			},
+		},
+		{
+			Name = "MouseUp",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.ScriptedInput } },
+
+			Arguments =
+			{
+				{ Name = "button", Type = "cstring", Nilable = false, Default = "LeftButton" },
+			},
+		},
+		{
 			Name = "SetCollapsesLayout",
 			Type = "Function",
 			IsProtectedFunction = true,
@@ -637,6 +698,17 @@ local SimpleScriptRegionAPI =
 			},
 		},
 		{
+			Name = "SetRoundLayoutToNearestPixel",
+			Type = "Function",
+			IsProtectedFunction = true,
+			SecretArguments = "NotAllowed",
+
+			Arguments =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SetScript",
 			Type = "Function",
 			RequiresAssignableScript = true,
@@ -692,6 +764,7 @@ local SimpleScriptRegionAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

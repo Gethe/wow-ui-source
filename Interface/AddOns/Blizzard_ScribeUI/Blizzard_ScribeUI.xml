@@ -1,0 +1,79 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="ScribeFrame" mixin="ScribeFrameMixin" inherits="DefaultPanelTemplate" parent="UIParent" hidden="true" frameStrata="HIGH">
+		<Size x="1112" y="807"/>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="1" y="-1"/>
+				</Anchors>
+			</Button>
+
+			<Button parentKey="Currency" frameStrata="HIGH" enableMouse="true" mixin="ScribeCurrencyFrameMixin">
+				<Size x="100" y="52"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-22" y="-20"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="CurrencyBackground" useAtlasSize="true" atlas="Talebound-Vendor-Talent-Point-Frame">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="-2" />
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="UnspentPointsCount" inherits="GameFontNormalHuge2" justifyH="RIGHT">
+							<Size x="80" y="0"/>
+							<Anchors>
+								<Anchor point="RIGHT" x="-8" y="-2"/>
+							</Anchors>
+
+							<Color color="SCRIBE_POINTS_COLOR"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave function="GameTooltip_Hide"/>
+				</Scripts>
+			</Button>
+
+			<!-- Texture are populated in code based on the talent cards -->
+			<Frame parentKey="BorderOverlay" setAllPoints="true" frameLevel="5250"/>
+
+			<Frame parentKey="DisabledOverlay" setAllPoints="true" hidden="true" frameStrata="HIGH" frameLevel="5500">
+				<Anchors>
+					<Anchor relativeTo="ScribeFrameBg" point="TOPLEFT" x="2" y="-2"/>
+					<Anchor relativeTo="ScribeFrameBg" point="BOTTOMRIGHT" x="-2" y="2"/>
+				</Anchors>
+				
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Background" setAllPoints="true">
+							<Color r="0" g="0" b="0" a="0.4"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				
+				<Scripts>
+					<OnEnter function="nop"/>
+					<OnLeave function="nop"/>
+				</Scripts>
+			</Frame>
+
+			<Frame parentKey="LoadingSpinner" inherits="SpinnerTemplate" hidden="true" frameLevel="6000">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

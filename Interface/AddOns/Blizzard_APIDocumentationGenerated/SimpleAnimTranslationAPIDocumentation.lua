@@ -40,6 +40,7 @@ local SimpleAnimTranslationAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

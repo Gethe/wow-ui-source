@@ -19,20 +19,4 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="MicroMenu" inherits="GridLayoutFrame" parent="MicroMenuContainer" flattenRenderLayers="true" mixin="MicroMenuMixin">
-		<Size x="1" y="1"/>
-		<Anchors>
-			<Anchor point="BOTTOMRIGHT"/>
-		</Anchors>
-		<KeyValues>
-			<KeyValue key="childXPadding" value="-5" type="number"/>
-			<KeyValue key="childYPadding" value="-5" type="number"/>
-			<KeyValue key="isHorizontal" value="true" type="boolean"/>
-			<KeyValue key="layoutFramesGoingRight" value="true" type="boolean"/>
-			<KeyValue key="layoutFramesGoingUp" value="false" type="boolean"/>
-		</KeyValues>
-		<Scripts>
-			<OnLoad method="OnLoad"/>
-		</Scripts>
-	</Frame>
 </Ui>

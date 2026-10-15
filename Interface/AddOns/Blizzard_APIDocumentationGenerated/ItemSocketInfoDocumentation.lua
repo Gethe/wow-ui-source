@@ -271,6 +271,7 @@ local ItemSocketInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

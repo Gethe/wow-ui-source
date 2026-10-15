@@ -218,7 +218,7 @@ local LuaDurationObjectAPI =
 
 			Returns =
 			{
-				{ Name = "elapsedDuration", Type = "DurationSeconds", Nilable = false },
+				{ Name = "elapsedDuration", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -280,7 +280,7 @@ local LuaDurationObjectAPI =
 
 			Returns =
 			{
-				{ Name = "remainingDuration", Type = "DurationSeconds", Nilable = false },
+				{ Name = "remainingDuration", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -328,7 +328,7 @@ local LuaDurationObjectAPI =
 
 			Returns =
 			{
-				{ Name = "totalDuration", Type = "DurationSeconds", Nilable = false },
+				{ Name = "totalDuration", Type = "Seconds", Nilable = false },
 			},
 		},
 		{
@@ -437,7 +437,7 @@ local LuaDurationObjectAPI =
 			Arguments =
 			{
 				{ Name = "endTime", Type = "FrameTime", Nilable = false },
-				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
+				{ Name = "duration", Type = "Seconds", Nilable = false },
 				{ Name = "modRate", Type = "number", Nilable = false, Default = 1, Documentation = { "Optional divisor for converting this time span to a base time." } },
 			},
 		},
@@ -450,7 +450,7 @@ local LuaDurationObjectAPI =
 			Arguments =
 			{
 				{ Name = "startTime", Type = "FrameTime", Nilable = false },
-				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
+				{ Name = "duration", Type = "Seconds", Nilable = false },
 				{ Name = "modRate", Type = "number", Nilable = false, Default = 1, Documentation = { "Optional divisor for converting this time span to a base time." } },
 			},
 		},
@@ -484,6 +484,7 @@ local LuaDurationObjectAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

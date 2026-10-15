@@ -101,12 +101,18 @@ end
 
 -- ------------------------------------------------------------------------------------------------------------
 function TutorialRangeManager:_Check()
-	for i = #self.WatchList, 1, -1 do
-		local watchData = self.WatchList[i];
+	local watchList = self.WatchList;
 
-		watchData:Check();
-		if (watchData.IsComplete) then
-			table.remove(self.WatchList, i);
+	for i = #watchList, 1, -1 do
+		local watchData = watchList[i];
+		if (watchData) then
+			watchData:Check();
+			if (self.WatchList ~= watchList) then
+				return;
+			end
+			if (watchData.IsComplete) then
+				table.remove(watchList, i);
+			end
 		end
 	end
 

@@ -62,6 +62,12 @@ function ToggleStoreUI(contextKey)
 		return;
 	end
 
+	if not C_StorePublic.IsEnabled() and not C_StorePublic.IsRewardsShopOverrideEnabled() then
+		return;
+	elseif not C_StorePublic.IsEnabled() and C_StorePublic.IsRewardsShopOverrideEnabled() and not C_CatalogShop.ValidateOverrideShopInteraction(CatalogShopFrame.shoppingSessionUUIDStr) then
+		return;
+	end
+
 	ToggleActiveStoreUI(contextKey);
 end
 

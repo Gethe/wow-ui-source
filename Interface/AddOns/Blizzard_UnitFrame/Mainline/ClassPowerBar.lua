@@ -74,18 +74,23 @@ function ClassPowerBar:OnLeave()
 	GameTooltip:Hide();
 end
 
-function ClassPowerBar:Setup()
+function ClassPowerBar:ShouldShowBar()
 	local _, class = UnitClass("player");
 	local spec = C_SpecializationInfo.GetSpecialization();
-	local showBar = false;
+
+	return class == self.class and (not self.spec or spec == self.spec);
+end
+
+function ClassPowerBar:Setup()
+	local _, class = UnitClass("player");
+	local showBar = self:ShouldShowBar();
 
 	if ( class == self.class ) then
-		if ( not self.spec or spec == self.spec ) then
+		if showBar then
 			PlayerFrame.classPowerBar = self;
 			self:RegisterUnitEvent("UNIT_POWER_FREQUENT", "player");
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			self:RegisterEvent("UNIT_DISPLAYPOWER");
-			showBar = true;
 		else
 			self:UnregisterEvent("UNIT_POWER_FREQUENT");
 			self:UnregisterEvent("PLAYER_ENTERING_WORLD");

@@ -2,6 +2,9 @@
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
 	<Button name="QuestObjectiveItemButtonTemplate" mixin="QuestObjectiveItemButtonMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_TrackerQuestItem" type="string"/>
+		</KeyValues>
 		<Size x="26" y="26"/>
 		<Layers>
 			<Layer level="BACKGROUND">

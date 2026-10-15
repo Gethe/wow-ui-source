@@ -349,6 +349,9 @@
 						<HighlightTexture parentKey="HighlightTexture" atlas="common-button-tertiary-square-normal" alphaMode="ADD"/>
 					</Button>
 					<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate" setAllPoints="true">
+						<KeyValues>
+							<KeyValue key="smartNavigationIgnoredDontPropagate" value="true" type="boolean"/>
+						</KeyValues>
 						<Frames>
 							<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate">
 								<Anchors>
@@ -817,6 +820,7 @@
 					<OnHide method="OnHide"/>
 				</Scripts>
 			</Frame>
+			<Frame name="TransmogFrameTabIndicators" parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

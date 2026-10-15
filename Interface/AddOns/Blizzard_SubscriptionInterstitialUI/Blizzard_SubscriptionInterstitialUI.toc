@@ -1,4 +1,6 @@
 ## Title: Blizzard Subscription Interstitial UI
 ## LoadOnDemand: 1
 Blizzard_SubscriptionInterstitialUI_Bootstrap.lua [Bootstrap]
+Blizzard_SubscriptionInterstitialUI.lua
+[Game]/Blizzard_SubscriptionInterstitialUI.lua [AllowLoadGameType camelot]
 Blizzard_SubscriptionInterstitialUI.xml

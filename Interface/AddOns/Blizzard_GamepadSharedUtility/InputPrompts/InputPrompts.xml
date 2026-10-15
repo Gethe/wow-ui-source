@@ -1,0 +1,179 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<!-- Prompt Text Template -->
+	<Frame name="InputPromptTextTemplate" virtual="true">
+		<Size x="45.2" y="11.9"/>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="FontString" inherits="GameFontNormal" justifyH="LEFT" text="Default">
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<!-- One Icon, No Text -->
+	<!-- If you need this template, consider instead using InputIconTextureFrameTemplate -->
+	<Frame name="InputPromptOneIconTemplate" virtual="true" mixin="InputPromptMixin">
+		<Size x="24" y="24"/>
+		<Frames>
+			<Frame parentKey="InputIcon1" parentArray="InputIcons" inherits="InputIconTextureFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<!-- One Icon with Text-->
+		<Frame name="InputPromptOneIconWithTextTemplate" virtual="true" mixin="InputPromptMixin">
+		<Size x="24" y="24"/>
+		<Frames>
+			<Frame parentKey="InputIcon1" parentArray="InputIcons" inherits="InputIconTextureFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ControlDescText" inherits="InputPromptTextTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.InputIcon1" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<!-- One Icon, One Divider, No Text-->
+		<Frame name="InputPromptOneIconWithDividerTemplate" virtual="true" mixin="InputPromptMixin">
+		<Size x="24" y="24"/>
+		<Frames>
+			<Frame parentKey="InputIcon1" parentArray="InputIcons" inherits="InputIconTextureFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="IconDivider1" parentArray="IconDividers" inherits="InputIconTextureFrameTemplate">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_PROMPT_DIVIDER_PLUS" type="global" />
+				</KeyValues>
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.InputIcon1" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+		<!-- Two Icons, No Text-->
+		<Frame name="InputPromptTwoIconTemplate" virtual="true" mixin="InputPromptMixin">
+		<Size x="24" y="24"/>
+		<Frames>
+			<Frame parentKey="InputIcon1" parentArray="InputIcons" inherits="InputIconTextureFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="IconDivider1" parentArray="IconDividers" inherits="InputIconTextureFrameTemplate">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_PROMPT_DIVIDER_PLUS" type="global" />
+				</KeyValues>
+				<Size x="8" y="8"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.InputIcon1" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="InputIcon2" parentArray="InputIcons" inherits="InputIconTextureFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.IconDivider1" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Two Icons with Text-->
+		<Frame name="InputPromptTwoIconWithTextTemplate" virtual="true" mixin="InputPromptMixin">
+		<Size x="24" y="24"/>
+		<Frames>
+			<Frame parentKey="InputIcon1" parentArray="InputIcons" inherits="InputIconTextureFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="IconDivider1" parentArray="IconDividers" inherits="InputIconTextureFrameTemplate">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_PROMPT_DIVIDER_PLUS" type="global" />
+				</KeyValues>
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.InputIcon1" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="InputIcon2" parentArray="InputIcons" inherits="InputIconTextureFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.IconDivider1" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="ControlDescText" inherits="InputPromptTextTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.InputIcon2" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<!-- Three Icons, No Text-->
+	<Frame name="InputPromptThreeIconTemplate" virtual="true" mixin="InputPromptMixin">
+		<Size x="24" y="24"/>
+		<Frames>
+			<Frame parentKey="InputIcon1" parentArray="InputIcons" inherits="InputIconTextureFrameTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="IconDivider1" parentArray="IconDividers" inherits="InputIconTextureFrameTemplate">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_PROMPT_DIVIDER_PLUS" type="global" />
+				</KeyValues>
+				<Size x="8" y="8"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.InputIcon1" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="InputIcon2" parentArray="InputIcons" inherits="InputIconTextureFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.IconDivider1" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="IconDivider2" parentArray="IconDividers" inherits="InputIconTextureFrameTemplate">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_PROMPT_DIVIDER_PLUS" type="global" />
+				</KeyValues>
+				<Size x="8" y="8"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.InputIcon2" relativePoint="RIGHT" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="InputIcon3" parentArray="InputIcons" inherits="InputIconTextureFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.IconDivider2" x="4" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -1,5 +1,5 @@
 ## Title: Blizzard_SecureTransferUI
 ## AllowLoad: Both
-## RequiredDep: Blizzard_SharedXML
+## RequiredDep: Blizzard_SharedXML, Blizzard_CatalogShopSharedUtil
 ## UseSecureEnvironment: 1
 Blizzard_SecureTransferUI.xml

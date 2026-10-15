@@ -5,9 +5,9 @@ local BattlepayConstants =
 		{
 			Name = "BulkPurchaseResult",
 			Type = "Enumeration",
-			NumValues = 8,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 7,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "ResultOk", Type = "BulkPurchaseResult", EnumValue = 0 },
@@ -18,6 +18,9 @@ local BattlepayConstants =
 				{ Name = "ResultSystemDisabled", Type = "BulkPurchaseResult", EnumValue = 5 },
 				{ Name = "ResultInsufficientFunds", Type = "BulkPurchaseResult", EnumValue = 6 },
 				{ Name = "ResultPurchaseTimeout", Type = "BulkPurchaseResult", EnumValue = 7 },
+				{ Name = "ResultInvalidCurrencyType", Type = "BulkPurchaseResult", EnumValue = 8 },
+				{ Name = "ResultFailedServerValidation", Type = "BulkPurchaseResult", EnumValue = 9 },
+				{ Name = "ResultFailedServerValidationMissingAchievement", Type = "BulkPurchaseResult", EnumValue = 10 },
 			},
 		},
 		{
@@ -327,6 +330,7 @@ local BattlepayConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

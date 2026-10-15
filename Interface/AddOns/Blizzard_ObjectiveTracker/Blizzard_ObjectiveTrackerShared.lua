@@ -142,6 +142,14 @@ function QuestObjectiveItemButtonMixin:UpdateInsideBlob(questID, inside)
 	end
 end
 
+function QuestObjectiveItemButtonMixin:GetItemID()
+	local questLogIndex = self:GetAttribute("questLogIndex");
+	local link = GetQuestLogSpecialItemInfo(questLogIndex);
+	local item = Item:CreateFromItemLink(link);
+	local itemID = item:GetItemID();
+	return itemID;
+end
+
 QuestObjectiveItemGlowAnimMixin = {}
 
 function QuestObjectiveItemGlowAnimMixin:OnLoop()

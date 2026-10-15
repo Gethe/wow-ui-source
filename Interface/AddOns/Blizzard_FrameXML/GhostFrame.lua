@@ -6,6 +6,11 @@ end
 
 function GhostFrameMixin:OnLoad()
 	self:RegisterEvent("ADDON_LOADED");
+
+	if not CanPortGraveyard() then
+		self:Hide();
+	end
+
 end
 
 function GhostFrameMixin:OnEvent(event, ...)

@@ -93,8 +93,16 @@ end
 function TimeManager_Toggle()
 	if ( TimeManagerFrame:IsShown() ) then
 		TimeManagerFrame:Hide();
+
+		if InputUtil.IsGamepadUIEnabled() then
+			GamepadMode.FrameControlsManager:FrameHidden(TimeManagerFrame);
+		end
 	else
 		TimeManagerFrame:Show();
+
+		if InputUtil.IsGamepadUIEnabled() then
+			GamepadMode.FrameControlsManager:FrameShown(TimeManagerFrame);
+		end
 	end
 end
 
@@ -329,7 +337,6 @@ function TimeManager_ToggleLocalTime()
 	-- TimeManagerClockButton_OnUpdate will pick up the clock change
 end
 
--- TimeManagerClockButton
 function TimeManagerClockButton_OnLoad(self)
 	if ( CLOCK_TICKER_Y_OVERRIDE ) then
 		TimeManagerClockTicker:SetPoint("CENTER", select(4, TimeManagerClockTicker:GetPoint(1)), CLOCK_TICKER_Y_OVERRIDE);
@@ -373,6 +380,10 @@ function TimeManagerClockButton_OnClick(self)
 		TimeManager_TurnOffAlarm();
 	else
 		TimeManager_Toggle();
+
+		if (InputUtil.IsGamepadUIEnabled() and GamepadHudMode:IsShown()) then
+			GamepadHudMode:Hide();
+		end
 	end
 end
 
@@ -467,6 +478,7 @@ end
 
 function TimeManager_TurnOffAlarm()
 	UIFrameFlashStop(TimeManagerAlarmFiredTexture);
+
 	if ( not TimeManagerClockButton.prevShown ) then
 		TimeManagerClockButton:Hide();
 	end

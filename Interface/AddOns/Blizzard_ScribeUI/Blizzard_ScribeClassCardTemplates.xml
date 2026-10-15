@@ -1,0 +1,160 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<StatusBar name="ScribeClassProgressBarTemplate" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0" virtual="true">
+		<Size x="215" y="15"/>
+		<BarTexture parentKey="BarTexture" atlas="widgetstatusbar-fill-white"/>
+		
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-2">
+				<Texture parentKey="BGLeft" useAtlasSize="true" atlas="widgetstatusbar-bgleft">
+					<Anchors>
+						<Anchor point="LEFT" x="-2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGRight" useAtlasSize="true" atlas="widgetstatusbar-bgright">
+					<Anchors>
+						<Anchor point="RIGHT" x="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGCenter" atlas="widgetstatusbar-bgcenter">
+					<Size y="18"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.BGLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="BorderLeft" useAtlasSize="true" atlas="widgetstatusbar-borderleft">
+					<Anchors>
+						<Anchor point="LEFT" x="-8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderRight" useAtlasSize="true" atlas="widgetstatusbar-borderright">
+					<Anchors>
+						<Anchor point="RIGHT" x="8"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BorderCenter" atlas="widgetstatusbar-bordercenter">
+					<Size y="31"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.BorderLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeKey="$parent.BorderRight" relativePoint="LEFT"/>
+					</Anchors>
+				</Texture>
+
+				<Texture parentKey="Spark" alphaMode="ADD" useAtlasSize="true" atlas="widgetstatusbar-spark">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.BarTexture" relativePoint="RIGHT"/>
+					</Anchors>
+				</Texture>
+
+				<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</StatusBar>
+	
+	<Frame name="ScribeClassCardTemplate" mixin="ScribeClassCardMixin" virtual="true">
+		<Size x="367" y="733"/>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="TalentLockedText" inherits="GameFontNormal" text="SCRIBE_TALE_IN_PROGRESS_WARNING" justifyH="CENTER" hidden="true">
+					<Size x="320"/>
+					<Anchors>
+						<Anchor point="BOTTOM" y="32"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BGHeader">
+				<Anchors>
+					<Anchor point="TOP" y="-32"/>
+					<Anchor point="LEFT" relativePoint="TOPLEFT" y="-64" x="16"/>
+					<Anchor point="RIGHT" relativePoint="TOPRIGHT" y="-64" x="-16"/>
+				</Anchors>
+
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="BGClassName" inherits="GameFontHighlightHuge">
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+
+						<Texture parentKey="BGClassNameDivider" atlas="Talebound-Vendor-HeaderBG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.BGClassName" relativePoint="CENTER" y="4"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="TalentTree" mixin="ScribeClassTalentFrameMixin" inherits="AutoCommitTraitFrameTemplate" enableMouse="true" setAllPoints="true" frameLevel="2500">
+				<KeyValues>
+					<KeyValue key="refreshOnShow" value="true" type="boolean"/>
+					<KeyValue key="basePanOffsetX" value="25" type="number"/>
+					<KeyValue key="basePanOffsetY" value="-35" type="number"/>
+					<KeyValue key="defaultSelectSound" value="SOUNDKIT.UI_CLASS_TALENT_LEARN_TALENT" type="global"/>
+					<KeyValue key="defaultDeselectSound" value="SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND" type="global"/>
+				</KeyValues>
+			</Frame>
+			<!-- Doing this in a Frame not on the base so we can layer on top of TalentTree-->
+			<Frame parentKey="ClassInfoOverlay" setAllPoints="true" frameLevel="5000">
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="0">
+						<Texture parentKey="Texture" setAllPoints="true">
+							<Color r=".66" g=".66" b=".66" a="1"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<FontString parentKey="ClassName" inherits="GameFontHighlightHuge">
+							<Anchors>
+								<Anchor point="CENTER" y="-116"/>
+							</Anchors>
+						</FontString>
+						<FontString parentKey="ClassDesc" inherits="GameFontHighlight">
+							<Size x="270"/>
+							<Anchors>
+								<Anchor point="TOP" relativeKey="$parent.ClassName" relativePoint="BOTTOM" y="-16"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<StatusBar parentKey="ProgressBar" inherits="ScribeClassProgressBarTemplate" frameLevel="5500">
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.ClassDesc" relativePoint="BOTTOM" y="-16"/>
+						</Anchors>
+					</StatusBar>
+				</Frames>
+			</Frame>
+
+			<Button parentKey="ActivateClassButton" inherits="UIPanelButtonTemplate" text="SCRIBE_SELECT_BUTTON_TEXT" propagateMouseInput="Motion" frameLevel="5500" motionScriptsWhileDisabled="true">
+				<Size x="150" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="16"/>
+				</Anchors>
+			</Button>
+
+			<Frame parentKey="PreviewHoverController" inherits="HoverFadeVisibilityControllerTemplate" frameStrata="HIGH" frameLevel="5000" setAllPoints="true"/>
+		</Frames>
+
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

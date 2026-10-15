@@ -217,6 +217,7 @@ local CovenantSanctum =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -1,0 +1,30 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="QuestTimerFrame" parentKey="QuestTimerFrame" inherits="BackdropTemplate, RightManagedFrameTemplate" toplevel="true" enableMouse="true" frameStrata="BACKGROUND" hidden="true" parent="UIParent" mixin="QuestTimerMixin">
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+			<KeyValue key="layoutIndex" value="13" type="number"/>
+		</KeyValues>
+		<Size x="158" y="72"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="QuestTimerHeader" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size x="256" y="64"/>
+					<Anchors>
+						<Anchor point="TOP" x="1" y="12"/>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="QUEST_TIMERS">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="QuestTimerHeader" x="0" y="-13"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnUpdate method="OnUpdate"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

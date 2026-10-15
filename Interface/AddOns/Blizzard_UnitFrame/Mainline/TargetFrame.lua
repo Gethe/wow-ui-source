@@ -13,11 +13,15 @@ local LARGE_FOCUS_SCALE = 1;
 local SMALL_FOCUS_SCALE = 0.75;
 local SMALL_FOCUS_UPSCALE = 1.333;
 
+-- Frame action keys
+local FOCUS_AURA_CONTENT_FRAME_ACTION_KEY = "FocusAuraContent";
+local OPEN_TARGET_FRAME_OPTIONS_MENU_FRAME_ACTION_KEY = "OpenOptions";
+
 CVarCallbackRegistry:SetCVarCachable("showTargetOfTarget");
 
 TargetFrameMixin = {};
 
-function TargetFrameMixin:OnLoad(unit, menuFunc)
+function TargetFrameMixin:OnLoadBase(unit, menuFunc)
 	self.statusCounter = 0;
 	self.statusSign = -1;
 	self.unitHPPercent = 1;
@@ -117,6 +121,10 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	EventRegistry:RegisterCallback("EditMode.Exit", function()
 		self:UpdateAuras();
 	end, self);
+end
+
+function TargetFrameMixin:OnLoad(unit, menuFunc)
+	self:OnLoadBase(unit, menuFunc);
 end
 
 function TargetFrameMixin:Update()
@@ -304,6 +312,16 @@ function TargetFrameMixin:CheckLevel()
 	end
 end
 
+-- Overridden per game type to point UnitFrameUtil at whichever regions that flavor actually renders.
+function TargetFrameMixin:GetPvPIndicatorElements()
+	local targetFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
+	return {
+		pvpIcon = targetFrameContentContextual.PvpIcon,
+		prestigePortrait = targetFrameContentContextual.PrestigePortrait,
+		prestigeBadge = targetFrameContentContextual.PrestigeBadge,
+	};
+end
+
 function TargetFrameMixin:CheckFaction()
 	if (not UnitPlayerControlled(self.unit) and UnitIsTapDenied(self.unit)) then
 		self.TargetFrameContent.TargetFrameContentMain.ReputationColor:SetVertexColor(0.5, 0.5, 0.5);
@@ -319,64 +337,53 @@ function TargetFrameMixin:CheckFaction()
 
 	local unitFramePvPContextualDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UnitFramePvPContextualDisabled);
 	if (self.showPVP and (not unitFramePvPContextualDisabled)) then
-		local factionGroup = UnitFactionGroup(self.unit);
-		local targetFrameContentContextual = self.TargetFrameContent.TargetFrameContentContextual;
-		if (UnitIsPVPFreeForAll(self.unit)) then
-			local honorLevel = UnitHonorLevel(self.unit);
-			local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
-			if (honorRewardInfo) then
-				targetFrameContentContextual.PrestigePortrait:SetAtlas("honorsystem-portrait-neutral", TextureKitConstants.IgnoreAtlasSize);
-				targetFrameContentContextual.PrestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
-				targetFrameContentContextual.PrestigePortrait:Show();
-				targetFrameContentContextual.PrestigeBadge:Show();
-				targetFrameContentContextual.PvpIcon:Hide();
-			else
-				targetFrameContentContextual.PrestigePortrait:Hide();
-				targetFrameContentContextual.PrestigeBadge:Hide();
-				targetFrameContentContextual.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-FFAIcon", TextureKitConstants.UseAtlasSize);
-				targetFrameContentContextual.PvpIcon:Show();
-			end
-		elseif (factionGroup and factionGroup ~= "Neutral" and UnitIsPVP(self.unit)) then
-			local honorLevel = UnitHonorLevel(self.unit);
-			local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
-			if (honorRewardInfo) then
-				targetFrameContentContextual.PrestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, TextureKitConstants.IgnoreAtlasSize);
-				targetFrameContentContextual.PrestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
-				targetFrameContentContextual.PrestigePortrait:Show();
-				targetFrameContentContextual.PrestigeBadge:Show();
-				targetFrameContentContextual.PvpIcon:Hide();
-			else
-				targetFrameContentContextual.PrestigePortrait:Hide();
-				targetFrameContentContextual.PrestigeBadge:Hide();
-				if (factionGroup == "Horde") then
-					targetFrameContentContextual.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-HordeIcon", TextureKitConstants.UseAtlasSize);
-				elseif (factionGroup == "Alliance") then
-					targetFrameContentContextual.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-AllianceIcon", TextureKitConstants.UseAtlasSize);
-				end
-				targetFrameContentContextual.PvpIcon:Show();
-			end
-		else
-			targetFrameContentContextual.PrestigePortrait:Hide();
-			targetFrameContentContextual.PrestigeBadge:Hide();
-			targetFrameContentContextual.PvpIcon:Hide();
-		end
+		UnitFrameUtil.UpdateUnitPvPIndicator(self:GetPvPIndicatorElements(), self.unit);
 	end
+end
+
+function TargetFrameMixin:ShowPrestigeLevel(parentFrame, factionGroup, honorRewardInfo)
+	parentFrame.PrestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, TextureKitConstants.IgnoreAtlasSize);
+	parentFrame.PrestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
+	parentFrame.PrestigePortrait:Show();
+	parentFrame.PrestigeBadge:Show();
+	parentFrame.PvpIcon:Hide();
+end
+
+function TargetFrameMixin:ShowPvPIcon(parentFrame, factionGroup)
+	parentFrame.PrestigePortrait:Hide();
+	parentFrame.PrestigeBadge:Hide();
+	if (factionGroup == "Horde") then
+		parentFrame.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-HordeIcon", TextureKitConstants.UseAtlasSize);
+	elseif (factionGroup == "Alliance") then
+		parentFrame.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-AllianceIcon", TextureKitConstants.UseAtlasSize);
+	elseif (factionGroup == "FFA") then
+		parentFrame.PvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-FFAIcon", TextureKitConstants.UseAtlasSize);
+	end
+	parentFrame.PvpIcon:Show();
+end
+
+function TargetFrameMixin:HidePvPFrames(parentFrame)
+	parentFrame.PrestigePortrait:Hide();
+	parentFrame.PrestigeBadge:Hide();
+	parentFrame.PvpIcon:Hide();
 end
 
 function TargetFrameMixin:CheckBattlePet()
 	if (UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit)) then
-		local petType = UnitBattlePetType(self.unit);
-		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
-		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Show();
-	else
-		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Hide();
+		if (ShouldShowBattlePetIcon()) then
+			local petType = UnitBattlePetType(self.unit);
+			self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
+			self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Show();
+		else
+			self.TargetFrameContent.TargetFrameContentMain.LevelBackgroundCircle:Hide();
+			self.TargetFrameContent.TargetFrameContentMain.LevelText:Hide();
+			self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Hide();
+		end
 	end
 end
 
 function TargetFrameMixin:CheckClassification()
 	local classification = UnitClassification(self.unit);
-	local healthBarsContainer = self.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer;
-	local healthBar = healthBarsContainer.HealthBar;
 	local manaBar = self.TargetFrameContent.TargetFrameContentMain.ManaBar;
 
 	-- Base frame/health/mana pieces
@@ -391,15 +398,6 @@ function TargetFrameMixin:CheckClassification()
 		if (self.threatIndicator) then
 			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
 		end
-
-		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
-		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
-		healthBarsContainer:SetHeight(12);
-		healthBarsContainer:SetWidth(125);
-		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 148, -1);
-
-		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 2);
 
 		manaBar.pauseUpdates = true;
 		manaBar:Hide();
@@ -417,30 +415,15 @@ function TargetFrameMixin:CheckClassification()
 		if (self.threatIndicator) then
 			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
 		end
-
-		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
-		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
-		healthBarsContainer:SetHeight(20);
-		healthBarsContainer:SetWidth(126);
-		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 149, -10);
-
-		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 6);
 	end
+	self:UpdateHealthBarVisuals(classification);
 
 	-- Boss frame pieces (dragon frame, icons)
 	local bossPortraitFrameTexture = self.TargetFrameContainer.BossPortraitFrameTexture;
-	if (UnitIsBossMob(self.unit)) then
-		bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold-Winged", TextureKitConstants.UseAtlasSize);
-		bossPortraitFrameTexture:SetPoint("TOPRIGHT", 8, -8);
-		bossPortraitFrameTexture:Show();
-	elseif (classification == "rareelite") then
-		bossPortraitFrameTexture:SetAtlas("ui-hud-unitframe-target-portraiton-boss-rare-silver", TextureKitConstants.UseAtlasSize);
-		bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8);
-		bossPortraitFrameTexture:Show();
-	elseif (classification == "elite") then
-		bossPortraitFrameTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Boss-Gold", TextureKitConstants.UseAtlasSize);
-		bossPortraitFrameTexture:SetPoint("TOPRIGHT", -11, -8);
+	local bossPortraitAtlas, bossPortraitOffsetX, bossPortraitOffsetY = GetBossPortraitFrameData(self.unit, classification);
+	if (bossPortraitAtlas) then
+		bossPortraitFrameTexture:SetAtlas(bossPortraitAtlas, TextureKitConstants.UseAtlasSize);
+		bossPortraitFrameTexture:SetPoint("TOPRIGHT", self.TargetFrameContainer, "TOPRIGHT", bossPortraitOffsetX, bossPortraitOffsetY);
 		bossPortraitFrameTexture:Show();
 	else
 		bossPortraitFrameTexture:Hide();
@@ -456,11 +439,36 @@ function TargetFrameMixin:CheckClassification()
 	-- Quest icon showing trumps rarity icon.
 	if (targetFrameContenContextual.QuestIcon and isQuestBoss) then
 		targetFrameContenContextual.BossIcon:Hide();
-	elseif (classification == "rare" or classification == "rareelite") then
+	elseif (ShouldShowStar(classification)) then
 		targetFrameContenContextual.BossIcon:SetAtlas("UnitFrame-Target-PortraitOn-Boss-Rare-Star", TextureKitConstants.UseAtlasSize);
 		targetFrameContenContextual.BossIcon:Show();
 	else
 		targetFrameContenContextual.BossIcon:Hide();
+	end
+end
+
+function TargetFrameMixin:UpdateHealthBarVisuals(classification)
+	local healthBarsContainer = self.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer;
+	local healthBar = healthBarsContainer.HealthBar;
+
+	if (classification == "minus") then
+		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
+		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer:SetHeight(12);
+		healthBarsContainer:SetWidth(125);
+		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 148, -1);
+
+		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 2);
+	else
+		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
+		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer:SetHeight(20);
+		healthBarsContainer:SetWidth(126);
+		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 149, -10);
+
+		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 6);
 	end
 end
 
@@ -658,13 +666,17 @@ function TargetFrame_OpenMenu(self)
 		name = RAID_TARGET_ICON;
 	end
 	if (which) then
-		local contextData = {
-			fromTargetFrame = true;
+		local contextData =
+		{
+			fromTargetFrame = true,
+			ownerFrame = self,
 			unit = "target",
 			name = name,
 		};
 
-		UnitPopup_OpenMenu(which, contextData);
+		local menu = UnitPopup_OpenMenu(which, contextData);
+		menu:ClearAllPoints();
+		menu:SetPoint("LEFT", self, "RIGHT");
 	end
 end
 
@@ -828,6 +840,11 @@ function TargetSpellBarMixin:AdjustPosition()
 
 	if not useAuraContainerAnchor and parentFrame.haveToT then
 		pointY = parentFrame.smallSize and -48 or -46;
+
+		if InputUtil.IsGamepadUIEnabled() then
+			-- Ensure that the spellbar does not overlap with right action bar when ToT is shown
+			pointX = parentFrame.smallSize and 118 or 123;
+		end
 	end
 
 	if useAuraContainerAnchor then
@@ -861,9 +878,13 @@ local targetOfTargetCVar = "showTargetOfTarget";
 
 TargetOfTargetMixin = {};
 
-function TargetOfTargetMixin:OnLoad()
+function TargetOfTargetMixin:OnLoadBase()
 	CVarCallbackRegistry:RegisterCallback(targetOfTargetCVar, self.OnTargetOfTargetCVarChanged, self);
 	self:OnTargetOfTargetCVarChanged();
+end
+
+function TargetOfTargetMixin:OnLoad()
+	self:OnLoadBase();
 end
 
 function TargetOfTargetMixin:OnTargetOfTargetCVarChanged()
@@ -1040,10 +1061,13 @@ end
 
 function BossTargetFrame_OpenMenu(self)
 	local contextData = {
-		fromTargetFrame = true;
+		fromTargetFrame = true,
+		ownerFrame = self,
 		unit = self.unit,
 	};
-	UnitPopup_OpenMenu("BOSS", contextData);
+	local menu = UnitPopup_OpenMenu("BOSS", contextData);
+	menu:ClearAllPoints();
+	menu:SetPoint("LEFT", self, "RIGHT");
 end
 
 BossTargetFrameContainerMixin = { };
@@ -1059,29 +1083,52 @@ end
 
 function BossTargetFrameContainerMixin:UpdateSize()
 	local lastShowingBossFrame;
+	local firstShowingBossFrame;
+
 	for index, bossFrame in ipairs(self.BossTargetFrames) do
-		if (self.smallSize) then
-			bossFrame.rightPadding = 30;
-			bossFrame.leftPadding = self.castBarOnSide and 80 or 15;
-			bossFrame.bottomPadding = self.castBarOnSide and -20 or 0;
+		if (self.isHorizontal) then
+			bossFrame.align = "center";
+
+			bossFrame.topPadding = 0;
+			bossFrame.rightPadding = 0;
+			bossFrame.leftPadding = self.castBarOnSide and 30 or 0;
+			bossFrame.bottomPadding = self.castBarOnSide and -10 or 10;
 		else
-			bossFrame.rightPadding = 15;
-			bossFrame.leftPadding = self.castBarOnSide and 105 or 20;
-			bossFrame.bottomPadding = self.castBarOnSide and -50 or -20;
+			bossFrame.align = "right";
+
+			if (self.smallSize) then
+				bossFrame.rightPadding = 30;
+				bossFrame.leftPadding = self.castBarOnSide and 80 or 15;
+				bossFrame.bottomPadding = self.castBarOnSide and -20 or 0;
+			else
+				bossFrame.rightPadding = 15;
+				bossFrame.leftPadding = self.castBarOnSide and 105 or 20;
+				bossFrame.bottomPadding = self.castBarOnSide and -50 or -20;
+			end
 		end
 
 		if (bossFrame:IsShown()) then
+			if (not firstShowingBossFrame) then
+				firstShowingBossFrame = bossFrame;
+			end
+
 			lastShowingBossFrame = bossFrame;
 		end
 	end
 
-	if (lastShowingBossFrame) then
+	if (self.isHorizontal and firstShowingBossFrame) then
+		firstShowingBossFrame.leftPadding = self.castBarOnSide and 80 or 10;
+	end
+
+	if (not self.isHorizontal and lastShowingBossFrame) then
 		if (self.smallSize) then
 			lastShowingBossFrame.bottomPadding = self.castBarOnSide and -15 or 10;
 		else
 			lastShowingBossFrame.bottomPadding = self.castBarOnSide and -20 or 10;
 		end
 	end
+
+	self.rightPadding = self.isHorizontal and -30 or -70;
 
 	self:Layout();
 	ManageFramePositions();
@@ -1119,6 +1166,57 @@ function BossTargetFrameContainerMixin:SetCastBarPosition(castBarOnSide)
 	self:UpdateSize();
 end
 
+function BossTargetFrameContainerMixin:LayoutChildren(children, ...)
+	if self.isHorizontal then
+		return HorizontalLayoutMixin.LayoutChildren(self, children, ...);
+	else
+		return VerticalLayoutMixin.LayoutChildren(self, children, ...);
+	end
+end
+
+function BossTargetFrameContainerMixin:SetUseHorizontalLayout(isHorizontal)
+	if (isHorizontal == self.isHorizontal) then
+		return;
+	end
+
+	self.isHorizontal = isHorizontal;
+	self:UpdateGrowDirection();
+	self:UpdateSize();
+end
+
+function BossTargetFrameContainerMixin:SetGrowDirection(direction, entireSystemUpdate)
+	local oldDirection = self.growDirection;
+	self.growDirection = direction;
+	self:UpdateGrowDirection();
+
+	if (oldDirection == self.growDirection) then
+		return;
+	end
+
+	if not entireSystemUpdate then
+		self:BreakFromFrameManager();
+		self:BreakFrameSnap();
+	end
+
+	self:UpdateSize();
+end
+
+function BossTargetFrameContainerMixin:UpdateGrowDirection()
+	if self.isHorizontal then
+		self.alwaysUseTopLeftAnchor = (self.growDirection == Enum.BossFrameGrowDirection.Left);
+		self.alwaysUseTopCenterAnchor = (self.growDirection == Enum.BossFrameGrowDirection.Center);
+		self.alwaysUseTopRightAnchor = (self.growDirection == Enum.BossFrameGrowDirection.Right);
+	else
+		self.alwaysUseTopLeftAnchor = false;
+		self.alwaysUseTopCenterAnchor = false;
+		self.alwaysUseTopRightAnchor = true;
+	end
+end
+
+function BossTargetFrameContainerMixin:IsInDefaultPosition()
+	return not C_GameRules.IsWoWHack() and EditModeSystemMixin.IsInDefaultPosition(self);
+end
+
 --
 -- Focus Frame
 --
@@ -1130,11 +1228,18 @@ FocusFrameMixin = {};
 
 function FocusFrame_OpenMenu(self)
 	local contextData = {
-		fromFocusFrame = true;
+		fromFocusFrame = true,
+		ownerFrame = self,
 		unit = "focus",
 		name = SET_FOCUS,
 	};
 	UnitPopup_OpenMenu("FOCUS", contextData);
+end
+
+function FocusFrameMixin:HideIfGameRuleActive() 
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.FocusFrameDisabled) then
+		self:Hide();
+	end
 end
 
 function FocusFrameMixin:IsLocked()

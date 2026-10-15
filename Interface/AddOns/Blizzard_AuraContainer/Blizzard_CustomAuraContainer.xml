@@ -7,6 +7,9 @@
 				<Mixin key="CustomAuraContainerInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
 				<Mixin key="CustomAuraContainerPrivateMixin" source="secure"/>
 			</Mixins>
+			<KeyValues>
+				<KeyValue key="editModePreviewEnabled" value="true" type="boolean"/>
+			</KeyValues>
 			<Scripts>
 				<OnLoad method="OnLoad"/>
 				<OnUpdate method="OnUpdate"/>

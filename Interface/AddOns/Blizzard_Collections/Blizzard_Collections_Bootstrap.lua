@@ -12,6 +12,13 @@ COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES = COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLO
 COLLECTIONS_JOURNAL_TAB_INDEX_WARBAND_SCENES = COLLECTIONS_JOURNAL_TAB_INDEX_APPEARANCES + 1;
 
 function ToggleCollectionsJournal(tabIndex)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
+		if CollectionsJournal and CollectionsJournal:IsShown() then
+			HideUIPanel(CollectionsJournal);
+		end
+		return;
+	end
+
 	if CollectionsJournal or CollectionsJournal_LoadUI() then
 		local tabMatches = not tabIndex or tabIndex == PanelTemplates_GetSelectedTab(CollectionsJournal);
 		local isShown = CollectionsJournal:IsShown() and tabMatches;
@@ -20,6 +27,13 @@ function ToggleCollectionsJournal(tabIndex)
 end
 
 function SetCollectionsJournalShown(shown, tabIndex)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
+		if not shown and CollectionsJournal then
+			HideUIPanel(CollectionsJournal);
+		end
+		return;
+	end
+
 	if CollectionsJournal_LoadUI() then
 		if shown then
 			ShowUIPanel(CollectionsJournal);
@@ -33,6 +47,10 @@ function SetCollectionsJournalShown(shown, tabIndex)
 end
 
 function ToggleToyCollection(autoPageToCollectedToyID)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
+		return;
+	end
+
 	if CollectionsJournal_LoadUI() then
 		ToyBox.autoPageToCollectedToyID = autoPageToCollectedToyID;
 		SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_TOYS);
@@ -40,6 +58,10 @@ function ToggleToyCollection(autoPageToCollectedToyID)
 end
 
 function ShowHeirloomsJournalToClosestUpgradeablePage()
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
+		return;
+	end
+
 	if CollectionsJournal_LoadUI() then
 		HeirloomsJournal:SetFindClosestUpgradeablePage(true);
 		SetCollectionsJournalShown(true, COLLECTIONS_JOURNAL_TAB_INDEX_HEIRLOOMS);

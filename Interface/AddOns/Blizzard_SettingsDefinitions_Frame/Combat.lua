@@ -193,9 +193,16 @@ local function Register()
 		local setting = Settings.RegisterProxySetting(category, "PROXY_ACTION_TARGETING",
 			Settings.VarType.Boolean, ACTION_TARGETING_OPTION, defaultValue, GetValue, SetValue);
 		Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_ACTION_TARGETING);
+
+		CombatOverrides.CreateCenterReticleSetting(category, layout);
 	end);
 
 	CombatOverrides.AdjustCombatSettings(category);
+
+	-- Auto Ranged Combat
+	if GetBuildOption("CanChangeAutoRangedCombatSpell") then
+		Settings.SetupCVarCheckbox(category, "autoRangedCombat", AUTO_RANGED_COMBAT_TEXT, OPTION_TOOLTIP_AUTO_RANGED_COMBAT);
+	end
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end

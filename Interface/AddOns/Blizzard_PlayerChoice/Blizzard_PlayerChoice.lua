@@ -158,6 +158,17 @@ local customTextureKitInfo = {
 		timerYOffset = -5,
 		useOldNineSlice = true,
 	},
+
+	talebound = {
+		optionFrameTemplate = "PlayerChoiceTaleboundOptionTemplate",
+		optionsSpacing = 80,
+		optionsTopPadding = 100,
+		optionsBottomPadding = 55,
+		showOptionsOnly = true,
+		frameYOffset = 95,
+		toggleXOffset = 0,
+		toggleYOffset = -60,
+	},
 };
 
 local defaultTextureKitInfo = {

@@ -96,6 +96,7 @@ local UIManager =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

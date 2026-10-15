@@ -172,6 +172,7 @@ local CreatureInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

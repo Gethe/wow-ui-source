@@ -61,6 +61,28 @@
 				</KeyValues>
 			</Button>
 
+			<CheckButton parentKey="SDToggleButton" mixin="BarberShopSDToggleMixin" hidden="true" inherits="UICheckButtonTemplate">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-245" y="130"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormalMed2" justifyH="LEFT" text="HIGH-DEFINITION_MODELS">
+							<Size x ="180"/>
+							<Anchors>
+								<Anchor point="LEFT" x="30" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</CheckButton>
+
 			<Button parentKey="AcceptButton" inherits="BarberShopButtonTemplate" text="ACCEPT">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-30" y="15"/>

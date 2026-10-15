@@ -3,7 +3,7 @@
 	<Script file="Blizzard_SecureTransferUIOutbound.lua"/>
 	<Script file="Blizzard_SecureTransferUI.lua"/>
 	<ScopedModifier forbidden="true">
-        <Button name="SecureTransferButtonTemplate" virtual="true">
+		<Button name="SecureTransferButtonTemplate" virtual="true">
 			<Size x="40" y="22" />
 			<Layers>
 				<Layer level="BACKGROUND">
@@ -72,11 +72,15 @@
 			<DisabledFont style="GameFontDisable"/>
 			<HighlightTexture inherits="UIPanelButtonHighlightTexture" />
 		</Button>
-        <Frame name="SecureTransferDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
+		<Frame name="SecureTransferDialog" inherits="FocusFramesInterfaceTemplate" mixin="SecureTransferDialogMixin" parent="UIParent" frameStrata="DIALOG" toplevel="true" hyperlinksEnabled="true" enableMouse="true" hidden="true">
 			<Size x="434" y="122" />
 			<Anchors>
 				<Anchor point="TOP" x="0" y="-135"/>
 			</Anchors>
+			<KeyValues>
+				<KeyValue key="layoutType" type="string" value="DialogFrameTemplate"/>
+				<KeyValue key="smartNavigationIgnored" type="boolean" value="true"/>
+			</KeyValues>
 			<Layers>
 				<Layer level="ARTWORK">
 					<FontString parentKey="Text" inherits="GameFontHighlight">
@@ -151,6 +155,16 @@
 						<Anchor point="CENTER"/>
 					</Anchors>
 				</Frame>
+				<SimpleHTML parentKey="RMTWarningText" resizeToFitContents="true" hyperlinkFormat="|cff06ff07|H%s|h%s|h|r">
+					<Size x="320" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.WarningText" relativePoint="BOTTOM" x="0" y="-8"/>
+					</Anchors>
+					<FontString inherits="GameFontNormal" justifyH="CENTER" justifyV="TOP"/>
+					<Scripts>
+						<OnHyperlinkClick function="GetURLIndexAndLoadURL"/>
+					</Scripts>
+				</SimpleHTML>
 			</Frames>
 			<Scripts>
 				<OnLoad function="SecureTransferDialog_OnLoad"/>
@@ -159,5 +173,5 @@
 				<OnHide function="SecureTransferDialog_OnHide"/>
 			</Scripts>
 		</Frame>
-    </ScopedModifier>
+	</ScopedModifier>
 </Ui>

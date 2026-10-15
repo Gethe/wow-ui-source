@@ -8,6 +8,30 @@ local Spell =
 	Functions =
 	{
 		{
+			Name = "CancelAutoRepeatSpell",
+			Type = "Function",
+			HasRestrictions = true,
+			Documentation = { "Cancels the player's active auto repeat spell, if any" },
+
+			Returns =
+			{
+				{ Name = "wasCancelled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CancelItemTempEnchantment",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Cancel a temporary enchantment on an item" },
+
+			Arguments =
+			{
+				{ Name = "weaponSlot", Type = "WeaponSlot", Nilable = false },
+				{ Name = "enchantmentType", Type = "ItemEnchantType", Nilable = false },
+			},
+		},
+		{
 			Name = "CancelSpellByID",
 			Type = "Function",
 			HasRestrictions = true,
@@ -60,6 +84,7 @@ local Spell =
 			{
 				{ Name = "healthChange", Type = "number", Nilable = false },
 				{ Name = "powerTypeChanges", Type = "table", InnerType = "PowerTypeChange", Nilable = false },
+				{ Name = "statAuraChanges", Type = "StatAuraChangeInfo", Nilable = true },
 			},
 		},
 		{
@@ -79,6 +104,22 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetConfirmationPromptHideOnEscape",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns true if a confirmation prompt aura should be hidden when players press the escape key." },
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hideOnEscape", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "GetDeadlyDebuffInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -92,6 +133,23 @@ local Spell =
 			Returns =
 			{
 				{ Name = "deadlyDebuffInfo", Type = "DeadlyDebuffInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetItemCooldown",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns nil if the item is not found or on cooldown" },
+
+			Arguments =
+			{
+				{ Name = "itemID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "spellCooldownInfo", Type = "SpellCooldownInfo", Nilable = false },
 			},
 		},
 		{
@@ -587,6 +645,15 @@ local Spell =
 			},
 		},
 		{
+			Name = "GetTargetSpellID",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetVisibilityInfo",
 			Type = "Function",
 			MayReturnNothing = true,
@@ -603,6 +670,25 @@ local Spell =
 				{ Name = "hasCustom", Type = "bool", Nilable = false },
 				{ Name = "alwaysShowMine", Type = "bool", Nilable = false },
 				{ Name = "showForMySpec", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsActiveSpell",
+			Type = "Function",
+			SecretWhenUnitAuraRestricted = true,
+			SecretWhenUnitIdentityRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns true if the spell is a currently active toggled spell" },
+
+			Arguments =
+			{
+				{ Name = "spellIdentifier", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "targetUnit", Type = "UnitToken", Nilable = true, Documentation = { "Optional specific target; If not supplied, the player will be used, or their pet if the spell is a pet spell" } },
+			},
+
+			Returns =
+			{
+				{ Name = "isActiveSpell", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -935,6 +1021,11 @@ local Spell =
 			},
 		},
 		{
+			Name = "PlaceTargetingSpellAtCursor",
+			Type = "Function",
+			HasRestrictions = true,
+		},
+		{
 			Name = "RequestLoadSpellData",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -1119,7 +1210,18 @@ local Spell =
 				{ Name = "spellID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "StatAuraChangeInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "maxStatChange", Type = "number", Nilable = false },
+				{ Name = "critPercentChange", Type = "number", Nilable = false },
+				{ Name = "meleeHitChanceTakenChange", Type = "number", Nilable = false },
+			},
+		},
 	},
+
 	Predicates =
 	{
 	},

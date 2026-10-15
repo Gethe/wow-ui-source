@@ -41,6 +41,7 @@
 		<!--
 		<KeyValues>
 			<KeyValue key="hideOnClick" type="boolean" value="false"/>
+			<KeyValue key="transparentBackgroundTexture" type="boolean" value="false"/>
 		</KeyValues>
 		-->
 		<Layers>
@@ -51,6 +52,7 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnKeyDown method="OnKeyDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 		</Scripts>

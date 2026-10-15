@@ -856,17 +856,16 @@ function WeeklyRewardsActivityMixin:AddWorldRunsToTooltip()
 	-- We loop on number of completions and print a line for each, until we hit the desiredRuns or have no remaining progress.
 	for _, tierProgress in ipairs(activityTierProgress) do
 		local numRuns = math.min(tierProgress.numPoints, desiredRuns);
-		if numRuns <= 0 then
-			return;
-		end
-		desiredRuns = desiredRuns - numRuns;
+		if numRuns > 0 then
+			desiredRuns = desiredRuns - numRuns;
 
-		-- Difficulties above 1 are guaranteed to be Delves and get a Delve-specific string, otherwise they get a generic string.
-		-- This will need to change if the assumption of World activities capping at difficulty 1 does not hold.
-		if tierProgress.difficulty > 1 then
-			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_DELVE_TIER_INFO, tierProgress.difficulty, numRuns));
-		else
-			GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_DELVE_TIER_AND_WORLD_INFO, tierProgress.difficulty, numRuns));
+			-- Difficulties above 1 are guaranteed to be Delves and get a Delve-specific string, otherwise they get a generic string.
+			-- This will need to change if the assumption of World activities capping at difficulty 1 does not hold.
+			if tierProgress.difficulty > 1 then
+				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_DELVE_TIER_INFO, tierProgress.difficulty, numRuns));
+			else
+				GameTooltip_AddHighlightLine(GameTooltip, string.format(WEEKLY_REWARDS_DELVE_TIER_AND_WORLD_INFO, tierProgress.difficulty, numRuns));
+			end
 		end
 	end
 end

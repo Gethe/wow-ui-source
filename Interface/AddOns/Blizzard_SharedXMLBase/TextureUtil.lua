@@ -466,13 +466,12 @@ local addressModeLookup = {
 -- so that as the region changes size, it continues to look correct.
 -- SetAtlas is preferred and checked first before falling back to set texture.
 -- Whether or not the asset refers to an atlas or a texture, UV wrapping will only work as expected if the asset contains a single image.
-function SetTextureWithAddressModeOptions(region, asset, autoSize, addressModeU, addressModeV)
+function SetTextureWithAddressModeOptions(region, asset, autoSize, addressModeU, addressModeV, resetTextureCoords)
 	local hData = addressModeLookup[addressModeU or TextureKitConstants.AddressModeClamp];
 	local vData = addressModeLookup[addressModeV or TextureKitConstants.AddressModeClamp];
 
 	-- NOTE: filterMode and resetTexCoords not supported in this API yet, just use defaults.
 	local filterMode = nil;
-	local resetTextureCoords = nil;
 	if not CheckSetAtlas(region, asset, autoSize, filterMode, resetTextureCoords, hData.descriptor, vData.descriptor) then
 		region:SetTexture(asset, hData.descriptor, vData.descriptor, filterMode);
 	end

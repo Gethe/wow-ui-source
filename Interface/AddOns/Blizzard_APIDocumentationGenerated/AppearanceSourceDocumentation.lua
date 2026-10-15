@@ -25,9 +25,11 @@ local AppearanceSource =
 				{ Name = "useErrorType", Type = "TransmogUseErrorType", Nilable = true },
 				{ Name = "meetsTransmogPlayerCondition", Type = "bool", Nilable = true },
 				{ Name = "isHideVisual", Type = "bool", Nilable = true },
+				{ Name = "isValidForEquippedItem", Type = "bool", Nilable = true },
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

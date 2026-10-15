@@ -11,7 +11,8 @@ Vanilla\MenuVariants.lua      [AllowLoadGameType vanilla, tbc, wrath]
 [Family]\MenuVariants.lua     [AllowLoadGameType mainline]
 Compositor.lua
 Menu.lua
-Menu.xml
+Menu.xml                      [ExcludeLoadGameType camelot]
+Camelot\Menu.xml              [AllowLoadGameType camelot]
 DropdownButton.lua
 DropdownButton.xml
 MenuTemplates.lua

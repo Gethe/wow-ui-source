@@ -187,16 +187,21 @@ function FlowContainer_DoLayout(container)
 
 				--Add it.
 				object:ClearAllPoints();
-				if container.flowOrientation == "horizontal" then
-					object:SetPoint("TOPLEFT", container, "TOPLEFT", currentSecondaryOffset, -currentPrimaryOffset - (targetVerticalOffset or 0));
 
+				local xOffset = currentSecondaryOffset;
+				if InputUtil:IsGamepadUIEnabled() and object.frameType == "flagged" then
+					xOffset = xOffset + 14;
+				end
+
+				if container.flowOrientation == "horizontal" then
+					object:SetPoint("TOPLEFT", container, "TOPLEFT", xOffset, -currentPrimaryOffset - (targetVerticalOffset or 0));
 					if object.frameType == "target" and not targetVerticalOffset then
 						targetVerticalOffset = object[secondaryDirection](object);
 					else
 						targetVerticalOffset = nil;
 					end
 				else
-					object:SetPoint("TOPLEFT", container, "TOPLEFT", currentPrimaryOffset, -currentSecondaryOffset);
+					object:SetPoint("TOPLEFT", container, "TOPLEFT", currentPrimaryOffset, -xOffset);
 				end
 
 				if not targetVerticalOffset then

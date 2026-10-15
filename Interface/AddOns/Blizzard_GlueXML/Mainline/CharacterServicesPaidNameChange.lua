@@ -8,15 +8,15 @@ local PNCNameSelectBlockMainline = CreateFromMixins(
 
 function PNCNameSelectBlockMainline:FormatResult()
 	local result = self:GetResult();
-	return NORMAL_FONT_COLOR:WrapTextInColorCode(result.name);
+	return GetFormattedVASName(result.name, result.surname);
 end
 
 
 PNCChoiceVerificationBlockMainline = CreateFromMixins(VASChoiceVerificationBlockBase);
 
 function PNCChoiceVerificationBlockMainline:RequestAssignVASForResults(results, isValidationOnly)
-	local valid, reason = C_CharacterCreation.IsCharacterNameValid(results.name)
-	if not valid then 
+	local valid, reason = C_CharacterCreation.IsFullNameValid(results.name, results.surname);
+	if not valid then
 		CharSelectServicesFlowFrame:SetErrorMessage(_G[reason]);
 		CharacterServicesMaster.flow:RequestRewind();
 		return false, 0;

@@ -1,7 +1,0 @@
-## Title: Blizzard Dungeon Journal
-## Author: Blizzard Entertainment
-## Version: 1.0
-## LoadOnDemand: 1
-## AllowLoad: game
-## AllowLoadGameType: vanilla, tbc, wrath
-Classic\Blizzard_EncounterJournal_Bootstrap.lua [Bootstrap]

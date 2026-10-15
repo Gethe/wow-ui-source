@@ -666,9 +666,9 @@ end
 
 function TutorialFrame_NewTutorial(tutorialID, forceShow)
 	local tutorialFrameDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.TutorialFrameDisabled);
-	if tutorialFrameDisabled or C_PlayerInfo.IsPlayerNPERestricted() then
+	if InputUtil.IsGamepadUIEnabled() or tutorialFrameDisabled or C_PlayerInfo.IsPlayerNPERestricted() then
 		return;
-	end	
+	end
 
 	if(forceShow) then
 		TutorialFrame_Update(tutorialID);

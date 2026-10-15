@@ -1,0 +1,21 @@
+## Title: Blizzard WoWHack Character UI
+## Author: Blizzard Entertainment
+## LoadOnDemand: 1
+## AllowLoadGameType: wowhack
+## AllowLoad: Game
+## DefaultState: enabled
+## Dependencies: Blizzard_SharedTalentUI
+
+Blizzard_WoWHackCharacterUI_Bootstrap.lua [Bootstrap]
+Blizzard_CharacterSheetList.lua
+Blizzard_CharacterSheetList.xml
+Blizzard_CharacterStatList.lua
+Blizzard_CharacterStatList.xml
+Blizzard_CharacterProgressionList.lua
+Blizzard_CharacterProgressionList.xml
+Blizzard_CharacterListHeader.lua
+Blizzard_CharacterListHeader.xml
+Blizzard_CharacterCurrencySummary.lua
+Blizzard_CharacterCurrencySummary.xml
+Blizzard_WoWHackCharacterUI.lua
+Blizzard_WoWHackCharacterUI.xml

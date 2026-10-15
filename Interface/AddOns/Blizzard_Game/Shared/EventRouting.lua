@@ -43,6 +43,7 @@ local eventHandlers = {
 	["ADDON_ACTION_FORBIDDEN"] = function(...) GameEvent.HandleAddonActionForbidden(...) end,
 	["AUCTION_HOUSE_SCRIPT_DEPRECATED"] = function(...) GameEvent.HandleAuctionHouseScriptDeprecated(...) end,
 	["ALERT_REGIONAL_CHAT_DISABLED"] = function(...) GameEvent.HandleAlertRegionalChatDisabled(...) end,
+	["ALERT_AGE_VERIFICATION_RESTRICTED"] = function(...) GameEvent.HandleAlertAgeVerificationRestricted(...) end,
 	["AREA_SPIRIT_HEALER_IN_RANGE"] = function(...) GameEvent.HandleAreaSpiritHealerInRange(...) end,
 	["AREA_SPIRIT_HEALER_OUT_OF_RANGE"] = function(...) GameEvent.HandleAreaSpiritHealerOutOfRange(...) end,
 	["BARBER_SHOP_OPEN"] = function(...) GameEvent.HandleBarberShopOpen(...) end,
@@ -97,6 +98,7 @@ local eventHandlers = {
 	["TRIAL_CAP_REACHED_MONEY"] = function(...) GameEvent.HandleTrialCapReached(...) end,
 	["TRIAL_CAP_REACHED_LEVEL"] = function(...) GameEvent.HandleTrialCapReached(...) end,
 	["BEHAVIORAL_NOTIFICATION"] = function(...) GameEvent.HandleBehavioralNotification(...) end,
+	["SHARD_TRANSFER"] = function(...) GameEvent.HandleShardTransferEvent(...) end,
 };
 
 function GameEvent.RegisterSharedEvents()

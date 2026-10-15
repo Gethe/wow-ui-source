@@ -11,10 +11,12 @@ local HIDE_MOST_BLOCKLIST = {
 	"objectives",
 	"statusBars",
 	"cooldownViewers",
+	"swingTimers",
 	"encounterUI",
 	"pvp",
 	"extraAbilities",
 	"widgets",
+	"queuestatus",
 };
 
 function UIModeUtil.RegisterMode(modeName, config)

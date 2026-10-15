@@ -414,6 +414,7 @@ local ProfessionSpecUI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

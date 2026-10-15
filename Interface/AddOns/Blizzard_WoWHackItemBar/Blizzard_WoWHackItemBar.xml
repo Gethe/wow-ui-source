@@ -1,0 +1,55 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<ItemButton name="WoWHackItemButtonTemplate" inherits="HUDInventoryButtonTemplate" mixin="WoWHackItemButtonMixin" scale="1.4" virtual="true">
+		<NormalTexture atlas="talebound-hud-actionbar-iconframe">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="-1" y="1"/>
+				<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+			</Anchors>
+		</NormalTexture>
+		<PushedTexture atlas="UI-HUD-ActionBar-IconFrame-Down">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="3" y="-3"/>
+				<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+			</Anchors>
+		</PushedTexture>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<MaskTexture parentKey="IconMask" atlas="talebound-hud-actionbar-iconframe-mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Size x="37" y="37"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+				<Texture parentKey="SlotArt" atlas="talebound-hud-actionbar-icon-inventory" setAllPoints="true" scale="0.6" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="6">
+				<FontString parentKey="Count" inherits="NumberFontNormal" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</ItemButton>
+
+	<Frame name="WoWHackItemBar" inherits="HUDInventoryBarTemplate" mixin="WoWHackItemBarMixin" parent="UIParent" frameStrata="MEDIUM" toplevel="true" frameLevel="10">
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="WoWHackItemButtonTemplate" type="string"/>
+			<KeyValue key="commandPrefix" value="WOWHACKITEM" type="string"/>
+			<KeyValue key="baseNumItemButtons" value="4" type="number"/>
+			<KeyValue key="spacing" value="7" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOM" x="70" y="58"/>
+		</Anchors>
+	</Frame>
+</Ui>

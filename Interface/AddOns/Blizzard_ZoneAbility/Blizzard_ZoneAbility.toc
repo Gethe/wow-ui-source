@@ -1,0 +1,9 @@
+## Title: Blizzard_ZoneAbility
+## Dep: Blizzard_UIPanels_Game
+## Dep: Blizzard_ActionBarController
+## Dep: Blizzard_ActionBar
+## Dep: Blizzard_PingUI
+## AllowLoadGameType: mainline
+
+ZoneAbility.lua
+ZoneAbility.xml

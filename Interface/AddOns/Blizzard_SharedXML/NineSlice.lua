@@ -235,6 +235,68 @@ function NineSliceUtil.AddLayout(layoutName, layout)
 	NineSliceLayouts[layoutName] = layout;
 end
 
+local function ClipNineSliceBottomCorner(piece, atlasName, cropPixels)
+	if not piece or not atlasName then
+		return;
+	end
+
+	local info = C_Texture.GetAtlasInfo(atlasName);
+	if not info then
+		return;
+	end
+
+	local textureSource = info.file or info.filename;
+	if not textureSource then
+		return;
+	end
+
+	cropPixels = math.max(0, math.min(cropPixels or 0, info.height));
+
+	piece:SetTexture(textureSource);
+
+	local uvHeightRange = info.bottomTexCoord - info.topTexCoord;
+	local croppedTopTexCoord = info.topTexCoord + (cropPixels / info.height) * uvHeightRange;
+	piece:SetTexCoord(info.leftTexCoord, info.rightTexCoord, croppedTopTexCoord, info.bottomTexCoord);
+	piece:SetSize(info.width, info.height - cropPixels);
+end
+
+function NineSliceUtil.UpdateCornerCropping(container, frameHeight)
+	local nineSlice = container and container.NineSlice;
+	if not nineSlice or not frameHeight then
+		return;
+	end
+
+	local layoutType = nineSlice.GetFrameLayoutType and nineSlice:GetFrameLayoutType() or nineSlice.layoutType or container.layoutType;
+	if not layoutType then
+		return;
+	end
+
+	local layout = NineSliceUtil.GetLayout(layoutType);
+	if not layout then
+		return;
+	end
+
+	local topLeftLayout = layout.TopLeftCorner;
+	local bottomLeftLayout = layout.BottomLeftCorner;
+	local bottomRightLayout = layout.BottomRightCorner;
+	if not (topLeftLayout and bottomLeftLayout and bottomRightLayout) then
+		return;
+	end
+
+	local topCornerInfo = C_Texture.GetAtlasInfo(topLeftLayout.atlas);
+	local bottomCornerInfo = C_Texture.GetAtlasInfo(bottomLeftLayout.atlas);
+	if not (topCornerInfo and bottomCornerInfo) then
+		return;
+	end
+
+	local topYOffset = topLeftLayout.y or 0;
+	local bottomYOffset = -(bottomLeftLayout.y or 0);
+	local overlap = topCornerInfo.height + bottomCornerInfo.height - frameHeight - topYOffset - bottomYOffset;
+
+	ClipNineSliceBottomCorner(nineSlice.BottomLeftCorner, bottomLeftLayout.atlas, overlap);
+	ClipNineSliceBottomCorner(nineSlice.BottomRightCorner, bottomRightLayout.atlas, overlap);
+end
+
 --------------------------------------------------
 -- NINE SLICE PANEL MIXIN
  NineSlicePanelMixin = {};

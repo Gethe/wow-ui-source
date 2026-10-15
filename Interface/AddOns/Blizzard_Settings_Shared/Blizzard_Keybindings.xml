@@ -1,7 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_Keybindings.lua"/>
-	
+
 	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="KeyBindingButtonMixin" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
@@ -26,7 +25,7 @@
 		<DisabledFont style="GameFontDisableSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
 	</Button>
-	
+
 	<Button name="KeyBindingFrameBindingButtonTemplateWithLabel" inherits="KeyBindingFrameBindingButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -38,7 +37,7 @@
 			</Layer>
 		</Layers>
 	</Button>
-	
+
 	<Frame name="KeyBindingFrameBindingTemplate" mixin="KeyBindingFrameBindingTemplateMixin" virtual="true">
 		<Size x="560" y="25"/>
 		<Layers>
@@ -46,6 +45,11 @@
 				<FontString parentKey="Label" inherits="GameFontNormal" enableMouse="true" wordwrap="false" justifyH="LEFT">
 					<Size x="170" y="24"/>
 				</FontString>
+				<Texture parentKey="ModifierWarning" atlas="perks-warning-small" useAtlasSize="true" hidden="true" enableMouse="true">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Label" relativePoint="RIGHT" x="4"/>
+					</Anchors>
+				</Texture>
 				<Texture parentKey="Highlight" hidden="true">
 					<Anchors>
 						<Anchor point="TOPLEFT"/>

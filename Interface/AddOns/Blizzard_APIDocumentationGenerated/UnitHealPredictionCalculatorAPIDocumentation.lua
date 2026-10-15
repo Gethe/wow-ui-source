@@ -486,6 +486,7 @@ local UnitHealPredictionCalculatorAPI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

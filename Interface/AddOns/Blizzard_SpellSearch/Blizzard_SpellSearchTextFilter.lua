@@ -197,6 +197,18 @@ function SpellSearchTextFilterMixin:DerivedGetMatchTypeForSpellBookItem(spellBoo
 
 	local spellBookItemInfo = spellBookItemData.spellBookItemInfo;
 
+	if spellBookItemData.templateKey == "OUTFIT" then
+		local getDescriptionFunc = nop;
+
+		spellBookItemResult.matchType = self:GetMatchTypeForText(spellBookItemData.name, nil, getDescriptionFunc);
+		if spellBookItemResult.matchType then
+			spellBookItemResult.name = spellBookItemData.name;
+			spellBookItemResult.icon = spellBookItemData.icon;
+		end
+
+		return spellBookItemResult;
+	end
+
 	if not spellBookItemInfo or not spellBookItemInfo.name then
 		return spellBookItemResult;
 	end

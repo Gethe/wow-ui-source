@@ -12,6 +12,7 @@ local UnitAura =
 			Type = "Function",
 			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Registers a sound for an aura event. The sound is stopped after five seconds of playback. The throttleSeconds value must be between 0 and 5 seconds, inclusive." },
 
 			Arguments =
 			{
@@ -164,6 +165,25 @@ local UnitAura =
 			Returns =
 			{
 				{ Name = "newDuration", Type = "number", Nilable = true },
+			},
+		},
+		{
+			Name = "GetAuraCasterGUID",
+			Type = "Function",
+			RequiresUnitAuraAccess = true,
+			RequiresValidUnitAuraInstance = true,
+			SecretWhenUnitAuraRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+
+			Arguments =
+			{
+				{ Name = "auraInstanceUnit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "casterGUID", Type = "WOWGUID", Nilable = true },
 			},
 		},
 		{
@@ -356,6 +376,7 @@ local UnitAura =
 		{
 			Name = "GetGroupBuffVisualAlerts",
 			Type = "Function",
+			Documentation = { "Returns the alerts passed to SetGroupBuffVisualAlerts plus an entry for every linked rank spell of those group buffs." },
 
 			Returns =
 			{
@@ -365,6 +386,7 @@ local UnitAura =
 		{
 			Name = "GetHiddenGroupBuffs",
 			Type = "Function",
+			Documentation = { "Returns the spell IDs passed to SetHiddenGroupBuffs plus every linked rank spell of those group buffs." },
 
 			Returns =
 			{
@@ -386,6 +408,27 @@ local UnitAura =
 			Returns =
 			{
 				{ Name = "aura", Type = "AuraData", Nilable = true },
+			},
+		},
+		{
+			Name = "GetRefreshCarryOverDuration",
+			Type = "Function",
+			RequiresUnitAuraAccess = true,
+			RequiresValidUnitAuraInstance = true,
+			SecretWhenUnitAuraRestricted = true,
+			SecretArguments = "AllowedWhenTainted",
+			Documentation = { "Returns the client-predicted amount of time that a new spellcast of the same spell would carry over to the new application of that aura. Takes an optional spellID to use as the new duration if that cannot be derived from the aura, if that value isn't supplied the aura's spellID will be used" },
+
+			Arguments =
+			{
+				{ Name = "auraInstanceUnit", Type = "UnitToken", Nilable = false },
+				{ Name = "auraInstanceID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "newDuration", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -456,7 +499,7 @@ local UnitAura =
 
 			Arguments =
 			{
-				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false, NeverSecret = true },
+				{ Name = "unit", Type = "UnitTokenRestrictedForAddOns", Nilable = false },
 				{ Name = "filter", Type = "AuraFilters", Nilable = false },
 				{ Name = "maxCount", Type = "number", Nilable = true },
 				{ Name = "sortRule", Type = "UnitAuraSortRule", Nilable = false, Default = "Unsorted" },
@@ -581,6 +624,7 @@ local UnitAura =
 			Type = "Event",
 			LiteralName = "GROUP_BUFF_VISUAL_ALERTS_CHANGED",
 			SynchronousEvent = true,
+			Documentation = { "The payload matches GetGroupBuffVisualAlerts, including linked rank spells." },
 			Payload =
 			{
 				{ Name = "visualAlerts", Type = "table", InnerType = "GroupBuffVisualAlertInfo", Nilable = false },
@@ -591,6 +635,7 @@ local UnitAura =
 			Type = "Event",
 			LiteralName = "HIDDEN_GROUP_BUFFS_CHANGED",
 			SynchronousEvent = true,
+			Documentation = { "The payload matches GetHiddenGroupBuffs, including linked rank spells." },
 			Payload =
 			{
 				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },
@@ -634,6 +679,7 @@ local UnitAura =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -9,17 +9,17 @@ local INVITE_MANAGER_COLUMN_INFO = {
 		title = COMMUNITIES_INVITE_MANAGER_COLUMN_TITLE_CREATOR,
 		width = 96,
 	},
-	
+
 	[2] = {
 		title = COMMUNITIES_INVITE_MANAGER_COLUMN_TITLE_LINK,
 		width = 284,
 	},
-	
+
 	[3] = {
 		title = COMMUNITIES_INVITE_MANAGER_COLUMN_TITLE_EXPIRES,
 		width = 75,
 	},
-	
+
 	[4] = {
 		title = COMMUNITIES_INVITE_MANAGER_COLUMN_TITLE_USES,
 		width = 0,
@@ -106,8 +106,10 @@ function CommunitiesTicketEntryMixin:OnUpdate()
 end
 
 function CommunitiesTicketEntryMixin:OnEnter()
-	self.CopyLinkButton:Show();
-	
+	if InputUtil.IsMKBUIEnabled() then
+		self.CopyLinkButton:Show();
+	end
+
 	if self.Creator:IsTruncated() then
 		self:SetScript("OnUpdate", CommunitiesTicketEntryMixin.OnUpdate);
 	end
@@ -117,7 +119,7 @@ function CommunitiesTicketEntryMixin:OnLeave()
 	if not self.CopyLinkButton:IsMouseMotionFocus() then
 		self.CopyLinkButton:Hide();
 	end
-	
+
 	self:SetScript("OnUpdate", nil);
 	GameTooltip:Hide();
 end
@@ -132,18 +134,18 @@ end
 
 function CommunitiesTicketEntryMixin:SetTicket(ticketInfo)
 	self.ticketInfo = ticketInfo;
-	
+
 	local clubId = self:GetClubId();
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if not clubInfo then
 		return;
 	end
-	
+
 	self.Creator:SetText(ticketInfo.creator.name or "");
 	self.Creator:SetTextColor(CommunitiesUtil.GetMemberRGB(ticketInfo.creator));
-		
+
 	self.Link:SetText(ClubTicketUtil.FormatTicket(clubInfo, ticketInfo.ticketId));
-	
+
 	if ticketInfo.allowedRedeemCount == 0 then
 		self.Uses:SetText(COMMUNITIES_INVITE_MANAGER_USES_UNLIMITED);
 		self.Uses:SetTextColor(GRAY_FONT_COLOR:GetRGB());
@@ -151,7 +153,7 @@ function CommunitiesTicketEntryMixin:SetTicket(ticketInfo)
 		self.Uses:SetText(COMMUNITIES_INVITE_MANAGER_USES_FORMAT:format(ticketInfo.allowedRedeemCount - ticketInfo.currentRedeemCount, ticketInfo.allowedRedeemCount));
 		self.Uses:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
 	end
-	
+
 	if ticketInfo.expirationTime == 0 then
 		self.Expires:SetText(COMMUNITIES_INVITE_MANAGER_EXPIRES_NEVER);
 		self.Expires:SetTextColor(GRAY_FONT_COLOR:GetRGB());
@@ -186,6 +188,22 @@ CommunitiesTicketManagerScrollFrameMixin = {};
 
 function CommunitiesTicketManagerScrollFrameMixin:OnLoad()
 	self.ColumnDisplay:LayoutColumns(INVITE_MANAGER_COLUMN_INFO);
+
+	local prevButton = nil;
+	for _, columnButton in ipairs({self.ColumnDisplay:GetChildren()}) do
+		SmartNavigation_AddJumpNavigationOverride(columnButton, SMART_NAV_INPUT_DIRECTION.DOWN, function()
+			if self.ScrollBox:GetFrameCount() > 0 then
+				SmartNavigation_SelectScrollBoxCurrentOrTop(self.ScrollBox);
+				return true;
+			end
+		end);
+
+		if prevButton then
+			SmartNavigation_AddBidirectionalJumpNavigationOverride(columnButton, SMART_NAV_INPUT_DIRECTION.LEFT, prevButton);
+		end
+
+		prevButton = columnButton;
+	end
 end
 
 CommunitiesTicketManagerDialogMixin = {};
@@ -195,11 +213,12 @@ function CommunitiesTicketManagerDialogMixin:OnLoad()
 	self.revokedTickets = {};
 	self:SetUses(USES_OPTIONS[DEFAULT_USES_OPTION]);
 	self:SetExpirationTime(EXPIRES_OPTIONS[DEFAULT_EXPIRES_OPTION]);
-	
+
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("CommunitiesTicketEntryTemplate", function(button, elementData)
 		button:SetClubId(self:GetClubId());
 		button:SetTicket(elementData);
+		button.RevokeButton:SetShown(InputUtil.IsMKBUIEnabled());
 	end);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.InviteManager.ScrollBox, self.InviteManager.ScrollBar, view);
@@ -209,6 +228,41 @@ function CommunitiesTicketManagerDialogMixin:OnLoad()
 
 	self:SetupUsesDropdown();
 	self:SetupExpiresDropdown();
+end
+
+function CommunitiesTicketManagerDialogMixin:CreateGamepadFooter()
+	local function CopyURL()
+		local entry = SmartNavigation:GetCurrentButton();
+		entry.CopyLinkButton:Click();
+	end
+
+	local function RevokeInvite()
+		local entry = SmartNavigation:GetCurrentButton();
+		entry.RevokeButton:Click();
+
+		if self.InviteManager.ScrollBox:GetFrameCount() > 0 then
+			SmartNavigation_SelectScrollBoxCurrentOrTop(self.InviteManager.ScrollBox);
+		else
+			SmartNavigation:SetTargetButtonForFrame(self, self.GenerateLinkButton);
+		end
+	end
+
+	local copyURLBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, CopyURL, COMMUNITIES_INVITE_MANAGER_COPY_LINK_BUTTON);
+	copyURLBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	copyURLBinding:AddButtonContext("ButtonContext_CommunitiesTicketEntryButton");
+
+	local holdTime = 1;
+	local revokeInvite = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_TOP, holdTime, nil, RevokeInvite, COMMUNITIES_INVITE_MANAGER_REVOKE_INVITE);
+	revokeInvite:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	revokeInvite:AddButtonContext("ButtonContext_CommunitiesTicketEntryButton");
+
+	local footer = GamepadSharedUtility.CreatePromptedBindingFooter(self);
+	footer:AddPromptedBinding(copyURLBinding);
+	footer:AddPromptedBinding(revokeInvite);
+	footer:AddStandardSelectPrompt();
+	footer:AddStandardBackPrompt();
+	footer:Finalize();
+	return footer;
 end
 
 function CommunitiesTicketManagerDialogMixin:SetupUsesDropdown()
@@ -253,7 +307,7 @@ function CommunitiesTicketManagerDialogMixin:OnShow()
 	self:SetExpanded(false);
 	self.shouldGenerateDefaultLink = true;
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_TICKET_MANAGER_DIALOG_EVENTS);
-	
+
 	local clubId = self:GetClubId()
 	local clubInfo = C_Club.GetClubInfo(clubId);
 	if clubInfo then
@@ -261,16 +315,16 @@ function CommunitiesTicketManagerDialogMixin:OnShow()
 		self.IconRing:SetAtlas(self.clubType == Enum.ClubType.BattleNet and "communities-ring-blue" or "communities-ring-gold");
 		C_Club.SetAvatarTexture(self.Icon, clubInfo.avatarId, clubInfo.clubType);
 	end
-	
+
 	self:Update();
-	
+
 	C_Club.RequestTickets(self:GetClubId());
-	
+
 	self.refreshTicker = C_Timer.NewTicker(1.0, function ()
 		self:RemoveExpiredTickets();
 		self:Refresh();
 	end);
-	
+
 	CommunitiesFrame:RegisterDialogShown(self);
 end
 
@@ -291,9 +345,9 @@ function CommunitiesTicketManagerDialogMixin:UpdateTickets()
 		self.tickets = tickets;
 		self:SortTickets();
 	end
-	
+
 	self.shouldGenerateDefaultLink = false;
-	
+
 	self:Update();
 end
 
@@ -314,7 +368,7 @@ function CommunitiesTicketManagerDialogMixin:RemoveExpiredTickets()
 			break;
 		end
 	end
-	
+
 	if ticketsChanged then
 		local remainingTickets = {};
 		for i, ticket in ipairs(self.tickets) do
@@ -322,7 +376,7 @@ function CommunitiesTicketManagerDialogMixin:RemoveExpiredTickets()
 				table.insert(remainingTickets, ticket);
 			end
 		end
-		
+
 		self.tickets = remainingTickets;
 		self:Update();
 	end
@@ -334,19 +388,19 @@ end
 
 function CommunitiesTicketManagerDialogMixin:Update()
 	self:RefreshLink();
-	
+
 	local tickets = self:GetTickets();
 	local hasTickets = #tickets >= 1;
 	self.LinkToChat:SetEnabled(hasTickets);
 	self.Copy:SetEnabled(hasTickets);
-	
+
 	local dataProvider = CreateDataProvider(tickets);
 	self.InviteManager.ScrollBox:SetDataProvider(dataProvider);
 end
 
 function CommunitiesTicketManagerDialogMixin:Refresh()
 	self:RefreshLink();
-	
+
 	self.InviteManager.ScrollBox:ForEachFrame(function(button, ticketInfo)
 		button:SetTicket(ticketInfo);
 	end);
@@ -359,7 +413,7 @@ function CommunitiesTicketManagerDialogMixin:OnTicketRevoked(ticketId)
 			break;
 		end
 	end
-	
+
 	self:Update();
 end
 
@@ -394,10 +448,20 @@ local PIECES_SHOWN_IN_EXPANDED_VIEW = {
 	GenerateLinkButton = true,
 };
 
+function CommunitiesTicketManagerDialogMixin:SmartNavigationCloseHandler()
+	self.Close:Click();
+end
+
 function CommunitiesTicketManagerDialogMixin:SetExpanded(expanded)
 	self:SetHeight(expanded and 584 or 282);
 	for piece, shownInExpandedView in pairs(PIECES_SHOWN_IN_EXPANDED_VIEW) do
 		self[piece]:SetShown(expanded == shownInExpandedView);
+	end
+
+	if InputUtil:IsGamepadUIEnabled() then
+		if SmartNavigation:GetActiveFrame() == self then
+			SmartNavigation:SelectFirstButton();
+		end
 	end
 end
 
@@ -426,12 +490,12 @@ function CommunitiesTicketManagerDialogMixin:GenerateLink(overrideUses, override
 	if uses == 0 then
 		uses = nil;
 	end
-	
+
 	local expirationTime = overrideExpiration or self:GetExpirationTime();
 	if expirationTime == 0 then
 		expirationTime = nil;
 	end
-	
+
 	local streamId = overrideStreamId or self:GetStreamId();
 	local clubId = self:GetClubId();
 	local clubInfo = C_Club.GetClubInfo(clubId);
@@ -443,7 +507,7 @@ function CommunitiesTicketManagerDialogMixin:GetFirstTicketInfo()
 	if #tickets >= 1 then
 		return tickets[1];
 	end
-	
+
 	return nil;
 end
 
@@ -467,15 +531,15 @@ function CommunitiesTicketManagerDialogMixin:RefreshLink()
 		if not clubInfo then
 			return;
 		end
-		
+
 		self.LinkIDText:SetText(ticketInfo.ticketId);
-		
+
 		if ticketInfo.allowedRedeemCount == 0 then
-			self.UsesText:SetText(COMMUNITIES_INVITE_MANAGER_USES_UNLIMITED); 
+			self.UsesText:SetText(COMMUNITIES_INVITE_MANAGER_USES_UNLIMITED);
 		else
 			self.UsesText:SetText(ticketInfo.allowedRedeemCount - ticketInfo.currentRedeemCount);
 		end
-		
+
 		if ticketInfo.expirationTime == 0 then
 			self.ExpiresText:SetText(COMMUNITIES_INVITE_MANAGER_EXPIRES_NEVER);
 		else

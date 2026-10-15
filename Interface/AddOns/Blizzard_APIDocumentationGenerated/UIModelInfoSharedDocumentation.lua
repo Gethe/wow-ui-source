@@ -72,6 +72,7 @@ local UIModelInfoShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

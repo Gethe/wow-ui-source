@@ -59,6 +59,10 @@ function PingFrameMixin:EvaluateResult(uiTargetInfo)
     end
 end
 
+function PingFrameMixin:EndGamepadStickSelection()
+	PingListenerFrame:TogglePingListener(false);
+end
+
 
 PingListenerFrameMixin = {
     PingRadialKeyDownDuration = 0.15;
@@ -82,7 +86,10 @@ end
 
 function PingListenerFrameMixin:OnPendingPingOffScreen()
 	self.pendingPingForceCancelled = true;
-    self:ClearPendingPingInfo();
+	self:ClearPendingPingInfo();
+	if (PingFrame.gamepadStickInputFrame) then
+		PingFrame.gamepadStickInputFrame:Hide();
+	end
 end
 
 function PingListenerFrameMixin:OnMouseDown()
@@ -145,50 +152,50 @@ function PingListenerFrameMixin:OnLeave()
 end
 
 function PingListenerFrameMixin:TogglePingListener(enabled)
-    if self.enabledState == enabled then
-        return;
-    end
+	if self.enabledState == enabled then
+		return;
+	end
 
-    self.enabledState = enabled;
-    if enabled then
-        -- If not the drag flow, start the timer until the radial wheel is shown.
-        if self:GetPingMode() == Enum.PingMode.KeyDown then
-            self:SetCursorPositions();
-            self.radialTimer = C_Timer.NewTimer(self.PingRadialKeyDownDuration, function()
-                self:BeginPendingPing();
-                self.radialTimer = nil;
-            end);
-        end
+	self.enabledState = enabled;
+	if enabled then
+		-- If not the drag flow, start the timer until the radial wheel is shown.
+		if self:GetPingMode() == Enum.PingMode.KeyDown or InputUtil.IsGamepadUIEnabled() then
+			self:SetCursorPositions();
+			self.radialTimer = C_Timer.NewTimer(self.PingRadialKeyDownDuration, function()
+				self:BeginPendingPing();
+				self.radialTimer = nil;
+			end);
+		end
 
-        self:Show();
-    else
-        if self:GetPingMode() == Enum.PingMode.KeyDown then
-            if self.pendingPingInfo then
-                self:EndPendingPing();
-            -- Do not attempt to send a contextual ping if a radial wheel was shown but since cancelled (gone off screen, triggered over invalid target, etc.)
-            elseif not self.pendingPingForceCancelled then
-                -- If no pending ping, send a contextual ping (ping listener keybind was released before the radial wheel was shown).
-                self:SetCursorPositions();
-                PingManager:DeterminePingTargetAndSend(self.checkX, self.checkY, self.startX, self.startY);
-            end
+		self:Show();
+	else
+		if self:GetPingMode() == Enum.PingMode.KeyDown or InputUtil.IsGamepadUIEnabled() then
+			if self.pendingPingInfo then
+				self:EndPendingPing();
+			-- Do not attempt to send a contextual ping if a radial wheel was shown but since cancelled (gone off screen, triggered over invalid target, etc.)
+			elseif not self.pendingPingForceCancelled then
+				-- If no pending ping, send a contextual ping (ping listener keybind was released before the radial wheel was shown).
+				self:SetCursorPositions();
+				PingManager:DeterminePingTargetAndSend(self.checkX, self.checkY, self.startX, self.startY);
+			end
 
-            if self.radialTimer then
-                self.radialTimer:Cancel();
-                self.radialTimer = nil;
-            end
-        else
-            PingListenerFrame:CancelPendingPing();
-        end
+			if self.radialTimer then
+				self.radialTimer:Cancel();
+				self.radialTimer = nil;
+			end
+		else
+			PingListenerFrame:CancelPendingPing();
+		end
 
 		self.cooldownInfo = nil;
-        if self.cooldownTimer then
-            self.cooldownTimer:Cancel();
-            self.cooldownTimer = nil;
-        end
+		if self.cooldownTimer then
+			self.cooldownTimer:Cancel();
+			self.cooldownTimer = nil;
+		end
 
-        self.pendingPingForceCancelled = nil;
+		self.pendingPingForceCancelled = nil;
 		self:Hide();
-    end
+	end
 end
 
 function PingListenerFrameMixin:SetupCooldownTimer()
@@ -249,10 +256,13 @@ function PingListenerFrameMixin:EndPendingPing()
 end
 
 function PingListenerFrameMixin:CancelPendingPing()
-    if self.pendingPingInfo then
-        PingManager:CancelPendingPing();
-        self:ClearPendingPingInfo();
-    end
+	if self.pendingPingInfo then
+		PingManager:CancelPendingPing();
+		self:ClearPendingPingInfo();
+		if (PingFrame.gamepadStickInputFrame) then
+			PingFrame.gamepadStickInputFrame:Hide();
+		end
+	end
 end
 
 function PingListenerFrameMixin:ClearPendingPingInfo()

@@ -383,6 +383,10 @@ function GameEvent.HandleMacroActionForbidden(_dispatcher, _event, arg1)
 end
 
 function GameEvent.HandleStartLootRoll(_dispatcher, _event, arg1, arg2)
+	if InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
 	GroupLootContainer_AddRoll(arg1, arg2);
 end
 
@@ -511,11 +515,20 @@ end
 
 function GameEvent.HandleEnchantSpellSelected(dispatcher, _event)
 	PlaySound(SOUNDKIT.ENCHANTMENT_SELECTED);
-	ItemButtonUtil.OpenAndFilterBags(dispatcher);
-	ItemButtonUtil.OpenAndFilterCharacterFrame();
+	if ItemButtonUtil.ShouldOpenBagsForEnchantSelection() then
+		ItemButtonUtil.OpenAndFilterBags(dispatcher);
+	end
+	if ItemButtonUtil.ShouldOpenCharacterFrameForEnchantSelection() then
+		ItemButtonUtil.OpenAndFilterCharacterFrame();
+		ItemButtonUtil.ConsumePendingItemSelectionSource();
+	end
 end
 
 function GameEvent.HandleUpdateSpellTargetItemContext(_dispatcher, _event)
+	if not C_Spell.TargetSpellIsEnchanting() then
+		ItemButtonUtil.ClearPendingItemSelectionSource();
+	end
+
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
 
@@ -818,11 +831,6 @@ function GameEvent.HandlePlayerEnteringWorld(dispatcher, event, isInitialLogin, 
 		end
 	end
 
-	local pendingLootRollIDs = GetActiveLootRollIDs();
-	for i=1, #pendingLootRollIDs do
-		GroupLootContainer_AddRoll(pendingLootRollIDs[i], C_Loot.GetLootRollDuration(pendingLootRollIDs[i]));
-	end
-
 	if IsBoostTutorialScenario() then
 		BoostTutorial_LoadUI();
 	end
@@ -843,6 +851,8 @@ function GameEvent.HandlePlayerEnteringWorld(dispatcher, event, isInitialLogin, 
 	if C_Housing.IsInsideHouseOrPlot() then
 		HousingControls_LoadUI();
 	end
+
+	GroupLootContainer_RefreshRolls();
 
 	return true;
 end

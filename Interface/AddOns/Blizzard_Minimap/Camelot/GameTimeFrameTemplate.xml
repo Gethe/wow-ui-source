@@ -1,0 +1,57 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="GameTimeFrameTemplate" virtual="true" mixin="GameTimeFrameMixin">
+		<KeyValues>
+			<KeyValue key="mouseoverAddAlpha" type="number" value="0.1"/>
+			<KeyValue key="mousedownAddAlpha" type="number" value="0.2"/>
+		</KeyValues>
+		<Size x="23" y="23"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeKey="$parent.ZoneTextButton" relativePoint="TOPRIGHT" x="-4" y="0"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="GameTimeCalendarInvitesTexture" file="Interface\Calendar\EventNotification" hidden="true">
+					<Size x="28" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="1"/>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.03125" right="0.6484375" top="0.03125" bottom="0.8671875"/>
+				</Texture>
+				<Texture name="GameTimeCalendarInvitesGlow" file="Interface\Calendar\EventNotificationGlow" hidden="true" alphaMode="ADD">
+					<Size x="48" y="48"/>
+					<Anchors>
+						<Anchor point="CENTER">
+							<Offset x="0" y="2"/>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="StateTexture" atlas="ui-hud-minimap-calendar-button" useAtlasSize="true"/>
+				<Texture parentKey="AddTexture" atlas="ui-hud-minimap-calendar-button" useAtlasSize="true" hidden="true"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture name="GameTimeCalendarEventAlarmTexture" file="Interface\Calendar\UI-Calendar-Button-Glow" alphaMode="ADD" hidden="true">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnClick method="OnClick"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+	</Button>
+</Ui>

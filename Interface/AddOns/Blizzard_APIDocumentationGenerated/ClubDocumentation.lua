@@ -1982,6 +1982,7 @@ local Club =
 			},
 		},
 	},
+
 	Predicates =
 	{
 		{

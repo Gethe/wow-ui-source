@@ -33,6 +33,10 @@ function MainHelpPlateButtonMixin:OnMouseUp()
 	self.I:SetPoint("CENTER", 0, 0);
 end
 
+function MainHelpPlateButtonMixin:OnShow()
+	--overridden in HelpPlateOverrides
+end 
+
 function MainHelpPlateButtonMixin:OnHide()
 	HelpPlateTooltip:Hide();
 end
@@ -334,7 +338,7 @@ function HelpPlate.IsShowingTutorialTooltip(helpInfo)
 end
 
 function HelpPlate.ShowTutorialTooltip(helpInfo, mainHelpButton)
-	if Kiosk.IsEnabled() then
+	if Kiosk.IsEnabled() or InputUtil.IsGamepadUIEnabled() then
 		return;
 	end
 

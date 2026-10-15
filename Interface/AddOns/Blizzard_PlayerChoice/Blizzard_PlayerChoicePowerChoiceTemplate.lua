@@ -60,10 +60,13 @@ function PlayerChoicePowerChoiceTemplateMixin:OnEnter()
 
 	GameTooltip_AddNormalLine(GameTooltip, self.optionInfo.description);
 	GameTooltip:Show();
+
+	self:OnOptionEnter();
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:OnLeave()
 	GameTooltip_Hide();
+	self:OnOptionLeave();
 end
 
 function PlayerChoicePowerChoiceTemplateMixin:FadeOut()

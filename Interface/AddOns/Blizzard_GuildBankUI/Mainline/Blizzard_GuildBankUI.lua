@@ -119,6 +119,7 @@ function GuildBankFrameMixin:OnShow()
 	self:UpdateTabard();
 	self:SelectAvailableTab();
 	PlaySound(SOUNDKIT.GUILD_VAULT_OPEN);
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 end
 
 function GuildBankFrameMixin:OnHide()
@@ -128,6 +129,7 @@ function GuildBankFrameMixin:OnHide()
 	StaticPopup_Hide("CONFIRM_BUY_GUILDBANK_TAB");
 	CloseGuildBankFrame();
 	PlaySound(SOUNDKIT.GUILD_VAULT_CLOSE);
+	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 
 	if self.iconDataProvider ~= nil then
 		self.iconDataProvider:Release();

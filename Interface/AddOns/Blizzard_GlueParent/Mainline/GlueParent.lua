@@ -1,10 +1,13 @@
 GLUE_SCREENS = {
 	["login"] = 		{ frame = "AccountLogin", 			playMusic = true,	playAmbience = true },
 	["realmlist"] = 	{ frame = "RealmListUI", 			playMusic = true,	playAmbience = false },
+	["experiencepreset"] = { frame = "ExperiencePreset",		playMusic = true,	playAmbience = false },
 	["charselect"] = 	{ frame = "CharacterSelect",		playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
 	["plunderstorm"] = 	{ frame = "PlunderstormLobbyFrame",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end, allowChat = true, },
 	["charcreate"] =	{ frame = "CharacterCreateFrame",	playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
 	["kioskmodesplash"]={ frame = "KioskModeSplash",		playMusic = true,	playAmbience = false },
+	["superdistrict"] = { frame = "SuperDistrictUI", 		playMusic = true,	playAmbience = false },
+	["wowhack"] = 		{ frame = "CharacterSelect",		playMusic = true,	playAmbience = false, onAttemptShow = function() InitializeCharacterScreenData() end },
 };
 
 GLUE_SECONDARY_SCREENS = {
@@ -19,6 +22,19 @@ GLUE_SECONDARY_SCREENS = {
 
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
 GENERIC_DISCONNECTED_ERROR_CODE = 319;
+
+local function Gamepad_OnScreenHidden(frame)
+	if (SmartNavigation) then
+		GamepadMode.FrameControlsManager:FrameHidden(frame);
+		SmartNavigation:HandlePanelClose(frame);
+	end
+end
+
+local function Gamepad_OnScreenShown(frame)
+	if (SmartNavigation) then
+		GamepadMode.FrameControlsManager:FrameShown(frame);
+	end
+end
 
 local function GlueParent_SetSecondaryScreen(secondaryScreen, contextKey)
 	GlueParent.currentSecondaryScreen = secondaryScreen;
@@ -175,7 +191,9 @@ function GlueParentMixin:OnEvent(event, ...)
 	elseif ( event == "ACTIVE_GAME_MODE_UPDATED" ) then
 		local gameMode = ...;
 		local isPlunderstorm = gameMode == Enum.GameMode.Plunderstorm;
-		WOW_PROJECT_ID = isPlunderstorm and WOW_PROJECT_WOWLABS or WOW_PROJECT_MAINLINE;
+		-- WOW_PROJECT_CAMELOT is only defined when the camelot game type is loaded.
+		local defaultProjectID = WOW_PROJECT_CAMELOT or WOW_PROJECT_MAINLINE;
+		WOW_PROJECT_ID = isPlunderstorm and WOW_PROJECT_WOWLABS or defaultProjectID;
 		local screen = isPlunderstorm and "plunderstorm" or "charselect";
 		GlueParent_SetScreen(screen);
 		C_Log.LogMessage("From ACTIVE_GAME_MODE_UPDATED");
@@ -191,7 +209,8 @@ function GlueParentMixin:OnEvent(event, ...)
 		ScriptedAnimationEffectsUtil.ReloadDB();
 	elseif (event == "KIOSK_ENABLED") then
 		C_AddOns.LoadAddOn("Blizzard_Kiosk");
-		StaticPopup_Show("KIOSK_ENABLED");
+
+		GlueParent_SetScreen("kioskmodesplash");
 	end
 end
 
@@ -200,23 +219,39 @@ end
 -- =============================================================
 
 function GlueParent_IsScreenValid(screen)
-	local auroraState, connectedToWoW, wowConnectionState, hasRealmList = C_Login.GetState();
+	local loginState = C_Login.GetState();
 	if ( screen == "plunderstorm" or screen == "charselect" or screen == "charcreate" or screen == "kioskmodesplash" ) then
-		return auroraState == LE_AURORA_STATE_NONE and (connectedToWoW or wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING) and not hasRealmList;
+		local isNormalAuroraState = (loginState.auroraState == LE_AURORA_STATE_NONE);
+		local connectionHappening = (loginState.connectedToWoW or loginState.wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING);
+		local pendingRealmSelect = (not loginState.hasRealmList or loginState.keepingCharacterListOnRealmJoin); -- We aren't pending if we were trying to keep around the undelete character list
+		local superDistrictChosen = (not loginState.superDistrictChoicePending);
+		return isNormalAuroraState and connectionHappening and pendingRealmSelect and superDistrictChosen;
 	elseif ( screen == "realmlist" ) then
-		return hasRealmList;
+		return loginState.hasRealmList and not loginState.superDistrictChoicePending;
 	elseif ( screen == "login" ) then
-		return not connectedToWoW and not hasRealmList;
+		return not loginState.connectedToWoW and not loginState.hasRealmList and not loginState.superDistrictChoicePending;
+	elseif ( screen == "superdistrict" ) then
+		return loginState.superDistrictChoicePending and loginState.auroraState == LE_AURORA_STATE_NONE and (loginState.connectedToWoW or loginState.wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING);
+	elseif ( screen == "experiencepreset" ) then
+		return loginState.auroraState == LE_AURORA_STATE_NONE and (loginState.connectedToWoW or loginState.wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING) and not loginState.hasRealmList and not loginState.superDistrictChoicePending and not loginState.hasSelectedExperiencePreset;
 	else
 		return false;
 	end
 end
 
 function GlueParent_GetBestScreen()
-	local auroraState, connectedToWoW, wowConnectionState, hasRealmList = C_Login.GetState();
-	if ( hasRealmList ) then
+	local loginState = C_Login.GetState();
+	if ( loginState.superDistrictChoicePending and not loginState.waitingForRuleSets ) then
+		return "superdistrict";
+	elseif ( loginState.hasRealmList ) then
 		return "realmlist";
-	elseif ( connectedToWoW ) then
+	elseif ( loginState.connectedToWoW ) then
+		if IsKioskGlueEnabled() then
+			return "kioskmodesplash";
+		end
+		if not loginState.hasSelectedExperiencePreset then
+			return "experiencepreset";
+		end
 		local screenName = C_GameRules.GetGameModeGlueScreenName() or "charselect";
 		return screenName;
 	else
@@ -240,11 +275,11 @@ end
 
 local currentlyShowingErrorID = nil;
 function GlueParent_UpdateDialogs()
-	local auroraState, connectedToWoW, wowConnectionState, hasRealmList, waitingForRealmList = C_Login.GetState();
+	local loginState = C_Login.GetState();
 	local errorID;
-	if ( auroraState == LE_AURORA_STATE_WAITING_FOR_NETWORK ) then
+	if ( loginState.auroraState == LE_AURORA_STATE_WAITING_FOR_NETWORK ) then
 		StaticPopup_Show("CANCEL", LOGIN_STATE_WAITFORNETWORK)
-	elseif ( auroraState == LE_AURORA_STATE_CONNECTING ) then
+	elseif ( loginState.auroraState == LE_AURORA_STATE_CONNECTING or (loginState.auroraState == LE_AURORA_STATE_CONNECTED and loginState.superDistrictChoicePending and GlueParent.currentScreen ~= "superdistrict") ) then
 		local isQueued, queuePosition, estimatedSeconds = C_Login.GetLogonQueueInfo();
 		if ( isQueued ) then
 			local queueMessage;
@@ -260,7 +295,7 @@ function GlueParent_UpdateDialogs()
 		else
 			StaticPopup_Show("CANCEL", LOGIN_STATE_CONNECTING);
 		end
-	elseif ( auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
+	elseif ( loginState.auroraState == LE_AURORA_STATE_NONE and C_Login.GetLastError() ) then
 		local errorCategory, localizedString, debugString, errorCodeString;
 		errorCategory, errorID, localizedString, debugString, errorCodeString = C_Login.GetLastError();
 
@@ -345,11 +380,13 @@ function GlueParent_UpdateDialogs()
 
 			EventRegistry:TriggerEvent("GlueParent.OnLoginError");
 		end
-	elseif (  waitingForRealmList ) then
+	elseif (  loginState.waitingForRuleSets ) then
+		StaticPopup_Show("RULE_SETS_IN_PROGRESS");
+	elseif (  loginState.waitingForRealmList ) then
 		StaticPopup_Show("REALM_LIST_IN_PROGRESS");
-	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING ) then
+	elseif ( loginState.wowConnectionState == LE_WOW_CONNECTION_STATE_CONNECTING ) then
 		StaticPopup_Show("CANCEL", GAME_SERVER_LOGIN);
-	elseif ( wowConnectionState == LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
+	elseif ( loginState.wowConnectionState == LE_WOW_CONNECTION_STATE_IN_QUEUE ) then
 		local waitPosition, waitMinutes, hasFCM = C_Login.GetWaitQueueInfo();
 
 		local queueString;
@@ -370,6 +407,10 @@ function GlueParent_UpdateDialogs()
 	else
 		-- JS_TODO: make it so this only cancels state dialogs, like "Connecting"
 		StaticPopup_HideAllExcept("RETRIEVING_CHARACTER_LIST");
+
+		if(not loginState.hasSelectedExperiencePreset) then
+			StaticPopup_Hide("RETRIEVING_CHARACTER_LIST");
+		end
 	end
 
 	if not errorID then
@@ -413,7 +454,9 @@ local function GlueParent_ChangeScreen(screenInfo, screenTable, oldScreen)
 	--Hide all other screens
 	for key, info in pairs(screenTable) do
 		if ( info ~= screenInfo and _G[info.frame] ) then
-			_G[info.frame]:Hide();
+			local frame = _G[info.frame];
+			Gamepad_OnScreenHidden(frame);
+			frame:Hide();
 		end
 	end
 
@@ -421,7 +464,9 @@ local function GlueParent_ChangeScreen(screenInfo, screenTable, oldScreen)
 	GlueParent_UpdateScreenSound(screenInfo);
 
 	--Actually show this screen
-	_G[screenInfo.frame]:Show();
+	local frameToShow = _G[screenInfo.frame];
+	frameToShow:Show();
+	Gamepad_OnScreenShown(frameToShow);
 end
 
 function GlueParent_GetCurrentScreen()
@@ -479,7 +524,9 @@ local function GlueParent_CloseSecondaryScreenInternal(openingNewScreen)
 			GlueParent_UpdateScreenSound(GLUE_SCREENS[primaryScreen]);
 		end
 
-		_G[screenInfo.frame]:Hide();
+		local frame = _G[screenInfo.frame];
+		frame:Hide();
+		Gamepad_OnScreenHidden(frame);
 
 		--Show the original screen if we hid it. Have to do this last in case it opens a new secondary screen.
 		if (screenInfo.fullScreen) then
@@ -511,7 +558,9 @@ function GlueParent_OpenSecondaryScreen(screen, contextKey)
 			if ( GlueParent.currentScreen ) then
 				local mainScreenInfo = GLUE_SCREENS[GlueParent.currentScreen];
 				if ( mainScreenInfo ) then
-					_G[mainScreenInfo.frame]:Hide();
+					local mainScreenFrame = _G[mainScreenInfo.frame];
+					mainScreenFrame:Hide();
+					Gamepad_OnScreenHidden(mainScreenFrame);
 				end
 			end
 		else
@@ -615,7 +664,7 @@ function SetLoginScreenModel(model)
 		if lowResBG and highResBG then
 			local background = GetLoginScreenBackground(highResBG, lowResBG);
 			model:SetModel(background, true);
-			if expansionLevel == LE_EXPANSION_LEGION then
+			if expansionLevel <= LE_EXPANSION_LEGION then
 				model:SetUseGBuffer(true);
 			end
 		end
@@ -643,63 +692,6 @@ local function UpdateLighting(model)
     	model:SetFogColor(fogData.r, fogData.g, fogData.b);
     end
 end
-
-local glueScreenTags =
-{
-	["charselect"] =
-	{
-		["PANDAREN"] = "PANDARENCHARACTERSELECT",
-	},
-
-	["charcreate"] =
-	{
-		-- Classes
-		["DEATHKNIGHT"] = true,
-		["DEMONHUNTER"] = true,
-
-		-- Races
-		["PANDAREN"] = true,
-
-		-- Factions
-		["HORDE"] = true,
-		["ALLIANCE"] = true,
-		["NEUTRAL"] = true,
-	},
-
-	["default"] =
-	{
-		-- Classes
-		["DEATHKNIGHT"] = true,
-		["DEMONHUNTER"] = true,
-
-		-- Races
-		["HUMAN"] = true,
-		["ORC"] = true,
-		["TROLL"] = true,
-		["DWARF"] = true,
-		["GNOME"] = true,
-		["TAUREN"] = true,
-		["SCOURGE"] = true,
-		["NIGHTELF"] = true,
-		["DRAENEI"] = true,
-		["BLOODELF"] = true,
-		["GOBLIN"] = true,
-		["WORGEN"] = true,
-		["VOIDELF"] = true,
-		["LIGHTFORGEDDRAENEI"] = true,
-		["NIGHTBORNE"] = true,
-		["HIGHMOUNTAINTAUREN"] = true,
-		["DARKIRONDWARF"] = true,
-		["MAGHARORC"] = true,
-		["ZANDALARITROLL"] = true,
-		["KULTIRAN"] = true,
-		["MECHAGNOME"] = true,
-		["VULPERA"] = true,
-		["DRACTHYR"] = true,
-		["EARTHENDWARF"] = true,
-		["HARRONIR"] = true,
-	},
-};
 
 local function GetGlueTagFromKey(subTable, key)
 	if ( subTable and key ) then
@@ -745,7 +737,7 @@ local function UpdateGlueTag()
 			class = classInfo.fileName;
 		end
 		local raceID = C_CharacterCreation.GetSelectedRace();
-		race = C_CharacterCreation.GetNameForRace(raceID);
+		race = select(2, C_CharacterCreation.GetNameForRace(raceID));
 		faction = C_CharacterCreation.GetFactionForRace(raceID);
 	end
 

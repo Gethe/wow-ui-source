@@ -18,7 +18,7 @@
 			<KeyValue key="playLoopingSoundFX" value="false" type="boolean"/>
 		</KeyValues>
 		<Frames>
-			<Frame parentKey="ShopRays" >				
+			<Frame parentKey="ShopRays" >
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
@@ -86,7 +86,7 @@
 		<Size x="180" y="30"/>
 		<NormalFont style="GameFontNormalLarge"/>
 		<HighlightFont style="GameFontHighlightLarge"/>
-		<DisabledFont style="GameFontDisableLarge"/>		
+		<DisabledFont style="GameFontDisableLarge"/>
 		<Scripts>
 			<OnClick method="OnClick" />
 			<OnEnter method="OnEnter" />
@@ -115,7 +115,7 @@
 							</Anchors>
 						</FontString>
 					</Layer>
-				</Layers>				
+				</Layers>
 			</Frame>
 			<Frame parentKey="ShopLoading">
 				<Size x="128" y="128"/>
@@ -143,7 +143,7 @@
 							<Anchors>
 								<Anchor point="TOP" relativePoint="CENTER" x="-290" y="275"/>
 							</Anchors>
-						</Texture>						
+						</Texture>
 						<Texture parentKey="Sign" atlas="shop-loading-sign" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOP" relativePoint="CENTER" x="-288" y="248"/>
@@ -158,7 +158,7 @@
 							<Anchors>
 								<Anchor point="CENTER" x="-299.5" y="250"/>
 							</Anchors>
-						</Texture>						
+						</Texture>
 						<Texture parentKey="Glow" alpha="0.25" alphaMode="ADD" atlas="shop-loading-sign-glow" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="CENTER" x="-360" y="650"/>
@@ -262,7 +262,7 @@
 						<Rotation childKey="Chain03-back" duration="1" order="1" startDelay="1" smoothing="IN_OUT" degrees="1">
 							<Origin point="TOP"/>
 						</Rotation>
-					</AnimationGroup>					
+					</AnimationGroup>
 				</Animations>
 			</Frame>
 			<Frame parentKey="Background" setAllPoints="true">
@@ -293,7 +293,7 @@
 					</AnimationGroup>
 				</Animations>
 			</Frame>
-			<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" />							
+			<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate" setAllPoints="true" />
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad" />
@@ -301,7 +301,7 @@
 			<OnHide method="OnHide" />
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="CatalogShopUnavailableScreenTemplate" mixin="CatalogShopUnavailableScreenMixin" virtual="true" setAllPoints="true">
 		<Frames>
 			<Frame parentKey="Background" setAllPoints="true">
@@ -331,7 +331,7 @@
 			<OnHide method="OnHide" />
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="CarouselControlTemplate" mixin="CarouselControlMixin" virtual="true">
 		<Frames>
 			<Button parentKey="CarouselLeftButton">
@@ -363,15 +363,33 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="layoutType" value="CatalogShopCarousel" type="string"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="GamepadFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CarouselLabelContainer" relativePoint="LEFT" x="-7" y="0"/>
+				</Anchors>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad" />
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 
-	
-	
+
+
 	<Button name="ImageCarouselElementTemplate" mixin="ImageCarouselElementTemplateMixin" virtual="true">
 		<Size x="138" y="78"/>
 		<Layers>
@@ -414,7 +432,7 @@
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="0"/>
 					</Anchors>
-				</Texture>				
+				</Texture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -429,7 +447,7 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="ImageCarouselControlTemplate" mixin="ImageCarouselControlMixin" virtual="true">
 		<Size x="553" y="80"/>
 		<Frames>
@@ -483,7 +501,7 @@
 			<!--<OnClick method="OnClick" />-->
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ProductRefundContainerTemplate" mixin="ProductRefundContainerMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="RefundTextFrame">
@@ -509,7 +527,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Button parentKey="RefundButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" text="CATALOG_SHOP_REFUND">
+			<Button parentKey="RefundButton" inherits="CatalogShopButtonTemplate" frameLevel="2000" text="CATALOG_SHOP_REFUND">
 				<Size x="141" y="50"/>
 				<Anchors>
 					<Anchor point="TOP" relativeKey="$parent.RefundTextFrame" relativePoint="BOTTOM" x="0" y="0"/>
@@ -523,7 +541,7 @@
 			<OnHide method="OnHide" />
 		</Scripts>
 	</Frame>
-	
+
 	<Button name="NavigationBarButtonTemplate" mixin="NavigationBarButtonMixin" virtual="true">
 		<Size x="40" y="40"/>
 		<NormalTexture parentKey="NormalTexture" atlas="shop-header-menu-bg-divider" useAtlasSize="true" >
@@ -626,6 +644,20 @@
 					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ScrollForwards" relativePoint="BOTTOMLEFT" x="0" y="0"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="GamepadPreviousCategoryIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_LEFT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+			</Frame>
+			<Frame parentKey="GamepadNextCategoryIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_SHOULDER_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+			</Frame>
 		</Frames>
 	</Frame>
 
@@ -711,7 +743,7 @@
 		<Frames>
 			<Frame parentKey="ProductsHeader" inherits="VerticalLayoutFrame" mixin="ProductsHeaderMixin" hyperlinksEnabled="true" enableMouse="true">
 				<KeyValues>
-					<KeyValue key="fixedWidth" value="752" type="string"/>
+					<KeyValue key="fixedWidth" value="752" type="number"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -753,7 +785,7 @@
 							<Scripts>
 								<OnEnter method="OnEnter"/>
 								<OnLeave method="OnLeave"/>
-							</Scripts>							
+							</Scripts>
 						</FontString>
 						<FontString parentKey="LegalDisclaimerText" inherits="GameFontNormal" justifyH="LEFT" text="CATALOG_SHOP_DISCLAIMER_ALL_PRODUCTS">
 							<Size x="544" y="0"/>
@@ -769,7 +801,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			
+
 			<Frame parentKey="ProductsScrollBoxContainer" setAllPoints="true" frameLevel="1000">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.ProductsHeader" relativePoint="BOTTOMLEFT" x="0" y="0" />
@@ -830,7 +862,7 @@
 	<Frame name="CatalogShopProductDetailsContainerFrameTemplate" mixin="CatalogShopProductDetailsContainerFrameMixin" movable="false" resizable="false" enableMouse="false" clampedToScreen="true" virtual="true">
 		<Size x="540" />
 		<Frames>
-			<Button parentKey="BackButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" text="CATALOG_SHOP_BACK" >
+			<Button parentKey="BackButton" inherits="CatalogShopButtonTemplate" frameLevel="2000" text="CATALOG_SHOP_BACK" >
 				<Size x="141" y="50"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="0" y="-10"/>
@@ -855,7 +887,50 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
-	
+
+	<Frame name="CatalogShopProductBYOBContainerFrameTemplate" mixin="CatalogShopProductBYOBContainerFrameMixin" movable="false" resizable="false" enableMouse="false" clampedToScreen="true" virtual="true">
+		<Size x="540" />
+		<Frames>
+			<Button parentKey="BackButton" inherits="CatalogShopButtonTemplate" frameLevel="2000" text="CATALOG_SHOP_BACK" >
+				<Size x="141" y="50"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="-10"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="catalogShopOnClickMethod" value="HideProductBYOB" type="string"/>
+				</KeyValues>
+			</Button>
+			<Frame parentKey="BYOBProductContainerFrame" inherits="CatalogShopProductContainerFrameTemplate" mixin="BYOBProductContainerFrameMixin" frameLevel="500">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.BackButton" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="52" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnShow method="OnShow" />
+					<OnHide method="OnHide" />
+				</Scripts>
+			</Frame>
+			<Button parentKey="BYOBPurchaseButton" inherits="CatalogShopRedGoldButtonTemplate" frameLevel="2000" >
+				<Size x="290" y="50"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="30"/>
+				</Anchors>
+				<KeyValues>
+					<KeyValue key="catalogShopOnClickMethod" value="PurchaseBYOB" type="string"/>
+				</KeyValues>
+				<Frames>
+					<Frame parentKey="Spinner" inherits="SpinnerTemplate" alpha="0.5" hidden="true">
+						<Size x="18" y="18"/>
+					</Frame>
+				</Frames>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnShow method="OnShow" />
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+
 	<Frame name="ModelSceneFrameTemplate" frameLevel="0" virtual="true">
 		<Size x="10" y="10"/>
 		<Layers>

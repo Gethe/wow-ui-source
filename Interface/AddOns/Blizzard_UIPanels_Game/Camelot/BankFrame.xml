@@ -1,0 +1,124 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<ItemButton name="BankItemButtonBagTemplate" mixin="BankItemButtonBagMixin" virtual="true" scale=".75">
+		<NormalTexture atlas="bank-frame-bag-slotframe"/>
+		<Layers>
+			<Layer>
+				<Texture name="$parentTexture" parentKey="HighlightTexture" alphaMode="ADD" file="Interface\Buttons\CheckButtonHilight" setAllPoints="true" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="DisabledOverlay" setAllPoints="true" hidden="true" atlas="bankslot-icon-lock"/>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true" atlas="bank-frame-bag-slot-bg"/>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnDragStart method="Pickup"/>
+			<OnReceiveDrag method="OnClickInternal"/>
+		</Scripts>
+	</ItemButton>
+
+	<ItemButton name="CamelotBankItemButtonTemplate" inherits="BankItemButtonTemplate" mixin="CamelotBankPanelItemButtonMixin" virtual="true">
+		<NormalTexture atlas="bank-frame-item-slotframe"/>
+		<KeyValues>
+			<KeyValue key="characterBankBackgroundAtlas" value="bags-item-bankslot64" type="string"/>
+		</KeyValues>
+	</ItemButton>
+
+	<Frame name="BankPageTabTemplate" inherits="LargeSideTabButtonTemplate" mixin="BankPageTabMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="fillToInterior" value="true" type="boolean"/>
+			<KeyValue key="iconTexture" value="Interface/ICONS/INV_SideTab_Bank_c60" type="string"/>
+			<KeyValue key="iconTexture1" value="Interface/ICONS/INV_SideTab_Bank_c60" type="string"/>
+			<KeyValue key="iconTexture2" value="Interface/ICONS/ACHIEVEMENT_GUILDPERK_MOBILEBANKING" type="string"/>
+			<KeyValue key="iconTexture3" value="Interface/ICONS/TRADE_ARCHAEOLOGY_CHESTOFTINYGLASSANIMALS" type="string"/>
+			<KeyValue key="iconTexture4" value="Interface/ICONS/Ability_Racial_PackHobgoblin" type="string"/>
+			
+			<KeyValue key="accountBankIconTexture1" value="Interface/ICONS/UI_Warbands" type="string"/>
+			<KeyValue key="accountBankIconTexture2" value="Interface/ICONS/UI_Warbands" type="string"/>
+			<KeyValue key="accountBankIconTexture3" value="Interface/ICONS/UI_Warbands" type="string"/>
+			<KeyValue key="accountBankIconTexture4" value="Interface/ICONS/UI_Warbands" type="string"/>
+		</KeyValues>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="BankFrame" inherits="BankFrameTemplate" mixin="BankFrameMixin">
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BagCost" inherits="GameFontNormalMed3" text="COSTS_LABEL" justifyH="RIGHT">
+					<Size y="12"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="101" y="45"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="BagText" inherits="GameFontNormalLarge2" text="BAGSLOTTEXT_COLON">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT">
+							<Offset>
+								<AbsDimension x="43" y="80"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<Texture atlas="bank-divider" useAtlasSize="true" scale="0.48">
+					<Anchors>
+						<Anchor point="BOTTOM" y="220"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="BankPanel" parentKey="BankPanel" useParentLevel="true" inherits="BankPanelTemplate">
+				<KeyValues>
+					<KeyValue key="itemButtonTemplate" value="CamelotBankItemButtonTemplate" type="string"/>
+					<KeyValue key="maximumTotalSlotsPerPage" value="88" type="number"/>
+					<KeyValue key="useUniformItemSlotSpacing" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="480" y="460"/>
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="MoneyDisplay" inherits="SmallMoneyFrameTemplate" mixin="BankBagCostMoneyDisplayMixin">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.$parent.BagCost" relativePoint="TOPRIGHT" x="8"/>
+						</Anchors>
+						<Scripts>
+							<OnLoad method="OnLoad"/>
+							<OnShow method="OnShow"/>
+							<OnHide method="OnHide"/>
+							<OnEvent method="OnEvent"/>
+						</Scripts>
+					</Frame>
+					
+					<Button parentKey="PurchaseButton" name="BankFramePurchaseButton" inherits="UIPanelButtonTemplate" virtual="true" text="BANKSLOTPURCHASE" mixin="BankFramePurchaseButtonMixin">
+						<Size x="124" y="21"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.MoneyDisplay" relativePoint="TOPRIGHT" x="8" y="4"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

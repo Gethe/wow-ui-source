@@ -8,4 +8,36 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
+
+	<Frame name="KioskModeSplashEnd" mixin="KioskModeSplashEndMixin" enableMouse="true" toplevel="true" setAllPoints="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true" nonBlocking="false"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="BodyText1" inherits="Game40Font_Shadow2" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="330"/>
+					</Anchors>
+					<Color color="NORMAL_FONT_COLOR"/>
+				</FontString>
+				<FontString parentKey="FooterText" inherits="Game22Font" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="50"/>
+					</Anchors>
+					<Color color="GRAY_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture atlas="Kiosk-Mode-Divider-c60" scale=".7" useAtlasSize="true" nonBlocking="false">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.BodyText1" relativePoint="BOTTOM" x="-13" y="95"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
 </Ui>

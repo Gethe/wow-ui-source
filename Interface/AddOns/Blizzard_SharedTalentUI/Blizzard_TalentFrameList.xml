@@ -10,6 +10,7 @@
 			<KeyValue key="isVertical" value="true" type="boolean"/>
 			<KeyValue key="centerAlign" value="false" type="boolean"/>
 			<KeyValue key="buttonSpacing" value="20" type="number"/>
+			<KeyValue key="refreshOnShow" value="true" type="boolean"/>
 		</KeyValues>
 	</Frame>
 </Ui>

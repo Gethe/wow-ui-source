@@ -2,9 +2,9 @@ CHARACTER_FACING_INCREMENT = 2;
 
 MOVING_TEXT_OFFSET = 12;
 DEFAULT_TEXT_OFFSET = 0;
-AUTO_DRAG_TIME = 0.5;				-- in seconds
+AUTO_DRAG_TIME = 0.5;                -- in seconds
 
-CHARACTER_UNDELETE_COOLDOWN = 0;	-- in seconds
+CHARACTER_UNDELETE_COOLDOWN = 0;    -- in seconds
 CHARACTER_UNDELETE_COOLDOWN_REMAINING = 0; -- in seconds
 
 PAID_CHARACTER_CUSTOMIZATION = 1;
@@ -16,22 +16,14 @@ local ACCOUNT_SAVE_IS_LOADED = false;
 CAN_BUY_RESULT_FOUND = false;
 TOKEN_COUNT_UPDATED = false;
 
-local characterCopyRegions = {
-	[1] = NORTH_AMERICA,
-	[2] = KOREA,
-	[3] = EUROPE,
-	[4] = TAIWAN,
-	[5] = CHINA,
-};
-
 CharacterSelectFrameMixin = { };
 function CharacterSelectFrameMixin:OnLoad()
 	self.LeftBlackBar:SetPoint("TOPLEFT", nil);
 	self.RightBlackBar:SetPoint("TOPRIGHT", nil);
 	self.TopBlackBar:SetPoint("TOPLEFT", nil);
 
-    self.createIndex = 0;
-    self.selectedIndex = 0;
+	self.createIndex = 0;
+	self.selectedIndex = 0;
 	self.selectLast = false;
 	self.backFromCharCreate = false;
 	self.waitingforCharacterList = true;
@@ -44,7 +36,8 @@ function CharacterSelectFrameMixin:OnLoad()
     self:RegisterEvent("STORE_STATUS_CHANGED");
     self:RegisterEvent("CHARACTER_UNDELETE_STATUS_CHANGED");
     self:RegisterEvent("CLIENT_FEATURE_STATUS_CHANGED");
-	self:RegisterEvent("CHARACTER_COPY_STATUS_CHANGED")
+	self:RegisterEvent("CHARACTER_COPY_STATUS_CHANGED");
+	self:RegisterEvent("CHARACTER_UNDELETE_STARTED");
     self:RegisterEvent("CHARACTER_UNDELETE_FINISHED");
     self:RegisterEvent("TOKEN_CAN_VETERAN_BUY_UPDATE");
     self:RegisterEvent("TOKEN_DISTRIBUTIONS_UPDATED");
@@ -61,7 +54,7 @@ function CharacterSelectFrameMixin:OnLoad()
     self:RegisterEvent("LOGIN_STATE_CHANGED");
 	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
 	self:RegisterEvent("TRIAL_STATUS_UPDATE");
-    self:RegisterEvent("CHARACTER_UPGRADE_UNREVOKE_RESULT");
+	self:RegisterEvent("CHARACTER_UPGRADE_UNREVOKE_RESULT");
 	self:RegisterEvent("MIN_EXPANSION_LEVEL_UPDATED");
 	self:RegisterEvent("MAX_EXPANSION_LEVEL_UPDATED");
 	self:RegisterEvent("INITIAL_HOTFIXES_APPLIED");
@@ -88,220 +81,230 @@ function CharacterSelectFrameMixin:OnLoad()
 
 	-- If UI is reloaded while at character select, make sure timerunning addon gets loaded if necessary
 	CharacterSelect_UpdateTimerunning();
+
+	self:RegisterForTransitions();
 end
 
 function CharacterSelectFrameMixin:OnShow()
-    InitializeCharacterScreenData();
-    SetInCharacterSelect(true);
-    CharacterSelect_ResetVeteranStatus();
+	InitializeCharacterScreenData();
+	SetInCharacterSelect(true);
+	CharacterSelect_ResetVeteranStatus();
 
 	CharacterSelectListUtil.BuildCharIndexToIDMapping();
 
-    -- request account data times from the server (so we know if we should refresh keybindings, etc...)
-    CheckCharacterUndeleteCooldown();
+	-- request account data times from the server (so we know if we should refresh keybindings, etc...)
+	CheckCharacterUndeleteCooldown();
 
-    UpdateAddonButton();
+	EventUtil.ContinueOnAddOnLoaded("Blizzard_AddOnList", function()
+		UpdateAddonButton();
+	end);
 
 	CharacterSelectUtil.SetAutoSwitchRealm(false);
 
-    local FROM_LOGIN_STATE_CHANGE = false;
-    CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
+	local FROM_LOGIN_STATE_CHANGE = false;
+	CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
 
 	-- If for any reason we had the UI disabled, turn it back on.
 	CharacterSelectUI:ResetVisibilityState();
 
-    -- Gameroom billing stuff (For Korea and China only)
-    if ( SHOW_GAMEROOM_BILLING_FRAME ) then
-        local paymentPlan, hasFallBackBillingMethod, isGameRoom = GetBillingPlan();
-        if ( paymentPlan == 0 or ( ( paymentPlan == 1 or paymentPlan == 3 ) and ONLY_SHOW_GAMEROOM_BILLING_FRAME_ON_PERSONAL_TIME ) ) then
-            -- No payment plan or should only show when using consumption time
-            GameRoomBillingFrame:Hide();
-        else
-            local billingTimeLeft = GetBillingTimeRemaining();
-            -- Set default text for the payment plan
-            local billingText = _G["BILLING_TEXT"..paymentPlan];
-            if ( paymentPlan == 1 ) then
-                -- Recurring account
-                billingTimeLeft = ceil(billingTimeLeft/(60 * 24));
-                if ( billingTimeLeft == 1 ) then
-                    billingText = BILLING_TIME_LEFT_LAST_DAY;
-                end
-            elseif ( paymentPlan == 2 ) then
-                -- Free account
-                if ( billingTimeLeft < (24 * 60) ) then
-                    billingText = format(BILLING_FREE_TIME_EXPIRE, format(MINUTES_ABBR, billingTimeLeft));
-                end
-            elseif ( paymentPlan == 3 ) then
-                -- Fixed but not recurring
-                if ( isGameRoom == 1 ) then
-                    if ( billingTimeLeft <= 30 ) then
-                        billingText = BILLING_GAMEROOM_EXPIRE;
-                    else
-                        billingText = format(BILLING_FIXED_IGR, MinutesToTime(billingTimeLeft, 1));
-                    end
-                else
-                    -- personal fixed plan
-                    if ( billingTimeLeft < (24 * 60) ) then
-                        billingText = BILLING_FIXED_LASTDAY;
-                    else
-                        billingText = format(billingText, MinutesToTime(billingTimeLeft));
-                    end
-                end
-            elseif ( paymentPlan == 4 ) then
-                -- Usage plan
-                if ( isGameRoom == 1 ) then
-                    -- game room usage plan
-                    if ( billingTimeLeft <= 600 ) then
-                        billingText = BILLING_GAMEROOM_EXPIRE;
-                    else
-                        billingText = BILLING_IGR_USAGE;
-                    end
-                else
-                    -- personal usage plan
-                    if ( billingTimeLeft <= 30 ) then
-                        billingText = BILLING_TIME_LEFT_30_MINS;
-                    else
-                        billingText = format(billingText, billingTimeLeft);
-                    end
-                end
-            end
-            -- If fallback payment method add a note that says so
-            if ( hasFallBackBillingMethod == 1 ) then
-                billingText = billingText.."\n\n"..BILLING_HAS_FALLBACK_PAYMENT;
-            end
-            GameRoomBillingFrameText:SetText(billingText);
-            GameRoomBillingFrame:SetHeight(GameRoomBillingFrameText:GetHeight() + 26);
-            GameRoomBillingFrame:Show();
+	-- Gameroom billing stuff (For Korea and China only)
+	if ( SHOW_GAMEROOM_BILLING_FRAME ) then
+		local paymentPlan, hasFallBackBillingMethod, isGameRoom = GetBillingPlan();
+		if ( paymentPlan == 0 or ( ( paymentPlan == 1 or paymentPlan == 3 ) and ONLY_SHOW_GAMEROOM_BILLING_FRAME_ON_PERSONAL_TIME ) ) then
+			-- No payment plan or should only show when using consumption time
+			GameRoomBillingFrame:Hide();
+		else
+			local billingTimeLeft = GetBillingTimeRemaining();
+			-- Set default text for the payment plan
+			local billingText = _G["BILLING_TEXT"..paymentPlan];
+			if ( paymentPlan == 1 ) then
+				-- Recurring account
+				billingTimeLeft = ceil(billingTimeLeft/(60 * 24));
+				if ( billingTimeLeft == 1 ) then
+					billingText = BILLING_TIME_LEFT_LAST_DAY;
+				end
+			elseif ( paymentPlan == 2 ) then
+				-- Free account
+				if ( billingTimeLeft < (24 * 60) ) then
+					billingText = format(BILLING_FREE_TIME_EXPIRE, format(MINUTES_ABBR, billingTimeLeft));
+				end
+			elseif ( paymentPlan == 3 ) then
+				-- Fixed but not recurring
+				if ( isGameRoom == 1 ) then
+					if ( billingTimeLeft <= 30 ) then
+						billingText = BILLING_GAMEROOM_EXPIRE;
+					else
+						billingText = format(BILLING_FIXED_IGR, MinutesToTime(billingTimeLeft, 1));
+					end
+				else
+					-- personal fixed plan
+					if ( billingTimeLeft < (24 * 60) ) then
+						billingText = BILLING_FIXED_LASTDAY;
+					else
+						billingText = format(billingText, MinutesToTime(billingTimeLeft));
+					end
+				end
+			elseif ( paymentPlan == 4 ) then
+				-- Usage plan
+				if ( isGameRoom == 1 ) then
+					-- game room usage plan
+					if ( billingTimeLeft <= 600 ) then
+						billingText = BILLING_GAMEROOM_EXPIRE;
+					else
+						billingText = BILLING_IGR_USAGE;
+					end
+				else
+					-- personal usage plan
+					if ( billingTimeLeft <= 30 ) then
+						billingText = BILLING_TIME_LEFT_30_MINS;
+					else
+						billingText = format(billingText, billingTimeLeft);
+					end
+				end
+			end
+			-- If fallback payment method add a note that says so
+			if ( hasFallBackBillingMethod == 1 ) then
+				billingText = billingText.."\n\n"..BILLING_HAS_FALLBACK_PAYMENT;
+			end
+			GameRoomBillingFrameText:SetText(billingText);
+			GameRoomBillingFrame:SetHeight(GameRoomBillingFrameText:GetHeight() + 26);
+			GameRoomBillingFrame:Show();
 			CharacterSelect_UpdateGameRoomBillingFrameAnchors();
-        end
-    end
+		end
+	end
 
-    --Clear out the addons selected item
+	--Clear out the addons selected item
 	AddonList_ClearCharacterDropdown();
 
 	CharacterSelect_UpdateLogo();
 	CharSelectAccountUpgradePanel:EvaluateShownState();
 
-	if KioskFrame then
-		KioskFrame:HandleCharacterSelectShown();
-	end
+	-- character templates
+	CharacterTemplatesFrame_Update();
 
-    -- character templates
-    CharacterTemplatesFrame_Update();
-
-    PlayersOnServer_Update();
+	PlayersOnServer_Update();
 
 	CharacterSelectUI:UpdateStoreEnabled();
 
-    CharacterServicesMaster_UpdateServiceButton();
+	CharacterServicesMaster_UpdateServiceButton();
 
-    C_StoreSecure.GetPurchaseList();
-    C_StoreSecure.GetProductList();
-    C_StoreGlue.UpdateVASPurchaseStates();
+	C_StoreSecure.GetPurchaseList();
+	C_StoreSecure.GetProductList();
+	C_StoreGlue.UpdateVASPurchaseStates();
 
-    CharacterSelect_ConditionallyLoadAccountSaveUI();
+	CharacterSelect_ConditionallyLoadAccountSaveUI();
 
 	CharacterSelectServerAlertFrame:UpdateEnabled();
 
-    CharacterSelect_CheckVeteranStatus();
+	CharacterSelect_CheckVeteranStatus();
 
-    if (C_StoreGlue.GetDisconnectOnLogout()) then
-        C_StoreSecure.SetDisconnectOnLogout(false);
-        StaticPopup_HideAll();
-        C_Login.DisconnectFromServer();
-    end
+	if (C_StoreGlue.GetDisconnectOnLogout()) then
+		C_StoreSecure.SetDisconnectOnLogout(false);
+		StaticPopup_HideAll();
+		C_Login.DisconnectFromServer();
+	end
 
 	if not self.showSocialContract then
 		C_SocialContractGlue.GetShouldShowSocialContract();
 	end
 
 	self.CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetExpanded(not g_characterSelectToolTrayCollapsed);
-	GeneralDockManager:Hide();
-	ChatFrame1:Hide();
+
+	EventUtil.ContinueOnAddOnLoaded("Blizzard_ChatFrameBase", function()
+		GeneralDockManager:Hide();
+		ChatFrame1:Hide();
+	end);
 
 	-- Show timerunning first time dialog if necessary
 	CharacterSelect_UpdateTimerunning();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
 end
 
 function CharacterSelectFrameMixin:OnHide()
-    CharacterDeleteDialog:Hide();
+	CharacterDeleteDialog:Hide();
 	StaticPopup_Hide("FORCE_RENAME_CHARACTER");
-    AccountReactivate_CloseDialogs();
+	AccountReactivate_CloseDialogs();
 
-    if ( DeclensionFrame ) then
-        DeclensionFrame:Hide();
-    end
+	if ( DeclensionFrame ) then
+		DeclensionFrame:Hide();
+	end
 
-    PromotionFrame_Hide();
-    C_AuthChallenge.Cancel();
-    if ( StoreFrame ) then
-        StoreFrame:Hide();
-    end
-    CopyCharacterFrame:Hide();
-    if ( AddonDialog:IsShown() ) then
-        AddonDialog:Hide();
-        HasShownAddonOutOfDateDialog = false;
-    end
+	PromotionFrame_Hide();
+	C_AuthChallenge.Cancel();
+	if ( StoreFrame ) then
+		StoreFrame:Hide();
+	end
+	CopyCharacterFrame:Hide();
+	if ( AddonDialog:IsShown() ) then
+		AddonDialog:Hide();
+		HasShownAddonOutOfDateDialog = false;
+	end
 
-    if ( self.undeleting ) then
-        CharacterSelect_EndCharacterUndelete();
-    end
+	if ( self.undeleting ) then
+		CharacterSelect_EndCharacterUndelete();
+	end
 
 	if not CharacterCreateFrame:HasService() then
-   		EndCharacterServicesFlow(true);
+		EndCharacterServicesFlow(true);
 	end
 
 	SocialContractFrame:Hide();
 
 	GlueTooltip:Hide();
 
-    AccountReactivate_CloseDialogs();
-    SetInCharacterSelect(false);
+	AccountReactivate_CloseDialogs();
+	SetInCharacterSelect(false);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
 end
 
 function CharacterSelect_UpdateState(fromLoginState)
 	if not GetServerName() then
 		CharacterSelect_SetSelectedCharacterName("");
-    end
+	end
 
 	if (fromLoginState == CharacterSelectUtil.GetAutoSwitchRealm()) then
-        if ( IsConnectedToServer() ) then
-            if (fromLoginState) then
-				if not (KioskFrame and KioskFrame:HandleAutoLoginToRealm()) then
-                    CharacterSelectUI:Hide();
-                    CharacterSelectUI:Show();
+		if ( IsConnectedToServer() ) then
+			if (fromLoginState) then
+					CharacterSelectUI:Hide();
+					CharacterSelectUI:Show();
 				end
-            end
 			CharacterSelectListUtil.GetCharacterListUpdate();
-        else
-            UpdateCharacterList();
-        end
-    end
+		else
+			UpdateCharacterList();
+		end
+	end
 end
 
 function CharacterSelect_SetRetrievingCharacters(retrieving, success)
-    if ( retrieving ~= CharacterSelect.retrievingCharacters ) then
-        CharacterSelect.retrievingCharacters = retrieving;
+	if ( retrieving ~= CharacterSelect.retrievingCharacters ) then
+		CharacterSelect.retrievingCharacters = retrieving;
 
-        if ( retrieving ) then
+		if ( retrieving ) then
 			-- Do not stop showing the login queue dialog if currently showing.
-			if ( not StaticPopup_FindVisible("QUEUED_WITH_FCM") and not StaticPopup_FindVisible("QUEUED_NORMAL") ) then
+			if ( CharacterSelectUtil.ShouldShowRetrievingCharacterList() ) then
 				StaticPopup_Show("RETRIEVING_CHARACTER_LIST");
 			end
-        else
-            if ( success ) then
-                StaticPopup_Hide("RETRIEVING_CHARACTER_LIST");
-            else
-                StaticPopup_Show("OKAY", CHAR_LIST_FAILED);
-            end
-        end
+		else
+			if ( success ) then
+				StaticPopup_Hide("RETRIEVING_CHARACTER_LIST");
+				CharacterSelect_UpdateGameModeSplashScreen();
+			else
+				StaticPopup_Show("OKAY", CHAR_LIST_FAILED);
+			end
+		end
 
-        CharacterSelect_UpdateButtonState();
-    end
+		CharacterSelect_UpdateButtonState();
+	end
 end
 
 function CharacterSelect_IsRetrievingCharacterList()
-    return CharacterSelect.retrievingCharacters;
+	return CharacterSelect.retrievingCharacters;
 end
 
 function CharacterSelect_IsVisible()
@@ -313,59 +316,61 @@ function CharacterSelect_IsUndeleting()
 end
 
 function CharacterSelectFrameMixin:OnUpdate(elapsed)
-    if ( self.undeleteFailed ) then
-        if (not StaticPopup_IsAnyDialogShown()) then
+	if ( self.undeleteFailed ) then
+		if (not StaticPopup_IsAnyDialogShown()) then
 			if (self.undeleteFailed == "name") then
 				StaticPopup_Show("UNDELETE_NAME_TAKEN");
+			elseif (self.undeleteFailed == "regionalname") then
+				StaticPopup_Show("UNDELETE_NAME_TAKEN_REGIONAL");
 			elseif (self.undeleteFailed == "dracthyr") then
 				StaticPopup_Show("UNDELETE_DRACTHYR_LEVEL_REQUIREMENT");
 			else
 				StaticPopup_Show("UNDELETE_FAILED");
 			end
-            self.undeleteFailed = false;
-        end
-    end
+			self.undeleteFailed = false;
+		end
+	end
 
-    if ( self.undeleteSucceeded ) then
-        if (not StaticPopup_IsAnyDialogShown()) then
-            StaticPopup_Show(self.undeletePendingRename and "UNDELETE_SUCCEEDED_NAME_TAKEN" or "UNDELETE_SUCCEEDED");
-            self.undeleteSucceeded = false;
-            self.undeletePendingRename = false;
-        end
-    end
+	if ( self.undeleteSucceeded ) then
+		if (not StaticPopup_IsAnyDialogShown()) then
+			StaticPopup_Show(self.undeletePendingRename and "UNDELETE_SUCCEEDED_NAME_TAKEN" or "UNDELETE_SUCCEEDED");
+			self.undeleteSucceeded = false;
+			self.undeletePendingRename = false;
+		end
+	end
 
-    if ( C_CharacterServices.HasQueuedUpgrade() or C_StoreGlue.GetVASProductReady() ) then
-        CharacterServicesMaster_OnCharacterListUpdate();
-    end
+	if ( C_CharacterServices.HasQueuedUpgrade() or C_StoreGlue.GetVASProductReady() ) then
+		CharacterServicesMaster_OnCharacterListUpdate();
+	end
 
-    if (StoreFrame_WaitingForCharacterListUpdate()) then
-        StoreFrame_OnCharacterListUpdate();
-    end
+	if (StoreFrame_WaitingForCharacterListUpdate()) then
+		StoreFrame_OnCharacterListUpdate();
+	end
 
 	StaticPopup_CheckQueuedDialogs();
 end
 
 function CharacterSelectFrameMixin:OnKeyDown(key)
 	local handled = false;
-    if key == "ESCAPE" then
-        if not CharacterSelectUI:GetVisibilityState() then
+	if key == "ESCAPE" then
+		if not CharacterSelectUI:GetVisibilityState() then
 			CharacterSelectUI:ToggleVisibilityState();
 			return false;
-        elseif C_Login.IsLauncherLogin() then
+		elseif C_Login.IsLauncherLogin() then
 			GlueMenuFrameUtil.ToggleMenu();
 			return false;
-        elseif CharSelectServicesFlowFrame:IsShown() then
+		elseif CharSelectServicesFlowFrame:IsShown() then
 			if CharSelectServicesFlowFrame.MinimizedFrame then
 				CharSelectServicesFlow_Minimize();
 			else
 				EndCharacterServicesFlow(false);
 			end
 			return false;
-        elseif CopyCharacterFrame:IsShown() then
-            CopyCharacterFrame:Hide();
+		elseif CopyCharacterFrame:IsShown() then
+			CopyCharacterFrame:Hide();
 			return false;
-        elseif CharacterSelect.undeleting then
-            CharacterSelect_EndCharacterUndelete();
+		elseif CharacterSelect.undeleting then
+			CharacterSelect_EndCharacterUndelete();
 			return false;
 		elseif GlobalGlueContextMenu_IsShown() then
 			GlobalGlueContextMenu_Release();
@@ -373,106 +378,104 @@ function CharacterSelectFrameMixin:OnKeyDown(key)
 		elseif AccountStoreFrame and AccountStoreFrame:IsShown() then
 			AccountStoreUtil.SetAccountStoreShown(false);
 			return false;
-        end
-    elseif key == "ENTER" then
-        if CharacterSelect_AllowedToEnterWorld() then
+		end
+	elseif key == "ENTER" then
+		if CharacterSelect_AllowedToEnterWorld() then
 			CharacterSelect_EnterWorld();
 			return false;
-        end
-    elseif key == "UP" or key == "LEFT" then
-        if not (CharSelectServicesFlowFrame:IsShown() and CharSelectServicesFlowFrame.DisableButtons) then
+		end
+	elseif key == "UP" or key == "LEFT" then
+		if not (CharSelectServicesFlowFrame:IsShown() and CharSelectServicesFlowFrame.DisableButtons) then
 			CharacterSelectScrollUp_OnClick();
 			return false;
-        end
-    elseif ( key == "DOWN" or key == "RIGHT" ) then
-        if not (CharSelectServicesFlowFrame:IsShown() and CharSelectServicesFlowFrame.DisableButtons) then
+		end
+	elseif ( key == "DOWN" or key == "RIGHT" ) then
+		if not (CharSelectServicesFlowFrame:IsShown() and CharSelectServicesFlowFrame.DisableButtons) then
 			CharacterSelectScrollDown_OnClick();
 			return false;
-        end
+		end
 	elseif key == "Z" and IsAltKeyDown() then
 		CharacterSelectUI:ToggleVisibilityState();
 		return false;
-    end
+	end
 
 	return true;
 end
 
 function CharacterSelectFrameMixin:OnEvent(event, ...)
-    if ( event == "CHARACTER_LIST_UPDATE" ) then
+	if ( event == "CHARACTER_LIST_UPDATE" ) then
 		if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 			self.waitingforCharacterList = false;
 			return;
 		end
 
-        PromotionFrame_AwaitingPromotion();
+		PromotionFrame_AwaitingPromotion();
 
-        local listSize = ...;
-        if listSize then
+		local listSize = ...;
+		if listSize then
 			CharacterSelectListUtil.BuildCharIndexToIDMapping(listSize);
-        end
+		end
 
-        if GetNumCharacters() == 0 then
+		if GetNumCharacters() == 0 then
 			local screenName = C_GameRules.GetGameModeGlueScreenName();
 			if self.undeleting then
 				CharacterSelect_EndCharacterUndelete();
 				self.undeleteNoCharacters = true;
 				return;
 			elseif (not screenName and not self.backFromCharCreate and not self.autoRealmSwap) then
-				if KioskFrame and KioskFrame:HandleCharacterListUpdate() then
-					return;
+				local loginState = C_Login.GetState();
+				if(loginState.hasSelectedExperiencePreset and not IsKioskGlueEnabled()) then
+					GlueParent_SetScreen("charcreate");
 				end
-
-				GlueParent_SetScreen("charcreate");
 				CharacterSelect_ShowTimerunningChoiceWhenActive();
 				return;
 			end
 		end
 
-        self.backFromCharCreate = false;
+		self.backFromCharCreate = false;
 
-        if (self.hasPendingTrialBoost) then
-            KioskMode_SetWaitingOnTrial(true);
-            C_CharacterServices.TrialBoostCharacter(self.trialBoostGuid, self.trialBoostFactionID, self.trialBoostSpecID);
-            CharacterSelect_SetPendingTrialBoost(false);
-        end
+		if (self.hasPendingTrialBoost) then
+			KioskMode_SetWaitingOnTrial(true);
+			C_CharacterServices.TrialBoostCharacter(self.trialBoostGuid, self.trialBoostFactionID, self.trialBoostSpecID);
+			CharacterSelect_SetPendingTrialBoost(false);
+		end
 
-        if (self.undeleteNoCharacters) then
-            StaticPopup_Show("UNDELETE_NO_CHARACTERS");
-            self.undeleteNoCharacters = false;
-        end
+		if (self.undeleteNoCharacters) then
+			StaticPopup_Show("UNDELETE_NO_CHARACTERS");
+			self.undeleteNoCharacters = false;
+		end
 
 		-- If we get here then any account conversion should have completed.
 		-- Clear the dialog if showing as a fallback in case the usual close message gets lost to prevent confusion.
 		StaticPopup_Hide("ACCOUNT_CONVERSION_DISPLAY");
 
 		self.waitingforCharacterList = false;
-        UpdateCharacterList();
-        UpdateAddonButton();
+		UpdateCharacterList();
+		UpdateAddonButton();
 
 		local characterGUID = GetCharacterGUID(CharacterSelectListUtil.GetCharIDFromIndex(self.selectedIndex));
 		if characterGUID then
 			local basicInfo = GetBasicCharacterInfo(characterGUID);
 			local timerunningSeasonID = GetCharacterTimerunningSeasonID(characterGUID);
-            CharacterSelect_SetSelectedCharacterName(basicInfo.name, timerunningSeasonID);
+			CharacterSelect_SetSelectedCharacterName(basicInfo.fullName, timerunningSeasonID);
 		else
 			CharacterSelect_SetSelectedCharacterName("");
 		end
 
 		CharacterSelectCharacterFrame:ProcessPendingGroupActions();
 
-        KioskMode_CheckAutoRealm();
-        KioskMode_CheckEnterWorld();
-        CharacterServicesMaster_OnCharacterListUpdate();
-    elseif ( event == "UPDATE_SELECTED_CHARACTER" ) then
+		KioskMode_CheckAutoRealm();
+		CharacterServicesMaster_OnCharacterListUpdate();
+	elseif ( event == "UPDATE_SELECTED_CHARACTER" ) then
 		local charID = ...;
 
 		CharacterSelectListUtil.CheckBuildCharIndexToIDMapping();
 
 		if ( charID == 0 ) then
-		    CharacterSelect_SetSelectedCharacterName("");
+			CharacterSelect_SetSelectedCharacterName("");
 		else
 			local index = CharacterSelectListUtil.GetIndexFromCharID(charID);
-		    self.selectedIndex = index;
+			self.selectedIndex = index;
 
 			local noCreate = true;
 			CharacterSelect_SelectCharacter(self.selectedIndex, noCreate);
@@ -481,7 +484,7 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 			if guid then
 				local basicInfo = GetBasicCharacterInfo(guid);
 				local timerunningSeasonID = guid and GetCharacterTimerunningSeasonID(guid);
-				CharacterSelect_SetSelectedCharacterName(basicInfo.name, timerunningSeasonID);
+				CharacterSelect_SetSelectedCharacterName(basicInfo.fullName, timerunningSeasonID);
 			end
 		end
 		CharacterSelectCharacterFrame:UpdateCharacterSelection();
@@ -497,106 +500,115 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		if elementData then
 			CharacterSelectListUtil.ScrollToElement(elementData, ScrollBoxConstants.AlignNearest);
 		end
-    elseif ( event == "FORCE_RENAME_CHARACTER" ) then
-		StaticPopup_HideAll();
+	elseif ( event == "FORCE_RENAME_CHARACTER" ) then
 		local message = ...;
-		StaticPopup_Show("FORCE_RENAME_CHARACTER", CharacterSelectUtil.GetForceRenameCharacterInstructions(_G[message]));
-    elseif ( event == "CHAR_RENAME_IN_PROGRESS" ) then
-        StaticPopup_Show("OKAY", CHAR_RENAME_IN_PROGRESS);
-    elseif ( event == "STORE_STATUS_CHANGED" ) then
+		local instructions = CharacterSelectUtil.GetForceRenameCharacterInstructions(_G[message]);
+		StaticPopup_HideAll();
+
+		if C_CharacterCreation.AreRegionalUniqueNamesEnabled() then
+			ForceRenameFullNameDialog:ShowWithInstructions(instructions);
+		else    
+			StaticPopup_Show("FORCE_RENAME_CHARACTER", instructions);
+		end
+	elseif ( event == "CHAR_RENAME_IN_PROGRESS" ) then
+		StaticPopup_Show("OKAY", CHAR_RENAME_IN_PROGRESS);
+	elseif ( event == "STORE_STATUS_CHANGED" ) then
 		CharacterSelectUI:UpdateStoreEnabled();
-    elseif ( event == "CHARACTER_UNDELETE_STATUS_CHANGED") then
-        local enabled, onCooldown, cooldown, remaining = GetCharacterUndeleteStatus();
+	elseif ( event == "CHARACTER_UNDELETE_STATUS_CHANGED") then
+		local enabled, onCooldown, cooldown, remaining = GetCharacterUndeleteStatus();
 
-        CHARACTER_UNDELETE_COOLDOWN = cooldown;
-        CHARACTER_UNDELETE_COOLDOWN_REMAINING = remaining;
+		CHARACTER_UNDELETE_COOLDOWN = cooldown;
+		CHARACTER_UNDELETE_COOLDOWN_REMAINING = remaining;
 
-        CharSelectUndeleteCharacterButton:SetEnabled(enabled and not onCooldown);
-        if (not enabled) then
-            CharSelectUndeleteCharacterButton:SetDisabledTooltip(UNDELETE_TOOLTIP_DISABLED);
-        elseif (onCooldown) then
-            local timeStr = SecondsToTime(remaining, false, true, 1, false);
+		CharSelectUndeleteCharacterButton:SetEnabled(enabled and not onCooldown);
+		if (not enabled) then
+			CharSelectUndeleteCharacterButton:SetDisabledTooltip(UNDELETE_TOOLTIP_DISABLED);
+		elseif (onCooldown) then
+			local timeStr = SecondsToTime(remaining, false, true, 1, false);
 			CharSelectUndeleteCharacterButton:SetDisabledTooltip(UNDELETE_TOOLTIP_COOLDOWN:format(timeStr));
-        end
+		end
 	elseif ( event == "CLIENT_FEATURE_STATUS_CHANGED" ) then
 		CharSelectAccountUpgradePanel:EvaluateShownState();
 		CopyCharacterButton:UpdateButtonState();
 		UpdateCharacterList();
 	elseif ( event == "CHARACTER_COPY_STATUS_CHANGED" ) then
 		CopyCharacterButton:UpdateButtonState();
-    elseif ( event == "CHARACTER_UNDELETE_FINISHED" ) then
-        StaticPopup_Hide("UNDELETING_CHARACTER");
-        CharacterSelect_EndCharacterUndelete();
-        local result, guid = ...;
-
-        if ( result == LE_CHARACTER_UNDELETE_RESULT_OK ) then
-            self.undeleteGuid = guid;
-            self.undeleteFailed = nil;
-        else
-            self.undeleteGuid = nil;
-            if ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_NAME_TAKEN_BY_THIS_ACCOUNT ) then
-                self.undeleteFailed = "name";
+	elseif (event == "CHARACTER_UNDELETE_STARTED" ) then
+		StaticPopup_Show("UNDELETING_CHARACTER");
+	elseif ( event == "CHARACTER_UNDELETE_FINISHED" ) then
+		StaticPopup_Hide("UNDELETING_CHARACTER");
+		CharacterSelect_EndCharacterUndelete();
+		local result, guid = ...;
+		if ( result == LE_CHARACTER_UNDELETE_RESULT_OK ) then
+			self.undeleteGuid = guid;
+			self.undeleteFailed = nil;
+		else
+			self.undeleteGuid = nil;
+			if ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_NAME_TAKEN_BY_THIS_ACCOUNT ) then
+				self.undeleteFailed = "name";       
+			elseif ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_NAME_TAKEN_BY_THIS_ACCOUNT_REGIONAL ) then
+				self.undeleteFailed = "regionalname";
 			elseif ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_DRACTHYR_LEVEL_REQUIREMENT ) then
 				self.undeleteFailed = "dracthyr";
-            else
-                self.undeleteFailed = "other";
-            end
-        end
-    elseif ( event == "TOKEN_DISTRIBUTIONS_UPDATED" ) then
-        local result = ...;
-        -- TODO: Use lua enum
-        if (result == 1) then
-            TOKEN_COUNT_UPDATED = true;
-            CharacterSelect_CheckVeteranStatus();
-        end
-    elseif ( event == "TOKEN_CAN_VETERAN_BUY_UPDATE" ) then
-        local result = ...;
-        CAN_BUY_RESULT_FOUND = result;
-        CharacterSelect_CheckVeteranStatus();
-    elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
-        local result = ...;
-        CharacterSelect_CheckVeteranStatus();
+			else
+				self.undeleteFailed = "other";
+			end
+		end
+	elseif ( event == "TOKEN_DISTRIBUTIONS_UPDATED" ) then
+		local result = ...;
+		-- TODO: Use lua enum
+		if (result == 1) then
+			TOKEN_COUNT_UPDATED = true;
+			CharacterSelect_CheckVeteranStatus();
+		end
+	elseif ( event == "TOKEN_CAN_VETERAN_BUY_UPDATE" ) then
+		local result = ...;
+		CAN_BUY_RESULT_FOUND = result;
+		CharacterSelect_CheckVeteranStatus();
+	elseif ( event == "TOKEN_MARKET_PRICE_UPDATED" ) then
+		local result = ...;
+		CharacterSelect_CheckVeteranStatus();
 	elseif event == "VAS_CHARACTER_STATE_CHANGED" then
 		CharacterSelect_UpdateIfUpdateIsNotPending();
 	elseif event == "STORE_PRODUCTS_UPDATED" then
 		CharacterSelect_UpdateIfUpdateIsNotPending();
-    elseif event == "CHARACTER_DELETION_RESULT" then
-        local success, errorToken = ...;
-        if success then
-            StaticPopup_HideAll();
-        else
-            StaticPopup_Show("OKAY", _G[errorToken]);
-        end
-    elseif ( event == "CHARACTER_DUPLICATE_LOGON" ) then
-        local errorCode = ...;
-        StaticPopup_Show("OKAY", _G[errorCode]);
-    elseif ( event == "CHARACTER_LIST_RETRIEVING" ) then
-        CharacterSelect_SetRetrievingCharacters(true);
-    elseif ( event == "CHARACTER_LIST_RETRIEVAL_RESULT" ) then
-        local success = ...;
-        CharacterSelect_SetRetrievingCharacters(false, success);
-    elseif ( event == "DELETED_CHARACTER_LIST_RETRIEVING" ) then
-        CharacterSelect_SetRetrievingCharacters(true);
-    elseif ( event == "DELETED_CHARACTER_LIST_RETRIEVAL_RESULT" ) then
-        local success = ...;
-        CharacterSelect_SetRetrievingCharacters(false, success);
-    elseif ( event == "CHARACTER_UPGRADE_UNREVOKE_RESULT" ) then
-        -- TODO: Add specific error messaging, but for now just show dialog that will open the help url
-        local errorCode = ...
-        if errorCode ~= 0 then
-            local urlIndex = GetCurrentRegionName() == "CN" and 36 or 35;
+	elseif event == "CHARACTER_DELETION_RESULT" then
+		local success, errorToken = ...;
+		if success then
+			StaticPopup_HideAll();
+		else
+			StaticPopup_Show("OKAY", _G[errorToken]);
+		end
+	elseif ( event == "CHARACTER_DUPLICATE_LOGON" ) then
+		local errorCode = ...;
+		StaticPopup_Show("OKAY", _G[errorCode]);
+	elseif ( event == "CHARACTER_LIST_RETRIEVING" ) then
+		CharacterSelect_SetRetrievingCharacters(true);
+	elseif ( event == "CHARACTER_LIST_RETRIEVAL_RESULT" ) then
+		local success = ...;
+		CharacterSelect_SetRetrievingCharacters(false, success);
+	elseif ( event == "DELETED_CHARACTER_LIST_RETRIEVING" ) then
+		CharacterSelect_SetRetrievingCharacters(true);
+	elseif ( event == "DELETED_CHARACTER_LIST_RETRIEVAL_RESULT" ) then
+		local success = ...;
+		CharacterSelect_SetRetrievingCharacters(false, success);
+	elseif ( event == "CHARACTER_UPGRADE_UNREVOKE_RESULT" ) then
+		-- TODO: Add specific error messaging, but for now just show dialog that will open the help url
+		local errorCode = ...
+		if errorCode ~= 0 then
+			local urlIndex = GetCurrentRegionName() == "CN" and 36 or 35;
 			local text2 = nil;
-            StaticPopup_Show("OKAY_WITH_URL_INDEX", ERROR_MANUAL_UNREVOKE_FAILURE, text2, urlIndex);
-        end
-    elseif ( event == "VAS_CHARACTER_QUEUE_STATUS_UPDATE" ) then
-        local guid, minutes = ...;
+			StaticPopup_Show("OKAY_WITH_URL_INDEX", ERROR_MANUAL_UNREVOKE_FAILURE, text2, urlIndex);
+		end
+	elseif ( event == "VAS_CHARACTER_QUEUE_STATUS_UPDATE" ) then
+		local guid, minutes = ...;
 		CharacterSelect_OnVASCharacterQueueStatusUpdate(guid, minutes);
-    elseif ( event == "LOGIN_STATE_CHANGED" ) then
+	elseif ( event == "LOGIN_STATE_CHANGED" ) then
 		if C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm then
 			return;
 		end
-        local FROM_LOGIN_STATE_CHANGE = true;
-        CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
+		local FROM_LOGIN_STATE_CHANGE = true;
+		CharacterSelect_UpdateState(FROM_LOGIN_STATE_CHANGE);
 	elseif ( event == "TRIAL_STATUS_UPDATE" ) then
 		CharacterSelect_UpdateLogo();
 		CharSelectAccountUpgradePanel:EvaluateShownState();
@@ -609,10 +621,10 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		if self.showSocialContract and GlueParent_GetCurrentScreen() == "charselect" then
 			CharacterSelect_UpdateIfUpdateIsNotPending();
 		end
-    elseif ( event == "ACCOUNT_SAVE_ENABLED_UPDATE" ) then
-        CharacterSelect_ConditionallyLoadAccountSaveUI();
-    elseif (event == "ACCOUNT_LOCKED_POST_SAVE_UPDATE" ) then
-        CharacterSelect_UpdateIfUpdateIsNotPending();
+	elseif ( event == "ACCOUNT_SAVE_ENABLED_UPDATE" ) then
+		CharacterSelect_ConditionallyLoadAccountSaveUI();
+	elseif (event == "ACCOUNT_LOCKED_POST_SAVE_UPDATE" ) then
+		CharacterSelect_UpdateIfUpdateIsNotPending();
 	elseif (event == "REALM_HIDDEN_INFO_UPDATE") then
 		local text = ...;
 		if(text) then
@@ -654,7 +666,7 @@ end
 function CharacterSelect_SetSelectedCharacterName(name, timerunningSeasonID)
 	local offsetX = nil;
 	local offsetY = 2;
-    CharSelectCharacterName:SetText(CharacterSelectUtil.FormatCharacterName(name, timerunningSeasonID, offsetX, offsetY));
+	CharSelectCharacterName:SetText(CharacterSelectUtil.FormatCharacterName(name, timerunningSeasonID, offsetX, offsetY));
 
 	if timerunningSeasonID then
 		CharSelectCharacterName:EnableMouse(true);
@@ -675,6 +687,25 @@ function CharacterSelect_SetSelectedCharacterName(name, timerunningSeasonID)
 		CharSelectCharacterName:SetScript("OnEnter", nil);
 		CharSelectCharacterName:SetScript("OnLeave", nil);
 	end
+end
+
+function CharacterSelect_PendingGameModeOperations()
+	GameModeInfoDisplay:TryPendingCreateCharacter();
+end
+
+function CharacterSelect_UpdateGameModeSplashScreen()
+	if not GameModeInfoDisplay then
+		C_AddOns.LoadAddOn("Blizzard_GameModeInfoDisplay");
+	end
+
+	local gameModeForSplashScreen = C_GameRules.GetActiveGameModeForSplashScreen() or GameModeInfoDisplay.gameModeForSplashScreen;
+	if not gameModeForSplashScreen then
+		GameModeInfoDisplay:SetShown(false);
+		return;
+	end
+
+	GameModeInfoDisplay:SetShown(C_GameRules.ShouldShowGameModeSplashScreen());
+	CharacterSelect_PendingGameModeOperations();
 end
 
 function CharacterSelect_UpdateTimerunning()
@@ -700,10 +731,10 @@ function CharacterSelect_OnVASCharacterQueueStatusUpdate(guid, minutes)
 end
 
 function CharacterSelect_SetPendingTrialBoost(hasPendingTrialBoost, factionID, specID, guid)
-    CharacterSelect.hasPendingTrialBoost = hasPendingTrialBoost;
-    CharacterSelect.trialBoostFactionID = factionID;
-    CharacterSelect.trialBoostSpecID = specID;
-    CharacterSelect.trialBoostGuid = guid;
+	CharacterSelect.hasPendingTrialBoost = hasPendingTrialBoost;
+	CharacterSelect.trialBoostFactionID = factionID;
+	CharacterSelect.trialBoostSpecID = specID;
+	CharacterSelect.trialBoostGuid = guid;
 end
 
 function CharacterSelect_CheckDialogStates()
@@ -740,9 +771,9 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelect.showSocialContract = false;
 	end
 
-    if CharacterSelect.undeleteChanged then
-        CharacterSelect.undeleteChanged = false;
-    end
+	if CharacterSelect.undeleteChanged then
+		CharacterSelect.undeleteChanged = false;
+	end
 
 	local includeEmptySlots = true;
 	local numChars = GetNumCharacters(includeEmptySlots);
@@ -771,28 +802,28 @@ function UpdateCharacterList(skipSelect)
 		CharacterSelect.selectedIndex = tonumber(GetCVar("lastCharacterIndex")) + 1;
 	end
 
-    CharacterSelect_UpdateButtonState();
+	CharacterSelect_UpdateButtonState();
 
 	CharacterSelectUI:UpdateStoreEnabled();
 
-    CharacterSelect_ResetVeteranStatus();
-    CharacterSelect_CheckVeteranStatus();
+	CharacterSelect_ResetVeteranStatus();
+	CharacterSelect_CheckVeteranStatus();
 
-    CharacterSelect.createIndex = 0;
+	CharacterSelect.createIndex = 0;
 
-    CharacterSelectUI.VisibilityFramesContainer.CharacterList:SetCharacterCreateEnabled(false);
-    CharSelectUndeleteCharacterButton:Hide();
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList:SetCharacterCreateEnabled(false);
+	CharSelectUndeleteCharacterButton:Hide();
 	CharacterTemplatesFrame.CreateTemplateButton:Hide();
 
-    local connected = IsConnectedToServer();
-    if CanCreateCharacter() and not CharacterSelect.undeleting then
-        CharacterSelect.createIndex = numChars + 1;
-        if connected then
+	local connected = IsConnectedToServer();
+	if CanCreateCharacter() and not CharacterSelect.undeleting then
+		CharacterSelect.createIndex = numChars + 1;
+		if connected then
 			CharacterSelectUI.VisibilityFramesContainer.CharacterList:SetCharacterCreateEnabled(true);
-            CharSelectUndeleteCharacterButton:Show();
+			CharSelectUndeleteCharacterButton:SetShown(InputUtil.IsMKBUIEnabled());
 			CharacterTemplatesFrame.CreateTemplateButton:Show();
-        end
-    end
+		end
+	end
 
 	local numCharsNoEmptySlots = GetNumCharacters();
 	if numCharsNoEmptySlots == 0 and not skipSelect then
@@ -813,14 +844,14 @@ function UpdateCharacterList(skipSelect)
 		return;
 	end
 
-    if CharacterSelect.selectedIndex == 0 or CharacterSelect.selectedIndex > numChars then
-        CharacterSelect.selectedIndex = 1;
-    end
+	if CharacterSelect.selectedIndex == 0 or CharacterSelect.selectedIndex > numChars then
+		CharacterSelect.selectedIndex = 1;
+	end
 
-    if not skipSelect then
+	if not skipSelect then
 		local noCreate = true;
-        CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
-    end
+		CharacterSelect_SelectCharacter(CharacterSelect.selectedIndex, noCreate);
+	end
 end
 
 function CharacterSelect_ShowTimerunningChoiceWhenActive()
@@ -834,7 +865,7 @@ function CharacterSelect_ShowTimerunningChoiceWhenActive()
 end
 
 function CharacterSelect_SelectCharacter(index, noCreate)
- 	if ( index == CharacterSelect.createIndex ) then
+	if ( index == CharacterSelect.createIndex ) then
 		if ( not noCreate and not CharacterSelectUtil.IsAccountLocked()) then
 			PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
 			CharacterSelectCharacterFrame:ClearSearch();
@@ -859,16 +890,16 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 
 		SelectCharacter(selectedCharacterID);
 
-        -- Update the text of the EnterWorld button based on the type of character that's selected, default to "enter world"
-        local text = ENTER_WORLD;
+		-- Update the text of the EnterWorld button based on the type of character that's selected, default to "enter world"
+		local text = ENTER_WORLD;
 
 		local characterInfo = CharacterSelectUtil.GetCharacterInfoTable(selectedCharacterID);
 		if not characterInfo then
 			return; --character selection is zero on startup.
 		end
 
-        if characterInfo.isTrialBoostCompleted then
-            text = ENTER_WORLD_UNLOCK_TRIAL_CHARACTER;
+		if characterInfo.isTrialBoostCompleted then
+			text = ENTER_WORLD_UNLOCK_TRIAL_CHARACTER;
 		elseif characterInfo.revokedCharacterUpgrade then
 			text = ENTER_WORLD_UNLOCK_REVOKED_CHARACTER_UPGRADE;
 		elseif IsRPEBoostEligible(selectedCharacterID) then
@@ -877,9 +908,9 @@ function CharacterSelect_SelectCharacter(index, noCreate)
 				local offsetX, offsetY, width, height = 0, 0, 290, 100;
 				GlowEmitterFactory:Show(CharSelectEnterWorldButton, GlowEmitterMixin.Anims.GreenGlow, offsetX, offsetY, width, height);
 			end
-        end
+		end
 
-        CharSelectEnterWorldButton:SetText(text);
+		CharSelectEnterWorldButton:SetText(text);
 
 		if characterInfo.boostInProgress == false and (not CharacterServicesFlow_IsShowing() or not CharacterServicesMaster.flow:UsesSelector()) then
 			EndCharacterServicesFlow(false);
@@ -946,79 +977,81 @@ function CharacterSelect_Exit()
 end
 
 function CharacterSelect_AccountOptions()
-    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ACCT_OPTIONS);
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ACCT_OPTIONS);
 end
 
 function CharacterSelect_TechSupport()
-    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ACCT_OPTIONS);
-    LaunchURL(TECH_SUPPORT_URL);
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ACCT_OPTIONS);
+	LaunchURL(TECH_SUPPORT_URL);
 end
 
 function CharacterSelect_Delete()
 	if (CharacterSelectUtil.IsAccountLocked()) then
-        return;
-    end
+		return;
+	end
 
-    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_DEL_CHARACTER);
-    if ( CharacterSelect.selectedIndex > 0 ) then
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_DEL_CHARACTER);
+	if ( CharacterSelect.selectedIndex > 0 ) then
 		CharacterSelectListUtil.SaveCharacterOrder();
-        CharacterDeleteDialog:Show();
-    end
+		CharacterDeleteDialog:Show();
+	end
 end
 
 function CharacterSelect_AllowedToEnterWorld()
 	local isAccountLocked = CharacterSelectUtil.IsAccountLocked();
 
-    if (isAccountLocked) then
-        return false;
-    elseif (GetNumCharacters() == 0) then
-        return false;
-    elseif (CharacterSelect.undeleting) then
-        return false;
-    elseif (AccountReactivationInProgressDialog:IsShown()) then
-        return false;
-    elseif (GoldReactivateConfirmationDialog:IsShown()) then
-        return false;
-    elseif (TokenReactivateConfirmationDialog:IsShown()) then
-        return false;
-    elseif (CharSelectServicesFlowFrame:ShouldDisableButtons()) then
-        return false;
+	if (isAccountLocked) then
+		return false;
+	elseif (GetNumCharacters() == 0) then
+		return false;
+	elseif (CharacterSelect.undeleting) then
+		return false;
+	elseif (AccountReactivationInProgressDialog:IsShown()) then
+		return false;
+	elseif (GoldReactivateConfirmationDialog:IsShown()) then
+		return false;
+	elseif (TokenReactivateConfirmationDialog:IsShown()) then
+		return false;
+	elseif (CharSelectServicesFlowFrame:ShouldDisableButtons()) then
+		return false;
 	elseif (Kiosk.IsEnabled() and (CharacterSelect.hasPendingTrialBoost or KioskMode_IsWaitingOnTrial())) then
 		return false;
-    end
+	elseif (IsNameReservationOnly()) then
+		return false;
+	end
 
-    local guid = GetCharacterGUID(GetCharacterSelection());
+	local guid = GetCharacterGUID(GetCharacterSelection());
 	if not guid then
 		return false;
 	end
 	local serviceInfo = GetServiceCharacterInfo(guid);
 	local trialBoostUnavailable = (serviceInfo.isExpansionTrialCharacter and (serviceInfo.isTrialBoostCompleted or not IsExpansionTrial())) or (serviceInfo.isTrialBoost and (serviceInfo.isTrialBoostCompleted or not C_CharacterServices.IsTrialBoostEnabled()));
-    if (serviceInfo.boostInProgress or serviceInfo.isRevokedCharacterUpgrade or trialBoostUnavailable) then
-        return false;
-    end
+	if (serviceInfo.boostInProgress or serviceInfo.isRevokedCharacterUpgrade or trialBoostUnavailable) then
+		return false;
+	end
 
-    if (IsCharacterTimerunning(guid) and not IsTimerunningEnabled()) then
-        return false, TIMERUNNING_DISABLED_TOOLTIP;
-    end
+	if (IsCharacterTimerunning(guid) and not IsTimerunningEnabled()) then
+		return false, TIMERUNNING_DISABLED_TOOLTIP;
+	end
 
-    return true;
+	return true;
 end
 
 function CharacterSelectRotateRight_OnUpdate(self)
-    if ( self:GetButtonState() == "PUSHED" ) then
-        SetCharacterSelectFacing(GetCharacterSelectFacing() + CHARACTER_FACING_INCREMENT);
-    end
+	if ( self:GetButtonState() == "PUSHED" ) then
+		SetCharacterSelectFacing(GetCharacterSelectFacing() + CHARACTER_FACING_INCREMENT);
+	end
 end
 
 function CharacterSelectRotateLeft_OnUpdate(self)
-    if ( self:GetButtonState() == "PUSHED" ) then
-        SetCharacterSelectFacing(GetCharacterSelectFacing() - CHARACTER_FACING_INCREMENT);
-    end
+	if ( self:GetButtonState() == "PUSHED" ) then
+		SetCharacterSelectFacing(GetCharacterSelectFacing() - CHARACTER_FACING_INCREMENT);
+	end
 end
 
 function CharacterSelect_ManageAccount()
-    PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ACCT_OPTIONS);
-    LaunchURL(AUTH_NO_TIME_URL);
+	PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_ACCT_OPTIONS);
+	LaunchURL(AUTH_NO_TIME_URL);
 end
 
 function CharacterSelect_RotateSelection(direction)
@@ -1171,10 +1204,10 @@ end
 
 function CharacterTemplatesFrame_Update()
 	if IsGMClient() and HideGMOnly() then
-        return;
-    end
+		return;
+	end
 
-    local numTemplates = C_CharacterCreation.GetNumCharacterTemplates();
+	local numTemplates = C_CharacterCreation.GetNumCharacterTemplates();
 	local isShown = (numTemplates > 0) and IsConnectedToServer();
 	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetToolFrameShown(CharacterTemplatesFrame, isShown);
 end
@@ -1205,7 +1238,7 @@ function CharacterTemplatesFrame_OnShow(self)
 		rootDescription:SetTag("MENU_CHARACTER_SELECT_TEMPLATE");
 
 		for characterIndex = 1, C_CharacterCreation.GetNumCharacterTemplates() do
-		    local name, description = C_CharacterCreation.GetCharacterTemplateInfo(characterIndex);
+			local name, description = C_CharacterCreation.GetCharacterTemplateInfo(characterIndex);
 			local radio = rootDescription:CreateRadio(name, IsSelected, SetSelected, characterIndex);
 			radio:SetTooltip(function(tooltip, elementDescription)
 				GameTooltip_SetTitle(tooltip, name);
@@ -1216,7 +1249,9 @@ function CharacterTemplatesFrame_OnShow(self)
 end
 
 function ToggleStoreUI(contextKey)
-	if not CharacterSelectUtil.IsStoreAvailable() then
+	if not CharacterSelectUtil.IsStoreAvailable() and not C_StorePublic.IsRewardsShopOverrideEnabled() then
+		return;
+	elseif not C_StorePublic.IsEnabled() and C_StorePublic.IsRewardsShopOverrideEnabled() and not C_CatalogShop.ValidateOverrideShopInteraction(CatalogShopFrame.shoppingSessionUUIDStr) then
 		return;
 	end
 	local useNewCashShop = C_CatalogShop.IsShop2Enabled();
@@ -1249,80 +1284,85 @@ end
 
 function PlayersOnServer_Update()
 	if IsGMClient() and HideGMOnly() then
-        return;
-    end
+		return;
+	end
 
-    local self = PlayersOnServer;
-    local connected = IsConnectedToServer();
+	local self = PlayersOnServer;
+	local connected = IsConnectedToServer();
 	if not connected then
 		CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetToolFrameShown(self, false);
-        return;
-    end
+		return;
+	end
 
-    local showPlayers, numHorde, numAlliance = GetPlayersOnServer();
+	local showPlayers, numHorde, numAlliance = GetPlayersOnServer();
 	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetToolFrameShown(self, showPlayers);
-    if showPlayers then
-        self.HordeCount:SetText(numHorde);
-        self.AllianceCount:SetText(numAlliance);
-        self.HordeStar:SetShown(numHorde < numAlliance);
-        self.AllianceStar:SetShown(numAlliance < numHorde);
-    end
+	if showPlayers then
+		self.HordeCount:SetText(numHorde);
+		self.AllianceCount:SetText(numAlliance);
+		self.HordeStar:SetShown(numHorde < numAlliance);
+		self.AllianceStar:SetShown(numAlliance < numHorde);
+	end
 end
 
 function CharacterSelect_ActivateFactionChange()
-    if IsConnectedToServer() then
-        EnableChangeFaction();
+	if IsConnectedToServer() then
+		EnableChangeFaction();
 		CharacterSelectListUtil.GetCharacterListUpdate();
-    end
+	end
 end
 
 StaticPopupDialogs["TOKEN_GAME_TIME_OPTION_NOT_AVAILABLE"] = {
-    text = ACCOUNT_REACTIVATE_OPTION_UNAVAILABLE,
-    button1 = OKAY,
-    escapeHides = true,
+	text = ACCOUNT_REACTIVATE_OPTION_UNAVAILABLE,
+	button1 = OKAY,
+	escapeHides = true,
 }
 
 function CharacterSelect_HasVeteranEligibilityInfo()
-    return TOKEN_COUNT_UPDATED and ((C_WowTokenGlue.GetTokenCount() > 0 or CAN_BUY_RESULT_FOUND) and C_WowTokenPublic.GetCurrentMarketPrice());
+	return TOKEN_COUNT_UPDATED and ((C_WowTokenGlue.GetTokenCount() > 0 or CAN_BUY_RESULT_FOUND) and C_WowTokenPublic.GetCurrentMarketPrice());
 end
 
 function CharacterSelect_ResetVeteranStatus()
-    CAN_BUY_RESULT_FOUND = false;
-    TOKEN_COUNT_UPDATED = false;
+	CAN_BUY_RESULT_FOUND = false;
+	TOKEN_COUNT_UPDATED = false;
 end
 
 function CharacterSelect_CheckVeteranStatus()
-    if (IsVeteranTrialAccount() and CharacterSelect_HasVeteranEligibilityInfo()) then
-        ReactivateAccountDialog_Open();
-    elseif (IsVeteranTrialAccount()) then
-        if (not TOKEN_COUNT_UPDATED) then
-            C_WowTokenPublic.UpdateTokenCount();
-        end
-        if (not CAN_BUY_RESULT_FOUND and TOKEN_COUNT_UPDATED) then
-            C_WowTokenGlue.CheckVeteranTokenEligibility();
-        end
-        if (not C_WowTokenPublic.GetCurrentMarketPrice() and CAN_BUY_RESULT_FOUND) then
-            C_WowTokenPublic.UpdateMarketPrice();
-        end
-    end
+	if (IsVeteranTrialAccount() and CharacterSelect_HasVeteranEligibilityInfo()) then
+		ReactivateAccountDialog_Open();
+	elseif (IsVeteranTrialAccount()) then
+		if (not TOKEN_COUNT_UPDATED) then
+			C_WowTokenPublic.UpdateTokenCount();
+		end
+		if (not CAN_BUY_RESULT_FOUND and TOKEN_COUNT_UPDATED) then
+			C_WowTokenGlue.CheckVeteranTokenEligibility();
+		end
+		if (not C_WowTokenPublic.GetCurrentMarketPrice() and CAN_BUY_RESULT_FOUND) then
+			C_WowTokenPublic.UpdateMarketPrice();
+		end
+	end
 end
 
 CharacterSelectInfoButtonMixin = {};
 
 function CharacterSelectInfoButtonMixin:OnClick()
-	C_AddOns.LoadAddOn("Blizzard_GameModeInfoDisplay");
-	GameModeInfoDisplay:SetShown(not GameModeInfoDisplay:IsShown());
+	if not GameModeInfoDisplay then
+		C_AddOns.LoadAddOn("Blizzard_GameModeInfoDisplay");
+	end
+
+	if not GameModeInfoDisplay:IsShown() then
+		-- Resetting this since we're manually trying to open the display. Should happen before SetShown.
+		GameModeInfoDisplay:ResetShownOnce();
+		GameModeInfoDisplay:SetShown(true);
+	end
 end
 
 CharacterSelectRewardsButtonMixin = {};
 
+CharacterSelect_ToggleStoreUI = ToggleStoreUI;
+
 function CharacterSelectRewardsButtonMixin:OnClick()
-	local storeFrontID = GameRulesUtil.GetActiveAccountStore();
-	if storeFrontID then
-		C_AddOns.LoadAddOn("Blizzard_AccountStore");
-		AccountStoreFrame:SetStoreFrontID(storeFrontID);
-		AccountStoreUtil.ToggleAccountStore();
-	end
+	CatalogShopFrame.shoppingSessionUUIDStr = C_CatalogShop.OpenCatalogShopInteractionFromRewards();
+	CharacterSelect_ToggleStoreUI();
 end
 
 CharSelectEnterWorldButtonMixin = {};
@@ -1339,6 +1379,23 @@ end
 
 function CharSelectEnterWorldButtonMixin:NarrationGetName()
 	return NarrationUtil.MakeNarrationString(self:GetText(), CharSelectCharacterName:GetText());
+end
+
+function CharSelectEnterWorldButtonMixin:OnEnter()
+	GlueTooltip:SetOwner(self, "ANCHOR_LEFT", 4, -8);
+	if ( not self:IsEnabled() and IsNameReservationOnly() ) then
+		local hours = GetLaunchETA();
+		local text;
+		if (hours > 0) then
+			text = LAUNCH_ETA:format(hours);
+		else
+			text = LAUNCH_ETA_SOON;
+		end
+
+		GlueTooltip:SetText(text);
+	else
+		GlueTooltip:Hide();
+	end
 end
 
 CharacterSelectRotateButtonMixin = {};
@@ -1375,12 +1432,12 @@ function CharacterSelectBackButtonMixin:OnClick()
 end
 
 function CharacterSelect_UpdateButtonState()
-    local hasCharacters = GetNumCharacters() > 0;
-    local servicesEnabled = not CharSelectServicesFlowFrame:ShouldDisableButtons();
-    local undeleting = CharacterSelect.undeleting;
-    local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
-    local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
-    local inCompetitiveMode = Kiosk.IsCompetitiveModeEnabled();
+	local hasCharacters = GetNumCharacters() > 0;
+	local servicesEnabled = not CharSelectServicesFlowFrame:ShouldDisableButtons();
+	local undeleting = CharacterSelect.undeleting;
+	local undeleteEnabled, undeleteOnCooldown = GetCharacterUndeleteStatus();
+	local redemptionInProgress = AccountReactivationInProgressDialog:IsShown() or GoldReactivateConfirmationDialog:IsShown() or TokenReactivateConfirmationDialog:IsShown();
+	local inCompetitiveMode = Kiosk.IsCompetitiveModeEnabled();
 	local inKioskMode = Kiosk.IsEnabled();
 	local guid = GetCharacterGUID(GetCharacterSelection());
 	local boostInProgress = guid and GetServiceCharacterInfo(guid).boostInProgress == true;
@@ -1401,7 +1458,7 @@ function CharacterSelect_UpdateButtonState()
 	CharSelectEnterWorldButton:SetEnabled(allowedToEnterWorld and not isCollectionsActive);
 	CharacterSelectBackButton:SetEnabled(servicesEnabled and not undeleting and not boostInProgress and not isCollectionsActive);
 	CharacterSelectUI.VisibilityToggleButton:SetEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isCollectionsActive);
-    CharSelectAccountUpgradePanel.UpgradeButton:SetEnabled(not undeleting and not redemptionInProgress and not isAccountLocked and not isCollectionsActive and not inCompetitiveMode and not inKioskMode);
+	CharSelectAccountUpgradePanel.UpgradeButton:SetEnabled(not undeleting and not redemptionInProgress and not isAccountLocked and not isCollectionsActive and not inCompetitiveMode and not inKioskMode);
 
 	-- Character list related buttons.
 	local maxGroupsReached = CharacterSelectListUtil.GetTotalGroupCount() >= GetMaxWarbandGroupCount();
@@ -1415,6 +1472,7 @@ function CharacterSelect_UpdateButtonState()
 	CharacterSelectUI:SetStoreEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isAccountLocked and not isCollectionsActive and isStoreAvailable);
 	CharacterSelectUI:SetMenuEnabled(servicesEnabled and not redemptionInProgress and not isCollectionsActive);
 	CharacterSelectUI:SetChangeRealmEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isCollectionsActive and not disableRealmsButton);
+	CharacterSelectUI:SetChangeSuperDistrictEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not isCollectionsActive);
 	CharacterSelectUI:SetEditCampEnabled(servicesEnabled and not undeleting and not redemptionInProgress and not disableCampsButton);
 
 	-- VAS tokens
@@ -1432,7 +1490,18 @@ function CharacterSelect_UpdateButtonState()
 
 	local visibilityFramesContainer = CharacterSelectUI.VisibilityFramesContainer;
 	visibilityFramesContainer.InfoButton:SetShown(C_GameRules.GetActiveGameMode() ~= Enum.GameMode.Standard);
-	visibilityFramesContainer.RewardsButton:SetShown(GameRulesUtil.GetActiveAccountStore() ~= nil);
+	visibilityFramesContainer.RewardsButton:SetShown(C_GameRules.IsRewardsShopEnabled());
+	if visibilityFramesContainer.RewardsButton:IsShown() then
+		visibilityFramesContainer.RewardsButton:SetEnabled(hasCharacters);
+	end
+
+	if (CharSelectReincarnateCharacterButton) then
+		-- Disable reincarnation for now. Potentially turn it on in the future? CAM-6168
+		local disableReincarnation = true;
+		local shouldShowReincarnate = C_GameRules.IsHardcoreActive() and not CharacterSelect.undeleting and not disableReincarnation;
+		CharSelectReincarnateCharacterButton:SetShown(shouldShowReincarnate);
+		CharSelectReincarnateCharacterButton:Enable(); -- Disabled when we are restoring a deleted character
+	end
 end
 
 local KIOSK_AUTO_REALM_ADDRESS = nil
@@ -1445,27 +1514,27 @@ function GetKioskAutoRealmAddress()
 end
 
 function KioskMode_CheckAutoRealm()
-    local realmAddr = GetKioskAutoRealmAddress();
-    if (realmAddr) then
+	local realmAddr = GetKioskAutoRealmAddress();
+	if (realmAddr) then
 		CharacterSelectUtil.SetAutoSwitchRealm(true);
 		C_Login.RequestAutoRealmJoin(realmAddr);
-        -- We only want to do this on first load
-        SetKioskAutoRealmAddress(nil);
-    end
+		-- We only want to do this on first load
+		SetKioskAutoRealmAddress(nil);
+	end
 end
 
 function CharacterSelect_ConditionallyLoadAccountSaveUI()
-    if C_AccountServices.IsAccountSaveEnabled() then
-        if not ACCOUNT_SAVE_IS_LOADED then
-            ACCOUNT_SAVE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_AccountSaveUI");
-        end
+	if C_AccountServices.IsAccountSaveEnabled() then
+		if not ACCOUNT_SAVE_IS_LOADED then
+			ACCOUNT_SAVE_IS_LOADED = C_AddOns.LoadAddOn("Blizzard_AccountSaveUI");
+		end
 
-        if AccountSaveFrame then
-            AccountSaveFrame:Show();
-        end
-    elseif AccountSaveFrame then
-        AccountSaveFrame:Hide();
-    end
+		if AccountSaveFrame then
+			AccountSaveFrame:Show();
+		end
+	elseif AccountSaveFrame then
+		AccountSaveFrame:Hide();
+	end
 end
 
 function CharacterSelect_UpdateGameRoomBillingFrameAnchors()
@@ -1477,17 +1546,11 @@ end
 
 local KIOSK_MODE_WAITING_ON_TRIAL = false;
 function KioskMode_SetWaitingOnTrial(waiting)
-    KIOSK_MODE_WAITING_ON_TRIAL = waiting;
+	KIOSK_MODE_WAITING_ON_TRIAL = waiting;
 end
 
 function KioskMode_IsWaitingOnTrial()
-    return KIOSK_MODE_WAITING_ON_TRIAL;
-end
-
-function KioskMode_CheckEnterWorld()
-	if KioskFrame then
-		KioskFrame:HandleCheckEnterWorld();
-	end
+	return KIOSK_MODE_WAITING_ON_TRIAL;
 end
 
 local function GetCharacterServiceDisplayOrder()
@@ -1515,12 +1578,12 @@ end
 function CharacterServicesMaster_UpdateServiceButton()
 	if not CharacterSelect.VASPools then
 		local vasResetter = function(framePool, frame)
-            frame:Hide();
-            frame.Glow:Hide();
-            frame.GlowSpin:Hide();
-            frame.GlowPulse:Hide();
-            frame.GlowSpin.SpinAnim:Stop();
-            frame.GlowPulse.PulseAnim:Stop();
+			frame:Hide();
+			frame.Glow:Hide();
+			frame.GlowSpin:Hide();
+			frame.GlowPulse:Hide();
+			frame.GlowSpin.SpinAnim:Stop();
+			frame.GlowPulse.PulseAnim:Stop();
 			frame:ClearAllPoints();
 			frame.layoutIndex = nil;
 		end
@@ -1532,19 +1595,19 @@ function CharacterServicesMaster_UpdateServiceButton()
 
 	CharacterSelect.VASPools:ReleaseAll();
 
-    UpgradePopupFrame:Hide();
-    CharacterSelectUI.VisibilityFramesContainer.WarningText:Hide();
+	UpgradePopupFrame:Hide();
+	CharacterSelectUI.VisibilityFramesContainer.WarningText:Hide();
 
-    if CharacterSelect.undeleting or CharSelectServicesFlowFrame:ShouldDisableButtons() or CharacterSelectUI.CollectionsFrame:IsShown() then
-        return;
-    end
+	if CharacterSelect.undeleting or CharSelectServicesFlowFrame:ShouldDisableButtons() or CharacterSelectUI.CollectionsFrame:IsShown() then
+		return;
+	end
 
 	local displayOrder = GetCharacterServiceDisplayOrder();
-    local upgradeInfo = C_SharedCharacterServices.GetUpgradeDistributions();
-    local hasPurchasedBoost = false;
-    for id, data in pairs(upgradeInfo) do
+	local upgradeInfo = C_SharedCharacterServices.GetUpgradeDistributions();
+	local hasPurchasedBoost = false;
+	for id, data in pairs(upgradeInfo) do
 		hasPurchasedBoost = hasPurchasedBoost or data.hasPaid;
-    end
+	end
 
 	local isExpansionTrial, expansionTrialRemainingSeconds = GetExpansionTrialInfo();
 	if isExpansionTrial then
@@ -1562,10 +1625,10 @@ function CharacterServicesMaster_UpdateServiceButton()
 
 	CharacterSelectUI:TriggerEvent(CharacterSelectUIMixin.Event.ExpansionTrialStateUpdated, isExpansionTrial);
 
-    -- support refund notice for Korea
-    if hasPurchasedBoost and C_StoreSecure.GetCurrencyID() == CURRENCY_KRW then
-        CharacterSelectUI.VisibilityFramesContainer.WarningText:Show();
-    end
+	-- support refund notice for Korea
+	if hasPurchasedBoost and C_StoreSecure.GetCurrencyID() == CURRENCY_KRW then
+		CharacterSelectUI.VisibilityFramesContainer.WarningText:Show();
+	end
 
 	CharacterServicesMaster_UpdateVASButtons(displayOrder);
 	CharacterServicesMaster_UpdateBoostButtons(displayOrder, upgradeInfo);
@@ -1625,6 +1688,8 @@ local function GetVASDistributions()
 						usable = DoesClientThinkTheCharacterIsEligibleForPNC(charID);
 					elseif vasType == Enum.ValueAddedServiceType.FreeCharacterTransfer then
 						usable = DoesClientThinkTheCharacterIsEligibleForFCM(charID);
+					elseif vasType == Enum.ValueAddedServiceType.HardcoreCharacterTransfer then
+						usable = DoesClientThinkTheCharacterIsEligibleForHCT(charID);
 					end
 					if usable then
 						break;
@@ -1795,22 +1860,22 @@ function DisplayBattlepayTokenFreeFrame(freeFrame)
 end
 
 local function CharacterUpgradePopup_CheckSetPopupSeen(data)
-    if UpgradePopupFrame and UpgradePopupFrame.data and UpgradePopupFrame:IsVisible() then
-        if data.expansion == UpgradePopupFrame.data.expansion then
+	if UpgradePopupFrame and UpgradePopupFrame.data and UpgradePopupFrame:IsVisible() then
+		if data.expansion == UpgradePopupFrame.data.expansion then
 			if UpgradePopupFrame.data.isExpansionTrial and C_SharedCharacterServices.GetLastSeenExpansionTrialPopup() < data.expansion then
 				C_SharedCharacterServices.SetExpansionTrialPopupSeen(data.expansion);
 			elseif C_SharedCharacterServices.GetLastSeenCharacterUpgradePopup() < data.expansion then
 				C_SharedCharacterServices.SetCharacterUpgradePopupSeen(data.expansion);
 			end
-        end
-    end
+		end
+	end
 end
 
 local function HandleUpgradePopupButtonClick(self)
-    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-    local data = self:GetParent().data;
-    CharacterUpgradePopup_CheckSetPopupSeen(data);
-    return data;
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	local data = self:GetParent().data;
+	CharacterUpgradePopup_CheckSetPopupSeen(data);
+	return data;
 end
 
 UpgradePopupFrameMixin = CreateFromMixins(BaseExpandableDialogMixin);
@@ -1822,18 +1887,18 @@ function UpgradePopupFrameMixin:OnCloseClick()
 end
 
 function CharacterUpgradePopup_OnCharacterBoostDelivered(boostType, guid, reason)
-    if reason == "forUnrevokeBoost" then
+	if reason == "forUnrevokeBoost" then
 		local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
 		CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid);
-    else
-        local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
+	else
+		local flowData = C_CharacterServices.GetCharacterServiceDisplayData(boostType);
 
-        if reason == "forClassTrialUnlock" then
-            CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid);
-        else
-            CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData);
-        end
-    end
+		if reason == "forClassTrialUnlock" then
+			CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData, guid);
+		else
+			CharacterUpgradePopup_BeginCharacterUpgradeFlow(flowData);
+		end
+	end
 end
 
 function CharSelectServices_ShowFlowFrame()
@@ -1905,13 +1970,15 @@ function CharacterUpgradePopup_BeginVASFlow(data, guid)
 		BeginCharacterServicesFlow(PaidNameChangeFlowMainline, data);
 	elseif data.vasType == Enum.ValueAddedServiceType.FreeCharacterTransfer then
 		BeginCharacterServicesFlow(FreeCharacterTransferFlow, data);
+	elseif data.vasType == Enum.ValueAddedServiceType.HardcoreCharacterTransfer then
+		BeginCharacterServicesFlow(HardcoreCharacterTransferFlow, data);
 	else
 		error("Unsupported VAS Type Flow");
 	end
 end
 
 function CharacterUpgradePopup_OnStartClick(self)
-    local data = HandleUpgradePopupButtonClick(self);
+	local data = HandleUpgradePopupButtonClick(self);
 	if data.isExpansionTrial then
 		CharacterSelectUtil.CreateNewCharacter(data.characterCreateType or Enum.CharacterCreateType.TrialBoost);
 	else
@@ -1933,11 +2000,11 @@ function CharacterUpgradePopup_OnStartLeave(self)
 end
 
 function CharacterUpgradePopup_OnTryNewClick(self)
-    HandleUpgradePopupButtonClick(self);
+	HandleUpgradePopupButtonClick(self);
 
-    if (C_CharacterServices.IsTrialBoostEnabled()) then
-        CharacterUpgrade_BeginNewCharacterCreation(Enum.CharacterCreateType.TrialBoost);
-    end
+	if (C_CharacterServices.IsTrialBoostEnabled()) then
+		CharacterUpgrade_BeginNewCharacterCreation(Enum.CharacterCreateType.TrialBoost);
+	end
 end
 
 CharacterVASMixin = {};
@@ -1967,11 +2034,11 @@ function CharacterVASMixin:OnEnter()
 		GameTooltip_AddNormalLine(tooltip, BOOST_TOKEN_TOOLTIP_DESCRIPTION:format(self.data.level));
 	end
 
-    tooltip:Show();
+	tooltip:Show();
 end
 
 function CharacterVASMixin:OnLeave()
-    self.Highlight:Hide();
+	self.Highlight:Hide();
 	GetAppropriateTooltip():Hide();
 end
 
@@ -2017,60 +2084,59 @@ function CharacterBoostMixin:OnClick()
 		else
 			DisplayBattlepayTokenFreeFrame(self);
 		end
-    elseif IsVeteranTrialAccount() then
-        StaticPopup_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_REACTIVATE);
-    elseif IsTrialAccount() then
-        StaticPopup_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_UPGRADE);
-    elseif not C_CharacterCreation.IsNewPlayerRestricted() then
-        CharacterUpgradePopup_BeginCharacterUpgradeFlow(self.data);
-    else
-        local text1, text2 = nil, nil;
-        StaticPopup_Show("CHARACTER_BOOST_NO_CHARACTERS_WARNING", text1, text2, self.data);
-    end
+	elseif IsVeteranTrialAccount() then
+		StaticPopup_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_REACTIVATE);
+	elseif IsTrialAccount() then
+		StaticPopup_Show("CHARACTER_BOOST_FEATURE_RESTRICTED", CHARACTER_BOOST_YOU_MUST_UPGRADE);
+	elseif not C_CharacterCreation.IsNewPlayerRestricted() then
+		CharacterUpgradePopup_BeginCharacterUpgradeFlow(self.data);
+	else
+		local text1, text2 = nil, nil;
+		StaticPopup_Show("CHARACTER_BOOST_NO_CHARACTERS_WARNING", text1, text2, self.data);
+	end
 end
 
 function CharacterServicesMaster_OnLoad(self)
-    self.flows = {};
+	self.flows = {};
 
-    self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
-    self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
-    self:RegisterEvent("PRODUCT_ASSIGN_TO_TARGET_FAILED");
+	self:RegisterEvent("PRODUCT_DISTRIBUTIONS_UPDATED");
+	self:RegisterEvent("UPDATE_EXPANSION_LEVEL");
+	self:RegisterEvent("PRODUCT_ASSIGN_TO_TARGET_FAILED");
 end
 
 function CharacterServicesMaster_OnEvent(self, event, ...)
-    if (event == "PRODUCT_DISTRIBUTIONS_UPDATED" or event == "UPDATE_EXPANSION_LEVEL") then
-        CharacterServicesMaster_UpdateServiceButton();
-    elseif (event == "PRODUCT_ASSIGN_TO_TARGET_FAILED") then
-        if (CharacterServicesMaster.pendingGuid and C_CharacterServices.DoesGUIDHavePendingFactionChange(CharacterServicesMaster.pendingGuid)) then
-            CharacterServicesMaster.pendingGuid = nil;
-            StaticPopup_Show("BOOST_FACTION_CHANGE_IN_PROGRESS");
-            return;
-        end
+	if (event == "PRODUCT_DISTRIBUTIONS_UPDATED" or event == "UPDATE_EXPANSION_LEVEL") then
+		CharacterServicesMaster_UpdateServiceButton();
+	elseif (event == "PRODUCT_ASSIGN_TO_TARGET_FAILED") then
+		if (CharacterServicesMaster.pendingGuid and C_CharacterServices.DoesGUIDHavePendingFactionChange(CharacterServicesMaster.pendingGuid)) then
+			CharacterServicesMaster.pendingGuid = nil;
+			StaticPopup_Show("BOOST_FACTION_CHANGE_IN_PROGRESS");
+			return;
+		end
 
 		local errorCode = ...;
 		local errorText = VASAssignErrorData_GetMessage(errorCode);
 		StaticPopup_Show("PRODUCT_ASSIGN_TO_TARGET_FAILED", errorText);
-    end
+	end
 end
 
 function CharacterServicesMaster_OnCharacterListUpdate()
 	CharacterServicesMaster_UpdateServiceButton();
 
-    CharacterServicesMaster.pendingGuid = nil;
-    local automaticBoostType = C_CharacterServices.GetAutomaticBoost();
+	CharacterServicesMaster.pendingGuid = nil;
+	local automaticBoostType = C_CharacterServices.GetAutomaticBoost();
 	local startAutomatically = automaticBoostType ~= nil;
-    if (CharacterServicesMaster.waitingForLevelUp) then
-        C_CharacterServices.ApplyLevelUp();
-        CharacterServicesMaster.waitingForLevelUp = false;
-        KioskMode_SetWaitingOnTrial(false);
-        KioskMode_CheckEnterWorld();
-    elseif (CharacterUpgrade_IsCreatedCharacterUpgrade() or startAutomatically) then
+	if (CharacterServicesMaster.waitingForLevelUp) then
+		C_CharacterServices.ApplyLevelUp();
+		CharacterServicesMaster.waitingForLevelUp = false;
+		KioskMode_SetWaitingOnTrial(false);
+	elseif (CharacterUpgrade_IsCreatedCharacterUpgrade() or startAutomatically) then
 		if (C_CharacterServices.GetAutomaticBoostCharacter()) then
 			local automaticBoostCharacterGUID = C_CharacterServices.GetAutomaticBoostCharacter();
 			CharacterSelectCharacterFrame:ScrollToCharacter(automaticBoostCharacterGUID);
 			CharacterUpgradePopup_BeginCharacterUpgradeFlow(C_CharacterServices.GetCharacterServiceDisplayData(automaticBoostType), automaticBoostCharacterGUID);
 			CharacterSelectListUtil.SelectCharacterByGUID(automaticBoostCharacterGUID);
-        else
+		else
 			if (CharacterUpgrade_IsCreatedCharacterUpgrade()) then
 				CharacterUpgradeFlow:SetTarget(CHARACTER_UPGRADE_CREATE_CHARACTER_DATA);
 			else
@@ -2087,29 +2153,29 @@ function CharacterServicesMaster_OnCharacterListUpdate()
 			CharacterUpgrade_ResetBoostData();
 		end
 
-        C_CharacterServices.SetAutomaticBoost(nil);
+		C_CharacterServices.SetAutomaticBoost(nil);
 		C_CharacterServices.SetAutomaticBoostCharacter(nil);
-    elseif (C_CharacterServices.HasQueuedUpgrade()) then
-        local guid = C_CharacterServices.GetQueuedUpgradeGUID();
+	elseif (C_CharacterServices.HasQueuedUpgrade()) then
+		local guid = C_CharacterServices.GetQueuedUpgradeGUID();
 
-        CharacterServicesMaster.waitingForLevelUp = CharacterSelectListUtil.SelectCharacterByGUID(guid);
+		CharacterServicesMaster.waitingForLevelUp = CharacterSelectListUtil.SelectCharacterByGUID(guid);
 
-        C_CharacterServices.ClearQueuedUpgrade();
-    end
+		C_CharacterServices.ClearQueuedUpgrade();
+	end
 end
 
 function CharacterServicesMaster_UpdateFinishLabel(self)
-    local finishButton = self:GetParent().FinishButton;
-    local displayText = self.flow:GetFinishLabel();
-    finishButton:SetText(displayText);
+	local finishButton = self:GetParent().FinishButton;
+	local displayText = self.flow:GetFinishLabel();
+	finishButton:SetText(displayText);
 end
 
 function CharacterServicesMaster_SetFlow(self, flow)
-    self.flow = flow;
+	self.flow = flow;
 	self.flows[flow] = true;
 	CharacterServicesMaster_HideFlows(self);
 
-    flow:Initialize(self);
+	flow:Initialize(self);
 
 	-- Prefer texture kit if set.
 	if flow.data.iconTextureKit then
@@ -2123,15 +2189,15 @@ function CharacterServicesMaster_SetFlow(self, flow)
 		self:GetParent().TitleText:SetText(flow.data.flowTitle);
 	end
 
-    CharacterServicesMaster_UpdateFinishLabel(self);
+	CharacterServicesMaster_UpdateFinishLabel(self);
 
-    for i = 1, #flow.Steps do
-        local block = flow.Steps[i];
-        if (not block.HiddenStep) then
-            block.frame:SetFrameLevel(CharacterServicesMaster:GetFrameLevel()+2);
-            block.frame:SetParent(self);
-        end
-    end
+	for i = 1, #flow.Steps do
+		local block = flow.Steps[i];
+		if (not block.HiddenStep) then
+			block.frame:SetFrameLevel(CharacterServicesMaster:GetFrameLevel()+2);
+			block.frame:SetParent(self);
+		end
+	end
 end
 
 function CharacterServicesMaster_ClearFlow(self)
@@ -2143,109 +2209,109 @@ function CharacterServicesMaster_AllowCharacterReordering(self)
 end
 
 function CharacterServicesMaster_SetCurrentBlock(self, block, wasFromRewind)
-    local parent = self:GetParent();
-    if (not block.HiddenStep) then
-        CharacterServicesMaster_SetBlockActiveState(block);
-    end
-    self.currentBlock = block;
-    self.blockComplete = false;
-    parent.BackButton:SetShown(block.Back);
-    parent.NextButton:SetShown(block.Next);
-    parent.FinishButton:SetShown(block.Finish);
-    if (block.Finish) then
-        self.FinishTime = GetTime();
-    end
+	local parent = self:GetParent();
+	if (not block.HiddenStep) then
+		CharacterServicesMaster_SetBlockActiveState(block);
+	end
+	self.currentBlock = block;
+	self.blockComplete = false;
+	parent.BackButton:SetShown(block.Back);
+	parent.NextButton:SetShown(block.Next);
+	parent.FinishButton:SetShown(block.Finish);
+	if (block.Finish) then
+		self.FinishTime = GetTime();
+	end
 
-    -- Some blocks may remember user choices when the user returns to
-    -- them.  As such, even though the block isn't finished for purposes
-    -- of advancing to the next step, the next button should still be
-    -- enabled.  This addresses an issue where the "alert, next is ready!"
-    -- animation was playing even though from the user's point of view
-    -- the next button never really appeared disabled.
+	-- Some blocks may remember user choices when the user returns to
+	-- them.  As such, even though the block isn't finished for purposes
+	-- of advancing to the next step, the next button should still be
+	-- enabled.  This addresses an issue where the "alert, next is ready!"
+	-- animation was playing even though from the user's point of view
+	-- the next button never really appeared disabled.
 
-    local isFinished = block:IsFinished(wasFromRewind);
+	local isFinished = block:IsFinished(wasFromRewind);
 
-    if wasFromRewind then
-        local forwardStateWouldBeFinished = block:IsFinished();
-        parent.NextButton:SetEnabled(forwardStateWouldBeFinished);
-    else
-        parent.NextButton:SetEnabled(isFinished);
-    end
+	if wasFromRewind then
+		local forwardStateWouldBeFinished = block:IsFinished();
+		parent.NextButton:SetEnabled(forwardStateWouldBeFinished);
+	else
+		parent.NextButton:SetEnabled(isFinished);
+	end
 
-    -- Since there's no way to finish the entire flow and then go back,
-    -- the finishButton is always enabled based on the block actually
-    -- being finished.
-    parent.FinishButton:SetEnabled(isFinished);
+	-- Since there's no way to finish the entire flow and then go back,
+	-- the finishButton is always enabled based on the block actually
+	-- being finished.
+	parent.FinishButton:SetEnabled(isFinished);
 end
 
 function CharacterServicesMaster_Restart()
-    local self = CharacterServicesMaster;
+	local self = CharacterServicesMaster;
 
-    if (self.flow) then
-        self.flow:Restart(self);
-    end
+	if (self.flow) then
+		self.flow:Restart(self);
+	end
 end
 
 function CharacterServicesMaster_Update()
-    local self = CharacterServicesMaster;
-    local parent = self:GetParent();
-    local block = self.currentBlock;
+	local self = CharacterServicesMaster;
+	local parent = self:GetParent();
+	local block = self.currentBlock;
 
-    CharacterServicesMaster_UpdateFinishLabel(self);
+	CharacterServicesMaster_UpdateFinishLabel(self);
 
 	if (block and block:IsFinished()) then
 
-        if (not block.HiddenStep and (block.AutoAdvance or self.blockComplete)) then
-            CharacterServicesMaster_SetBlockFinishedState(block);
-        end
+		if (not block.HiddenStep and (block.AutoAdvance or self.blockComplete)) then
+			CharacterServicesMaster_SetBlockFinishedState(block);
+		end
 
 		if (block.AutoAdvance) then
 			if ( block.Popup and ( not block.ShouldShowPopup or block:ShouldShowPopup() )) then
-		 		local text;
+				local text;
 				if ( block.GetPopupText ) then
 					text = block:GetPopupText();
 				end
 				StaticPopup_Show(block.Popup, text);
 				return;
 			end
-            self.flow:Advance(self);
-        else
-            if (block.Next) then
-                if (not parent.NextButton:IsEnabled()) then
-                    parent.NextButton:SetEnabled(true);
-                    if ( parent.NextButton:IsVisible() ) then
-                        parent.NextButton.Flash:Show();
-                        parent.NextButton.PulseAnim:Play();
-                    end
-                end
-            elseif (block.Finish) then
-                parent.FinishButton:SetEnabled(true);
-            end
-        end
-    elseif (block) then
-        if (block.Next) then
-            parent.NextButton:SetEnabled(false);
+			self.flow:Advance(self);
+		else
+			if (block.Next) then
+				if (not parent.NextButton:IsEnabled()) then
+					parent.NextButton:SetEnabled(true);
+					if ( parent.NextButton:IsVisible() ) then
+						parent.NextButton.Flash:Show();
+						parent.NextButton.PulseAnim:Play();
+					end
+				end
+			elseif (block.Finish) then
+				parent.FinishButton:SetEnabled(true);
+			end
+		end
+	elseif (block) then
+		if (block.Next) then
+			parent.NextButton:SetEnabled(false);
 
-            if ( parent.NextButton:IsVisible() ) then
-                parent.NextButton.PulseAnim:Stop();
-                parent.NextButton.Flash:Hide();
-            end
-        elseif (block.Finish) then
-            parent.FinishButton:SetEnabled(false);
-        end
-    end
-    self.currentTime = 0;
+			if ( parent.NextButton:IsVisible() ) then
+				parent.NextButton.PulseAnim:Stop();
+				parent.NextButton.Flash:Hide();
+			end
+		elseif (block.Finish) then
+			parent.FinishButton:SetEnabled(false);
+		end
+	end
+	self.currentTime = 0;
 
 	self.flow:CheckRewind(self);
 end
 
 function CharacterServicesMaster_OnHide(self)
-    for flow, state in pairs(self.flows) do
-        if state then
+	for flow, state in pairs(self.flows) do
+		if state then
 			flow:OnHide();
 			self.flows[flow] = false;
-        end
-    end
+		end
+	end
 end
 
 function CharacterServicesMaster_HideFlows(self)
@@ -2295,32 +2361,32 @@ do
 end
 
 function CharacterServicesMasterBackButton_OnClick()
-    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-    local master = CharacterServicesMaster;
-    master.flow:Rewind(master);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	local master = CharacterServicesMaster;
+	master.flow:Rewind(master);
 end
 
 function CharacterServicesMasterNextButton_OnClick()
-    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-    local master = CharacterServicesMaster;
-    if ( master.currentBlock.Popup and
-        ( not master.currentBlock.ShouldShowPopup or master.currentBlock:ShouldShowPopup() )) then
-        local text;
-        if ( master.currentBlock.GetPopupText ) then
-            text = master.currentBlock:GetPopupText();
-        end
-        StaticPopup_Show(master.currentBlock.Popup, text);
-        return;
-    end
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	local master = CharacterServicesMaster;
+	if ( master.currentBlock.Popup and
+		( not master.currentBlock.ShouldShowPopup or master.currentBlock:ShouldShowPopup() )) then
+		local text;
+		if ( master.currentBlock.GetPopupText ) then
+			text = master.currentBlock:GetPopupText();
+		end
+		StaticPopup_Show(master.currentBlock.Popup, text);
+		return;
+	end
 
-    CharacterServicesMaster_Advance();
+	CharacterServicesMaster_Advance();
 end
 
 function CharacterServicesMaster_Advance()
-    local master = CharacterServicesMaster;
-    master.blockComplete = true;
-    CharacterServicesMaster_Update();
-    master.flow:Advance(master);
+	local master = CharacterServicesMaster;
+	master.blockComplete = true;
+	CharacterServicesMaster_Update();
+	master.flow:Advance(master);
 end
 
 function CharacterServicesMasterFinishButton_OnClick()
@@ -2329,53 +2395,59 @@ function CharacterServicesMasterFinishButton_OnClick()
 		return;
 	end
 
-    -- wait a bit after button is shown so no one accidentally upgrades the wrong character
-    if (CharacterServicesMaster.FinishTime and (GetTime() - CharacterServicesMaster.FinishTime < 0.5 )) then
-        return;
-    end
-    local master = CharacterServicesMaster;
-    local parent = master:GetParent();
-    local success = master.flow:Finish(master);
-    if (success) then
-        PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
-        parent:Hide();
-    else
-        PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-    end
+	-- wait a bit after button is shown so no one accidentally upgrades the wrong character
+	if (CharacterServicesMaster.FinishTime and (GetTime() - CharacterServicesMaster.FinishTime < 0.5 )) then
+		return;
+	end
+	local master = CharacterServicesMaster;
+	local parent = master:GetParent();
+	local success = master.flow:Finish(master);
+	if (success) then
+		PlaySound(SOUNDKIT.GS_CHARACTER_SELECTION_CREATE_NEW);
+		parent:Hide();
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	end
 end
 
 function CharacterUpgradeSecondChanceWarningFrameConfirmButton_OnClick(self)
-    CharacterUpgradeSecondChanceWarningFrame.warningAccepted = true;
+	CharacterUpgradeSecondChanceWarningFrame.warningAccepted = true;
 
-    CharacterUpgradeSecondChanceWarningFrame:Hide();
+	CharacterUpgradeSecondChanceWarningFrame:Hide();
 
-    CharacterServicesMasterFinishButton_OnClick();
+	CharacterServicesMasterFinishButton_OnClick();
 end
 
 function CharacterUpgradeSecondChanceWarningFrameCancelButton_OnClick(self)
-    PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 	local master = CharacterServicesMaster;
 	CharSelectServicesFlowFrame.FinishButton:Show(master.currentBlock.Finish);
 	CharSelectServicesFlowFrame.BackButton:Show(master.currentBlock.Back);
 	CharSelectServicesFlowFrame.CloseButton:Show();
-    CharacterUpgradeSecondChanceWarningFrame:Hide();
+	CharacterUpgradeSecondChanceWarningFrame:Hide();
 
-    CharacterUpgradeSecondChanceWarningFrame.warningAccepted = false;
+	CharacterUpgradeSecondChanceWarningFrame.warningAccepted = false;
 end
 
 -- CHARACTER UNDELETE
 
 StaticPopupDialogs["UNDELETE_FAILED"] = {
-    text = UNDELETE_FAILED_ERROR,
-    button1 = OKAY,
-    escapeHides = true,
+	text = UNDELETE_FAILED_ERROR,
+	button1 = OKAY,
+	escapeHides = true,
 }
 
 StaticPopupDialogs["UNDELETE_NAME_TAKEN"] = {
-    text = UNDELETE_NAME_TAKEN,
-    button1 = OKAY,
-    escapeHides = true,
+	text = UNDELETE_NAME_TAKEN,
+	button1 = OKAY,
+	escapeHides = true,
+}
+
+StaticPopupDialogs["UNDELETE_NAME_TAKEN_REGIONAL"] = {
+	text = UNDELETE_NAME_TAKEN_REGIONAL,
+	button1 = OKAY,
+	escapeHides = true,
 }
 
 StaticPopupDialogs["UNDELETE_DRACTHYR_LEVEL_REQUIREMENT"] = {
@@ -2385,151 +2457,88 @@ StaticPopupDialogs["UNDELETE_DRACTHYR_LEVEL_REQUIREMENT"] = {
 }
 
 StaticPopupDialogs["UNDELETE_NO_CHARACTERS"] = {
-    text = UNDELETE_NO_CHARACTERS;
-    button1 = OKAY,
-    button2 = nil,
+	text = UNDELETE_NO_CHARACTERS;
+	button1 = OKAY,
+	button2 = nil,
 }
 
 StaticPopupDialogs["UNDELETE_SUCCEEDED"] = {
-    text = UNDELETE_SUCCESS,
-    button1 = OKAY,
-    escapeHides = true,
+	text = UNDELETE_SUCCESS,
+	button1 = OKAY,
+	escapeHides = true,
 }
 
 StaticPopupDialogs["UNDELETE_SUCCEEDED_NAME_TAKEN"] = {
-    text = UNDELETE_SUCCESS_NAME_CHANGE_REQUIRED,
-    button1 = OKAY,
-    escapeHides = true,
+	text = UNDELETE_SUCCESS_NAME_CHANGE_REQUIRED,
+	button1 = OKAY,
+	escapeHides = true,
 }
 
 StaticPopupDialogs["UNDELETE_CONFIRM"] = {
-    text = UNDELETE_CONFIRMATION,
-    button1 = OKAY,
-    button2 = CANCEL,
-    OnAccept = function(dialog, data)
-        CharacterSelect_FinishUndelete(CharacterSelect.pendingUndeleteGuid);
-        CharacterSelect.pendingUndeleteGuid = nil;
-    end,
-    OnCancel = function(dialog, data)
-        CharacterSelect.pendingUndeleteGuid = nil;
-    end,
+	text = UNDELETE_CONFIRMATION,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(dialog, data)
+		CharacterSelect_FinishUndelete(CharacterSelect.pendingUndeleteGuid);
+		CharacterSelect.pendingUndeleteGuid = nil;
+	end,
+	OnCancel = function(dialog, data)
+		CharacterSelect.pendingUndeleteGuid = nil;
+	end,
 }
 
 function CharacterSelect_StartCharacterUndelete()
-    CharacterSelect.undeleting = true;
-    CharacterSelect.undeleteChanged = true;
+	CharacterSelect.undeleting = true;
+	CharacterSelect.undeleteChanged = true;
 
 	CharacterSelectUI.VisibilityToggleButton:Hide();
-    CharacterSelectCharacterFrame:UpdateUndeleteState();
+	CharacterSelectCharacterFrame:UpdateUndeleteState();
 	CharacterTemplatesFrame.CreateTemplateButton:Hide();
 
-    AccountReactivate_CloseDialogs();
+	AccountReactivate_CloseDialogs();
 
-    CharacterServicesMaster_UpdateServiceButton();
-    StartCharacterUndelete();
+	CharacterServicesMaster_UpdateServiceButton();
+	StartCharacterUndelete();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		CharacterSelect:EnterRestoreCharacterState();
+	end
 end
 
 function CharacterSelect_EndCharacterUndelete()
-    CharacterSelect.undeleting = false;
-    CharacterSelect.undeleteChanged = true;
+	CharacterSelect.undeleting = false;
+	CharacterSelect.undeleteChanged = true;
 
-	CharacterSelectUI.VisibilityToggleButton:Show();
+	if InputUtil.IsMKBUIEnabled() then
+		CharacterSelectUI.VisibilityToggleButton:Show();
+	end
+
 	CharacterSelectCharacterFrame:UpdateUndeleteState();
 	CharacterTemplatesFrame.CreateTemplateButton:Show();
 
-    CharacterServicesMaster_UpdateServiceButton();
-    EndCharacterUndelete();
+	if (CharSelectReincarnateCharacterButton) then
+		local shouldShowReincarnate = C_GameRules.IsHardcoreActive();
+		CharSelectReincarnateCharacterButton:SetShown(shouldShowReincarnate);
+	end
+
+	CharacterServicesMaster_UpdateServiceButton();
+	EndCharacterUndelete();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		CharacterSelect:ExitRestoreCharacterState();
+	end
 end
 
 function CharacterSelect_FinishUndelete(guid)
-    StaticPopup_Show("UNDELETING_CHARACTER");
-
     UndeleteCharacter(guid);
     CharacterSelect.createIndex = 0;
 end
 
--- COPY CHARACTER
-StaticPopupDialogs["COPY_CHARACTER"] = {
-    text = "",
-    button1 = OKAY,
-    button2 = CANCEL,
-    escapeHides = true,
-    OnAccept = function(dialog, data)
-        CopyCharacterFromLive();
-    end,
-}
-
-StaticPopupDialogs["COPY_ACCOUNT_DATA"] = {
-    text = COPY_ACCOUNT_CONFIRM,
-    button1 = OKAY,
-    button2 = CANCEL,
-    escapeHides = true,
-    OnAccept = function(dialog, data)
-        CopyCharacter_AccountDataFromLive();
-    end,
-}
-
-StaticPopupDialogs["COPY_KEY_BINDINGS"] = {
-    text = COPY_KEY_BINDINGS_CONFIRM,
-    button1 = OKAY,
-    button2 = CANCEL,
-    escapeHides = true,
-    OnAccept = function(dialog, data)
-        CopyCharacter_KeyBindingsFromLive();
-    end,
-}
-
-StaticPopupDialogs["COPY_IN_PROGRESS"] = {
-    text = COPY_IN_PROGRESS,
-    button1 = nil,
-    button2 = nil,
-    ignoreKeys = true,
-    spinner = true,
-}
-
 StaticPopupDialogs["UNDELETING_CHARACTER"] = {
-    text = RESTORING_CHARACTER_IN_PROGRESS,
-    ignoreKeys = true,
-    spinner = true,
+	text = RESTORING_CHARACTER_IN_PROGRESS,
+	ignoreKeys = true,
+	spinner = true,
 }
-
-function CopyCharacterFromLive()
-    if ( not IsGMClient() ) then
-		CopyAccountCharacterFromLive(CopyCharacterFrame_GetSelectedRegionID(), CopyCharacterFrame.SelectedIndex);
-	else
-		CopyAccountCharacterFromLive(CopyCharacterFrame_GetSelectedRegionID(), CopyCharacterFrame.SelectedIndex, CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
-	end
-    StaticPopup_Show("COPY_IN_PROGRESS");
-end
-
-function CopyCharacter_AccountDataFromLive()
-    if ( not IsGMClient() ) then
-        CopyAccountDataFromLive(CopyCharacterFrame_GetSelectedRegionID(), CopyCharacterFrame.SelectedIndex);
-    else
-        CopyAccountDataFromLive(CopyCharacterFrame_GetSelectedRegionID(), CopyCharacterFrame.SelectedIndex, CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
-    end
-    StaticPopup_Show("COPY_IN_PROGRESS");
-end
-
-function CopyCharacter_KeyBindingsFromLive()
-    if ( not IsGMClient() ) then
-        CopyKeyBindingsFromLive(CopyCharacterFrame_GetSelectedRegionID(), CopyCharacterFrame.SelectedIndex);
-    else
-        CopyKeyBindingsFromLive(CopyCharacterFrame_GetSelectedRegionID(), CopyCharacterFrame.SelectedIndex, CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
-    end
-    StaticPopup_Show("COPY_IN_PROGRESS");
-end
-
-CopyCharacterButtonMixin = {};
-
-function CopyCharacterButtonMixin:OnClick()
-	CopyCharacterFrame:SetShown(not CopyCharacterFrame:IsShown());
-end
-
-function CopyCharacterButtonMixin:UpdateButtonState()
-	local isShown = C_CharacterServices.IsLiveRegionCharacterListEnabled() or C_CharacterServices.IsLiveRegionCharacterCopyEnabled() or C_CharacterServices.IsLiveRegionAccountCopyEnabled() or C_CharacterServices.IsLiveRegionKeyBindingsCopyEnabled();
-	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetToolFrameShown(self, isShown);
-end
 
 CharacterSelectVisibilityToggleButtonMixin = {};
 
@@ -2544,204 +2553,6 @@ end
 function CharacterSelectVisibilityToggleButtonMixin:NarrationNavigationShouldSkipTooltips()
 	return true;
 end
-
-function CopyCharacterSearch_OnClick(self)
-    ClearAccountCharacters();
-    CopyCharacterFrame_Update(CopyCharacterFrame.scrollFrame);
-    RequestAccountCharacters(CopyCharacterFrame_GetSelectedRegionID(), CopyCharacterFrame.RealmName:GetText(), CopyCharacterFrame.CharacterName:GetText());
-    self:Disable();
-end
-
-function CopyCharacterCopy_OnClick(self)
-    if ( not StaticPopup_IsAnyDialogShown() ) then
-		local selectedIndex = CopyCharacterFrame.SelectedIndex;
-		if ( selectedIndex and (selectedIndex <= GetNumAccountCharacters()) ) then
-			local name, realm = GetAccountCharacterInfo(selectedIndex);
-			StaticPopup_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, name, realm));
-		elseif ( IsGMClient() ) then
-			StaticPopup_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, CopyCharacterFrame.CharacterName:GetText(), CopyCharacterFrame.RealmName:GetText()));
-		end
-    end
-end
-
-function CopyAccountData_OnClick(self)
-    if ( not StaticPopup_IsAnyDialogShown() ) then
-        StaticPopup_Show("COPY_ACCOUNT_DATA");
-    end
-end
-
-function CopyKeyBindings_OnClick(self)
-    if ( not StaticPopup_IsAnyDialogShown() ) then
-        StaticPopup_Show("COPY_KEY_BINDINGS");
-    end
-end
-
-function CopyCharacterEntry_Init(self, characterIndex)
-	local name, realm, class, level = GetAccountCharacterInfo(characterIndex);
-	self.Name:SetText(name);
-	self.Server:SetText(realm);
-	self.Class:SetText(class);
-	self.Level:SetText(level);
-
-	local selected = CopyCharacterFrame.SelectedIndex == characterIndex;
-	CopyCharacterEntry_SetSelected(self, selected);
-end
-
-function CopyCharacterEntry_SetSelected(self, selected)
-	self.SelectedTexture:SetShown(selected);
-end
-
-function CopyCharacterEntry_OnClick(self)
-   CopyCharacterFrame_SetSelected(self:GetElementData());
-end
-
-function CopyCharacterFrame_SetSelected(characterIndex)
-	if characterIndex then
-		CopyCharacterFrame.CopyButton:SetEnabled(C_CharacterServices.IsLiveRegionCharacterCopyEnabled());
-	end
-
-	local function SetSelected(index, selected)
-		if index then
-			local frame = CopyCharacterFrame.ScrollBox:FindFrame(index);
-			if frame then
-				CopyCharacterEntry_SetSelected(frame, selected);
-			end
-		end
-	end
-
-	SetSelected(CopyCharacterFrame.SelectedIndex, false);
-	CopyCharacterFrame.SelectedIndex = characterIndex;
-	SetSelected(CopyCharacterFrame.SelectedIndex, true);
-end
-
-function CopyCharacterEntry_OnEnter(self)
-	self.HighlightTexture:Show();
-end
-
-function CopyCharacterEntry_OnLeave(self)
-	self.HighlightTexture:Hide();
-end
-
-function CopyCharacterFrame_OnLoad(self)
-    ButtonFrameTemplate_HidePortrait(self);
-    self:RegisterEvent("ACCOUNT_CHARACTER_LIST_RECIEVED");
-    self:RegisterEvent("CHAR_RESTORE_COMPLETE");
-    self:RegisterEvent("ACCOUNT_DATA_RESTORED");
-    self:RegisterEvent("KEY_BINDINGS_COPY_COMPLETE");
-
-	local view = CreateScrollBoxListLinearView();
-	view:SetElementInitializer("CopyCharacterEntryTemplate", function(button, elementData)
-		CopyCharacterEntry_Init(button, elementData);
-	end);
-	view:SetPadding(0,0,0,0,4);
-
-	ScrollUtil.InitScrollBoxListWithScrollBar(CopyCharacterFrame.ScrollBox, CopyCharacterFrame.ScrollBar, view);
-
-	self.RegionID:SetWidth(100);
-end
-
-function CopyCharacterFrame_OnShow(self)
-   GlueParent_AddModalFrame(self);
-
-	self.CopyButton:SetEnabled(false);
-
-	local regions = C_CharacterServices.GetLiveRegionCharacterCopySourceRegions();
-	self.selectedRegion = regions[1];
-
-	local function IsSelected(regionID)
-		return self.selectedRegion == regionID;
-	end
-
-	local function SetSelected(regionID)
-		self.selectedRegion = regionID;
-
-		if not IsGMClient() then
-			CopyCharacterFrame_SetSelected(nil);
-			CopyCharacterFrame.ScrollBox:SetDataProvider(CreateIndexRangeDataProvider(0), ScrollBoxConstants.RetainScrollPosition);
-			CopyCharacterFrame.CopyButton:Disable();
-			RequestAccountCharacters(regionID);
-		end
-	end
-
-	self.RegionID:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:SetTag("MENU_CHARACTER_SELECT_REGION");
-
-		for index, regionID in ipairs(regions) do
-			local regionName = characterCopyRegions[regionID];
-			if regionName then
-				rootDescription:CreateRadio(regionName, IsSelected, SetSelected, regionID);
-			end
-		end
-	end);
-
-	ClearAccountCharacters();
-	CopyCharacterFrame_Update(self.scrollFrame);
-
-	if ( not IsGMClient() ) then
-		self.RealmName:Hide();
-		self.CharacterName:Hide();
-		self.SearchButton:Hide();
-		RequestAccountCharacters(CopyCharacterFrame_GetSelectedRegionID());
-	else
-		self.RealmName:Show();
-		self.RealmName:SetFocus();
-		self.CharacterName:Show();
-		self.SearchButton:Show();
-		self.SearchButton:SetEnabled(C_CharacterServices.IsLiveRegionCharacterListEnabled());
-		self.CopyButton:SetEnabled(C_CharacterServices.IsLiveRegionCharacterCopyEnabled());
-	end
-
-	self.CopyAccountData:SetEnabled(C_CharacterServices.IsLiveRegionAccountCopyEnabled());
-	self.CopyKeyBindings:SetEnabled(C_CharacterServices.IsLiveRegionKeyBindingsCopyEnabled());
-end
-
-function CopyCharacterFrame_OnHide(self)
-	GlueParent_RemoveModalFrame(self);
-end
-
-function CopyCharacterFrame_OnEvent(self, event, ...)
-    if ( event == "ACCOUNT_CHARACTER_LIST_RECIEVED" ) then
-        CopyCharacterFrame_Update(self.scrollFrame);
-        self.SearchButton:Enable();
-    elseif ( event == "CHAR_RESTORE_COMPLETE" or event == "ACCOUNT_DATA_RESTORED" or event == "KEY_BINDINGS_COPY_COMPLETE") then
-        local success, token = ...;
-        StaticPopup_HideAll();
-        self:Hide();
-        if (not success) then
-            StaticPopup_Show("OKAY", COPY_FAILED);
-        end
-    end
-end
-
-function CopyCharacterFrame_GetSelectedRegionID()
-	return CopyCharacterFrame.selectedRegion;
-end
-
-function CopyCharacterFrame_Update(self)
-	local dataProvider = CreateIndexRangeDataProvider(GetNumAccountCharacters());
-	CopyCharacterFrame.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
-end
-
-function CopyCharacterEditBox_OnLoad(self)
-    self.parent = self:GetParent();
-end
-
-function CopyCharacterEditBox_OnShow(self)
-    self:SetText("");
-end
-
-function CopyCharacterEditBox_OnEnterPressed(self)
-    self:GetParent().SearchButton:Click();
-end
-
-function CopyCharacterRealmNameEditBox_OnTabPressed(self)
-    self:GetParent().CharacterName:SetFocus();
-end
-
-function CopyCharacterCharacterNameEditBox_OnTabPressed(self)
-    self:GetParent().RealmName:SetFocus();
-end
-
 
 function CharacterServicesFlow_IsShowing()
 	return CharSelectServicesFlowFrame:IsShown() or (CharSelectServicesFlowFrame.MinimizedFrame and CharSelectServicesFlowFrame.MinimizedFrame:IsShown())
@@ -2941,7 +2752,7 @@ function CollapsableUpgradeFrameMixin:EvaluateShownState()
 		CharacterSelectServerAlertFrame:SetPoint("TOP", CharacterSelectLogo, "BOTTOM", 0, -5);
 		CharacterSelectLogo:Show();
 		self:Hide();
-    end
+	end
 end
 
 function CollapsableUpgradeFrameMixin:OnToggled(isExpanded, isUserInput)
@@ -2999,4 +2810,434 @@ function CollapsableUpgradeFrameMixin:SetExpandedState(expanded, locked)
 	self.isExpanded = expanded;
 	self.ExpandBar:SetExpandedState(expanded, locked);
 	self:OnExpandedStateChanged();
+end
+
+function CharacterSelectFrameMixin:SelectElement()
+	local element = SmartNavigation:GetCurrentButton();
+	if element and element.Click then
+		element:Click();
+	end
+
+	if element and element.SetFocus then
+		element:SetFocus(); 
+	end
+end
+
+function CharacterSelectFrameMixin:IsSelectContextActionValid()
+	local element = SmartNavigation:GetCurrentButton();
+	return element and element.buttonContext ~= "ButtonContext_CharacterSelectListCharacterButton"
+end
+
+function CharacterSelectFrameMixin:IsCreateCharacterContextActionValid()
+	return not self:IsInMoveCharacterMode()
+		and CanCreateCharacter()
+		and CharSelectCreateCharacterButton:IsEnabled();
+end
+
+function CharacterSelectFrameMixin:IsInMoveCharacterMode()
+	return self.isMovingCharacter or self.isPickingUpCharacter;
+end
+
+function CharacterSelectFrameMixin:IsRestoreCharacterContextActionValid()
+	return self.undeleting;
+end
+
+function CharacterSelectFrameMixin:IsPlaceCharacterContextActionValid()
+	return self.isMovingCharacter;
+end
+
+function CharacterSelectFrameMixin:IsEnterWorldContextActionValid()
+	return not self:IsInMoveCharacterMode() and CharacterSelect_AllowedToEnterWorld();
+end
+
+function CharacterSelectFrameMixin:IsPickupCharacterContextActionValid()
+	return self.isPickingUpCharacter;
+end
+
+function CharacterSelectFrameMixin:IsMoveCharacterContextActionValid() 
+	local isSorting = GetCVarBool("sortCharListByLastActive");
+	return not self.isMovingCharacter and not isSorting;
+end
+
+function CharacterSelectFrameMixin:IsInSelectCharacterMode()
+	return not self:IsInMoveCharacterMode() and not self.undeleting;
+end
+
+function CharacterSelectFrameMixin:EnterMoveCharacterState()
+	local focusedButton = self:GetSelectedCharacterButton();
+	self.isMovingCharacter = true;
+	self.isPickingUpCharacter = false;
+	GamepadMode.DeactivateBindingGroup(self.characterSelectBindings);
+	GamepadMode.ActivateBindingGroup(self.characterMoveBindings);
+
+	focusedButton.InnerContent:ShowMoveButtons();
+	self.frameFooter:Refresh();
+end
+
+function CharacterSelectFrameMixin:ExitMoveCharacterState(pickupNewMoveTarget)
+	local focusedButton = self:GetSelectedCharacterButton();
+	self.isMovingCharacter = false;
+	self.isPickingUpCharacter = pickupNewMoveTarget;
+	GamepadMode.DeactivateBindingGroup(self.characterMoveBindings);
+
+	if not pickupNewMoveTarget then
+		GamepadMode.ActivateBindingGroup(self.characterSelectBindings);
+	end
+
+	focusedButton.InnerContent.UpButton:Hide();
+	focusedButton.InnerContent.DownButton:Hide();
+	self.frameFooter:Refresh();
+end
+
+function CharacterSelectFrameMixin:EnterRestoreCharacterState()
+	GamepadMode.DeactivateBindingGroup(self.characterSelectBindings);
+	GamepadMode.ActivateBindingGroup(self.characterRestoreBindings);
+	CharacterSelectCharacterFrame.BackToActiveButton:Hide();
+end
+
+function CharacterSelectFrameMixin:ExitRestoreCharacterState()
+	CharacterSelectCharacterFrame.BackToActiveButton:Click();
+	GamepadMode.DeactivateBindingGroup(self.characterRestoreBindings);
+	GamepadMode.ActivateBindingGroup(self.characterSelectBindings);
+end
+
+function CharacterSelectFrameMixin:CancelCurrentMode()
+	if self:IsInMoveCharacterMode() then
+		self:ExitMoveCharacterState(false);
+	else
+		self:ExitRestoreCharacterState();
+	end
+end
+
+function CharacterSelectFrameMixin:IsMovingOrUndeleting()
+	return self:IsInMoveCharacterMode() or self.undeleting;
+end
+
+function CharacterSelectFrameMixin:MoveSelectedCharacter(moveDown)
+	local focusedButton = SmartNavigation:GetCurrentButton();
+
+	if moveDown then
+		focusedButton.InnerContent.DownButton:Click();
+	else
+		focusedButton.InnerContent.UpButton:Click();
+	end
+	SmartNavigation:SelectButton(self:GetSelectedCharacterButton());
+end
+
+function CharacterSelectFrameMixin:OnGamepadCloseButton()
+	if self:IsMovingOrUndeleting() then
+		self:CancelCurrentMode();
+		return;
+	end
+
+	local element = SmartNavigation:GetCurrentButton();
+	local searchBox = CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+	if element then
+		if (element == searchBox) and not element:HasFocus() then
+			CharacterSelect_Exit();
+			return;
+		end
+
+		if element.buttonContext ~= "ButtonContext_CharacterSelectListCharacterButton" then
+			SmartNavigation:SelectButton(self:GetSelectedCharacterButton());
+			return;
+		end
+	end
+
+	CharacterSelect_Exit();
+end
+
+function CharacterSelectFrameMixin:ToggleVisibilityStateBindings()
+	CharacterSelectUI:ToggleVisibilityState();
+
+	if CharacterSelectUI:GetVisibilityState() then
+		GamepadMode.DeactivateBindingGroup(self.characterToggleUIBindings);
+		GamepadMode.ActivateBindingGroup(self.characterSelectBindings);
+
+		SmartNavigation:RunCurrentButtonEnterScript();
+		SmartNavigation:ShowCursor(false);
+		self.frameFooter.inputLegend:Show();
+	else
+		GamepadMode.DeactivateBindingGroup(self.characterSelectBindings);
+		GamepadMode.ActivateBindingGroup(self.characterToggleUIBindings);
+
+		SmartNavigation:RunCurrentButtonLeaveScript();
+		SmartNavigation:HideCursor(true);
+		self.frameFooter.inputLegend:Hide();
+	end
+end
+
+function CharacterSelectFrameMixin:RotateCharacter(inX, inY)
+	if inX > 0 then
+		SetCharacterSelectFacing(GetCharacterSelectFacing() + CHARACTER_FACING_INCREMENT);
+	elseif inX < 0 then
+		SetCharacterSelectFacing(GetCharacterSelectFacing() - CHARACTER_FACING_INCREMENT);
+	end
+end
+
+function CharacterSelectFrameMixin:ToggleUpgradeExpand()
+	CharSelectAccountUpgradePanel.ExpandBar.ExpandButton:Click();
+end
+
+function CharacterSelectFrameMixin:GetSelectedCharacterButton()
+	for _, frame in CharacterSelectCharacterFrame.ScrollBox:EnumerateFrames() do
+		if frame.IsSelected and frame:IsSelected() then
+			return frame;
+		end
+	end
+
+	return CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+end
+
+function CharacterSelectFrameMixin:RestoreSelectedCharacter()
+	local selectedCharacterButton = self:GetSelectedCharacterButton();
+	selectedCharacterButton.RestoreCharacterServiceFrame.Button:Click();
+end
+
+function CharacterSelectFrameMixin:FocusCharacterSearch()
+	local searchBox = CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+	if searchBox.FocusIcon:IsShown() then
+		SmartNavigation:SelectButton(searchBox);
+		searchBox:SetFocus();
+	end
+end
+
+function CharacterSelectFrameMixin:NavigateFromSearchBox(down)
+	local searchBox = CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+	local navBar = CharacterSelectUI.VisibilityFramesContainer.NavBar;
+	local focusedButton = self:GetSelectedCharacterButton();
+
+	searchBox:ClearFocus();
+
+	if down then
+		if focusedButton.InnerContent ~= nil then
+		focusedButton.InnerContent.Selected:Show();
+		return self:GetSelectedCharacterButton();
+	else
+			return searchBox;
+		end
+	else
+		if focusedButton.InnerContent ~= nil then
+		focusedButton.InnerContent.Selected:Hide();
+		end
+		return navBar.rightmostButton;
+	end
+end
+
+function CharacterSelectFrameMixin:OpenGameMenu()
+	local navBar = CharacterSelectUI.VisibilityFramesContainer.NavBar;
+	navBar.MenuButton:Click();
+end
+
+function CharacterSelectFrameMixin:SuppressSelectedHighlight()
+	local focusedButton = self:GetSelectedCharacterButton();
+	focusedButton.InnerContent.Selected:Hide();
+end
+
+function CharacterSelectFrameMixin:OnSmartNavButtonSelected(inButton)
+	-- Control navigation shortcut icon visibility.
+	local searchBox = CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+
+	searchBox.FocusIcon:SetShown(inButton ~= searchBox);
+	CharSelectAccountUpgradePanel.FocusIcon:SetShown(inButton == CharSelectAccountUpgradePanel.UpgradeButton)
+end
+
+function CharacterSelectFrameMixin:OnSmartNavFocus()
+	self.frameFooter:ShowAndActivateBindings();
+	SmartNavigation:SelectButton(CharacterSelect:GetSelectedCharacterButton());
+
+	if self.undeleting then
+		GamepadMode.ActivateBindingGroup(self.characterRestoreBindings);
+	else
+		GamepadMode.ActivateBindingGroup(self.characterSelectBindings);
+	end
+end
+
+function CharacterSelectFrameMixin:SetUpGamepad()
+	-- Set up input bindings.
+	self.characterSelectBindings = GamepadMode.CreateBindingGroup("CharacterSelectBindings");
+	self.characterSelectBindings:AddFunctionBinding(GAMEPAD_MENU_LEFT, GenerateClosure(self.FocusCharacterSearch, self));
+	self.characterSelectBindings:AddFunctionBinding(GAMEPAD_MENU_RIGHT, function() GlueMenuFrameUtil.ShowMenu(); end);
+	self.characterSelectBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.RotateCharacter, self));
+
+	self.characterMoveBindings = GamepadMode.CreateBindingGroup("CharacterMoveBindings");
+	self.characterMoveBindings:BlockDpadAndFaceButtons();
+	self.characterMoveBindings:AddFunctionBinding(GAMEPAD_DPAD_BOTTOM, GenerateClosure(self.MoveSelectedCharacter, self, true));
+	self.characterMoveBindings:AddFunctionBinding(GAMEPAD_DPAD_TOP, GenerateClosure(self.MoveSelectedCharacter, self, false));
+	self.characterMoveBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.RotateCharacter, self));
+
+	self.characterRestoreBindings = GamepadMode.CreateBindingGroup("CharacterRestoreBindings");
+	self.characterRestoreBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.RotateCharacter, self));
+
+	self.characterToggleUIBindings = GamepadMode.CreateBindingGroup("CharacterToggleUIBindings");
+	self.characterToggleUIBindings:BlockDpadAndFaceButtons();
+	self.characterToggleUIBindings:AddFunctionBinding(GAMEPAD_STICK_LEFT_PRESS, GenerateClosure(self.ToggleVisibilityStateBindings, self));
+	self.characterToggleUIBindings:AddFunctionBinding(GAMEPAD_MENU_RIGHT, GenerateClosure(self.ToggleVisibilityStateBindings, self));
+	self.characterToggleUIBindings:AddFunctionBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.ToggleVisibilityStateBindings, self));
+	self.characterToggleUIBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.RotateCharacter, self));
+
+	-- Set up footers
+	local selectElement = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.SelectElement, self), ACTION_LABEL_SELECT);
+	selectElement:AddCondition(GenerateClosure(self.IsSelectContextActionValid, self));
+	selectElement:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local enterWorldAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, CharacterSelect_EnterWorld, ENTER_WORLD);
+	enterWorldAction:AddButtonContext("ButtonContext_CharacterSelectListCharacterButton");
+	enterWorldAction:AddCondition(GenerateClosure(self.IsEnterWorldContextActionValid, self));
+	enterWorldAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local backAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.OnGamepadCloseButton, self), CHARACTER_SELECT_BACK);
+
+	local createCharacterAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, function() CharSelectCreateCharacterButton:Click() end, CREATE_CHARACTER);
+	createCharacterAction:AddCondition(GenerateClosure(self.IsCreateCharacterContextActionValid, self));
+	createCharacterAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local charSelectMoreActions = GamepadSharedUtility.CreateMoreActionsPromptedBinding(GAMEPAD_FACE_TOP);
+	charSelectMoreActions:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	charSelectMoreActions:AddButtonContext("ButtonContext_CharacterSelectListCharacterButton");
+	charSelectMoreActions:AddCondition(GenerateClosure(self.IsInSelectCharacterMode, self));
+	charSelectMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_MOVE_CHARACTERS, GenerateClosure(self.EnterMoveCharacterState, self), GenerateClosure(self.IsMoveCharacterContextActionValid, self));
+	charSelectMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_RESTORE_CHARACTERS, CharacterSelect_StartCharacterUndelete, function() return CharSelectUndeleteCharacterButton:IsEnabled(); end );
+	charSelectMoreActions:AddMoreActionsRedEntry(DELETE_CHARACTER, CharacterSelect_Delete, nil);
+
+	local function IsUpgradeSubscribeButtonSelected()
+		return SmartNavigation:GetCurrentButton() == CharSelectAccountUpgradePanel.UpgradeButton;
+	end
+	local function UpgradeExpandButtonClick()
+		CharSelectAccountUpgradePanel.ExpandBar.ExpandButton:Click();
+	end
+
+	local accountUpgradeBannerCollapseAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, "AccountUpgrade_Collapse");
+	accountUpgradeBannerCollapseAction:AddFooterBinding({
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.NEVER,
+		conditions = { IsUpgradeSubscribeButtonSelected, }
+	});
+	accountUpgradeBannerCollapseAction:AddFooterFunction({
+		bindingFunctions = UpgradeExpandButtonClick,
+	});
+
+	local placeCharacterFromMove = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.ExitMoveCharacterState, self, true), CONTEXT_ACTION_LABEL_PLACE);
+	placeCharacterFromMove:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	placeCharacterFromMove:AddCondition(GenerateClosure(self.IsPlaceCharacterContextActionValid, self));
+
+	local confirmCharacterMove = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.ExitMoveCharacterState, self, false), FRAME_ACTION_CONFIRM);
+	confirmCharacterMove:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	confirmCharacterMove:AddCondition(GenerateClosure(self.IsInMoveCharacterMode, self));
+
+	local pickupCharacterAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.EnterMoveCharacterState, self), CONTEXT_ACTION_LABEL_MOVE);
+	pickupCharacterAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	pickupCharacterAction:AddButtonContext("ButtonContext_CharacterSelectListCharacterButton");
+	pickupCharacterAction:AddCondition(GenerateClosure(self.IsPickupCharacterContextActionValid, self));
+
+	local restoreCharacterAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.RestoreSelectedCharacter, self), CONTEXT_ACTION_LABEL_RESTORE);
+	restoreCharacterAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	restoreCharacterAction:AddCondition(GenerateClosure(self.IsRestoreCharacterContextActionValid, self));
+
+	local toggleUIAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_LEFT_PRESS, GenerateClosure(self.ToggleVisibilityStateBindings, self), ACTION_LABEL_TOGGLE_UI);
+	toggleUIAction:AddCondition(GenerateClosure(self.IsInSelectCharacterMode, self));
+	toggleUIAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local footerAnchor = CreateAnchor("BOTTOM", self, "BOTTOM", 0, 15);
+	self.frameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CharacterSelectFooter");
+	self.frameFooter:SetCustomAnchor(footerAnchor);
+	self.frameFooter:AddPromptedBinding(selectElement);
+	self.frameFooter:AddPromptedBinding(backAction);
+	self.frameFooter:AddPromptedBinding(enterWorldAction);
+	self.frameFooter:AddPromptedBinding(pickupCharacterAction);
+	self.frameFooter:AddPromptedBinding(toggleUIAction);
+	self.frameFooter:AddPromptedBinding(createCharacterAction);
+	self.frameFooter:AddPromptedBinding(charSelectMoreActions);
+	self.frameFooter:AddPromptedBinding(accountUpgradeBannerCollapseAction);
+	self.frameFooter:AddPromptedBinding(placeCharacterFromMove);
+	self.frameFooter:AddPromptedBinding(confirmCharacterMove);
+	self.frameFooter:AddPromptedBinding(restoreCharacterAction);
+	self.frameFooter:Finalize();
+
+	function CharacterSelect.UnfocusGamepad()
+		GamepadMode.DeactivateBindingGroup(self.characterSelectBindings);
+		GamepadMode.DeactivateBindingGroup(self.characterMoveBindings);
+		GamepadMode.DeactivateBindingGroup(self.characterRestoreBindings);
+		GamepadMode.DeactivateBindingGroup(self.characterToggleUIBindings);
+		self.frameFooter:HideAndDeactivateBindings();
+		self.isMovingCharacter = false;
+		self.isPickingUpCharacter = false;
+	end
+
+	self.SmartNavigationOnSelect = self.OnSmartNavButtonSelected;
+end
+
+function CharacterSelectFrameMixin:InitializeGamepad()
+	--Set up navigation overrides.
+	local navBar = self.CharacterSelectUI.VisibilityFramesContainer.NavBar;
+	local searchBox = CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox;
+
+	SmartNavigation_AddJumpNavigationOverride(searchBox, SMART_NAV_INPUT_DIRECTION.UP, GenerateClosure(self.NavigateFromSearchBox, self, false));
+	SmartNavigation_AddJumpNavigationOverride(searchBox, SMART_NAV_INPUT_DIRECTION.DOWN, GenerateClosure(self.NavigateFromSearchBox, self, true));
+	SmartNavigation_AddJumpNavigationOverride(navBar.rightmostButton, SMART_NAV_INPUT_DIRECTION.DOWN, GenerateClosure(self.GetSelectedCharacterButton, self));
+
+	CharacterSelectRotateLeft:Hide();
+	CharacterSelectRotateRight:Hide();
+	CharSelectEnterWorldButton:Hide();
+	CharacterSelectBackButton:Hide();
+	CharSelectCreateCharacterButton:Hide();
+	CharSelectUndeleteCharacterButton:Hide();
+	CharacterSelectUI.VisibilityToggleButton:Hide();
+	CharacterSelectUI.VisibilityFramesContainer.ListToggle:Hide();
+	CharacterSelectCharacterFrame.DeleteCharacterButton:Hide();
+
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox.FocusIcon:Show();
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox:SetPoint("TOPLEFT", 40, -25);
+	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetPoint("RIGHT", CharSelectEnterWorldButton, "BOTTOMLEFT", -200, 0);
+	CharSelectCharacterName:SetPoint("BOTTOM", self.frameFooter.inputLegend, "TOP", 0, 15);
+
+	if self:IsShown() then
+		UpdateCharacterList();
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
+
+	EventRegistry:RegisterCallback("CharacterSelectList.OnCharacterSelectionUpdated",
+	function()
+		if SmartNavigation:GetActiveFrame() ~= CharacterSelect then
+			return;
+		end
+
+		local button = CharacterSelect:GetSelectedCharacterButton();
+		if button then
+			SmartNavigation:SelectButton(button);
+		end
+	end);
+end
+
+function CharacterSelectFrameMixin:UninitializeGamepad()
+	CharacterSelectRotateLeft:Show();
+	CharacterSelectRotateRight:Show();
+	CharSelectEnterWorldButton:Show();
+	CharacterSelectBackButton:Show();
+	CharSelectCreateCharacterButton:Show();
+	CharSelectUndeleteCharacterButton:Show();
+	CharacterSelectUI.VisibilityToggleButton:Show();
+	CharacterSelectUI.VisibilityFramesContainer.ListToggle:Show();
+	CharacterSelectUI.VisibilityFramesContainer.ConfigurationWarnings:Show();
+	CharacterSelectCharacterFrame.DeleteCharacterButton:Show();
+
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox.FocusIcon:Hide();
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox:SetPoint("TOPLEFT", 19, -25);
+	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetPoint("RIGHT", CharSelectEnterWorldButton, "BOTTOMLEFT", -40, 0);
+	CharacterSelectUI.VisibilityFramesContainer.ConfigurationWarnings:SetPoint("LEFT", CharSelectEnterWorldButton, "RIGHT", 10, 0);
+	CharSelectCharacterName:SetPoint("BOTTOM", 0, 114);
+
+	GamepadMode.DeactivateBindingGroup(self.characterSelectBindings);
+	GamepadMode.DeactivateBindingGroup(self.characterMoveBindings);
+	GamepadMode.DeactivateBindingGroup(self.characterRestoreBindings);
+	GamepadMode.DeactivateBindingGroup(self.characterToggleUIBindings);
+	self.frameFooter:HideAndDeactivateBindings();
+	self.isMovingCharacter = false;
+	self.isPickingUpCharacter = false;
+end
+
+function CharacterSelectFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetUpGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
 end

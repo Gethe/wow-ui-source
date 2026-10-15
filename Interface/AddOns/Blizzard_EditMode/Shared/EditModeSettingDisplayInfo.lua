@@ -240,6 +240,26 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 
+		-- Use Horizontal Layout
+		{
+			setting = Enum.EditModeUnitFrameSetting.UseHorizontalLayout,
+			name = HUD_EDIT_MODE_SETTING_BOSS_FRAME_USE_HORIZONTAL_LAYOUT,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Grow Direction
+		{
+			setting = Enum.EditModeUnitFrameSetting.GrowDirection,
+			name = HUD_EDIT_MODE_SETTING_BOSS_FRAME_GROW_DIRECTION,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.BossFrameGrowDirection.Left, text = HUD_EDIT_MODE_SETTING_BOSS_FRAME_GROW_DIRECTION_LEFT},
+				{value = Enum.BossFrameGrowDirection.Center, text = HUD_EDIT_MODE_SETTING_BOSS_FRAME_GROW_DIRECTION_CENTER},
+				{value = Enum.BossFrameGrowDirection.Right, text = HUD_EDIT_MODE_SETTING_BOSS_FRAME_GROW_DIRECTION_RIGHT},
+			},
+		},
+
 		-- ShowCastTime
 		-- {
 		-- 	setting = Enum.EditModeUnitFrameSetting.ShowCastTime,
@@ -678,18 +698,6 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
 		},
-
-		-- Size
-		{
-			setting = Enum.EditModeMicroMenuSetting.EyeSize,
-			name = HUD_EDIT_MODE_SETTING_MICRO_MENU_EYE_SIZE,
-			type = Enum.EditModeSettingDisplayType.Slider,
-			minValue = 50,
-			maxValue = 150,
-			stepSize = 5,
-			ConvertValue = ConvertValueDefault,
-			formatter = ShowAsPercentage,
-		},
 	},
 
 	[Enum.EditModeSystem.Bags] =
@@ -783,6 +791,89 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			stepSize = 10,
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
+		},
+	},
+
+	[Enum.EditModeSystem.SwingTimer] =
+	{
+		-- Scale
+		{
+			setting = Enum.EditModeSwingTimerSetting.Scale,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_SCALE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 200,
+			stepSize = 10,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+
+		-- Opacity
+		{
+			setting = Enum.EditModeSwingTimerSetting.Opacity,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_OPACITY,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 100,
+			stepSize = 1,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+			hideSystemSelectionOnInteract = true,
+		},
+
+		-- Width
+		{
+			setting = Enum.EditModeSwingTimerSetting.Width,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_WIDTH,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 213,
+			maxValue = 852,
+			stepSize = 10,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = NARROW,
+			maxText = WIDE,
+		},
+
+		-- Height
+		{
+			setting = Enum.EditModeSwingTimerSetting.Height,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_HEIGHT,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 15,
+			maxValue = 60,
+			stepSize = 1,
+			ConvertValue = ConvertValueDiffFromMin,
+			hideValue = true,
+			minText = SHORT,
+			maxText = TALL,
+		},
+
+		-- Show Bar Title
+		{
+			setting = Enum.EditModeSwingTimerSetting.ShowBarTitle,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_SHOW_BAR_TITLE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Time
+		{
+			setting = Enum.EditModeSwingTimerSetting.ShowTime,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_SHOW_TIME,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Visibility
+		{
+			setting = Enum.EditModeSwingTimerSetting.Visibility,
+			name = HUD_EDIT_MODE_SETTING_SWING_TIMER_VISIBLE_SETTING,
+			type = Enum.EditModeSettingDisplayType.Dropdown,
+			options =
+			{
+				{value = Enum.EditModeSwingTimerVisibility.Always, text = HUD_EDIT_MODE_SETTING_SWING_TIMER_VISIBLE_SETTING_ALWAYS},
+				{value = Enum.EditModeSwingTimerVisibility.InCombat, text = HUD_EDIT_MODE_SETTING_SWING_TIMER_VISIBLE_SETTING_IN_COMBAT},
+				{value = Enum.EditModeSwingTimerVisibility.Hidden, text = HUD_EDIT_MODE_SETTING_SWING_TIMER_VISIBLE_SETTING_HIDDEN},
+			},
 		},
 	},
 
@@ -1085,6 +1176,13 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 		{
 			setting = Enum.EditModePersonalResourceDisplaySetting.ShowBarText,
 			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_SHOW_BAR_TEXT,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Allow Mouseover Through
+		{
+			setting = Enum.EditModePersonalResourceDisplaySetting.AllowMouseoverThrough,
+			name = HUD_EDIT_MODE_SETTING_PERSONAL_RESOURCE_DISPLAY_ALLOW_MOUSEOVER_THROUGH,
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 	},
@@ -1403,6 +1501,31 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 
 	},
 
+	[Enum.EditModeSystem.MainActionBarEndCap] =
+	{
+		-- Hidden
+		{
+			setting = Enum.EditModeMainActionBarEndCapSetting.Hidden,
+			name = HUD_EDIT_MODE_SETTING_END_CAP_HIDDEN,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+	},
+
+	[Enum.EditModeSystem.GroupFinder] =
+	{
+		-- Size
+		{
+			setting = Enum.EditModeGroupFinderSetting.Size,
+			name = HUD_EDIT_MODE_SETTING_GROUP_FINDER_SIZE,
+			type = Enum.EditModeSettingDisplayType.Slider,
+			minValue = 50,
+			maxValue = 150,
+			stepSize = 5,
+			ConvertValue = ConvertValueDefault,
+			formatter = ShowAsPercentage,
+		},
+	},
+
 	[Enum.EditModeSystem.LossOfControl] =
 	{
 		-- Size
@@ -1415,6 +1538,44 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			stepSize = 10,
 			ConvertValue = ConvertValueDefault,
 			formatter = ShowAsPercentage,
+		},
+	},
+
+	[Enum.EditModeSystem.GamepadMainActionBar] =
+	{
+		-- Compact
+		{
+			setting = Enum.EditModeGamepadMainActionBarSetting.Compact,
+			name = GAMEPAD_TOGGLE_COMPACT_ACTION_BAR,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Show Empty Bars
+		{
+			setting = Enum.EditModeGamepadMainActionBarSetting.ShowEmptyBars,
+			name = GAMEPAD_SHOW_EMPTY_ACTIONBARS,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Button Prompts
+		{
+			setting = Enum.EditModeGamepadMainActionBarSetting.ShowButtonPrompts,
+			name = GAMEPAD_ACTION_BAR_INPUT_PROMPT_TOGGLE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Highlight
+		{
+			setting = Enum.EditModeGamepadMainActionBarSetting.ShowHighlight,
+			name = GAMEPAD_ACTION_BAR_HIGHLIGHT_TOGGLE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
+		},
+
+		-- Expand
+		{
+			setting = Enum.EditModeGamepadMainActionBarSetting.ShouldExpand,
+			name = GAMEPAD_ACTION_BAR_SCALING_TOGGLE,
+			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 	},
 };

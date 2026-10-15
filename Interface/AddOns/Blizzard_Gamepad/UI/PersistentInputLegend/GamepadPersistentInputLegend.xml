@@ -1,0 +1,47 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="GamepadPersistentInputLegendBackgroundTemplate" frameStrata="BACKGROUND" hidden="true" virtual="true">
+		<Size x="200" y="100"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" />
+		</Anchors>
+		<Frames>
+			<Frame parentKey="Background" setAllPoints="true" frameStrata="BACKGROUND" inherits="DialogBorderTemplate" />
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="HeaderTrim" atlas="UI-World-Quest-golden-line" hidden="true">
+					<Size x="175" y="5"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="30" y="-40" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="GamepadPersistentInputLegendEntryTemplate" mixin="GamepadPersistentInputLegendEntryMixin" inherits="InputPromptOneIconWithTextTemplate" virtual="true">
+		<Scripts>
+			<OnShow method="OnShow" />
+			<OnEvent method="OnEvent" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="GamepadPersistentInputLegendEntryWithTwoIconsTemplate" mixin="GamepadPersistentInputLegendEntryMixin" inherits="InputPromptTwoIconWithTextTemplate" virtual="true">
+		<Scripts>
+			<OnShow method="OnShow" />
+			<OnEvent method="OnEvent" />
+		</Scripts>
+	</Frame>
+
+	<Frame name="GamepadPersistentInputLegend" parentKey="GamepadPersistentInputLegend" parent="UIParent" mixin="GamepadPersistentInputLegendMixin" frameStrata="LOW">
+		<Size x="10" y="10" />
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeTo="$parent" relativePoint="TOPLEFT" x="5" y="-5"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+		</Scripts>
+	</Frame>
+</Ui>

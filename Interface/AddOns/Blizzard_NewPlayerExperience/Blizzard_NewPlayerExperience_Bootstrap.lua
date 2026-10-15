@@ -5,11 +5,10 @@ function NPE_LoadUI()
 		return;
 	end
 
-	if C_PlayerInfo.IsPlayerNPERestricted() then
+	if TutorialManager.CanBootstrapNPE() then
 		return LoadAddOnWithErrorHandling(AddonName);
 	end
 end
-
 
 function NPE_InitializeIfLoaded()
 	if C_AddOns.IsAddOnLoaded(AddonName) then

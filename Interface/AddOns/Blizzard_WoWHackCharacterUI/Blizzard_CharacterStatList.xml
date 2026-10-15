@@ -1,0 +1,32 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="CharacterStatListTemplate" mixin="CharacterStatListMixin" inherits="CharacterSheetListTemplate" virtual="true">
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CharacterStatSummaryTemplate" mixin="CharacterStatSummaryMixin" virtual="true">
+		<Size x="650" y="1"/>
+		<Frames>
+			<Frame parentKey="Header" inherits="CharacterListHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="StatList" inherits="CharacterStatListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" y="-12"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

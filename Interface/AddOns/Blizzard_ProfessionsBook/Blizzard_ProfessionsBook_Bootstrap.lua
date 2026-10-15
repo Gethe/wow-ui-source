@@ -6,6 +6,16 @@ end
 
 function ToggleProfessionsBook()
 	if ProfessionsBook_LoadUI() then
-		ToggleFrame(ProfessionsBookFrame);
+		if ProfessionsBookFrame then
+			ToggleFrame(ProfessionsBookFrame);
+		elseif ProfessionsFrame then
+			ToggleFrame(ProfessionsFrame);
+		elseif ShowProfessionsFrame then
+			ShowProfessionsFrame();
+
+			if ProfessionsFrame and ProfessionsFrame.SelectBookPage then
+				ProfessionsFrame:SelectBookPage();
+			end
+		end
 	end
 end

@@ -50,7 +50,11 @@ function RewardTrackFrameMixin:Init(elementList, paragonInfo, progressBar)
 			frame:SetPoint("LEFT", lastFrame, "RIGHT", self.elementSpacing, 0);
 		else
 			self.headElement = frame;
-			frame:SetPoint("CENTER");
+			if self.disableCentering then
+				frame:SetPoint("LEFT", self.ClipFrame, "LEFT");
+			else
+				frame:SetPoint("CENTER");
+			end
 		end
 		frame:Show();
 		if not firstFrame then
@@ -109,6 +113,10 @@ function RewardTrackFrameMixin:GetElements()
 	return self.Elements;
 end
 
+function RewardTrackFrameMixin:SetCenteringEnabled(enabled)
+	self.disableCentering = not enabled;
+end
+
 function RewardTrackFrameMixin:OnUpdate(elapsed)
 	if self.stopRequested then
 		self:StopScroll();
@@ -155,9 +163,14 @@ function RewardTrackFrameMixin:SetSelection(index, forceRefresh, skipSound, over
 		PlaySound(self.scrollStopSound);
 	end
 	self.selectedIndex = index;
-	local offset = self:GetAbsoluteOffsetForIndex(index);
-	self.headElement:SetPoint("CENTER", -offset, 0);
-	self.offset = offset;
+
+	if self.disableCentering then
+		self.offset = 0;
+	else
+		self.offset = self:GetAbsoluteOffsetForIndex(index);
+		self.headElement:SetPoint("CENTER", -self.offset, 0);
+	end
+
 	if forceRefresh then
 		self.centerIndex = nil;
 	end
@@ -168,8 +181,9 @@ function RewardTrackFrameMixin:RefreshView(forceRefresh)
 	local centerIndex = self:GetClosestIndexToCenter();
 	if forceRefresh or (self.centerIndex ~= centerIndex) then
 		self.centerIndex = centerIndex;
-		local leftIndex = math.max(1, centerIndex - self.numElementsPerHalf);
-		local rightIndex = math.min(centerIndex + self.numElementsPerHalf, self.numElements);
+		-- Without centering every element is on screen at once, so none of them can be skipped.
+		local leftIndex = self.disableCentering and 1 or math.max(1, centerIndex - self.numElementsPerHalf);
+		local rightIndex = self.disableCentering and self.numElements or math.min(centerIndex + self.numElementsPerHalf, self.numElements);
 		self:GetParent():OnTrackUpdate(leftIndex, centerIndex, rightIndex, self.moving);
 		if self.moving and self.scrollCenterChangeSound then
 			PlaySound(self.scrollCenterChangeSound);
@@ -333,6 +347,14 @@ end
 
 RenownLevelMixin = { };
 
+local function ResolveIconBorderAtlas(atlas, iconShape)
+	if atlas and atlas:find("%s", 1, true) then
+		return atlas:format(iconShape);
+	end
+
+	return atlas;
+end
+
 function RenownLevelMixin:SetInfo(info)
 	self.info = info;
 	self.init = false;
@@ -392,25 +414,25 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 	end
 
 	if selected then
-		borderAtlas = "ui-journeys-delve-rewardicon-%s-frame-yellow";
-		rectangleFrameAtlas = "ui-journeys-delve-rewardicon-rectangle-frame-yellow";
+		borderAtlas = self.selectedIconBorderAtlas or "ui-journeys-delve-rewardicon-%s-frame-yellow";
+		rectangleFrameAtlas = self.selectedRectangleFrameAtlas or "ui-journeys-delve-rewardicon-rectangle-frame-yellow";
 	elseif earned then
-		borderAtlas = "ui-journeys-delve-rewardicon-%s-frame";
-		rectangleFrameAtlas = "ui-journeys-delve-rewardicon-rectangle-frame";
+		borderAtlas = self.earnedIconBorderAtlas or "ui-journeys-delve-rewardicon-%s-frame";
+		rectangleFrameAtlas = self.earnedRectangleFrameAtlas or "ui-journeys-delve-rewardicon-rectangle-frame";
 	else
-		borderAtlas = "ui-journeys-delve-rewardicon-%s-frame-grey";
-		rectangleFrameAtlas = "ui-journeys-delve-rewardicon-rectangle-frame-grey";
+		borderAtlas = self.iconBorderAtlas or "ui-journeys-delve-rewardicon-%s-frame-grey";
+		rectangleFrameAtlas = self.rectangleFrameAtlas or "ui-journeys-delve-rewardicon-rectangle-frame-grey";
 	end
 
 	if lastEarned then
-		backgroundFrameAtlas = "ui-journeys-delve-reward-bar-green";
-		levelSquareFrameAtlas = "ui-journeys-delve-level-square-green";
+		backgroundFrameAtlas = self.lastEarnedBackgroundFrameAtlas or "ui-journeys-delve-reward-bar-green";
+		levelSquareFrameAtlas = self.lastEarnedLevelSquareFrameAtlas or "ui-journeys-delve-level-square-green";
 	elseif earned then
-		backgroundFrameAtlas = "ui-journeys-delve-reward-bar";
-		levelSquareFrameAtlas = "ui-journeys-delve-level-square";
+		backgroundFrameAtlas = self.earnedBackgroundFrameAtlas or "ui-journeys-delve-reward-bar";
+		levelSquareFrameAtlas = self.earnedLevelSquareFrameAtlas or "ui-journeys-delve-level-square";
 	else
-		backgroundFrameAtlas = "ui-journeys-delve-reward-bar-grey";
-		levelSquareFrameAtlas = "ui-journeys-delve-level-square-grey";
+		backgroundFrameAtlas = self.backgroundFrameAtlas or "ui-journeys-delve-reward-bar-grey";
+		levelSquareFrameAtlas = self.levelSquareFrameAtlas or "ui-journeys-delve-level-square-grey";
 	end
 
 	if self.IconMask then
@@ -420,7 +442,7 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 	end
 
 	if self.IconBorder then
-		self.IconBorder:SetAtlas(borderAtlas:format(iconShape), TextureKitConstants.IgnoreAtlasSize);
+		self.IconBorder:SetAtlas(ResolveIconBorderAtlas(borderAtlas, iconShape), TextureKitConstants.IgnoreAtlasSize);
 	end
 
 	if self.LevelRectangle then
@@ -437,10 +459,22 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 
 	if earned then
 		self.Icon:SetDesaturated(false);
-		self.Level:SetTextColor(NORMAL_FONT_COLOR:GetRGB());
+		self.Level:SetTextColor((self.earnedLevelColor or NORMAL_FONT_COLOR):GetRGB());
 	else
 		self.Icon:SetDesaturated(true);
-		self.Level:SetTextColor(DISABLED_FONT_COLOR:GetRGB());
+		self.Level:SetTextColor((self.levelColor or DISABLED_FONT_COLOR):GetRGB());
+	end
+
+	if self.RewardName then
+		local rewardNameColor;
+		if earned then
+			rewardNameColor = self.earnedRewardNameColor;
+		else
+			rewardNameColor = self.rewardNameColor;
+		end
+		if rewardNameColor then
+			self.RewardName:SetTextColor(rewardNameColor:GetRGB());
+		end
 	end
 
 	if self.EarnedCheckmark then

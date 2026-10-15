@@ -6,7 +6,7 @@
 		</KeyValues>
 	</Frame>
 
-	<Button name="PartyMemberPetFrameTemplate" mixin="PartyMemberPetFrameMixin" frameStrata="LOW" inherits="SecureUnitButtonTemplate" virtual="true">
+	<Button name="PartyMemberPetFrameTemplate" mixin="PartyMemberPetFrameMixin" frameStrata="LOW" inherits="SecureUnitButtonTemplate, SmartNavigationNoContextActions" virtual="true">
 		<Size x="64" y="23"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -45,7 +45,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<StatusBar parentKey="HealthBar" inherits="TextStatusBar" scale="0.5">
+			<StatusBar parentKey="HealthBar" inherits="TextStatusBar, SmartNavigationIgnoredTemplate" scale="0.5">
 				<Size x="71" y="10"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="43" y="-18"/>
@@ -57,7 +57,7 @@
 				</Scripts>
 				<BarTexture atlas="ui-hud-unitframe-party-portraiton-bar-health"/>
 			</StatusBar>
-			<Frame parentKey="AuraFrameContainer" inherits="HorizontalLayoutFrame">
+			<Frame parentKey="AuraFrameContainer" inherits="HorizontalLayoutFrame, SmartNavigationIgnoredTemplate">
 				<KeyValues>
 					<KeyValue key="spacing" value="2" type="number"/>
 				</KeyValues>
@@ -76,7 +76,7 @@
 	<!--IMPORTANT
 		If you change anything in this file, be sure to check in PartyMemberFrame.lua if these values get set there as well.
 		IMPORTANT-->
-	<Button name="PartyMemberFrameTemplate" mixin="PartyMemberFrameMixin" hidden="true" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate" virtual="true">
+	<Button name="PartyMemberFrameTemplate" mixin="PartyMemberFrameMixin" hidden="true" inherits="SecureUnitButtonTemplate, PingableUnitFrameTemplate, SmartNavigationNoContextActions" virtual="true">
 		<Size x="120" y="53"/>
 		<KeyValues>
 			<KeyValue key="frameType" value="Party" type="string"/>
@@ -129,19 +129,19 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="PowerBarAlt" inherits="UnitPowerBarAltTemplate">
+			<Frame parentKey="PowerBarAlt" inherits="UnitPowerBarAltTemplate, SmartNavigationIgnoredTemplate" >
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent" relativePoint="RIGHT" x="13" y="5"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="HealthBarContainer" inherits="SecureFrameParentPropagationTemplate">
+			<Frame parentKey="HealthBarContainer" inherits="SecureFrameParentPropagationTemplate, SmartNavigationIgnoredTemplate">
 				<Size x="70" y="10"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="45" y="-19"/>
 				</Anchors>
 				<Frames>
 					<StatusBar parentKey="TempMaxHealthLoss" hidden="true" drawLayer="BACKGROUND" useParentLevel="true" mixin="TempMaxHealthLossMixin">
-						<BarTexture atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss"/>
+						<BarTexture parentKey="Texture" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
 							<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
@@ -238,7 +238,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<StatusBar parentKey="ManaBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate">
+			<StatusBar parentKey="ManaBar" inherits="TextStatusBar, SecureFrameParentPropagationTemplate, SmartNavigationIgnoredTemplate">
 				<Size x="74" y="7"/>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="41" y="-30"/>
@@ -287,9 +287,9 @@
 						self:GetParent():Click(button);
 					</OnMouseUp>
 				</Scripts>
-				<BarTexture atlas="UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana"/>
+				<BarTexture parentKey="Texture" atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana"/>
 			</StatusBar>
-			<Frame parentKey="PartyMemberOverlay" setAllPoints="true">
+			<Frame parentKey="PartyMemberOverlay" inherits="SmartNavigationIgnoredTemplate" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
 						<Texture parentKey="Status" atlas="UI-HUD-UnitFrame-Party-PortraitOn-Status" useAtlasSize="true" hidden="true">
@@ -329,7 +329,7 @@
 					</Layer>
 				</Layers>
 			</Frame>
-			<Frame parentKey="ReadyCheck" inherits="ReadyCheckStatusTemplate" hidden="true">
+			<Frame parentKey="ReadyCheck" inherits="ReadyCheckStatusTemplate, SmartNavigationIgnoredTemplate" hidden="true">
 				<Anchors>
 					<Anchor point="CENTER" relativeKey="$parent.Portrait" relativePoint="CENTER" x="0" y="-2"/>
 				</Anchors>
@@ -339,7 +339,7 @@
 					</OnLoad>
 				</Scripts>
 			</Frame>
-			<Frame parentKey="NotPresentIcon" ignoreParentAlpha="true" hidden="true">
+			<Frame parentKey="NotPresentIcon" inherits="SmartNavigationIgnoredTemplate" ignoreParentAlpha="true" hidden="true">
 				<Size x="25" y="25"/>
 				<Anchors>
 					<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="-2"/>

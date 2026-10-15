@@ -1,0 +1,12 @@
+## Title: Blizzard_UnitPopupShared
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_Colors
+## Dep: Blizzard_GlueXML [AllowLoad glue]
+## Dep: Blizzard_FrameXMLBase [AllowLoad game] [AllowLoadGameType mainline]
+## AllowLoad: both [AllowLoadGameType mainline]
+
+UnitPopupSharedUtils.lua
+UnitPopupSharedButtonMixins.lua
+[Family]\UnitPopupSharedButtonMixins.lua	[AllowLoadGameType mainline]
+UnitPopupShared.lua
+UnitPopupSharedMenus.lua

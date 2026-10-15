@@ -1,0 +1,17 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="GamepadHudMode" parent="UIParent" hidden="true" mixin="GamepadHudModeMixin">
+		<Size x="150" y="120"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="50" y="-50" />
+		</Anchors>
+		<Frames>
+			<Frame parentKey="GamepadHudCursor" inherits="SmartNavigationPointerTemplate"/>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

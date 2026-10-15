@@ -49,6 +49,15 @@ local RaidLocks =
 				{ Name = "raidLockExtendFeatureEnabled", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "IsRaidLockExtendFeatureSupported",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "raidLockExtendFeatureSupported", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -58,6 +67,7 @@ local RaidLocks =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -1,0 +1,96 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Texture name="TravelerManaPipTextureTemplate" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" virtual="true"/>
+
+	<Frame name="TravelerManaPipTemplate" mixin="TravelerManaPipMixin" virtual="true">
+		<Size x="20" y="20"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BGShadow" atlas="talebound-manapip-bg-shadow" useAtlasSize="true" inherits="TravelerManaPipTextureTemplate">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="-4"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGActive" atlas="talebound-manapip-bg" useAtlasSize="true" inherits="TravelerManaPipTextureTemplate" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGInactive" atlas="talebound-manapip-bg-dis" useAtlasSize="true" inherits="TravelerManaPipTextureTemplate" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="BGGlow" atlas="talebound-manapip-bg" useAtlasSize="true" inherits="TravelerManaPipTextureTemplate" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Icon" atlas="talebound-manapip-icon-teal" useAtlasSize="true" inherits="TravelerManaPipTextureTemplate" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="2">
+				<Texture parentKey="FXGlow" atlas="talebound-manapip-fx-teal" useAtlasSize="true" inherits="TravelerManaPipTextureTemplate" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FrameGlow" atlas="talebound-manapip-frame-glow" useAtlasSize="true" inherits="TravelerManaPipTextureTemplate" parentArray="fxTextures">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="SlashFB" atlas="talebound-manapip-slash-teal" alphaMode="BLEND" texelSnappingBias="0.0" snapToPixelGrid="false" parentArray="fxTextures">
+					<Size x="43" y="43"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="instantActivateAnim" setToFinalAlpha="true">
+				<Alpha childKey="Icon" fromAlpha="0" toAlpha="1" duration=".01" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="1" duration=".01" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="1" toAlpha="0" duration=".01" order="1"/>
+				<Alpha childKey="SlashFB" fromAlpha="1" toAlpha="0" duration=".01" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="instantDeactivateAnim" setToFinalAlpha="true">
+				<Alpha childKey="Icon" fromAlpha="1" toAlpha="0" duration=".01" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="1" toAlpha="0" duration=".01" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="0" toAlpha="1" duration=".01" order="1"/>
+				<Alpha childKey="SlashFB" fromAlpha="1" toAlpha="0" duration=".01" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="activateAnim" setToFinalAlpha="true">
+				<Alpha childKey="SlashFB" fromAlpha="0" toAlpha="1" duration="0" order="1"/>
+				<Alpha childKey="SlashFB" fromAlpha="1" toAlpha="0" startDelay=".56" duration=".01" order="1"/>
+				<FlipBook childKey="SlashFB" duration=".57" flipBookRows="3" flipBookColumns="6" flipBookFrames="17" flipBookFrameWidth="0" flipBookFrameHeight="0" order="1"/>
+				<Alpha childKey="Icon" fromAlpha="0" toAlpha=".5" duration=".1" order="1"/>
+				<Alpha childKey="Icon" fromAlpha=".5" toAlpha="1" startDelay=".27" duration=".27" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="0" duration=".2" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="0" toAlpha="1" startDelay=".2" duration=".17" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="1" toAlpha="1" duration=".37" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="1" toAlpha="0" startDelay=".37" duration=".1" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="0" toAlpha="1" duration=".17" order="1"/>
+				<Alpha childKey="BGGlow" fromAlpha="1" toAlpha="0" startDelay=".17" duration=".4" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="deactivateAnim" setToFinalAlpha="true">
+				<Alpha childKey="SlashFB" fromAlpha="1" toAlpha="0" duration=".01" order="1"/>
+				<Alpha childKey="FrameGlow" fromAlpha="1" toAlpha="0" duration=".5" order="1"/>
+				<Alpha childKey="Icon" fromAlpha="1" toAlpha="0" duration=".17" order="1"/>
+				<Alpha childKey="FXGlow" fromAlpha="1" toAlpha="0" duration=".4" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="1" toAlpha="1" duration=".2" order="1"/>
+				<Alpha childKey="BGActive" fromAlpha="1" toAlpha="0" startDelay=".2" duration=".17" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="0" toAlpha="0" duration=".37" order="1"/>
+				<Alpha childKey="BGInactive" fromAlpha="0" toAlpha="1" startDelay=".37" duration=".1" order="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

@@ -1,0 +1,14 @@
+## Title: Blizzard_ScribeUI
+## AllowLoad: Game
+## LoadOnDemand: 1
+## AllowLoadGameType: wowhack
+## Dependencies: Blizzard_FrameVisibilityUtils, Blizzard_FrameXMLUtil
+
+Blizzard_ScribeUI_Bootstrap.lua [Bootstrap]
+
+Blizzard_ScribeClassCardTemplates.lua
+Blizzard_ScribeClassCardTemplates.xml
+Blizzard_ScribeUI.lua
+Blizzard_ScribeUI.xml
+
+Blizzard_ScribeUIRegistration.lua

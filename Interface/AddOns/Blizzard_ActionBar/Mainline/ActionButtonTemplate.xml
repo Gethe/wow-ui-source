@@ -38,6 +38,11 @@
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
 				</Texture>
+				<Texture parentKey="InsufficientResourceFlash" atlas="UI-HUD-ActionBar-IconFrame-Flash" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString name="$parentName" parentKey="Name" inherits="GameFontHighlightSmallOutline">
@@ -161,7 +166,7 @@
 				<Anchor point="TOPLEFT"/>
 			</Anchors>
 		</HighlightTexture>
-		<CheckedTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" parentKey="CheckedTexture">
+		<CheckedTexture atlas="UI-HUD-ActionBar-IconFrame-Mouseover" alphaMode="ADD" parentKey="CheckedTexture">
 			<Size x="46" y="45"/>
 			<Anchors>
 				<Anchor point="TOPLEFT"/>

@@ -1,0 +1,298 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<CheckButton name="PetStableSlotTemplate" virtual="true" mixin="PetStableSlotMixin">
+		<Size x="37" y="37"/>
+		<KeyValues>
+			<KeyValue key="buttonContext" type="string" value="ButtonContext_StableFramePetButton"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="BORDER">
+				<Texture name="$parentIconTexture"/>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="currentGlow" atlas="ui-stables-pet-frame-current-glow" useAtlasSize="true" hidden="true" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="genericPetIcon" atlas="ui-stables-pet-icon-unlocked" useAtlasSize="true" hidden="true" scale="0.8">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="unlockedBackground" atlas="ui-stables-pet-frame-stabled" useAtlasSize="true" hidden="true" scale="0.8">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="currentBackground" atlas="ui-stables-pet-frame-current" useAtlasSize="true" hidden="true" scale="0.8">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="lockedBackground" atlas="ui-stables-pet-frame-locked" useAtlasSize="true" hidden="true" scale="0.8">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="lockIcon" atlas="AdventureMapIcon-Lock" useAtlasSize="true" hidden="true" scale="0.56">
+					<Anchors>
+						<Anchor point="CENTER" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnReceiveDrag method="OnReceiveDrag"/>
+		</Scripts>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress"/>
+		<HighlightTexture file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD"/>
+		<CheckedTexture file="Interface\Buttons\CheckButtonHilight" alphaMode="ADD"/>
+	</CheckButton>
+
+	<Frame name="PetStableFrame" mixin="StableFrameMixin" inherits="PortraitFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+		<Size x="384" y="522"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="-104"/>
+		</Anchors>
+		<HitRectInsets>
+			<AbsInset left="0" right="34" top="0" bottom="75"/>
+		</HitRectInsets>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString name="PetStableLevelText" inherits="GameFontNormalLarge" text="">
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-31"/>
+					</Anchors>
+				</FontString>
+				<FontString name="PetStableLoyaltyText" inherits="GameFontHighlight" text="">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="PetStableLevelText" relativePoint="BOTTOM" x="0" y="-3">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetStableSlotText" inherits="GameFontNormalSmall" text="STABLE_SLOT_TEXT">
+					<Anchors>
+						<Anchor point="BOTTOM" x="0" y="60">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="PetStableCostLabel" inherits="GameFontNormal" text="COSTS_LABEL">
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="100" y="35">
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="GamepadSlotCostText" inherits="GameFontWhite" justifyH="LEFT" text="STABLE_SLOT_COST_TEXT" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="100" y="60"/>
+						<Anchor point="BOTTOMRIGHT" x="-100" y="25"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" name="BottomBackground" atlas="ui-stables-footer-bg">
+					<Size y="132"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="4" y="20"/>
+						<Anchor point="BOTTOMRIGHT" x="-4" y="20"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="Background" name="TopBackground" atlas="ui-stables-subheader-bg">
+					<Size y="50"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="4" y="-20"/>
+						<Anchor point="TOPRIGHT" x="-4" y="-20"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="insideFrameBottom" atlas="common-insideframe" >
+					<Size y="126"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" x="4" y="22"/>
+						<Anchor point="BOTTOMRIGHT" x="-6" y="34"/>
+					</Anchors>					
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="modelScene" inherits="PanningModelSceneMixinTemplate"  mixin="StablePetModelSceneMixin">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="6" y="-72" />
+					<Anchor point="BOTTOMRIGHT" x="-6" y="150" />
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background" atlas="ui-stables-pet-model-bg">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="PetShadow" atlas="perks-char-shadow" alpha="0.6">
+							<Size x="410" y="90"/>
+							<Anchors>
+								<Anchor point="CENTER" x="-8" y="-80"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate">
+						<Anchors>
+							<Anchor point="TOP" y="-10"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="Inset" useParentLevel="true" inherits="InsetFrameTemplate">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+					</Frame>
+
+					<Frame parentKey="PetModelSceneShadow" inherits="ShadowOverlayTemplate" useParentLevel="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT" x="1" y="-1"/>
+						</Anchors>
+					</Frame>
+
+				</Frames>
+			</ModelScene>
+
+			<Frame parentKey="diet" enableMouse="true" inherits="PetFrameHappinessTemplate" frameLevel="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.modelScene" x="14" y="-18"/>
+				</Anchors>
+			</Frame>
+
+			<Frame name="expBar" parentKey="expBar" mixin="StableExpBarMixin" inherits="PetExpColoredProgressBarTemplate">
+				<Size x="257" y="29"/>
+				<Anchors>
+					<Anchor point="BOTTOM" y="10" relativeKey="$parent.modelScene"/>
+				</Anchors>
+			</Frame>
+
+			<CheckButton name="PetStableCurrentPet" inherits="PetStableSlotTemplate" id="1">
+				<Anchors>
+					<!-- This is moved in Blizzard_StableUI.lua when the purchase button is hidden. -->
+					<Anchor point="TOP" relativePoint="BOTTOM" relativeKey="$parent.modelScene" x ="-69" y="-34"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" text="CURRENT_PET">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="9"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</CheckButton>
+			<CheckButton name="PetStableStabledPet1" inherits="PetStableSlotTemplate" id="2">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetStableCurrentPet" relativePoint="RIGHT" x="53" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" text="STABLED_PETS">
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="TOP" x="24" y="9"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</CheckButton>
+			<CheckButton name="PetStableStabledPet2" inherits="PetStableSlotTemplate" id="3">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetStableStabledPet1" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+			</CheckButton>
+				
+			<Button parentKey="purchaseButton" inherits="UIPanelButtonTemplate" mixin="PetStablePurchaseButtonMixin" text="PURCHASE">
+				<Size x="105" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-85" y="31"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
+			<Frame name="PetStableMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-6" y="28"/>
+					<Anchor point="BOTTOMLEFT" x="6" y="7"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="Border" inherits="ContainerFrameCurrencyBorderTemplate">
+						<KeyValues>
+							<KeyValue key="leftEdge" value="common-coinbox-left" type="string"/>
+							<KeyValue key="rightEdge" value="common-coinbox-right" type="string"/>
+							<KeyValue key="centerEdge" value="_common-coinbox-center" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="LEFT" />
+							<Anchor point="RIGHT" />
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame name="PetStableCostMoneyFrame" inherits="SmallMoneyFrameTemplate">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="PetStableCostLabel" relativePoint="RIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						SmallMoneyFrame_OnLoad(self);
+						MoneyFrame_SetType(self, "STATIC");
+					</OnLoad>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="BottomDividerFrame" setAllPoints="true" frameLevel="500">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="horzDivider" atlas="ui-stables-horz-divider">
+							<Size x="372" y="12"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="TopDividerFrame" setAllPoints="true" frameLevel="500">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="horzDivider" atlas="ui-stables-horz-divider">
+							<Size x="372" y="12"/>
+							<Anchors>
+								<Anchor point="BOTTOM" relativePoint="BOTTOM" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnEvent method="OnEvent"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

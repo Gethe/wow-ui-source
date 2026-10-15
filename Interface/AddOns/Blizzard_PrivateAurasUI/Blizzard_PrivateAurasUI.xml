@@ -39,7 +39,7 @@
 					<Texture parentKey="Gradient" parentArray="OverlayColorElements" setAllPoints="true"/>
 					<Texture parentKey="Border" parentArray="OverlayColorElements" atlas="RaidFrame-DispelHighlight" setAllPoints="true"/>
 				</Layer>
-				<Layer level="ARTWORK" textureSubLevel="-4">
+				<Layer level="ARTWORK" textureSubLevel="1">
 					<Texture inherits="CompactDispelDebuffTemplate"/>
 					<Texture inherits="CompactDispelDebuffTemplate"/>
 					<Texture inherits="CompactDispelDebuffTemplate"/>
@@ -50,6 +50,33 @@
 					<Alpha fromAlpha="0.5" toAlpha="1" duration="0.5" />
 				</AnimationGroup>
 			</Animations>
+		</Frame>
+
+		<Frame name="CompactUnitFrameAnimatedDispelBorderTemplate" inherits="MarchingAntsTemplate" virtual="true">
+			<KeyValues>
+				<KeyValue key="verticalAsset" value="UI-RaidFrames-SingleAnt-Vertical" type="string"/>
+				<KeyValue key="horizontalAsset" value="UI-RaidFrames-SingleAnt-Horiz" type="string"/>
+
+				<KeyValue key="leftOffsetP1X" value="-3" type="number"/>
+				<KeyValue key="leftOffsetP1Y" value="0" type="number"/>
+				<KeyValue key="leftOffsetP2X" value="-3" type="number"/>
+				<KeyValue key="leftOffsetP2Y" value="0" type="number"/>
+
+				<KeyValue key="rightOffsetP1X" value="3" type="number"/>
+				<KeyValue key="rightOffsetP1Y" value="0" type="number"/>
+				<KeyValue key="rightOffsetP2X" value="3" type="number"/>
+				<KeyValue key="rightOffsetP2Y" value="0" type="number"/>
+
+				<KeyValue key="topOffsetP1X" value="0" type="number"/>
+				<KeyValue key="topOffsetP1Y" value="3" type="number"/>
+				<KeyValue key="topOffsetP2X" value="0" type="number"/>
+				<KeyValue key="topOffsetP2Y" value="3" type="number"/>
+
+				<KeyValue key="bottomOffsetP1X" value="0" type="number"/>
+				<KeyValue key="bottomOffsetP1Y" value="-3" type="number"/>
+				<KeyValue key="bottomOffsetP2X" value="0" type="number"/>
+				<KeyValue key="bottomOffsetP2Y" value="-3" type="number"/>
+			</KeyValues>
 		</Frame>
 
 		<Frame name="RaidBossEmoteFramePrivate" inherits="RaidWarningFrameTemplate" mixin="PrivateRaidBossEmoteFrameMixin" frameStrata="HIGH">

@@ -2,6 +2,7 @@ UIModeUtil.RegisterMode("ClientScene", {
 	rolesetBlocklist = {
 		"unitFrames",
 		"cooldownViewers",
+		"swingTimers",
 	},
 });
 

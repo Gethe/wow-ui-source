@@ -77,6 +77,7 @@ local SpellActivationOverlay =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

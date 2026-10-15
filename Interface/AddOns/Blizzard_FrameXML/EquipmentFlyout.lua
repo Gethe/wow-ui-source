@@ -50,6 +50,8 @@ VERTICAL_FLYOUTS = { [16] = true, [17] = true, [18] = true }
 local itemTable = {}; -- Used for items and locations
 local itemDisplayTable = {} -- Used for ordering items by location
 
+EquipmentFlyoutMixin = {};
+
 function EquipmentFlyout_OnLoad(self)
 	self.buttons = {};
 end
@@ -259,22 +261,20 @@ function EquipmentFlyout_UpdateItems()
 		numPageItems = EQUIPMENTFLYOUT_ITEMS_PER_PAGE;
 	end
 
-	-- navigation frame
 	local navFrame = flyout.NavigationFrame;
 	if ( maxPage == 1 ) then
 		navFrame:Hide();
 	else
 		navFrame:Show();
-		if ( currentPage <= 1 ) then
-			navFrame.PrevButton:Disable();
-		else
-			navFrame.PrevButton:Enable();
-		end
-		if ( currentPage >= maxPage ) then
-			navFrame.NextButton:Disable();
-		else
-			navFrame.NextButton:Enable();
-		end
+		local enablePrev = currentPage > 1;
+		navFrame.PrevButton:SetEnabled(enablePrev);
+		navFrame.PageTurnIndicatorLeft:SetEnabled(enablePrev);
+		navFrame.PrevPagePrompt:SetEnabled(enablePrev);
+
+		local enableNext = currentPage < maxPage;
+		navFrame.NextButton:SetEnabled(enableNext);
+		navFrame.PageTurnIndicatorRight:SetEnabled(enableNext);
+		navFrame.NextPagePrompt:SetEnabled(enableNext);
 	end
 
 	for i, button in ipairs(buttons) do

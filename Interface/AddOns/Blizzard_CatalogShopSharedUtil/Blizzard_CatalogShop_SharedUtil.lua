@@ -231,7 +231,7 @@ local function GetDefaultActorInfo(modelSceneID, playerRaceName, playerRaceNameA
 		local returnActorInfo;
 		for i, defaultActorID in ipairs(defaultActorIDs) do
 			local tempActorInfo = C_ModelInfo.GetModelSceneActorInfoByID(defaultActorID);
-			
+
 			if tempActorInfo.scriptTag == playerRaceNameActorTag then
 				return tempActorInfo;
 			end
@@ -255,7 +255,7 @@ end
 --[[
 
 CatalogShopUtil is a system for taking relevant product info and "flattening" it into a single "display data" table.  There is an auto tools system
-used by the UI team and it can only work with a single flat table.  
+used by the UI team and it can only work with a single flat table.
 
 ]]
 CatalogShopUtil = {
@@ -316,6 +316,8 @@ function CatalogShopUtil.ExtractProductInfoForDisplayData(productInfo)
 	end
 	return data
 end
+
+
 
 function CatalogShopUtil.TranslateProductInfoToProductDisplayData(productInfo, defaultModelSceneID, overrideModelSceneID)
 	local selectedModelSceneID = overrideModelSceneID or defaultModelSceneID;
@@ -689,7 +691,7 @@ function CatalogShopUtil.SetupPlayerModelSceneForInGame(playerData, modelLoadedC
 	if not playerData then
 		return;
 	end
-		
+
 	local actor = nil;
 	if playerData.overrideActorName then
 		actor = playerData.modelScene:GetPlayerActor(playerData.overrideActorName);
@@ -762,7 +764,9 @@ function CatalogShopUtil.SetupPlayerModelSceneForGlues(playerData, modelLoadedCB
 	end
 
 	if not actor then
-		error("CatalogShopUtil.SetupPlayerModelSceneForGlues : invalid actor")
+		-- We've seen this happen for the following causes:
+		--	ModelScene of one type configured for a product of another (i.e. a Transmog product configured with a mount ModelScene, https://t2jira.corp.blizzard.net/browse/TECH-13041)
+		error("CatalogShopUtil.SetupPlayerModelSceneForGlues : invalid actor, see comments for possible causes")
 		return nil;
 	end
 	if modelLoadedCB then
@@ -817,7 +821,6 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 			end
 		end
 	end
-
 	if actorDisplayData then
 		hideWeapon = actorDisplayData.hideWeapon;
 		sheatheWeapon = actorDisplayData.sheatheWeapon;
@@ -825,8 +828,8 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 		autoDress = actorDisplayData.autoDress or false;
 		--itemModifiedAppearanceID = displayData.itemModifiedAppearanceID;
 		itemModifiedAppearanceIDs = displayData.itemModifiedAppearanceIDs;
-	end	
-	
+	end
+
 	local hasSubItems = data and data.hasSubItems or nil; -- not valid yet
 	local overrideActorName = displayData.modelSceneTag;
 	local playerData = CatalogShopUtil.TranslatePlayerModelData(modelScene, overrideActorName, itemModifiedAppearanceIDs, hasSubItems, sheatheWeapon, autoDress, hideWeapon, useNativeForm, forceSceneChange);
@@ -887,7 +890,7 @@ function CatalogShopUtil.SetupModelSceneForPets(modelScene, modelSceneID, displa
 				EventRegistry:TriggerEvent("CatalogShop.OnModelSceneActorFailedToLoad", displayData);
 			end
 
-			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);			
+			actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 			local tryUseOverrideAnim = true;
 			CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData, tryUseOverrideAnim);
 		end
@@ -924,6 +927,10 @@ end
 
 function CatalogShopUtil.CatalogShopTryOn(actor, itemModifiedAppearanceID, allowOffHand)
 	local itemID = C_TransmogCollection.GetSourceItemID(itemModifiedAppearanceID);
+	if not itemID then
+		return;
+	end
+
 	local invType = select(4, C_Item.GetItemInfoInstant(itemID));
 
 	local isEquippedInOffhand = invType == "INVTYPE_SHIELD"
@@ -996,19 +1003,19 @@ function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, pro
 		end
 
 		local actorDisplayInfoData = actorDisplayData.actorDisplayInfoData;
-		actor:SetSpellVisualKit(nil);
 		actor:StopAnimationKit();
 		actor:SetAnimation(0, 0, 1.0);
 		if tryUseOverrideAnim then
 			SetAnimations(actor, actorDisplayInfoData);
-		end		
+		end
 		actor:SetSpellVisualKit(actorDisplayInfoData.spellVisualKitID or actorDisplayData.spellVisualID);
 	else
 		local x, y, z = actorDisplayData.actorX, actorDisplayData.actorY, actorDisplayData.actorZ;
 		actor:SetPosition(x, y, z);
 
 		local actorDisplayInfoData = actorDisplayData.actorDisplayInfoData;
-		actor:SetSpellVisualKit(nil);
+		local spellVisualKitID = actorDisplayData.spellVisualID; -- can be nil;
+		actor:SetSpellVisualKit(spellVisualKitID);
 		actor:StopAnimationKit();
 		actor:SetAnimation(0, 0, 1.0);
 		SetAnimations(actor, actorDisplayInfoData);
@@ -1083,6 +1090,8 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 
 	if productType == CatalogShopConstants.ProductType.Transmog then
 		actor = modelScene.CachedPlayerActor;
+		-- Defaulting to 1. Otherwise, we don't have actorDisplayData. Which causes it to early out during UpdateActorWithDisplayData
+		actorDisplayData = actorDisplayBucket[1];
 	elseif modelSceneTag ~= nil then
 		actor = modelScene:GetActorByTag(modelSceneTag);
 		for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
@@ -1174,9 +1183,12 @@ end
 
 function CatalogShopUtil.GetTypeText(productInfo)
 	-- Grab our current environment so we can access the loaded global strings
+
+	local productType = productInfo.cardDisplayData.productType;
+
 	local secureEnv = GetCurrentEnvironment();
 	if (productInfo.type) then
-		if (productInfo.isBundle or false) then
+		if (productInfo.isBundle and productType ~= CatalogShopConstants.ProductType.BYOB) then
 			return string.format(secureEnv[productInfo.type], productInfo.numBundleDetailCards);
 		else
 			return secureEnv[productInfo.type];
@@ -1219,7 +1231,7 @@ function CatalogShopUtil.ItemAppearancesHaveSameCategory(itemModifiedAppearanceI
 		return false;
 	end
 
-	-- weapons have multiple category slots and we want to treat them as a single slot for the purpose of 
+	-- weapons have multiple category slots and we want to treat them as a single slot for the purpose of
 	-- iterating over transmog items in a carousel.
 	-- Example: a transmog set is all Enum.TransmogCollectionType.Back, we want to return TRUE so this will carousel
 	-- or - this transmog set has ALL weapons (but different slots) - we want to return TRUE so this will carousel
@@ -1259,13 +1271,41 @@ function CatalogShopUtil.GetTimeTexture(productInfo, productType)
 		return nil;
 	end
 
-	local textureName = prefix.."-time-"..productInfo.licenseTermDuration;
+	local termDuration;
+	local usingDeferredTimeDays = false;
+	if productInfo.licenseTermDuration > 0 then
+		termDuration = productInfo.licenseTermDuration;
+	elseif productInfo.deferredGameTimeDays > 0 then
+		termDuration = productInfo.deferredGameTimeDays;
+		usingDeferredTimeDays = true;
+	else
+		return nil;
+	end
+
+	local textureName = prefix.."-time-"..termDuration;
 	if productInfo.licenseTermType == CatalogShopConstants.LicenseTermTypes.Months then
 		return textureName.."mo";
-	elseif productInfo.licenseTermType == CatalogShopConstants.LicenseTermTypes.Days then
+	elseif productInfo.licenseTermType == CatalogShopConstants.LicenseTermTypes.Days or usingDeferredTimeDays then
+		-- Currently, we assume that any deferred time displays are in days
 		return textureName.."day";
 	else
 		return nil;
+	end
+end
+
+local function CreateDisplayDataForChildrenProducts( childrenProductData, displayInfoTable, defaultModelSceneID, overrideModelSceneID )
+	for _, childData in ipairs(childrenProductData) do
+		local childProductDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childData.childProductID)
+
+		if not childProductDisplayInfo.hasUnknownLicense then
+			if displayInfoTable then
+				local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultModelSceneID, overrideModelSceneID)
+				childProductData.displayOrder = childData.displayOrder or 999;
+				childProductData.cameraDisplayData = nil;
+
+				table.insert(displayInfoTable, childProductData);
+			end
+		end
 	end
 end
 
@@ -1280,7 +1320,7 @@ function CatalogShopUtil.GetProductInfo(productID)
 		error("CatalogShopMixin:GetProductInfo : product display info not found!")
 		return productInfo;
 	end
-		
+
 	local defaultPreviewModelSceneID = productDisplayInfo.defaultPreviewModelSceneID;
 	local overridePreviewModelSceneID = productDisplayInfo.overridePreviewModelSceneID or nil;
 	local defaultCardModelSceneID = productDisplayInfo.defaultCardModelSceneID;
@@ -1298,51 +1338,35 @@ function CatalogShopUtil.GetProductInfo(productID)
 	if defaultWideCardModelSceneID then
 		productInfo.wideCardDisplayData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(productDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID);
 	end
-				
+
 	-- get bundle children display data
 	if productDisplayInfo.productType == CatalogShopConstants.ProductType.Bundle then
 		local childrenProductData = C_CatalogShop.GetProductIDsForBundle(productID);
 		if productInfo.sceneDisplayData then
 			productInfo.sceneDisplayData.bundleChildrenDisplayData = {};
+			CreateDisplayDataForChildrenProducts( childrenProductData, productInfo.sceneDisplayData.bundleChildrenDisplayData , defaultPreviewModelSceneID, overridePreviewModelSceneID )
 		end
 		if productInfo.cardDisplayData then
 			productInfo.cardDisplayData.bundleChildrenDisplayData = {};
+			CreateDisplayDataForChildrenProducts( childrenProductData, productInfo.cardDisplayData.bundleChildrenDisplayData, defaultCardModelSceneID, overrideCardModelSceneID )
 		end
 		if productInfo.wideCardDisplayData then
 			productInfo.wideCardDisplayData.bundleChildrenDisplayData = {};
+			CreateDisplayDataForChildrenProducts( childrenProductData, productInfo.wideCardDisplayData.bundleChildrenDisplayData, defaultWideCardModelSceneID, overrideWideCardModelSceneID )
 		end
-		for _, childData in ipairs(childrenProductData) do
-			local childProductDisplayInfo = C_CatalogShop.GetCatalogShopProductDisplayInfo(childData.childProductID)
-			-- If this product has a missing license (unknown to server) then we can't use this product in our model scene (it's from another game)
-			if not childProductDisplayInfo.hasUnknownLicense then
-				if productInfo.sceneDisplayData then
-					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultPreviewModelSceneID, overridePreviewModelSceneID)
-					childProductData.displayOrder = childData.displayOrder or 999;
-					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-					childProductData.cameraDisplayData = nil;
-					table.insert(productInfo.sceneDisplayData.bundleChildrenDisplayData, childProductData);
-				end
-				if productInfo.cardDisplayData then
-					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultCardModelSceneID, overrideCardModelSceneID)
-					childProductData.displayOrder = childData.displayOrder or 999;
-					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-					childProductData.cameraDisplayData = nil;
-					table.insert(productInfo.cardDisplayData.bundleChildrenDisplayData, childProductData);
-				end
-				if productInfo.wideCardDisplayData then
-					local childProductData = CatalogShopUtil.TranslateProductInfoToProductDisplayData(childProductDisplayInfo, defaultWideCardModelSceneID, overrideWideCardModelSceneID)
-					childProductData.displayOrder = childData.displayOrder or 999;
-					-- Special case for bundle children (reminder a product could be in a bundle AND not in a bundle in the storefront)
-					-- We don't want to adjust the model scene's camera based on child data, so we are nilling it out of our childProductData
-					childProductData.cameraDisplayData = nil;
-					table.insert(productInfo.wideCardDisplayData.bundleChildrenDisplayData, childProductData);
-				end
-			end
+	elseif productDisplayInfo.productType == CatalogShopConstants.ProductType.BYOB then
+		productInfo.selectionGroupInfos = C_CatalogShop.GetSelectionGroupInfo(productID);
+
+		for i, selectionGroupInfo in ipairs(productInfo.selectionGroupInfos) do
+			local childrenProductData = selectionGroupInfo.products;
+
+			selectionGroupInfo.sceneDisplayData = {};
+			CreateDisplayDataForChildrenProducts( childrenProductData, selectionGroupInfo.sceneDisplayData, defaultPreviewModelSceneID, overridePreviewModelSceneID );
+
+			selectionGroupInfo.cardDisplayData = {};
+			CreateDisplayDataForChildrenProducts( childrenProductData, selectionGroupInfo.cardDisplayData, defaultCardModelSceneID, overrideCardModelSceneID );
 		end
 	end
-
 	return productInfo;
 end
 

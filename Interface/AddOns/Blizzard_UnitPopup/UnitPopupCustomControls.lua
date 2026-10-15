@@ -68,11 +68,30 @@ function UnitPopupVoiceLevelsMixin:GetVoiceChannel()
 end
 
 function UnitPopupVoiceLevelsMixin:OnLoad()
+	local function Toggle()
+		self.Toggle:Click();
+	end
+
+	local function Increase()
+		self.Slider:SetValue(self.Slider:GetValue() + 5);
+	end
+
+	local function Decrease()
+		self.Slider:SetValue(self.Slider:GetValue() - 5);
+	end
+
 	local function UpdateText(slider, value, isMouse)
 		self.Text:SetText(FormatPercentage(value / 100, true))
 	end
 
 	self.Slider:RegisterPropertyChangeHandler("OnValueChanged", UpdateText);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.bindings = GamepadMode.CreateBindingGroup("UnitPopupVoiceLevelsBindings");
+		self.bindings:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, Toggle);
+		self.bindings:AddFunctionBinding(GAMEPAD_DPAD_LEFT, Decrease);
+		self.bindings:AddFunctionBinding(GAMEPAD_DPAD_RIGHT, Increase);
+	end
 end
 
 function UnitPopupVoiceLevelsMixin:OnShow()
@@ -83,9 +102,21 @@ function UnitPopupVoiceLevelsMixin:OnHide()
 	self.Toggle:UnregisterEvents();
 end
 
-function UnitPopupVoiceLevelsMixin:OnAttach()
+function UnitPopupVoiceLevelsMixin:OnAttach(...)
 	self.Toggle:UpdateVisibleState();
 	self.Slider:UpdateVisibleState();
+end
+
+function UnitPopupVoiceLevelsMixin:OnEnter()
+	if self.bindings then
+		GamepadMode.ActivateBindingGroup(self.bindings);
+	end
+end
+
+function UnitPopupVoiceLevelsMixin:OnLeave()
+	if self.bindings then
+		GamepadMode.DeactivateBindingGroup(self.bindings);
+	end
 end
 
 UnitPopupToggleMuteMixin = {};
@@ -169,7 +200,7 @@ end
 function UnitPopupToggleUserMuteMixin:IsSilenced()
 	local voiceChannelID = self:GetParent():GetVoiceChannelID();
 	if voiceChannelID then
-		local voiceMemberID = self:GetParent():GetVoiceMemberID();	
+		local voiceMemberID = self:GetParent():GetVoiceMemberID();
 		return C_VoiceChat.IsMemberSilenced(voiceChannelID, voiceMemberID);
 	end
 	return false;

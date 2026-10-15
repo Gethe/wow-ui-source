@@ -1,0 +1,99 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="LegacyChallengeCategoryListTemplate" mixin="LegacyChallengeCategoryListMixin" virtual="true">
+		<Size x="330" y="505"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="NoResultsText" inherits="GameFontNormal" text="LEGACY_NO_CHALLENGES" hidden="true">
+					<Size x="200" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-60"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<DropdownButton parentKey="FilterDropdown" inherits="WowStyle1FilterDropdownTemplate">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-8" y="-9"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="GamepadFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+						<Size x="28" y="28"/>
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-2" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</DropdownButton>
+
+			<EditBox parentKey="SearchBox" autoFocus="false" inherits="SearchBoxTemplate">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
+				<Size y="20"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.FilterDropdown" relativePoint="LEFT" x="-4" y="0"/>
+					<Anchor point="TOPLEFT" x="13" y="-8"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="GamepadFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_LEFT" type="global"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="28" y="28"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-8" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</EditBox>
+
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-35"/>
+					<Anchor point="BOTTOMRIGHT" x="-20" y="5"/>
+				</Anchors>
+			</Frame>
+
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+	<Button name="LegacyChallengeCategoryTemplate" inherits="ListHeaderVisualTemplate" mixin="LegacyChallengeCategoryMixin" virtual="true">
+		<Size y="25"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="NotificationIcon" atlas="UI-HUD-MicroMenu-Communities-Icon-Notification" hidden="true">
+					<Size x="14" y="14"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+	
+</Ui>

@@ -129,6 +129,7 @@ local HousingBlueprintConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

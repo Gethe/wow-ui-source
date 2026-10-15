@@ -20,7 +20,7 @@ local function Register()
 	InterfaceOverrides.RunSettingsCallback(function()
 		if C_CVar.GetCVar("showInGameNavigation") then
 			-- In Game Navigation
-			Settings.SetupCVarCheckbox(category, "showInGameNavigation", SHOW_IN_GAME_NAVIGATION, OPTION_TOOLTIP_SHOW_IN_GAME_NAVIGATION);
+			InterfaceOverrides.AdjustInGameNavigationSettings(category);
 		end
 	end);
 
@@ -41,18 +41,7 @@ local function Register()
 	end);
 
 	-- Outline
-	if C_CVar.GetCVar("Outline") then
-		local function GetOptions()
-			local container = Settings.CreateControlTextContainer();
-			container:Add(0, OBJECT_NPC_OUTLINE_DISABLED);
-			container:Add(1, OBJECT_NPC_OUTLINE_MODE_ONE);
-			container:Add(2, OBJECT_NPC_OUTLINE_MODE_TWO);
-			container:Add(3, OBJECT_NPC_OUTLINE_MODE_THREE);
-			return container:GetData();
-		end
-
-		Settings.SetupCVarDropdown(category, "Outline", Settings.VarType.Number, GetOptions, OBJECT_NPC_OUTLINE, OPTION_TOOLTIP_OBJECT_NPC_OUTLINE);
-	end
+	InterfaceOverrides.RegisterOutlineSettings(category);
 
 	-- Status text 
 	do
@@ -137,6 +126,11 @@ local function Register()
 	do
 		InterfaceOverrides.CreateQuestSettings(category, layout);
 	end
+	
+	-- Toasts
+	do
+		InterfaceOverrides.CreateToastSettings(category, layout);
+	end
 
 	InterfaceOverrides.AdjustDisplaySettings(category);
 
@@ -157,7 +151,16 @@ local function Register()
 	InterfaceOverrides.CreateHousingSettings(category, layout);
 
 	-- Coordinates Settings
-	InterfaceOverrides.CreateCoordinatesSettings(category, layout);
+	do
+		local sectionTooltip = nil;
+		local sectionNewTagID = "SETTINGS_MAP_COORDS_SECTION";
+		layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(SETTINGS_MAP_COORDS_SECTION, sectionTooltip, sectionNewTagID));
+
+		Settings.SetupCVarCheckbox(category, "worldMapShowPlayerCoords", SETTINGS_PLAYER_MAP_COORDS, SETTINGS_PLAYER_MAP_COORDS_TOOLTIP);
+		Settings.SetupCVarCheckbox(category, "worldMapShowCursorCoords", SETTINGS_CURSOR_MAP_COORDS, SETTINGS_CURSOR_MAP_COORDS_TOOLTIP);
+		Settings.SetupCVarCheckbox(category, "minimapShowPlayerCoords", SETTINGS_MINIMAP_PLAYER_COORDS, SETTINGS_MINIMAP_PLAYER_COORDS_TOOLTIP);
+		Settings.SetupCVarCheckbox(category, "coordsByTenths", SETTINGS_COORDS_BY_TENTHS, SETTINGS_COORDS_BY_TENTHS_TOOLTIP);
+	end
 
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end

@@ -18,8 +18,8 @@ function GetCVar(name)
 	return C_CVar.GetCVar(name);
 end
 
-function SetCVarBitfield(name, index, value, scriptCVar)
-	return C_CVar.SetCVarBitfield(name, index, value, scriptCVar);
+function SetCVarBitfield(name, index, value)
+	return C_CVar.SetCVarBitfield(name, index, value);
 end
 
 function SetCVarToDefault(name)

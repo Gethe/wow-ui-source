@@ -254,6 +254,7 @@
 			</Frame>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnUpdate method="OnUpdate"/>

@@ -50,7 +50,8 @@ LinkUtil.RegisterLinkHandler(LinkTypes.Channel, function(link, text, linkData, c
 end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.GMChat, function(link, text, linkData, contextData)
-	GMChatStatusFrame_OnClick();
+	GMChatFrame_LoadUI();
+	GMChatFrame_Show();
 end);
 
 LinkUtil.RegisterLinkHandler(LinkTypes.PvPUI, function(link, text, linkData, contextData)

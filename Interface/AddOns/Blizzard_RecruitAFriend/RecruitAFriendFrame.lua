@@ -1,6 +1,9 @@
 local RECRUIT_HEIGHT = 34;
 local DIVIDER_HEIGHT = 16;
 
+local PLAYER_FACTION_GROUP, PLAYER_FACTION_NAME = UnitFactionGroup("player");
+local PLAYER_REALM_NAME = GetRealmName();
+
 RecruitAFriendSystemMixin = {};
 
 -- We temporarily have two RecruitAFriendFrames, one for the new Social UI and one for the legacy friend list
@@ -237,6 +240,28 @@ local function SortRecruitsByWoWAccount(a, b)
 	end
 end
 
+local function BuildRecruitNameText(accountInfo)
+	local nameText = FriendsListUtil.GetFriendAccountNameText(accountInfo);
+
+	local gameAccountInfo = accountInfo.gameAccountInfo;
+	local characterName = FriendsFrame_GetFormattedCharacterName(gameAccountInfo.characterName, nil, gameAccountInfo.clientProgram, gameAccountInfo.timerunningSeasonID);
+	if characterName == "" then
+		return nameText;
+	end
+
+	local isSameRealmAndFaction = (gameAccountInfo.realmID and gameAccountInfo.realmID > 0) and (gameAccountInfo.factionName == PLAYER_FACTION_GROUP);
+	local isPlayingWoW = (gameAccountInfo.clientProgram == BNET_CLIENT_WOW);
+	local canCooperate = isPlayingWoW and isSameRealmAndFaction;
+
+	local shouldShowCannotCooperateLabel = not canCooperate and CVarCallbackRegistry:GetCVarValueBool("colorblindMode");
+	if shouldShowCannotCooperateLabel then
+		characterName = characterName .. CANNOT_COOPERATE_LABEL;
+	end
+
+	local characterNameColorCode = canCooperate and FRIENDS_WOW_NAME_COLOR_CODE or FRIENDS_OTHER_NAME_COLOR_CODE;
+	return nameText .. " " .. characterNameColorCode .. PARENS_TEMPLATE:format(characterName) .. FONT_COLOR_CODE_CLOSE;
+end
+
 local function ProcessAndSortRecruits(recruits)
 	local seenAccounts = {};
 
@@ -253,7 +278,8 @@ local function ProcessAndSortRecruits(recruits)
 		if accountInfo and accountInfo.gameAccountInfo and not accountInfo.gameAccountInfo.isWowMobile then
 			recruitInfo.isOnline = accountInfo.gameAccountInfo.isOnline;
 			recruitInfo.characterName = accountInfo.gameAccountInfo.characterName;
-			recruitInfo.nameText, recruitInfo.nameColor = FriendsFrame_GetBNetAccountNameAndStatus(accountInfo);
+			recruitInfo.nameText = BuildRecruitNameText(accountInfo);
+			recruitInfo.nameColor = accountInfo.gameAccountInfo.isOnline and FRIENDS_BNET_NAME_COLOR or FRIENDS_GRAY_COLOR;
 			recruitInfo.plainName = BNet_GetBNetAccountName(accountInfo);
 		else
 			-- We have no presence info for them yet...we will get an update when we do
@@ -299,7 +325,7 @@ local function ProcessAndSortRecruits(recruits)
 	return haveOnlineFriends and haveOfflineFriends;
 end
 
-function RecruitAFriendFrameMixin:HideShowContents(anyRecruits)
+function RecruitAFriendFrameMixin:RefreshRecruitContentVisibility(anyRecruits)
 	self.RecruitList.NoRecruitsDesc:SetShown(not anyRecruits);
 	self.RecruitList.ScrollBar:SetShown(anyRecruits);
 end
@@ -307,7 +333,7 @@ end
 function RecruitAFriendFrameMixin:UpdateRecruitList(recruits)
 	local numRecruits = #recruits;
 
-	self:HideShowContents(numRecruits > 0);
+	self:RefreshRecruitContentVisibility(numRecruits > 0);
 
 	self:GetRecruitCountFontString():SetText(self.fractionString:format(numRecruits, maxRecruits));
 
@@ -393,7 +419,7 @@ end
 
 function RecruitAFriendFrameMixin:OnRewardsListClosed()
 	self.RewardClaiming.ClaimOrViewRewardButton:UpdateUnclaimedRewardsAnim();
-end	
+end
 
 function RecruitAFriendFrameMixin:OnNewRewardTabSelected(tabRAFVersion)
 	self:SetSelectedRAFVersion(tabRAFVersion);
@@ -696,8 +722,9 @@ function RecruitListButtonMixin:OnClick(button)
 			menuElementPreInitializer = SocialUIUtil.InitializeUserScaledDropdownButton,
 			menuMainTitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
 			menuSubtitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,
+			ownerFrame = self,
 		}
-		
+
 		local accountInfo = recruitInfo.accountInfo;
 		if accountInfo then
 			contextData.guid = accountInfo.gameAccountInfo.playerGuid;
@@ -893,9 +920,9 @@ function RecruitAFriendClaimLegacyRewardsButtonMixin:Update(selectedRAFVersionIn
 	self.nextReward = selectedRAFVersionInfo.nextReward;
 	self.haveUnclaimedReward = self.nextReward and self.nextReward.canClaim;
 	self.numAffordableRewards = selectedRAFVersionInfo.numAffordableRewards;
-	
+
 	local isShown = self.haveUnclaimedReward;
-	
+
 	self:SetShown(isShown);
 	if self.autoClaimRewards and self.numAffordableRewards <= 0 then
 		self.autoClaimRewards = false;
@@ -911,8 +938,8 @@ function RecruitAFriendClaimLegacyRewardsButtonMixin:Update(selectedRAFVersionIn
 	end
 
 	if self.autoClaimRewards and self.haveUnclaimedReward and not self:GetRecruitAFriendFrame().claimInProgress then
-		C_Timer.After(1.75, function() 
-			if self.autoClaimRewards then 
+		C_Timer.After(1.75, function()
+			if self.autoClaimRewards then
 				self:ClaimNextReward();
 			end
 		end);
@@ -941,7 +968,7 @@ function RecruitAFriendClaimLegacyRewardsButtonMixin:ClaimNextReward()
 	if self.nextReward.rewardType == Enum.RafRewardType.GameTime then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 		WowTokenRedemptionFrame_ShowDialog("RAF_GAME_TIME_REDEEM_CONFIRMATION_SUB", self.nextReward.rafVersion);
-	else 
+	else
 		self.autoClaimRewards = C_RecruitAFriend.ClaimNextReward(self.nextReward.rafVersion);
 	end
 end
@@ -1083,7 +1110,7 @@ function RecruitAFriendRewardsFrameMixin:SetUpTabs(rafInfo)
 		else
 			rewardTab:SetPoint("TOPLEFT", lastRewardTab, "BOTTOMLEFT", 0, -17);
 		end
-		
+
 		rewardTab:Setup(versionInfo.rafVersion);
 		lastRewardTab = rewardTab;
 	end
@@ -1097,7 +1124,7 @@ function RecruitAFriendRewardsFrameMixin:UpdateRewards(rewards)
 	end
 
 	local lastRewardFrame;
-	for index, rewardInfo in ipairs(rewards) do	
+	for index, rewardInfo in ipairs(rewards) do
 		if index > 13 then
 			return;
 		end
@@ -1491,9 +1518,6 @@ end
 function RecruitAFriendRecruitmentFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 end
-
-local PLAYER_REALM_NAME = GetRealmName();
-local _, PLAYER_FACTION_NAME = UnitFactionGroup("player");
 
 function RecruitAFriendRecruitmentFrameMixin:UpdateRecruitmentInfo(recruitmentInfo, recruitsAreMaxed)
 	if recruitmentInfo then

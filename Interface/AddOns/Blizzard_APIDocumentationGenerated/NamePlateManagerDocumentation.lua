@@ -150,6 +150,7 @@ local NamePlateManager =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

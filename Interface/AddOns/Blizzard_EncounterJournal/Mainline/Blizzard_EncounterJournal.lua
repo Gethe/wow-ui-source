@@ -482,7 +482,9 @@ function EncounterJournal_OnLoad(self)
 		-- Defer this until after PLAYER_LOGIN as expansion selection won't work if the
 		-- addon is loaded too early (eg. via dependency).
 		local showTutorialsFrame = not GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EnconterJournalTutorialsTabSeen);
-		if showTutorialsFrame then
+		if C_GameRules.IsWoWHack() then
+			EJ_ContentTab_Select(self.MonthlyActivitiesTab:GetID());
+		elseif showTutorialsFrame then
 			SetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.EnconterJournalTutorialsTabSeen, true);
 			EJTutorialsFrame_OpenFrame();
 		else
@@ -885,7 +887,7 @@ end
 
 function EncounterJournal_CheckAndDisplayTradingPostTab()
 	EncounterJournal.suggestTab:ClearAllPoints();
-	if C_PlayerInfo.IsTradingPostAvailable() then
+	if GameRulesUtil.EJShouldShowTravelersLog() then
 		PanelTemplates_ShowTab(EncounterJournal, EncounterJournal.MonthlyActivitiesTab:GetID());
 		EncounterJournal.suggestTab:SetPoint("LEFT", EncounterJournal.MonthlyActivitiesTab, "RIGHT", 3, 0);
 	else

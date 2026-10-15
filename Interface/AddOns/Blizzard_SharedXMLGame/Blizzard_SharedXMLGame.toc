@@ -6,7 +6,7 @@ Shared\Localization.lua
 [Family]\Localization.lua [AllowLoadGameType mainline]
 [Game]\Localization.lua [AllowLoadGameType vanilla]
 Tooltip\TooltipUtil.lua [AllowLoadGameType mainline]
-Tooltip\TooltipDataHandler.lua [ExcludeLoadGameType vanilla]
+Tooltip\TooltipDataHandler.lua
 Tooltip\TooltipDataRules.lua [AllowLoadGameType mainline]
 Tooltip\TooltipComparisonManager.lua [AllowLoadGameType mainline]
 StaticModelInfo.lua [AllowLoadGameType mainline]

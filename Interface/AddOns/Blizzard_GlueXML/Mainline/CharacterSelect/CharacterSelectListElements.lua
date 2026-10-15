@@ -197,6 +197,8 @@ function CharacterSelectListCharacterMixin:OnLoad()
 	self.Arrow.IntroAnim:SetScript("OnFinished", function()
 		self.Arrow.IdleAnim:PlaySynced();
 	end);
+
+	self:RegisterForTransitions();
 end
 
 -- We echo the various input down to our child frame, to prevent it from eating the input and stopping drag behavior.
@@ -206,6 +208,13 @@ function CharacterSelectListCharacterMixin:OnEnter()
 	self:SetTooltipAndShow();
 	CharSelectAccountUpgradePanel.UpgradeButton.PointerFrame:Show();
 	CharSelectAccountUpgradePanel.UpgradeButton.Glow:Show();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local currentButton = SmartNavigation:GetCurrentButton();
+		if currentButton == self then
+			CharacterSelectUtil.SelectAtIndex(self:GetCharacterIndex());
+		end
+	end
 end
 
 -- Note this method is overwridden by CharacterServicesCharacterSelectorMixin at times.
@@ -471,7 +480,7 @@ function CharacterSelectListCharacterMixin:SetTooltipAndShow()
 	if self:GetCharacterIsVeteranLocked() and CharSelectAccountUpgradePanel.UpgradeButton:IsEnabled() then
 		GlueTooltip:SetText(CHARSELECT_CHAR_LIMITED_TOOLTIP, nil, nil, nil, nil, true);
 		GlueTooltip:Show();
-	elseif CharacterSelectUtil.SetTooltipForCharacterInfo(self.characterInfo, self:GetCharacterID()) then
+	elseif CharacterSelectUtil.SetTooltipForCharacterInfo(self.characterInfo, self:GetCharacterID()) and InputUtil.IsMKBUIEnabled()then
 		GlueTooltip:Show();
 	else
 		GlueTooltip:Hide();
@@ -496,6 +505,15 @@ function CharacterSelectListCharacterMixin:SetSelectedState(isSelected)
 	if isIconAssigned and showFaction then
 		self.InnerContent.FactionEmblemSelected:SetShown(isSelected);
 		self.InnerContent.FactionEmblem:SetShown(not isSelected);
+	end
+
+	-- Gamepad overrides
+	if InputUtil.IsGamepadUIEnabled() then
+		local showVersion = not CharacterSelect.undeleting;
+		self.InnerContent.Text.LastVersion:SetShown(showVersion);
+
+		local showFactionSelected = not (CharacterSelect.isMovingCharacter or CharacterSelect.undeleting or CharacterSelect.pendingUndeleteGuid);
+		self.InnerContent.FactionEmblemSelected:SetShown(isSelected and showFactionSelected);
 	end
 end
 
@@ -553,6 +571,29 @@ function CharacterSelectListCharacterMixin:CleanupAnimations()
 	self.PulseAnim:OnFinished();
 end
 
+function CharacterSelectListCharacterMixin:InitializeGamepad()
+	self.InnerContent.DownButton.NormalTexture:Hide();
+	self.InnerContent.UpButton.NormalTexture:Hide();
+	self.RestoreCharacterServiceFrame.Pointer:Hide();
+	self.RestoreCharacterServiceFrame.Button:SetSize(45, 45);
+	self.RestoreCharacterServiceFrame:ClearAllPoints();
+	self.RestoreCharacterServiceFrame:SetPoint("RIGHT", self, "RIGHT", 0, -15);
+end
+
+function CharacterSelectListCharacterMixin:UninitializeGamepad()
+	self.InnerContent.DownButton.NormalTexture:Show();
+	self.InnerContent.UpButton.NormalTexture:Show();
+	self.RestoreCharacterServiceFrame.Pointer:Show();
+	self.RestoreCharacterServiceFrame.Button:SetSize(58, 58);
+	self.RestoreCharacterServiceFrame:ClearAllPoints();
+	self.RestoreCharacterServiceFrame:SetPoint("RIGHT", self,"LEFT", 12, 0);
+end
+
+function CharacterSelectListCharacterMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
 
 CharacterSelectListCharacterGlowMoveAnimMixin = {};
 
@@ -655,6 +696,12 @@ function CharacterSelectListCharacterInnerContentMixin:OnLeave(isSelected)
 			MapSceneCharacterHighlightEnd(self.characterInfo.guid);
 		end
 	end
+
+	-- Gamepad overrides
+	if InputUtil.IsGamepadUIEnabled() and self.FactionEmblemSelected:IsShown() then
+		local showFactionSelected = not (CharacterSelect.undeleting or CharacterSelect.pendingUndeleteGuid);
+		self.FactionEmblemSelected:SetShown(showFactionSelected);
+	end
 end
 
 function CharacterSelectListCharacterInnerContentMixin:SetData(characterInfo)
@@ -750,7 +797,7 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 
 	local characterInfo = self.characterInfo;
 
-	local name = characterInfo.name;
+	local name = characterInfo.fullName;
 	local class = characterInfo.className;
 	local level = characterInfo.experienceLevel;
 	local guid = characterInfo.guid;
@@ -991,6 +1038,10 @@ function CharacterSelectListCharacterInnerContentMixin:ShowMoveButtons()
 		return;
 	end
 
+	if (InputUtil.IsGamepadUIEnabled() and not CharacterSelect.isMovingCharacter) then
+		return;
+	end
+
 	local upButton = self.UpButton;
 	local downButton = self.DownButton;
 
@@ -1006,6 +1057,12 @@ function CharacterSelectListCharacterInnerContentMixin:ShowMoveButtons()
 	local lastIndex = math.max(CharacterSelectListUtil.GetTotalGroupSlotCount() + 1, lastCharacterIndex);
 	local isLastButton = index == lastIndex;
 	downButton:SetEnabledState(not isLastButton);
+
+	-- Gamepad overrides
+	if InputUtil.IsGamepadUIEnabled() then
+		upButton:SetShown(upButton:IsEnabled());
+		downButton:SetShown(downButton:IsEnabled());
+	end
 end
 
 function CharacterSelectListCharacterInnerContentMixin:SetDragState(isDragging)

@@ -312,6 +312,7 @@ SECURE_ACTIONS.togglemenu = function(self, unit, button, isKeyPress, down)
 	if( which ) then
 		local contextData =
 		{
+			ownerFrame = self,
 			unit = unit,
 		}
 		UnitPopup_OpenMenu(which, contextData);
@@ -346,12 +347,13 @@ SECURE_ACTIONS.action =
 
             local actionType, flyoutId = GetActionInfo(action);
             local cursorType = GetCursorInfo();
+			local flyout = self.popup or SpellFlyout;
 
             if ( actionType == "flyout" and not cursorType ) then
                 local isActionBar, specID, showFullTooltip, reason = true, 0, false, nil;
-                SpellFlyout:Toggle(self, flyoutId, isActionBar, specID, showFullTooltip, reason);
+				flyout:Toggle(self, flyoutId, isActionBar, specID, showFullTooltip, reason);
             else
-                SpellFlyout:Hide();
+				flyout:Hide();
                 UseAction(action, unit, button, isKeyPress);
             end
         end
@@ -377,8 +379,9 @@ SECURE_ACTIONS.pet =
 SECURE_ACTIONS.flyout =
         function (self, unit, button)
             local flyoutId = SecureButton_GetModifiedAttribute(self, "spell", button);
+			local popup = self.popup or SpellFlyout;
             local isActionBar, specID, showFullTooltip, reason = true, 0, false, nil;
-            SpellFlyout:Toggle(self, flyoutId, isActionBar, specID, showFullTooltip, reason);
+			popup:Toggle(self, flyoutId, isActionBar, specID, showFullTooltip, reason);
         end;
 
 SECURE_ACTIONS.multispell =
@@ -460,15 +463,9 @@ SECURE_ACTIONS.macro =
         end
     end;
 
-local CANCELABLE_ITEMS = {
-	[C_PaperDollInfo.GetInventorySlotInfo("MainHandSlot")] = 1, -- main hand slot
-	[C_PaperDollInfo.GetInventorySlotInfo("SecondaryHandSlot")] = 2, -- off-hand slot
-};
-
-do
-	if (C_PaperDollInfo.IsRangedSlotShown()) then
-		CANCELABLE_ITEMS[C_PaperDollInfo.GetInventorySlotInfo("RangedSlot")] = 3 -- ranged slot
-	end
+local function IsCancellableSlotValid(slot)
+	-- These are the values that CancelItemTempEnchantment expects.
+	return slot and (slot >= 1) and (slot <= 3);
 end
 
 SECURE_ACTIONS.cancelaura =

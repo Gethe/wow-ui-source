@@ -77,6 +77,18 @@ function CompactRaidFrameContainerMixin:OnSizeChanged()
 	self:UpdateBorder();
 end
 
+function CompactRaidFrameContainerMixin:OnShow()
+	if RaidTargetingFreeSelection then
+		RaidTargetingFreeSelection:UpdateVisibility();
+	end
+end
+
+function CompactRaidFrameContainerMixin:OnHide()
+	if RaidTargetingFreeSelection then
+		RaidTargetingFreeSelection:UpdateVisibility();
+	end
+end
+
 --Externally used functions
 function CompactRaidFrameContainerMixin:SetGroupMode(groupMode)
 	self.groupMode = groupMode;
@@ -145,6 +157,39 @@ function CompactRaidFrameContainerMixin:ApplyToFrames(updateSpecifier, func, ...
 			end
 		end
 	end
+end
+
+function CompactRaidFrameContainerMixin:GetBounds()
+	local minX = 100000;
+	local minY = 100000;
+	local maxX = 0;
+	local maxY = 0;
+	for _, list in pairs(self.frameUpdateList) do
+		for _, frame in ipairs(list) do
+			-- Party/Arena frames are tracked for updates but are parented elsewhere and are not laid out by this container.
+			if frame:GetParent() == self and frame:IsVisible() then
+				local left, bottom, width, height = frame:GetRect();
+				local right  = left + width;
+				local top = bottom - height;
+
+				minX = math.min(minX, left);
+				maxX = math.max(maxX, right);
+
+				minY = math.min(minY, top);
+				maxY = math.max(maxY, bottom);
+			end
+		end
+	end
+
+	return minX, maxX, minY, maxY;
+end
+
+function CompactRaidFrameContainerMixin:RefreshSize()
+	local left, right, top, bottom = self:GetBounds();
+	local width = right - left;
+	local height = bottom - top;
+
+	self:SetSize(width, height);
 end
 
 function CompactRaidFrameContainerMixin:ApplyMultipleToFrames(...)
@@ -217,6 +262,16 @@ function CompactRaidFrameContainerMixin:LayoutFrames()
 
 	self:UpdateBorder();
 	self:ReleaseAllReservedFrames();
+
+	-- When in discrete groups the unit frames are in separate child frames that update independently to the GROUP_ROSTER_UPDATE event.
+	-- We need to wait a frame so they can update and the GetBounds function actually gets the correct bounds.
+	if not self.pendingSizeRefresh then
+		self.pendingSizeRefresh = true;
+		RunNextFrame(function()
+			self:RefreshSize();
+			self.pendingSizeRefresh = nil;
+		end)
+	end
 end
 
 function CompactRaidFrameContainerMixin:UpdateBorder()
@@ -351,6 +406,7 @@ function CompactRaidFrameContainerMixin:AddFlaggedUnits()
 				--Target of target?
 				local targetOfTargetFrame = self:AddUnitFrame(unit.."targettarget", "target");
 				CompactUnitFrame_SetUpdateAllOnUpdate(targetOfTargetFrame, true);
+				SmartNavigation_MarkFrameIgnored(targetOfTargetFrame);
 
 				FlowContainer_EndAtomicAdd(self);
 			end

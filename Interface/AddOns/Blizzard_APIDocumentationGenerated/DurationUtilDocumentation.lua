@@ -46,6 +46,7 @@ local DurationUtil =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

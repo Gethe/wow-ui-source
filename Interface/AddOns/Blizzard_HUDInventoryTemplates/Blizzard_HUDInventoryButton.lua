@@ -44,7 +44,17 @@ function HUDInventoryButtonMixin:OnClick(button, ...)
 	if modifiedClick then
 		self:HandleModifiedClick();
 	else
+		if button ~= "LeftButton" then
+			ItemButtonUtil.MarkItemSelectionFromBag();
+		end
 		self:HandleClick();
+		if button ~= "LeftButton" then
+			if C_Spell.TargetSpellIsEnchanting() then
+				ItemButtonUtil.MarkItemSelectionFromBag();
+			else
+				ItemButtonUtil.ClearPendingItemSelectionSource();
+			end
+		end
 	end
 end
 

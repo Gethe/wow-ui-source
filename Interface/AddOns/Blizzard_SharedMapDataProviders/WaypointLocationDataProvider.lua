@@ -165,8 +165,16 @@ end
 function WaypointLocationPinMixin:OnMouseEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -16, -4);
 	GameTooltip_SetTitle(GameTooltip, MAP_PIN_SHARING);
-	GameTooltip_AddNormalLine(GameTooltip, MAP_PIN_SHARING_TOOLTIP);
-	GameTooltip_AddColoredLine(GameTooltip, MAP_PIN_REMOVE, GREEN_FONT_COLOR);
+
+	if InputUtil.IsMKBUIEnabled() then
+		GameTooltip_AddNormalLine(GameTooltip, MAP_PIN_SHARING_TOOLTIP);
+		GameTooltip_AddColoredLine(GameTooltip, MAP_PIN_REMOVE, GREEN_FONT_COLOR);
+	else
+		GameTooltip_AddNormalLine(GameTooltip, MAP_PIN_SHARING_TOOLTIP_GAMEPAD);
+		GameTooltip_AddLineWithInputIcon(GameTooltip, MAP_PIN_TOGGLE_FOCUS, GREEN_FONT_COLOR, GAMEPAD_FACE_BOTTOM);
+		GameTooltip_AddLineWithInputIcon(GameTooltip, SHARE_IN_CHAT, GREEN_FONT_COLOR, GAMEPAD_FACE_LEFT);
+	end
+
 	GameTooltip:Show();
 end
 

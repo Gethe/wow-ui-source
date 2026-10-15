@@ -4,7 +4,7 @@ function PetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 	self:UpdateMemberAuras(unitAuraUpdateInfo);
 end
 
-function PetFrameMixin:OnLoad()
+function PetFrameMixin:OnLoadBase()
 	PetFrameHealthBar.LeftText = PetFrameHealthBarTextLeft;
 	PetFrameHealthBar.RightText = PetFrameHealthBarTextRight;
 	PetFrameManaBar.LeftText = PetFrameManaBarTextLeft;
@@ -50,7 +50,9 @@ function PetFrameMixin:OnLoad()
 	local function OpenContextMenu(frame, unit, button, isKeyPress)
 		if UnitExists(unit) then
 			local which = nil;
-			local contextData = {};
+			local contextData = {
+				ownerFrame = frame,
+			};
 			if unit == "player" then
 				which = "SELF";
 				contextData.unit = "player";
@@ -66,6 +68,10 @@ function PetFrameMixin:OnLoad()
 	end
 
 	SecureUnitButton_OnLoad(self, "pet", OpenContextMenu);
+end
+
+function PetFrameMixin:OnLoad()
+	self:OnLoadBase();
 end
 
 function PetFrameMixin:Update(override)

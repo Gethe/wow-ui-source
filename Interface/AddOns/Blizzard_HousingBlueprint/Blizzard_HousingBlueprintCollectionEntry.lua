@@ -70,7 +70,7 @@ function HousingBlueprintCollectionEntryMixin:OnEnter()
 	
 	local dateTimeStr = self:GetDateTimeStr(--[[excludeTime=]]false);
 	GameTooltip_AddNormalLine(tooltip, HOUSING_BLUEPRINT_COLLECTION_TIMESTAMP_FMT:format(dateTimeStr));
-	GameTooltip_AddInstructionLine(tooltip, CLUB_FINDER_SHIFT_CLICK_LINK);
+	GameTooltip_AddInstructionLine(tooltip, HOUSING_BLUEPRINT_CHATLINK_INSTRUCTION);
 
 	GameTooltip:Show();
 	self:UpdateStateVisuals();
@@ -87,8 +87,13 @@ function HousingBlueprintCollectionEntryMixin:ShowContextMenu()
 	end
 
 	MenuUtil.CreateContextMenu(self, function(self, rootDescription)
+		local shouldShowImport, importDisabledTooltip = false, nil;
+		if self.owner then
+			shouldShowImport, importDisabledTooltip = self.owner:ShouldShowContextImportOption(self.blueprintInfo);
+		end
 		local menuParams = {
-			shouldShowImport = self.owner and self.owner:ShouldShowContextImportOption(self.blueprintInfo),
+			shouldShowImport = shouldShowImport,
+			importDisabledTooltip = importDisabledTooltip,
 			onDeleteConfirm = function() self:OnDeleteConfirmed(); end,
 			onStateChange = function() self:UpdateStateVisuals(); end,
 			onMenuOpenChanged = function(isMenuOpen) self.contextMenuIsOpen = isMenuOpen; self:UpdateStateVisuals(); end,

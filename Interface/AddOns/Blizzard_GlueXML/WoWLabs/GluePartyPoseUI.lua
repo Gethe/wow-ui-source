@@ -19,7 +19,7 @@ end
 
 function GluePartyPoseMixin:Clear()
 	self.ModelScene:ClearScene();
-	if self.partyMemberFramePool then 
+	if self.partyMemberFramePool then
 		self.partyMemberFramePool:ReleaseAll()
 	end
 end
@@ -52,15 +52,15 @@ function GluePartyPoseMixin:SetModelScene(sceneID, partyCategory, forceUpdate)
 			partyActor = self.ModelScene:GetActorByTag("party"..actorIndex);
 			actorIndex = actorIndex + 1;
 		end
-		
+
 		if partyActor then
 			partyActor:SetFrontEndLobbyModelFromDefaultCharacterDisplay(self.characterIndex);
-			local partyMemberFrame = self.partyMemberFramePool:Acquire(); 
+			local partyMemberFrame = self.partyMemberFramePool:Acquire();
 			partyActor.partyMemberFrame = partyMemberFrame;
 			partyMemberFrame.actor = partyActor;
 			partyMemberFrame.modelScene = self.ModelScene;
 			partyMemberFrame.layoutIndex = i;
-			partyMemberFrame:Setup(memberInfo); 
+			partyMemberFrame:Setup(memberInfo);
 			self:SetupPartyMemberFrame(partyActor);
 			self.characterIndex = self.characterIndex + 1;
 		end
@@ -90,7 +90,7 @@ function GluePartyPoseMixin:SetupPartyMemberFrame(actor)
 		depthScale = Lerp(0.1, 1, ClampedPercentageBetween(depthScale, 0.8, 1));-- Scales down the texture depending on it's depthScale.
 		local bottomDepthScale = depthScale;
 		local VERTICAL_INSET = 20 * depthScale;
-		local HORIZONTAL_INSET = 20 * depthScale;		
+		local HORIZONTAL_INSET = 20 * depthScale;
 		local inverseScale = self.ModelScene:GetEffectiveScale() * depthScale; -- Need to apply the effective scale to account for UI Scaling.
 		local xOffset = (x / inverseScale) + HORIZONTAL_INSET;
 		local yOffset = (y / inverseScale) + VERTICAL_INSET;
@@ -106,36 +106,36 @@ function GluePartyPoseMixin:SetupPartyMemberFrame(actor)
 		xOffset = modelSceneWidth - (x / inverseScale) + HORIZONTAL_INSET;
 		yOffset = modelSceneHeight - (y / inverseScale) + VERTICAL_INSET;
 		partyMemberFrame:SetPoint("TOPRIGHT", self.ModelScene, "TOPRIGHT", -xOffset, -yOffset);
-		
+
 		xOffset = 15;
 		yOffset = 25;
 		partyMemberFrame.dropShadow:ClearAllPoints();
 		partyMemberFrame.dropShadow:SetPoint("BOTTOMLEFT", partyMemberFrame, "BOTTOMLEFT", -xOffset/bottomDepthScale, (-yOffset * 1.25)/bottomDepthScale);
 		partyMemberFrame.dropShadow:SetPoint("TOPRIGHT", partyMemberFrame, "BOTTOMRIGHT", xOffset/topDepthScale, (yOffset * 2)/topDepthScale);
-	
+
 		partyMemberFrame:SetScale(inverseScale);
 
 		partyMemberFrame:Show();
 		partyMemberFrame.MemberNameFrame.MemberName:SetText(partyMemberFrame.fullText);
-		PartyPoseDialogSpinner:Hide();	
+		PartyPoseDialogSpinner:Hide();
 	end;
 
 	actor:SetOnSizeChangedCallback(self.onActorSizeChangedCallback);
 end
 
-PartyMemberFrameTemplateMixin = { }; 
+PartyMemberFrameTemplateMixin = { };
 function PartyMemberFrameTemplateMixin:Setup(memberInfo)
 	local memberNameFrame = self.MemberNameFrame;
 	local memberNameText = StringSplitIntoTable("#", memberInfo.playerName)[1];
 	memberNameFrame.MemberName:SetText(memberNameText);
 
-	--Show the leader icon in front of the party member if they are the leader of the group.. 
+	--Show the leader icon in front of the party member if they are the leader of the group..
 	memberNameFrame.LeaderIcon:SetShown(memberInfo.isPartyLeader and not C_WoWLabsMatchmaking.IsAloneInWoWLabsParty());
 	--Show the ready icon on the end of the party member if they are ready.
 	memberNameFrame.ReadyCheck:SetShown(memberInfo.isReady);
 	memberNameFrame:Layout();
 
-	self.memberGUID = memberInfo.partyMemberGUID; 
+	self.memberGUID = memberInfo.partyMemberGUID;
 	self.memberName = memberInfo.playerName;
 	self.isLocalPlayer = memberInfo.isLocalPlayer;
 	self.fullText = memberNameText;
@@ -144,17 +144,18 @@ end
 
 function PartyMemberFrameTemplateMixin:OnClick(button)
 	if not self.memberName or not self.memberGUID then
-		return; 
-	end 
+		return;
+	end
 
 	if button == "RightButton" then
 		local contextData = {
 			guid = self.memberGUID,
 			name = self.memberName,
+			ownerFrame = self,
 		};
 		UnitPopup_OpenMenu("GLUE_PARTY_MEMBER", contextData);
 	end
-end 
+end
 
 function PartyMemberFrameTemplateMixin:OnMouseDown(button)
     if button == "LeftButton" then
@@ -186,7 +187,7 @@ end
 function PartyMemberFrameTemplateMixin:OnEnter()
 	if not GluePartyPoseFrame.rotatingActor and self.actor then
 		self.actor:SetSpellVisualKit(ACTOR_OUTLINE_SPELL_VISUAL_KIT);
-		
+
 		--C_WoWLabsMatchmaking.IsPlayer(self:GetGUID()) and not C_WoWLabsMatchmaking.IsAloneInWoWLabsParty()
 		--C_WoWLabsMatchmaking.IsPartyLeader() and not C_WoWLabsMatchmaking.IsPlayer(self:GetGUID())
 
@@ -204,4 +205,4 @@ end
 
 function PartyMemberFrameTemplateMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonDown", "RightButtonUp");
-end 
+end

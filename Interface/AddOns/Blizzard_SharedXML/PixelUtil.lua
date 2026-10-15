@@ -35,22 +35,38 @@ function PixelUtil.ConvertPixelsToUIForRegion(desiredPixels, region)
 	return PixelUtil.GetNearestPixelSize(desiredPixels, region:GetEffectiveScale());
 end
 
+-- DEPRECATED: Use SetRoundLayoutToNearestPixel instead for native code to automatically apply the same adjustment. This will be removed in the future.
 function PixelUtil.SetWidth(region, width, minPixels)
 	region:SetWidth(PixelUtil.GetNearestPixelSize(width, region:GetEffectiveScale(), minPixels));
 end
 
+-- DEPRECATED: Use SetRoundLayoutToNearestPixel instead for native code to automatically apply the same adjustment. This will be removed in the future.
 function PixelUtil.SetHeight(region, height, minPixels)
 	region:SetHeight(PixelUtil.GetNearestPixelSize(height, region:GetEffectiveScale(), minPixels));
 end
 
+-- DEPRECATED: Use SetRoundLayoutToNearestPixel instead for native code to automatically apply the same adjustment. This will be removed in the future.
 function PixelUtil.SetSize(region, width, height, minWidthPixels, minHeightPixels)
 	PixelUtil.SetWidth(region, width, minWidthPixels);
 	PixelUtil.SetHeight(region, height, minHeightPixels);
 end
 
+-- DEPRECATED: Use SetRoundLayoutToNearestPixel instead for native code to automatically apply the same adjustment. This will be removed in the future.
 function PixelUtil.SetPoint(region, point, relativeTo, relativePoint, offsetX, offsetY, minOffsetXPixels, minOffsetYPixels)
 	region:SetPoint(point, relativeTo, relativePoint,
 		PixelUtil.GetNearestPixelSize(offsetX, region:GetEffectiveScale(), minOffsetXPixels),
 		PixelUtil.GetNearestPixelSize(offsetY, region:GetEffectiveScale(), minOffsetYPixels)
 	);
+end
+
+function PixelUtil.SetRoundLayoutToNearestPixelRecursively(frame, enabled)
+	frame:SetRoundLayoutToNearestPixel(enabled);
+
+	for _, region in ipairs({frame:GetRegions()}) do
+		region:SetRoundLayoutToNearestPixel(enabled);
+	end
+
+	for _, child in ipairs({frame:GetChildren()}) do
+		PixelUtil.SetRoundLayoutToNearestPixelRecursively(child, enabled);
+	end
 end

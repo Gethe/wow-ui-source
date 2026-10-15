@@ -279,6 +279,7 @@ local FrameAPICharacterModelBase =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

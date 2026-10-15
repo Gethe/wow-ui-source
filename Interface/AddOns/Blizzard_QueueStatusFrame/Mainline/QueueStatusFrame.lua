@@ -1,220 +1,70 @@
-local LFG_EYE_NONE_ANIM			= "NONE";
-local LFG_EYE_INIT_ANIM			= "INITIAL";
-local LFG_EYE_SEARCHING_ANIM	= "SEARCHING_LOOP";
-local LFG_EYE_HOVER_ANIM		= "HOVER_ANIM";
-local LFG_EYE_FOUND_INIT_ANIM	= "FOUND_INIT";
-local LFG_EYE_FOUND_LOOP_ANIM	= "FOUND_LOOP";
-local LFG_EYE_POKE_INIT_ANIM	= "POKE_INIT";
-local LFG_EYE_POKE_LOOP_ANIM	= "POKE_LOOP";
-local LFG_EYE_POKE_END_ANIM		= "POKE_END";
-
-EyeTemplateMixin = {};
-
-function EyeTemplateMixin:OnLoad()
-	self.currActiveAnims = {};
-	self.activeAnim = LFG_EYE_NONE_ANIM;
-	self.isStatic = false;
-end
-
-function EyeTemplateMixin:StartInitialAnimation()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyeInitial, self.EyeInitial.EyeInitialAnim);
-
-	self.currAnim = LFG_EYE_INIT_ANIM;
-end
-
-function EyeTemplateMixin:StartSearchingAnimation()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyeSearchingLoop, self.EyeSearchingLoop.EyeSearchingLoopAnim);
-
-	self.currAnim = LFG_EYE_SEARCHING_ANIM;
-end
-
-function EyeTemplateMixin:StartHoverAnimation()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyeMouseOver, self.EyeMouseOver.EyeMouseOverAnim);
-
-	self.currAnim = LFG_EYE_HOVER_ANIM;
-end
-
-function EyeTemplateMixin:StartFoundAnimationInit()
-	self:StopAnimating();
-	
-	self:PlayAnim(self.EyeFoundInitial, self.EyeFoundInitial.EyeFoundInitialAnim);
-
-	self.currAnim = LFG_EYE_FOUND_INIT_ANIM;
-end
-
-function EyeTemplateMixin:StartFoundAnimationLoop()
-	self:StopAnimating();
-	
-	self:PlayAnim(self.EyeFoundLoop, self.EyeFoundLoop.EyeFoundLoopAnim);
-	self:PlayAnim(self.EyeFoundLoop, self.GlowBackLoop.GlowBackLoopAnim);
-
-	self.currAnim = LFG_EYE_FOUND_LOOP_ANIM;
-end
-
-function EyeTemplateMixin:StartPokeAnimationInitial()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyePokeInitial, self.EyePokeInitial.EyePokeInitialAnim);
-
-	self.currAnim = LFG_EYE_POKE_INIT_ANIM;
-end
-
-function EyeTemplateMixin:StartPokeAnimationLoop()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyePokeLoop, self.EyePokeLoop.EyePokeLoopAnim);
-
-	self.currAnim = LFG_EYE_POKE_LOOP_ANIM;
-end
-
-function EyeTemplateMixin:StartPokeAnimationEnd()
-	self:StopAnimating();
-
-	self:PlayAnim(self.EyePokeEnd, self.EyePokeEnd.EyePokeEndAnim);
-
-	self.currAnim = LFG_EYE_POKE_END_ANIM;
-end
-
-function EyeTemplateMixin:SetStaticMode(set)
-	self.isStatic = set;
-
-	for _, currAnim in ipairs(self.currActiveAnims) do
-		if (self.isStatic) then
-			currAnim[1]:Hide();
-			currAnim[2]:Pause();
-		else
-			currAnim[1]:Show();
-			currAnim[2]:Play();
-		end
-	end
-end
-
-function EyeTemplateMixin:IsStaticMode()
-	return self.isStatic;
-end
-
-function EyeTemplateMixin:PlayAnim(parentFrame, anim)
-	parentFrame:Show();
-	anim:Play();
-
-	tinsert(self.currActiveAnims, #(self.currActiveAnims) + 1, { parentFrame, anim });
-end
-
-function EyeTemplateMixin:StopAnimating()
-	if self.currAnim == LFG_EYE_NONE_ANIM then
-		return;
-	end
-	self.currAnim = LFG_EYE_NONE_ANIM;
-
-	for _, currAnim in ipairs(self.currActiveAnims) do
-		currAnim[1]:Hide();
-		currAnim[2]:Stop();
-	end
-
-	self.currActiveAnims = {};
-end
-
 ----------------------------------------------
 -------------QueueStatusButton----------------
 ----------------------------------------------
 
 QueueStatusButtonMixin = {};
 
-local LFG_ANGER_INC_VAL = 30;
-local LFG_ANGER_DEC_VAL = 1;
-local LFG_ANGER_INIT_VAL = 60;
-local LFG_ANGER_END_VAL = 75;
-local LFG_ANGER_CAP_VAL = 90;
+-- This game rules drives the ability to exit an instance by a server-initiated spell id.
+local function InstanceExitSpellEnabled()
+	return C_GameRules.IsGameRuleActive(Enum.GameRule.InstanceExitSpellEnabled);
+end
+
+local function IsInExitableInstance()
+	local inInstance, instanceType = IsInInstance();
+	return inInstance and (instanceType == "party" or instanceType == "raid" or instanceType == "scenario");
+end
+
 function QueueStatusButtonMixin:OnLoad()
 	self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
 	self.glowLocks = {};
-	self.angerVal = 0;
-end
 
-function QueueStatusButtonMixin:IsInitialEyeAnimFinished()
-	return self.Eye.currAnim == LFG_EYE_INIT_ANIM and not self.Eye.EyeInitial.EyeInitialAnim:IsPlaying();
-end
-function QueueStatusButtonMixin:IsFoundInitialAnimFinished()
-	return self.Eye.currAnim == LFG_EYE_FOUND_INIT_ANIM and not self.Eye.EyeFoundInitial.EyeFoundInitialAnim:IsPlaying();
-end
-function QueueStatusButtonMixin:ShouldStartHoverAnim()
-	return self.cursorOnButton and self.Eye.currAnim == LFG_EYE_SEARCHING_ANIM;
-end
-function QueueStatusButtonMixin:ShouldStartPokeInitAnim()
-	return self.angerVal >= LFG_ANGER_INIT_VAL and (self.Eye.currAnim == LFG_EYE_HOVER_ANIM or self.Eye.currAnim == LFG_EYE_SEARCHING_ANIM);
-end
-function QueueStatusButtonMixin:IsPokeInitAnimFinished()
-	return self.Eye.currAnim == LFG_EYE_POKE_INIT_ANIM and not self.Eye.EyePokeInitial.EyePokeInitialAnim:IsPlaying();
-end
-function QueueStatusButtonMixin:ShouldStartPokeEndAnim()
-	return self.angerVal < LFG_ANGER_END_VAL and (self.Eye.currAnim == LFG_EYE_POKE_LOOP_ANIM or self:IsPokeInitAnimFinished());
-end
-function QueueStatusButtonMixin:IsPokeEndAnimFinished()
-	return self.Eye.currAnim == LFG_EYE_POKE_END_ANIM and not self.Eye.EyePokeEnd.EyePokeEndAnim:IsPlaying();
-end
-
-function QueueStatusButtonMixin:OnUpdate()
-	if ( self.Eye:IsStaticMode() ) then
-		self.Eye.texture:Show();
-		return;
-	end
-
-	self.Eye.texture:Hide();
-
-	--Animation state machine
-	if ( self:IsInitialEyeAnimFinished() or self:IsPokeEndAnimFinished()) then
-		self.Eye:StartSearchingAnimation();
-	elseif ( self:IsFoundInitialAnimFinished() ) then
-		self.Eye:StartFoundAnimationLoop();
-	elseif ( self:ShouldStartPokeInitAnim() ) then
-		self.Eye:StartPokeAnimationInitial();
-	elseif ( self:IsPokeInitAnimFinished() ) then
-		self.Eye:StartPokeAnimationLoop();
-	elseif ( self:ShouldStartPokeEndAnim() ) then
-		self.Eye:StartPokeAnimationEnd();
-	elseif ( self:ShouldStartHoverAnim() ) then
-		self.Eye:StartHoverAnimation();
-	end
-
-	self.angerVal = self.angerVal - LFG_ANGER_DEC_VAL;
-	self.angerVal = Clamp(self.angerVal, 0, LFG_ANGER_CAP_VAL);
+	-- For Camelot, we need to call UpdateDefaultAnchor when the Minimap scale changes.
+	EventRegistry:RegisterCallback("Minimap.OnScaleUpdated", self.UpdateDefaultAnchor, self);
 end
 
 function QueueStatusButtonMixin:OnEnter()
-	QueueStatusFrame:Show();
-	self.cursorOnButton = true;
-
-	if ( self.Eye:IsStaticMode() ) then
+	-- If we have an exit spell rule and id, don't show hover states.
+	-- This isn't supported since there is not status apart from the eye being 
+	-- an indicator that you can leave the instance quickly.
+	if InstanceExitSpellEnabled() then
 		return;
 	end
 
-	if ( self.Eye.currAnim == LFG_EYE_SEARCHING_ANIM or self.Eye.currAnim == LFG_EYE_NONE_ANIM ) then
-		self.Eye:StartHoverAnimation();
-	end
+	QueueStatusFrame:SetOwner(self);
+	QueueStatusFrame:ClearAllPoints();
+	QueueStatusFrame:SetPoint("RIGHT", self, "LEFT", 0, 28);
+	QueueStatusFrame:Show();
+
+	self.cursorOnButton = true;
+
+	self.Eye:OnEnter();
 end
 
 function QueueStatusButtonMixin:OnLeave()
-	QueueStatusFrame:Hide();
-	self.cursorOnButton = false;
-	
-	if ( self.Eye:IsStaticMode() ) then
+	-- If we have an exit spell rule and id, don't show hover states.
+	-- This isn't supported since there is not status apart from the eye being 
+	-- an indicator that you can leave the instance quickly.
+	if InstanceExitSpellEnabled() then
 		return;
 	end
 
-	if ( self.Eye.currAnim == LFG_EYE_HOVER_ANIM ) then
-		self.Eye:StartSearchingAnimation();
-	end
+	QueueStatusFrame:Hide();
+	self.cursorOnButton = false;
+
+	self.Eye:OnLeave();
 end
 
 function QueueStatusButtonMixin:ShowContextMenu()
 	MenuUtil.CreateContextMenu(self, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_QUEUE_STATUS_FRAME");
+
+		-- If we have an exit spell rule and id, show the leave button and return early.
+		if InstanceExitSpellEnabled() then
+			rootDescription:CreateButton(LEAVE, function()
+				C_LFGInfo.LeaveInstanceBySpell();
+			end);
+			return;
+		end
 
 		--Plunderstorm
 		if ( C_LobbyMatchmakerInfo.IsInQueue() ) then
@@ -232,7 +82,7 @@ function QueueStatusButtonMixin:ShowContextMenu()
 		--LFGList
 		local isActive = C_LFGList.HasActiveEntryInfo();
 		if ( isActive ) then
-			QueueStatusDropdown_AddLFGListButtons(rootDescription);
+			QueueStatusDropdown_AddLFGListButtons(rootDescription, self);
 		end
 
 		local apps = C_LFGList.GetApplications();
@@ -280,12 +130,17 @@ function QueueStatusButtonMixin:ShowContextMenu()
 	end);
 end
 
+-- Abstracted so that game modes with a different LFG system can override
+-- this method without duplicating OnClick logic.
+function QueueStatusButtonMixin:ShowLFGFrame(toggle)
+	LFGListUtil_OpenBestWindow(toggle);
+end
+
 function QueueStatusButtonMixin:OnClick(button)
 	if ( button == "RightButton" ) then
 		self:ShowContextMenu();
 	else
-		--Angry Eye
-		self.angerVal = self.angerVal + LFG_ANGER_INC_VAL;
+		self.Eye:OnClick();
 
 		local inBattlefield, showScoreboard = QueueStatus_InActiveBattlefield();
 		if ( IsInLFDBattlefield() ) then
@@ -298,7 +153,7 @@ function QueueStatusButtonMixin:OnClick(button)
 				TogglePVPScoreboardOrResults();
 			end
 		elseif ( lfgListActiveEntry ) then
-			LFGListUtil_OpenBestWindow(true);
+			self:ShowLFGFrame(true);
 		else
 			--See if we have any active LFGList applications
 			local apps = C_LFGList.GetApplications();
@@ -306,7 +161,7 @@ function QueueStatusButtonMixin:OnClick(button)
 				local _, appStatus = C_LFGList.GetApplicationInfo(apps[i]);
 				if ( appStatus == "applied" or appStatus == "invited" ) then
 					--We want to open to the LFGList screen
-					LFGListUtil_OpenBestWindow(true);
+					self:ShowLFGFrame(true);
 					return;
 				end
 			end
@@ -338,13 +193,11 @@ end
 
 function QueueStatusButtonMixin:OnShow()
 	self:CheckTutorials();
-	
+
 	self.Eye:SetFrameLevel(self:GetFrameLevel() - 1);
 
 	self.Eye:StartInitialAnimation();
 	EventRegistry:TriggerEvent("QueueStatusButton.OnShow");
-
-	MicroMenuContainer:Layout();
 end
 
 function QueueStatusButtonMixin:OnHide()
@@ -394,72 +247,6 @@ function QueueStatusButtonMixin:OnGlowPulse()
 	return playSounds;
 end
 
-function QueueStatusButtonMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
-	-- Position button so that it is facing towards the center of the screen to avoid it going offscreen
-	local point, relativeTo, relativePoint, offsetX, offsetY;
-
-	self:ClearAllPoints();
-	if MicroMenu:GetParent() == MicroMenuContainer then
-		-- Micro menu is in default container. Anchor to the micro menu
-		relativeTo = MicroMenu;
-
-		if isMenuHorizontal then
-			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
-				point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "BOTTOMRIGHT", 15, 0;
-			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
-				point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "BOTTOMLEFT", -15, 0;
-			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
-				point, relativePoint, offsetX, offsetY = "TOPLEFT", "TOPRIGHT", 15, 0;
-			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
-				point, relativePoint, offsetX, offsetY = "TOPRIGHT", "TOPLEFT", -15, 0;
-			end
-		else
-			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
-				point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "TOPLEFT", 0, 15;
-			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
-				point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "TOPRIGHT", 0, 15;
-			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
-				point, relativePoint, offsetX, offsetY = "TOPLEFT", "BOTTOMLEFT", 0, -15;
-			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
-				point, relativePoint, offsetX, offsetY = "TOPRIGHT", "BOTTOMRIGHT", 0, -15;
-			end
-		end
-	else
-		-- Micro menu isn't in it's normal container so don't anchor to it and instead anchor relative to the container
-		relativeTo = MicroMenuContainer;
-		offsetX, offsetY = 0, 0;
-
-		if isMenuHorizontal then
-			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
-				point, relativePoint = "BOTTOMRIGHT", "BOTTOMRIGHT";
-			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
-				point, relativePoint = "BOTTOMLEFT", "BOTTOMLEFT";
-			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
-				point, relativePoint = "TOPRIGHT", "TOPRIGHT";
-			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
-				point, relativePoint = "TOPLEFT", "TOPLEFT";
-			end
-		else
-			if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
-				point, relativePoint = "TOPLEFT", "TOPLEFT";
-			elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
-				point, relativePoint = "TOPRIGHT", "TOPRIGHT";
-			elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
-				point, relativePoint = "BOTTOMLEFT", "BOTTOMLEFT";
-			elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
-				point, relativePoint = "BOTTOMRIGHT", "BOTTOMRIGHT";
-			end
-		end
-	end
-
-	-- Make sure to account for scale since it can be changed via edit mode
-	local scale = self:GetScale();
-	offsetX = offsetX / scale;
-	offsetY = offsetY / scale;
-
-	self:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY);
-end
-
 ----------------------------------------------
 ------------QueueStatusFrame------------------
 ----------------------------------------------
@@ -470,7 +257,7 @@ function QueueStatusFrameMixin:OnLoad()
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	self:RegisterEvent("GROUP_ROSTER_UPDATE");
 
-	--For Plunderstorm 
+	--For Plunderstorm
 	self:RegisterEvent("LOBBY_MATCHMAKER_QUEUE_STATUS_UPDATE");
 	self:RegisterEvent("LOBBY_MATCHMAKER_QUEUE_ABANDONED");
 	self:RegisterEvent("LOBBY_MATCHMAKER_QUEUE_POPPED");
@@ -517,6 +304,12 @@ function QueueStatusFrameMixin:OnEvent(event, ...)
 		QueueStatusButton.Eye:StartSearchingAnimation();
 	end
 
+end
+
+function QueueStatusFrameMixin:SetOwner(_parent, _anchor)
+	-- This function only exists so this frame can be treated more or less as a tooltip
+	-- Don't actually change the parent, just allow the anchoring that follows this call
+	-- to position the QueueStatusFrame and leave it in the tooltip strata.
 end
 
 function QueueStatusFrameMixin:GetEntry(entryIndex)
@@ -570,6 +363,13 @@ do
 end
 
 function QueueStatusFrameMixin:Update()
+	-- If we have an exit spell rule and id, set up the static eye as an indicator only.
+	if InstanceExitSpellEnabled() then
+		QueueStatusButton:SetShown(IsInExitableInstance() or EditModeManagerFrame:IsEditModeActive());
+		QueueStatusButton.Eye:SetStaticMode(true);
+		return;
+	end
+
 	local makeEyeStatic = true;
 
 	local nextEntry = 1;
@@ -577,7 +377,7 @@ function QueueStatusFrameMixin:Update()
 	local totalHeight = 4; --Add some buffer height
 
 	self.statusEntriesPool:ReleaseAll();
-	
+
 	-- NOTE: Plunderstorm Queue is exclusive to all other queues
 	local queuedForPlunderstorm = C_LobbyMatchmakerInfo.IsInQueue();
 	if queuedForPlunderstorm then
@@ -591,14 +391,7 @@ function QueueStatusFrameMixin:Update()
 		if (queueSearching) then
 			makeEyeStatic = false;
 
-			--Gates the animation from playing from anything that isn't a static eye -> queued eye
-			if ( QueueStatusButton.Eye.currAnim
-			and	QueueStatusButton.Eye.currAnim ~= LFG_EYE_SEARCHING_ANIM
-			and QueueStatusButton.Eye.currAnim ~= LFG_EYE_INIT_ANIM
-			and QueueStatusButton.Eye.currAnim ~= LFG_EYE_HOVER_ANIM
-			and QueueStatusButton.Eye.currAnim ~= LFG_EYE_NONE_ANIM ) then
-				QueueStatusButton.Eye:StartSearchingAnimation();
-			end
+			QueueStatusButton.Eye:CheckStartSearchingAnimation();
 		end
 	end
 
@@ -618,14 +411,7 @@ function QueueStatusFrameMixin:Update()
 			if ( mode == "queued" or mode == "abandonedInDungeon" or mode == "rolecheck" or mode == "proposal") then
 				makeEyeStatic = false;
 
-				--Gates the animation from playing from anything that isn't a static eye -> queued eye
-				if ( QueueStatusButton.Eye.currAnim
-				and	QueueStatusButton.Eye.currAnim ~= LFG_EYE_SEARCHING_ANIM
-				and QueueStatusButton.Eye.currAnim ~= LFG_EYE_INIT_ANIM
-				and QueueStatusButton.Eye.currAnim ~= LFG_EYE_HOVER_ANIM
-				and QueueStatusButton.Eye.currAnim ~= LFG_EYE_NONE_ANIM ) then
-					QueueStatusButton.Eye:StartSearchingAnimation();
-				end
+				QueueStatusButton.Eye:CheckStartSearchingAnimation();
 			end
 		end
 	end
@@ -774,27 +560,31 @@ function QueueStatusFrameMixin:HasNonPlunderstormQueue()
 	return self.hasNonPlunderstormQueue;
 end
 
-function QueueStatusFrameMixin:UpdatePosition(microMenuPosition, isMenuHorizontal)
+function QueueStatusFrameMixin:UpdatePosition(position, isMenuHorizontal)
 	-- Position frame so that it is facing towards the center of the screen to avoid it going offscreen
+	-- Note: "isMenuHorizontal" refers to how in Modern the QueueStatusButton is by default anchored
+	--  to the MicroMenu, which can be either horizontal or vertical.
+	--  Horizontal can be thought of as the default.
 	local point, relativePoint, offsetX, offsetY;
+
 	if isMenuHorizontal then
-		if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+		if position == FrameUtilQuadrantEnum.BottomLeft then
 			point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "BOTTOMRIGHT", 0, 25;
-		elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+		elseif position == FrameUtilQuadrantEnum.BottomRight then
 			point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "BOTTOMLEFT", 0, 25;
-		elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+		elseif position == FrameUtilQuadrantEnum.TopLeft then
 			point, relativePoint, offsetX, offsetY = "TOPLEFT", "TOPRIGHT", 0, -25;
-		elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+		elseif position == FrameUtilQuadrantEnum.TopRight then
 			point, relativePoint, offsetX, offsetY = "TOPRIGHT", "TOPLEFT", 0, -25;
 		end
 	else
-		if microMenuPosition == MicroMenuPositionEnum.BottomLeft then
+		if position == FrameUtilQuadrantEnum.BottomLeft then
 			point, relativePoint, offsetX, offsetY = "BOTTOMLEFT", "TOPLEFT", 25, 0;
-		elseif microMenuPosition == MicroMenuPositionEnum.BottomRight then
+		elseif position == FrameUtilQuadrantEnum.BottomRight then
 			point, relativePoint, offsetX, offsetY = "BOTTOMRIGHT", "TOPRIGHT", -25, 0;
-		elseif microMenuPosition == MicroMenuPositionEnum.TopLeft then
+		elseif position == FrameUtilQuadrantEnum.TopLeft then
 			point, relativePoint, offsetX, offsetY = "TOPLEFT", "BOTTOMLEFT", 25, 0;
-		elseif microMenuPosition == MicroMenuPositionEnum.TopRight then
+		elseif position == FrameUtilQuadrantEnum.TopRight then
 			point, relativePoint, offsetX, offsetY = "TOPRIGHT", "BOTTOMRIGHT", -25, 0;
 		end
 	end
@@ -851,11 +641,19 @@ local function GetDisplayNameFromCategory(category)
 			return instanceName;
 		end
 
-		-- We should be able to get the name from the LFG record, but use the brawl name as a fallback
+		-- We should be able to get the name from the LFG record if in queue, but we also need to check the active instance.
+		-- First, see if we can use the active brawl name.
 		local brawlInfo;
 		if (C_PvP.IsInBrawl()) then
 			brawlInfo = C_PvP.GetActiveBrawlInfo();
 		else
+			-- One last try for the ACTIVE instance name if we aren't in a brawl.
+			instanceName = C_LFGInfo.GetActiveLFGDungeonName();
+			if instanceName then
+				return instanceName;
+			end
+
+			-- Last resort, get current *available* brawl if there is one.
 			brawlInfo = C_PvP.GetAvailableBrawlInfo();
 		end
 		if (brawlInfo and brawlInfo.canQueue and brawlInfo.name) then
@@ -1126,7 +924,7 @@ local function AddQueuedTimeToEntry(entry, queuedTime, heightOffset)
 	end
 	entry.TimeInQueue:SetPoint("TOPLEFT", entry, "TOPLEFT", 10, -(heightOffset + 5));
 	entry.TimeInQueue:Show();
-	
+
 	return entry.TimeInQueue:GetHeight();
 end
 
@@ -1251,7 +1049,7 @@ function QueueStatusEntry_SetFullDisplay(entry, title, queuedTime, myWait, isTan
 		entry.HealersFound.Count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, totalHealers - healerNeeds, totalHealers);
 		entry.DamagersFound.Count:SetFormattedText(PLAYERS_FOUND_OUT_OF_MAX, totalDPS - dpsNeeds, totalDPS);
 
-		local needMoreTanks, needMoreHealers, needMoreDPS = tankNeeds ~= 0, healerNeeds ~= 0, dpsNeeds ~= 0; 
+		local needMoreTanks, needMoreHealers, needMoreDPS = tankNeeds ~= 0, healerNeeds ~= 0, dpsNeeds ~= 0;
 		entry.TanksFound.RoleIcon:SetAtlas(GetIconForRole("TANK", needMoreTanks), TextureKitConstants.IgnoreAtlasSize);
 		entry.HealersFound.RoleIcon:SetAtlas(GetIconForRole("HEALER", needMoreHealers), TextureKitConstants.IgnoreAtlasSize);
 		entry.DamagersFound.RoleIcon:SetAtlas(GetIconForRole("DAMAGER", needMoreDPS), TextureKitConstants.IgnoreAtlasSize);
@@ -1344,7 +1142,7 @@ local function LeaveQueueWithMatchReadyCheck(idx)
 end
 
 function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
-	local status, mapName, teamSize, registeredMatch, _, _, _, _, asGroup, _, _, isSoloQueue  = GetBattlefieldStatus(idx);
+	local status, mapName, teamSize, registeredMatch, _, _, _, _, asGroup, _, _, isSoloQueued  = GetBattlefieldStatus(idx);
 
 	local name = mapName;
 	if ( name and status == "active" ) then
@@ -1357,7 +1155,7 @@ function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
 			LeaveQueueWithMatchReadyCheck(idx);
 		end);
 
-		if IsInGroup() and not UnitIsGroupLeader("player") and not isSoloQueue then
+		if IsInGroup() and not UnitIsGroupLeader("player") and not isSoloQueued then
 			button:SetEnabled(false);
 		end
 	elseif ( status == "locked" ) then
@@ -1415,7 +1213,7 @@ function QueueStatusDropdown_AddBattlefieldButtons(description, idx)
 		local leaveButton = description:CreateButton(text, function()
 			ConfirmOrLeaveBattlefield();
 		end);
-		
+
 		if disabled then
 			leaveButton:SetEnabled(false);
 		end
@@ -1521,12 +1319,12 @@ function QueueStatusDropdown_AddLFGButtons(description, category)
 	end
 end
 
-function QueueStatusDropdown_AddLFGListButtons(description)
+function QueueStatusDropdown_AddLFGListButtons(description, queueStatusButton)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	description:CreateTitle(activeEntryInfo.name);
 
 	description:CreateButton(LFG_LIST_VIEW_GROUP, function()
-		LFGListUtil_OpenBestWindow();
+		queueStatusButton:ShowLFGFrame();
 	end);
 
 	local button = description:CreateButton(UNLIST_MY_GROUP, function()

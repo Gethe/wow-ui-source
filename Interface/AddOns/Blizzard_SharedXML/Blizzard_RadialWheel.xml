@@ -147,6 +147,8 @@ UI.xsd">
 		</Animations>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnGamePadButtonDown method="ProcessGamepadButtonDown"/>
+			<OnGamePadStick method="ProcessGamepadStickInput"/>
 		</Scripts>
-    </Frame>
+	</Frame>
 </Ui>

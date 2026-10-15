@@ -61,15 +61,18 @@ local function InitScreenNarrationSettings(category, layout)
 		return CVarCallbackRegistry:GetCVarValueBool("accessibilityScreenNarrationEnabled");
 	end
 
-	local _enabledSetting, enabledInitializer = Settings.SetupCVarCheckbox(category, "accessibilityScreenNarrationEnabled", ENABLE_SCREEN_NARRATOR, OPTION_TOOLTIP_ENABLE_SCREEN_NARRATOR);
+	local enabledSetting, enabledInitializer = Settings.SetupCVarCheckbox(category, "accessibilityScreenNarrationEnabled", ENABLE_SCREEN_NARRATOR, OPTION_TOOLTIP_ENABLE_SCREEN_NARRATOR);
+	enabledSetting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 
 	do
-		local _setting, initializer = Settings.SetupCVarDropdown(category, "accessibilityScreenNarrationVoice", Settings.VarType.Number, GetVoiceOptions, SCREEN_NARRATOR_VOICE, OPTION_TOOLTIP_SCREEN_NARRATOR_VOICE);
+		local setting, initializer = Settings.SetupCVarDropdown(category, "accessibilityScreenNarrationVoice", Settings.VarType.Number, GetVoiceOptions, SCREEN_NARRATOR_VOICE, OPTION_TOOLTIP_SCREEN_NARRATOR_VOICE);
+		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 		initializer:SetParentInitializer(enabledInitializer, IsScreenNarrationEnabled);
 	end
 
 	do
 		local setting = Settings.RegisterCVarSetting(category, "accessibilityScreenNarrationSpeechRate", Settings.VarType.Number, SCREEN_NARRATOR_SPEECH_RATE);
+		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 		local minValue, maxValue, step = Constants.TTSConstants.TTSRateMin, Constants.TTSConstants.TTSRateMax, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
@@ -79,12 +82,20 @@ local function InitScreenNarrationSettings(category, layout)
 
 	do
 		local setting = Settings.RegisterCVarSetting(category, "accessibilityScreenNarrationSpeechVolume", Settings.VarType.Number, SCREEN_NARRATOR_SPEECH_VOLUME);
+		setting:SetCommitFlags(Settings.CommitFlag.KioskProtected);
 		local minValue, maxValue, step = Constants.TTSConstants.TTSVolumeMin, Constants.TTSConstants.TTSVolumeMax, 1;
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
 		local initializer = Settings.CreateSlider(category, setting, options, OPTION_TOOLTIP_SCREEN_NARRATOR_SPEECH_VOLUME);
 		initializer:SetParentInitializer(enabledInitializer, IsScreenNarrationEnabled);
 	end
+end
+
+local function GetVoiceServiceTooltip(tooltip)
+	if C_VoiceChat.GetActiveVoiceProviderID and C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord then
+		return ("%s\n\n|cnERROR_COLOR:%s|r"):format(tooltip, VOICE_CHAT_JOIN_GROUP_DISCORD_TEXT);
+	end
+	return tooltip;
 end
 
 local function Register()
@@ -103,7 +114,7 @@ local function Register()
 		if voiceChatEnabled then
 			local setting = Settings.RegisterCVarSetting(category, "speechToText", Settings.VarType.Boolean, ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION);
 			local options = nil;
-			local data = Settings.CreateSettingInitializerData(setting, options, OPTION_TOOLTIP_ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION);
+			local data = Settings.CreateSettingInitializerData(setting, options, GenerateClosure(GetVoiceServiceTooltip, OPTION_TOOLTIP_ENABLE_SPEECH_TO_TEXT_TRANSCRIPTION));
 			local initializer = Settings.CreateSettingInitializer("STTTemplate", data);
 			layout:AddInitializer(initializer);
 		end
@@ -121,7 +132,7 @@ local function Register()
 
 		-- Speak for me in Voice Chat
 		if voiceChatEnabled then
-			local rtttSetting, rtttInitializer = Settings.SetupCVarCheckbox(category, "remoteTextToSpeech", ENABLE_REMOTE_TEXT_TO_SPEECH, OPTION_TOOLTIP_ENABLE_REMOTE_TEXT_TO_SPEECH);
+			local rtttSetting, rtttInitializer = Settings.SetupCVarCheckbox(category, "remoteTextToSpeech", ENABLE_REMOTE_TEXT_TO_SPEECH, GenerateClosure(GetVoiceServiceTooltip, OPTION_TOOLTIP_ENABLE_REMOTE_TEXT_TO_SPEECH));
 
 			local function IsSpeakForMeAllowed()
 				return C_VoiceChat.IsSpeakForMeAllowed();
@@ -175,6 +186,16 @@ local function Register()
 			-- When referenced elsewhere, this offset should be removed in order to correctly look up the associated sound info.
 			local function CooldownViewerSoundToCAAValue(value)
 				return value + CombatAudioAlertConstants.COOLDOWN_VIEWER_SOUND_OFFSET;
+			end
+
+			local function AddCooldownViewerSoundOptions(initializer, isSelected, setSelected)
+				initializer.customOptionHandler = function (rootDescription)
+					-- CooldownViewerUtil can be disabled for particular game modes, like WoWHack. 
+					if CooldownViewerUtil then
+						local useHighlightStyle = true;
+						CooldownViewerUtil.BuildSoundMenus(rootDescription, isSelected, setSelected, useHighlightStyle);
+					end
+				end;
 			end
 
 			-- Header
@@ -277,10 +298,7 @@ local function Register()
 					Settings.SetValue(cvarCombatStart, CooldownViewerSoundToCAAValue(soundEnum));
 				end
 
-				initializer.customOptionHandler = function (rootDescription)
-					local useHighlightStyle = true;
-					CooldownViewerUtil.BuildSoundMenus(rootDescription, IsSelected, SetSelected, useHighlightStyle);
-				end;
+				AddCooldownViewerSoundOptions(initializer, IsSelected, SetSelected);
 
 				InitCAAOption(initializer);
 			end
@@ -308,12 +326,47 @@ local function Register()
 					Settings.SetValue(cvarCombatEnd, CooldownViewerSoundToCAAValue(soundEnum));
 				end
 
-				initializer.customOptionHandler = function (rootDescription)
-					local useHighlightStyle = true;
-					CooldownViewerUtil.BuildSoundMenus(rootDescription, IsSelected, SetSelected, useHighlightStyle);
-				end;
+				AddCooldownViewerSoundOptions(initializer, IsSelected, SetSelected);
 
 				InitCAAOption(initializer);
+			end
+
+			-- Pulse Your Health
+			do
+				local function GetPulsePercentOptions()
+					local container = Settings.CreateControlTextContainer();
+					for index, percentInfo in CombatAudioAlertUtil.EnumeratePulseHealthPercentInfo() do
+						container:Add(index - 1, percentInfo.str);
+					end
+					return container:GetData();
+				end
+
+				local setting = Settings.RegisterCVarSetting(category, "CAAPulsePlayerHealthPercent", Settings.VarType.Number, CAA_PULSE_PLAYER_HEALTH_LABEL);
+				local pulsePlayerHealthInitializer = Settings.CreateDropdown(category, setting, GetPulsePercentOptions, CAA_PULSE_PLAYER_HEALTH_TOOLTIP);
+				InitCAAOption(pulsePlayerHealthInitializer);
+
+				local function PulsePlayerHealthOptionsModifiable()
+					return GetCVarNumberOrDefault("CAAPulsePlayerHealthPercent") > 0;
+				end
+
+				-- Pulse Your Health Volume
+				local function GetValue()
+					return C_CombatAudioAlert.GetCategoryVolume(Enum.CombatAudioAlertCategory.PlayerHealthPulse);
+				end
+
+				local function SetValue(value)
+					C_CombatAudioAlert.SetCategoryVolume(Enum.CombatAudioAlertCategory.PlayerHealthPulse, value);
+				end
+
+				local volumeSetting = Settings.RegisterProxySetting(category, "PROXY_CAA_PULSE_PLAYER_HEALTH_VOLUME",
+					Settings.VarType.Number, CAA_VOLUME_LABEL, Constants.TTSConstants.TTSVolumeDefault, GetValue, SetValue);
+
+				local volumeOptions = Settings.CreateSliderOptions(Constants.TTSConstants.TTSVolumeMin, Constants.TTSConstants.TTSVolumeMax, 1);
+				volumeOptions:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right);
+
+				local volumeInitializer = Settings.CreateSlider(category, volumeSetting, volumeOptions, CAA_PULSE_PLAYER_HEALTH_VOLUME_TOOLTIP);
+				InitCAAOption(volumeInitializer);
+				volumeInitializer:SetParentInitializer(pulsePlayerHealthInitializer, PulsePlayerHealthOptionsModifiable);
 			end
 
 			local function GetPercentOptions()
@@ -453,10 +506,7 @@ local function Register()
 					SetValue(CooldownViewerSoundToCAAValue(soundEnum));
 				end
 
-				initializer.customOptionHandler = function (rootDescription)
-					local useHighlightStyle = true;
-					CooldownViewerUtil.BuildSoundMenus(rootDescription, IsSelected, SetSelected, useHighlightStyle);
-				end;
+				AddCooldownViewerSoundOptions(initializer, IsSelected, SetSelected);
 
 				InitCAAOption(initializer);
 			end
@@ -519,10 +569,7 @@ local function Register()
 					Settings.SetValue(cvarTargetDeathBehavior, CooldownViewerSoundToCAAValue(soundEnum));
 				end
 
-				initializer.customOptionHandler = function (rootDescription)
-					local useHighlightStyle = true;
-					CooldownViewerUtil.BuildSoundMenus(rootDescription, IsSelected, SetSelected, useHighlightStyle);
-				end;
+				AddCooldownViewerSoundOptions(initializer, IsSelected, SetSelected);
 
 				InitCAAOption(initializer);
 				initializer:SetParentInitializer(sayTargetHealthInitializer, SayTargetHealthOptionsModifiable);
@@ -1123,10 +1170,7 @@ local function Register()
 					Settings.SetValue(cvarInterruptCast, CooldownViewerSoundToCAAValue(soundEnum));
 				end
 
-				initializer.customOptionHandler = function (rootDescription)
-					local useHighlightStyle = true;
-					CooldownViewerUtil.BuildSoundMenus(rootDescription, IsSelected, SetSelected, useHighlightStyle);
-				end;
+				AddCooldownViewerSoundOptions(initializer, IsSelected, SetSelected);
 
 				InitCAAOption(initializer);
 			end
@@ -1154,10 +1198,7 @@ local function Register()
 					Settings.SetValue(cvarInterruptCastSuccess, CooldownViewerSoundToCAAValue(soundEnum));
 				end
 
-				initializer.customOptionHandler = function (rootDescription)
-					local useHighlightStyle = true;
-					CooldownViewerUtil.BuildSoundMenus(rootDescription, IsSelected, SetSelected, useHighlightStyle);
-				end;
+				AddCooldownViewerSoundOptions(initializer, IsSelected, SetSelected);
 
 				InitCAAOption(initializer);
 			end
@@ -1249,10 +1290,7 @@ local function Register()
 					Settings.SetValue(cvarDebuffSelf, CooldownViewerSoundToCAAValue(soundEnum));
 				end
 
-				initializer.customOptionHandler = function (rootDescription)
-					local useHighlightStyle = true;
-					CooldownViewerUtil.BuildSoundMenus(rootDescription, IsSelected, SetSelected, useHighlightStyle);
-				end;
+				AddCooldownViewerSoundOptions(initializer, IsSelected, SetSelected);
 
 				InitCAAOption(initializer);
 			end
@@ -1273,6 +1311,11 @@ local function Register()
 
 	do
 		local function InitRemoteVoices(category)
+			if C_VoiceChat.GetActiveVoiceProviderID and C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord then
+				InitSettings(category);
+				return;
+			end
+
 			local voices = C_VoiceChat.GetRemoteTtsVoices();
 			if #voices > 0 then
 				InitSettings(category);

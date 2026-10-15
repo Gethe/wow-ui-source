@@ -37,6 +37,7 @@ local GameError =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -1775,40 +1775,6 @@ function PVPRewardEnlistmentBonus_OnEnter(self)
 	GameTooltip:Show();
 end
 
-function PvPObjectiveBannerFrame_PlayBanner(self, data)
-	local name = data.name or "";
-	local description = data.description or "";
-
-	self.Title:SetText(name);
-	self.TitleFlash:SetText(name);
-	self.BonusLabel:SetText(description);
-
-	-- offsets for anims
-	local xOffset = QueueStatusButton:GetLeft() - self:GetLeft();
-	local yOffset = QueueStatusButton:GetTop() - self:GetTop() + 64;
-
-	self.Anim.BG1Translation:SetOffset(xOffset, yOffset);
-	self.Anim.TitleTranslation:SetOffset(xOffset, yOffset);
-	self.Anim.BonusLabelTranslation:SetOffset(xOffset, yOffset);
-	self.Anim.IconTranslation:SetOffset(xOffset, yOffset);
-	-- hide zone text as it's very likely to be up
-	ZoneText_Clear();
-	-- show and play
-	self:Show();
-	self.Anim:Stop();
-	self.Anim:Play();
-end
-
-function PvPObjectiveBannerFrame_StopBanner(self)
-	self.Anim:Stop();
-	self:Hide();
-end
-
-function PvPObjectiveBannerFrame_OnAnimFinished()
-	TopBannerManager_BannerFinished();
-	PvPObjectiveBannerFrame:Hide();
-end
-
 local HONOR_INSET_WIDTH = 225;
 
 PVPUIHonorInsetMixin = { }
@@ -2139,15 +2105,20 @@ function PVPConquestLockTooltipShow(self)
 end
 
 function PVPConquestBarMixin:Update()
+	local shouldShowConquestBar = false;
+	local maxProgress = 0;
+	local progress = 0;
+
 	local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.CurrencyConsts.CONQUEST_CURRENCY_ID);
-	local shouldShowConquestBar = currencyInfo and currencyInfo.maxQuantity > 0;
+	if currencyInfo then
+		shouldShowConquestBar = currencyInfo.maxQuantity > 0;
+		maxProgress = currencyInfo.maxQuantity;
+		progress = math.min(currencyInfo.totalEarned, maxProgress);
+	end
 	self:SetShown(shouldShowConquestBar);
 
 	self.locked = not GameRulesUtil.IsPlayerAtEffectiveMaxLevel();
 	self.Lock:SetShown(self.locked);
-
-	local maxProgress = currencyInfo.maxQuantity;
-	local progress = math.min(currencyInfo.totalEarned, maxProgress);
 
 	local weeklyProgress = C_WeeklyRewards.GetConquestWeeklyProgress();
 	local displayType = weeklyProgress.displayType;
@@ -2709,8 +2680,8 @@ function TrainingGroundsFrameMixin:InitializeQueueButton()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		local queueOption = self:GetSelectedQueueOption();
 		if queueOption then
-			if queueOption == "RandomTrainingGround" then
-				C_PvP.JoinRandomTrainingGroundBattleground();
+			if queueOption == "RandomTrainingGroundBG" then
+				C_PvP.JoinRandomTrainingGroundBG();
 			elseif queueOption == "RandomTrainingGroundArena" then
 				C_PvP.JoinRandomTrainingGroundArena();
 			else
@@ -2903,7 +2874,7 @@ end
 
 function BonusTrainingGroundListMixin:TrySelectFirstQueueOptionIfNoneSelected()
 	if not self:GetSelectedQueueOption() then
-		self:SetSelectedQueueOption(self.RandomTrainingGroundButton.queueOption);
+		self:SetSelectedQueueOption(self.RandomTrainingGroundBGButton.queueOption);
 	end
 end
 
@@ -2916,8 +2887,8 @@ end
 TrainingGroundActivityButtonMixin = CreateFromMixins(PVPCasualActivityButtonMixin);
 
 local queueOptionToRewardGetter = {
-	["RandomTrainingGround"] = C_PvP.GetRandomTrainingGroundRewards;
-	["RandomTrainingGroundArena"] = C_PvP.GetRandomTrainingGroundRewards;
+	["RandomTrainingGroundBG"] = C_PvP.GetRandomTrainingGroundBGRewards;
+	["RandomTrainingGroundArena"] = C_PvP.GetRandomTrainingGroundArenaRewards;
 };
 
 function TrainingGroundActivityButtonMixin:OnLoad()

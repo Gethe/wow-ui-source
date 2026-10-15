@@ -117,6 +117,15 @@ local LFGInfo =
 			},
 		},
 		{
+			Name = "GetActiveLFGDungeonName",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetAllEntriesForCategory",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -256,6 +265,10 @@ local LFGInfo =
 			{
 				{ Name = "enabled", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "LeaveInstanceBySpell",
+			Type = "Function",
 		},
 	},
 
@@ -521,6 +534,7 @@ local LFGInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -1,0 +1,785 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="GamepadActionBarPageTrackerSlotImageFrame" mixin="GamepadActionBarPageTrackerSlotImageMixin" virtual="true">
+		<Size x="30" y="30" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="NormalTexture" atlas="gamepad-actionbar-numericalpage-1-normal" useAtlasSize="false" hidden="true" setAllPoints="true" />
+				<Texture parentKey="SelectedTexture" atlas="gamepad-actionbar-numericalpage-1-selected" useAtlasSize="false" hidden="true" setAllPoints="true" />
+				<Texture parentKey="DisabledTexture" atlas="gamepad-actionbar-numericalpage-1-disabled" useAtlasSize="false" hidden="true" setAllPoints="true" />
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="GamepadActionBarPageTrackerSlotTextFrame" mixin="GamepadActionBarPageTrackerSlotTextMixin" virtual="true">
+		<Size x="30" y="30" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="gamepad-actionbar-slot-bg-empty" setAllPoints="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="ActiveHighlight" atlas="gamepad-actionbar-slot-frame-select" setAllPoints="true" hidden="true" />
+				<FontString parentKey="text" text="1" inherits="GameFontNormalHuge" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER" x="0" y="0"/>
+					</Anchors>
+					<Color color="GRAY_FONT_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="GamepadActionBarGroupParticlesSingle" virtual="true">
+		<Size x="148" y="116" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentFocusParticles1" parentKey="FocusParticles1" atlas="gamepad-actionbar-fx-particlessingle1" hidden="true">
+					 <Size x="128" y="84" />
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFocusParticles2" parentKey="FocusParticles2" atlas="gamepad-actionbar-fx-particlessingle2" hidden="true">
+					  <Size x="148" y="86" />
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFocusParticles3" parentKey="FocusParticles3" atlas="gamepad-actionbar-fx-particlessingle3" hidden="true">
+					 <Size x="136" y="116" />
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup name="$parentFocusStartAnim" parentKey="FocusStartAnim" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha childKey="FocusParticles3" duration="1.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="FocusParticles3" duration="1.83" order="1" startDelay="1.33" fromAlpha="0" toAlpha="0.9"/>
+				<Alpha childKey="FocusParticles2" duration="1.33" order="1" fromAlpha="0.3" toAlpha="1"/>
+				<Alpha childKey="FocusParticles2" duration="0.83" order="1" startDelay="1.33" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="FocusParticles2" duration="1" order="1" startDelay="2.16" fromAlpha="0" toAlpha="0.2"/>
+				<Alpha childKey="FocusParticles1" duration="1.33" order="1" fromAlpha="1" toAlpha="0.3"/>
+				<Alpha childKey="FocusParticles1" duration="1.83" order="1" startDelay="1.33" fromAlpha="0.3" toAlpha="0.9"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="GamepadActionBarEditModeFocusBackground" virtual="true">
+		<Size x="1" y="1" />
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture name="$parentAnimEditDustRight" parentKey="AnimEditDustRight" atlas="gamepad-actionbar-fx-magicDust2" useAtlasSize="false" hidden="true">
+					<Size x="212" y="160" />
+					<Anchors>
+						<Anchor point="CENTER"  x="70" y="20" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentAnimEditBgRight" parentKey="AnimEditBgRight" atlas="gamepad-actionbar-fx-controls-behind" useAtlasSize="false" hidden="true">
+					<Size x="180" y="180" />
+					<Anchors>
+						<Anchor point="CENTER"  x="70" y="0" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentAnimEditDustLeft" parentKey="AnimEditDustLeft" atlas="gamepad-actionbar-fx-magicDust1" useAtlasSize="false" hidden="true">
+					<Size x="224" y="162" />
+					<Anchors>
+						<Anchor point="CENTER"  x="-60" y="-20" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentAnimEditBgLeft" parentKey="AnimEditBgLeft" atlas="gamepad-actionbar-fx-controls-behind" useAtlasSize="false" hidden="true">
+					<Size x="180" y="180" />
+					<Anchors>
+						<Anchor point="CENTER"  x="-75" y="0" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentEditBackgroundFocus" parentKey="EditBackgroundFocus" atlas="gamepad-actionbar-focus-keybind-bg" useAtlasSize="false" hidden="true">
+					<Size x="512" y="160" />
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFocusParticles1" parentKey="FocusParticles1" atlas="gamepad-actionbar-fx-particles3" hidden="true">
+					<Size x="290" y="116" />
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFocusParticles2" parentKey="FocusParticles2" atlas="gamepad-actionbar-fx-particles2" hidden="true">
+					 <Size x="290" y="112" />
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentFocusParticles3" parentKey="FocusParticles3" atlas="gamepad-actionbar-fx-particles1" hidden="true">
+					<Size x="290" y="132" />
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="EditFocusAllStart" looping="REPEAT" setToFinalAlpha="true">
+				<Alpha childKey="FocusParticles3" duration="1.33" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="FocusParticles3" duration="1.83" order="1" startDelay="1.33" fromAlpha="0" toAlpha="0.9"/>
+				<Alpha childKey="FocusParticles2" duration="1.33" order="1" fromAlpha="0.3" toAlpha="1"/>
+				<Alpha childKey="FocusParticles2" duration="0.83" order="1" startDelay="1.33" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="FocusParticles2" duration="1" order="1" startDelay="2.16" fromAlpha="0" toAlpha="0.2"/>
+				<Alpha childKey="FocusParticles1" duration="1.33" order="1" fromAlpha="1" toAlpha="0.3"/>
+				<Alpha childKey="FocusParticles1" duration="1.83" order="1" startDelay="1.33" fromAlpha="0.3" toAlpha="0.9"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="EditFocusLeftStart" setToFinalAlpha="true">
+				<Translation childKey="AnimEditDustLeft" duration="0.6" order="1" offsetX="0" offsetY="6"/>
+				<Alpha childKey="AnimEditDustLeft" duration="0.6" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="AnimEditBgLeft" duration="0.6" order="1" fromAlpha="0.5" toAlpha="0.2"/>
+			</AnimationGroup>
+			<AnimationGroup parentKey="EditFocusRightStart" setToFinalAlpha="true">
+				<Translation childKey="AnimEditDustRight" duration="0.6" order="1" offsetX="0" offsetY="6"/>
+				<Alpha childKey="AnimEditDustRight" duration="0.6" order="1" fromAlpha="1" toAlpha="0"/>
+				<Alpha childKey="AnimEditBgRight" duration="0.6" order="1" fromAlpha="0.5" toAlpha="0.2"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="GamepadActionBarTemplate" frameStrata="LOW" virtual="true" mixin="GamepadActionBarMixin">
+		<!-- Left and Right elements are anchored to this width, adjust to change how close they are -->
+		<Size x="300" y="200" />
+		<Frames>
+			<Frame parentKey="Left">
+				<Size x="256" y="128" />
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Frames>
+					<!-- Left -->
+					<CheckButton name="$parentActionButton1" parentKey="ActionButton1" inherits="GamepadActionBarButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="10" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_LEFT" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="RIGHT" x="17" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Top -->
+					<CheckButton name="$parentActionButton2" parentKey="ActionButton2" inherits="GamepadActionBarButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="57" y="39"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_TOP" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="-17"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Right -->
+					<CheckButton name="$parentActionButton3" parentKey="ActionButton3" inherits="GamepadActionBarButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="104" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_RIGHT" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="LEFT" x="-17" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Bottom -->
+					<CheckButton name="$parentActionButton4" parentKey="ActionButton4" inherits="GamepadActionBarButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="57" y="-39"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_BOTTOM" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="TOP" x="0" y="17"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<Frame name="$parentEditModeFocusParticlesSingle" parentKey="EditModeFocusParticlesSingle" inherits="GamepadActionBarGroupParticlesSingle" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" x="-70" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="Right">
+				<Size x="256" y="128" />
+				<Anchors>
+					<Anchor point="RIGHT" />
+				</Anchors>
+				<Frames>
+					<!-- Left -->
+					<CheckButton name="$parentActionButton5" parentKey="ActionButton1" inherits="GamepadActionBarButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" x="-104" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_LEFT" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="RIGHT" x="17" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Top -->
+					<CheckButton name="$parentActionButton6" parentKey="ActionButton2" inherits="GamepadActionBarButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" x="-57" y="39"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_TOP" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="-17"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Right -->
+					<CheckButton name="$parentActionButton7" parentKey="ActionButton3" inherits="GamepadActionBarButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" x="-10" y="-1"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_RIGHT" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="LEFT" x="-17" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Bottom -->
+					<CheckButton name="$parentActionButton8" parentKey="ActionButton4" inherits="GamepadActionBarButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" x="-57" y="-39"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_BOTTOM" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="TOP" x="0" y="17"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<Frame name="$parentEditModeFocusParticlesSingle" parentKey="EditModeFocusParticlesSingle" inherits="GamepadActionBarGroupParticlesSingle" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" x="62" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame name="$parentEditModeFocusBackground" parentKey="EditModeFocusBackground" inherits="GamepadActionBarEditModeFocusBackground">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!-- Gamepad shaped frame -->
+				<Texture name="$parentLeftButtonFrame" parentKey="LeftButtonFrame" atlas="gamepad-actionbar-bg" useAtlasSize="false" hidden="true">
+					<Size x="153" y="156" />
+					<Anchors>
+						<Anchor point="CENTER"  x="-83" y="0" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRightButtonFrame" parentKey="RightButtonFrame" atlas="gamepad-actionbar-bg" useAtlasSize="false" hidden="true">
+					<Size x="153" y="156" />
+					<Anchors>
+						<Anchor point="CENTER"  x="83" y="0" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBackgroundFocus" parentKey="BackgroundFocus" alpha="0.375" atlas="gamepad-actionbar-focus-bg-section" useAtlasSize="false" hidden="true">
+					<Size x="512" y="160" />
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+
+				<!-- Identifier icon used to help identify certain action bars (Possess Bar, etc). -->
+				<Texture name="$parentIdentifierIcon" parentKey="IdentifierIcon">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<!-- Anchor will be dynamic depending on if the bar is collapsed or expanded. -->
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+
+				<!--Sizing and anchor points adjusted as bar is collapsed or expanded using ActionBarStyles.lua.-->
+				<Texture parentKey="BackgroundWatermark" atlas="gamepad-actionbar-stance-backing" useAtlasSize="true" hidden="true">
+					<Color r="0.066" g="0.063" b="0.063" a="0.80"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GamepadPossessActionBarTemplate" frameStrata="LOW" virtual="true" mixin="GamepadPossessBarMixin">
+		<!-- Left and Right elements are anchored to this width, adjust to change how close they are -->
+		<Size x="300" y="200" />
+		<Frames>
+			<Frame parentKey="Left">
+				<Size x="256" y="128" />
+				<Anchors>
+					<Anchor point="LEFT"/>
+				</Anchors>
+				<Frames>
+					<!-- Left -->
+					<CheckButton name="$parentActionButton1" parentKey="ActionButton1" inherits="GamepadActionBarPetButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="10" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_LEFT" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="RIGHT" x="17" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Top -->
+					<CheckButton name="$parentActionButton2" parentKey="ActionButton2" inherits="GamepadActionBarPetButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="57" y="39"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_TOP" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="-17"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Right -->
+					<CheckButton name="$parentActionButton3" parentKey="ActionButton3" inherits="GamepadActionBarPetButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="104" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_RIGHT" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="LEFT" x="-17" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Bottom -->
+					<CheckButton name="$parentActionButton4" parentKey="ActionButton4" inherits="GamepadActionBarPetButtonTemplate">
+						<Anchors>
+							<Anchor point="LEFT" x="57" y="-39"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_BOTTOM" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="TOP" x="0" y="17"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<Frame name="$parentEditModeFocusParticlesSingle" parentKey="EditModeFocusParticlesSingle" inherits="GamepadActionBarGroupParticlesSingle" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" x="-70" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="Right">
+				<Size x="256" y="128" />
+				<Anchors>
+					<Anchor point="RIGHT" />
+				</Anchors>
+				<Frames>
+					<!-- Left -->
+					<CheckButton name="$parentActionButton5" parentKey="ActionButton1" inherits="GamepadActionBarPetButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" x="-104" y="0"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_LEFT" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="RIGHT" x="17" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Top -->
+					<CheckButton name="$parentActionButton6" parentKey="ActionButton2" inherits="GamepadActionBarPetButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" x="-57" y="39"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_TOP" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="-17"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Right -->
+					<CheckButton name="$parentActionButton7" parentKey="ActionButton3" inherits="GamepadActionBarPetButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" x="-10" y="-1"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_RIGHT" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="LEFT" x="-17" y="0"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<!-- Bottom -->
+					<CheckButton name="$parentActionButton8" parentKey="ActionButton4" inherits="GamepadActionBarPetButtonTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" x="-57" y="-39"/>
+						</Anchors>
+						<Frames>
+							<Frame name="$parentButtonIcon" parentKey="ButtonIcon" inherits="InputIconTextureFrameTemplate" hidden="false">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_BOTTOM" type="global"/>
+								</KeyValues>
+								<Size x="20" y="20"/>
+								<Anchors>
+									<Anchor point="TOP" x="0" y="17"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</CheckButton>
+
+					<Frame name="$parentEditModeFocusParticlesSingle" parentKey="EditModeFocusParticlesSingle" inherits="GamepadActionBarGroupParticlesSingle" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER" x="62" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="$parentEditModeFocusBackground" parentKey="EditModeFocusBackground" inherits="GamepadActionBarEditModeFocusBackground">
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="0"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<!-- Gamepad shaped frame -->
+				<Texture name="$parentLeftButtonFrame" parentKey="LeftButtonFrame" atlas="gamepad-actionbar-bg" useAtlasSize="false" hidden="true">
+					<Size x="153" y="156" />
+					<Anchors>
+						<Anchor point="CENTER"  x="-83" y="0" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentRightButtonFrame" parentKey="RightButtonFrame" atlas="gamepad-actionbar-bg" useAtlasSize="false" hidden="true">
+					<Size x="153" y="156" />
+					<Anchors>
+						<Anchor point="CENTER"  x="83" y="0" />
+					</Anchors>
+				</Texture>
+				<Texture name="$parentBackgroundFocus" parentKey="BackgroundFocus" alpha="0.375" atlas="gamepad-actionbar-focus-bg-section" useAtlasSize="false" hidden="true">
+					<Size x="512" y="160" />
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+
+				<!-- Identifier icon used to help identify certain action bars (Possess Bar, etc). -->
+				<Texture name="$parentIdentifierIcon" parentKey="IdentifierIcon">
+					<Size x="40" y="40"/>
+					<Anchors>
+						<!-- Anchor will be dynamic depending on if the bar is collapsed or expanded. -->
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+		<KeyValues>
+			<KeyValue key="isGamepadPossessBar" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="GamepadActionBarPageUnitTemplate" virtual="true" mixin="GamepadActionBarPageUnitMixin">
+		<Size x="656" y="202"/>
+		<Frames>
+			<Frame name="$parentTopCenteredAnchor" parentKey="TopCenteredAnchor">
+				<Size x="50" y="50" />
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="58"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentTopBar" parentKey="Bar" enableMouse="true" inherits="GamepadActionBarTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="DisplayName" value="GAMEPAD_ACTION_BAR_TOP_DISPLAY_NAME" type="global"/>
+						</KeyValues>
+					</Frame>
+					<Frame name="$parentPossessBar" parentKey="PossessBar" enableMouse="true" inherits="GamepadPossessActionBarTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="crossbarBackgroundAtlas" value="gamepad-actionbar-possessbar-bg" type="string"/>
+							<KeyValue key="identifierIconAtlas" value="gamepad-actionbar-possess-pet-icon" type="string"/>
+							<KeyValue key="DisplayName" value="GAMEPAD_ACTION_BAR_POSSESS_DISPLAY_NAME" type="global"/>
+							<KeyValue key="overrideCVar" value="GamepadPossessBarOverride" type="string"/>
+							<KeyValue key="overrideCVarChangedEvent" value="GAMEPAD_POSSESS_BAR_OVERRIDE_CHANGED" type="string"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Frame>
+					<Frame name="$parentStanceBar" parentKey="StanceBar" enableMouse="true" inherits="GamepadActionBarTemplate" mixin="GamepadStanceBarMixin" hidden="true">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="DisplayName" value="GAMEPAD_ACTION_BAR_STANCE_DISPLAY_NAME" type="global"/>
+							<KeyValue key="overrideCVar" value="GamepadStanceBarOverride" type="string"/>
+							<KeyValue key="overrideCVarChangedEvent" value="GAMEPAD_STANCE_BAR_OVERRIDE_CHANGED" type="string"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame name="$parentPageTracker" parentKey="PageTracker" enableMouse="true" movable="true" hidden="true">
+				<Size x="98" y="40" />
+				<Anchors>
+					<Anchor point="BOTTOM" relativeKey="$parent.TopCenteredAnchor" relativePoint="TOP" x="0" y="20" />
+				</Anchors>
+
+				<Frames>
+					<Frame parentKey="SwitchPagePrompt" inherits="InputPromptThreeIconTemplate">
+						<KeyValues>
+							<KeyValue key="Icon1" value="GAMEPAD_SHOULDER_LEFT" type="global"/>
+							<KeyValue key="Icon2" value="GAMEPAD_SHOULDER_RIGHT" type="global"/>
+							<KeyValue key="Icon3" value="GAMEPAD_DPAD_HORIZONTAL" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-5" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame name="$parentBottomCenteredAnchor" parentKey="BottomCenteredAnchor">
+				<Size x="50" y="50" />
+				<Anchors>
+					<Anchor point="CENTER" x="0" y="-58"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentBottomBar" parentKey="Bar" enableMouse="true" inherits="GamepadActionBarTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="DisplayName" value="GAMEPAD_ACTION_BAR_BOTTOM_DISPLAY_NAME" type="global"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame name="$parentLeftCenteredAnchor" parentKey="LeftCenteredAnchor">
+				<Size x="50" y="50" />
+				<Anchors>
+					<Anchor point="CENTER" x="-195" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentLeftBar" parentKey="Bar" enableMouse="true" inherits="GamepadActionBarTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="DisplayName" value="GAMEPAD_ACTION_BAR_LEFT_DISPLAY_NAME" type="global"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame name="$parentRightCenteredAnchor" parentKey="RightCenteredAnchor">
+				<Size x="50" y="50" />
+				<Anchors>
+					<Anchor point="CENTER" x="195" y="0"/>
+				</Anchors>
+				<Frames>
+					<Frame name="$parentRightBar" parentKey="Bar" enableMouse="true" inherits="GamepadActionBarTemplate" hidden="false">
+						<Anchors>
+							<Anchor point="CENTER" />
+						</Anchors>
+						<KeyValues>
+							<KeyValue key="DisplayName" value="GAMEPAD_ACTION_BAR_RIGHT_DISPLAY_NAME" type="global"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="LeftIcon" parentArray="ModifierIcons" inherits="InputIconTextureFrameTemplate">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_TRIGGER_LEFT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.LeftCenteredAnchor.Bar" x="0" y="-35"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="RightIcon" parentArray="ModifierIcons" inherits="InputIconTextureFrameTemplate">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_TRIGGER_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.RightCenteredAnchor.Bar" x="0" y="-35"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="CenteredIcons" parentArray="ModifierIcons" inherits="InputPromptTwoIconTemplate">
+				<KeyValues>
+					<KeyValue key="Icon1" value="GAMEPAD_TRIGGER_LEFT" type="global"/>
+					<KeyValue key="Icon2" value="GAMEPAD_TRIGGER_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.BottomCenteredAnchor.Bar" x="0" y="-35"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GamepadActionBarModifierGlowTop" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="GlowTopTexture" atlas="gamepad-actionbar-fx-triggerL-top">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup name="$parentFocusStartAnim" parentKey="FocusStartAnim" setToFinalAlpha="true">
+				<Alpha childKey="GlowTopTexture" duration="0.3" order="1" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+
+	<Frame name="GamepadActionBarModifierGlowBottom" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="GlowBottomTexture" atlas="gamepad-actionbar-fx-trigger-behind">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup name="$parentFocusStartAnim" parentKey="FocusStartAnim" setToFinalAlpha="true">
+				<Alpha childKey="GlowBottomTexture" duration="0.5" order="1" fromAlpha="0.7" toAlpha="0.2"/>
+			</AnimationGroup>
+			<AnimationGroup name="$parentFocusEndAnim" parentKey="FocusEndAnim" setToFinalAlpha="true">
+				<Alpha childKey="GlowBottomTexture" duration="0.33" order="1" fromAlpha="0.2" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

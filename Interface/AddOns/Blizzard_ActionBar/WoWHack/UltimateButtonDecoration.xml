@@ -1,0 +1,156 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="WoWHackUltimateButtonDecorationTemplate" virtual="true" frameStrata="LOW">
+		<Size x="45" y="45"/>
+		<Anchors>
+			<Anchor point="CENTER" relativeKey="$parent.$parent.icon" x="0" y="1"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-8">
+				<Texture parentKey="TreeTexture" atlas="talebound-hud-actionbar-tree" useAtlasSize="true" scale="0.7" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER" x="-10" y="16"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="TreeTopBranchesFrame" frameStrata="HIGH" fixedFrameStrata="true" hidden="true">
+				<Size x="45" y="45"/>
+				<Anchors>
+					<Anchor point="CENTER" x="-8" y="11"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="3">
+						<Texture parentKey="Texture" atlas="talebound-hud-actionbar-tree-top-branches" useAtlasSize="true" scale="0.7">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="IntroFrame" hidden="true" scale="0.7">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER" x="-10" y="15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Flipbook" atlas="talebound-hud-actionbar-fx-flipbook">
+							<Size x="150" y="150"/>
+							<Anchors>
+								<Anchor point="CENTER" x="10" y="-15"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim">
+						<FlipBook childKey="Flipbook" duration="0.6" order="1" flipBookRows="5" flipBookColumns="4" flipBookFrames="20" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="ReadyLoopFrame" hidden="true" scale="0.7">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER" x="-10" y="15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-6">
+						<Texture parentKey="Glow" alphaMode="ADD" atlas="talebound-hud-actionbar-tree-top-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="GlowMask" atlas="talebound-hud-actionbar-fx-mask01" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="880" y="300"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="150"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Glow"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="-5">
+						<Texture parentKey="Runes" atlas="talebound-hud-actionbar-tree-top-runes" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="RunesMask" atlas="talebound-hud-actionbar-fx-mask01" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="880" y="300"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="150"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Runes"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim" looping="REPEAT">
+						<Translation childKey="GlowMask" duration="4" order="1" offsetX="0" offsetY="-450"/>
+						<Translation childKey="RunesMask" duration="4" order="1" offsetX="0" offsetY="-450"/>
+						<Translation childKey="GlowMask" duration="4" order="2" offsetX="0" offsetY="150"/>
+						<Translation childKey="RunesMask" duration="4" order="2" offsetX="0" offsetY="150"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+			<Frame parentKey="UseBurstFrame" hidden="true" scale="0.7">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER" x="-10" y="15"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK" textureSubLevel="-1">
+						<Texture parentKey="Glow" alphaMode="ADD" alpha="0" atlas="talebound-hud-actionbar-tree-top-glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="GlowMask" atlas="talebound-hud-actionbar-fx-mask02" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="50" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-28"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Glow"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Runes" alpha="0" atlas="talebound-hud-actionbar-tree-top-runes" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="RunesMask" atlas="talebound-hud-actionbar-fx-mask02" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Size x="50" y="50"/>
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-28"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="Runes"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<AnimationGroup parentKey="Anim">
+						<Alpha childKey="Glow" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Glow" duration="0.5" order="1" startDelay="0.2" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Glow" duration="0.6" order="1" startDelay="0.7" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="GlowMask" duration="1.3" order="1" smoothing="IN_OUT" fromScaleX="1" fromScaleY="1" toScaleX="35" toScaleY="30"/>
+						<Alpha childKey="Runes" duration="0.2" order="1" fromAlpha="0" toAlpha="1"/>
+						<Alpha childKey="Runes" duration="0.8" order="1" startDelay="0.2" fromAlpha="1" toAlpha="1"/>
+						<Alpha childKey="Runes" duration="0.3" order="1" startDelay="1" fromAlpha="1" toAlpha="0"/>
+						<Scale childKey="RunesMask" duration="1.3" order="1" smoothing="IN_OUT" fromScaleX="1" fromScaleY="1" toScaleX="35" toScaleY="30"/>
+					</AnimationGroup>
+				</Animations>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

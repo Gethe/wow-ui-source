@@ -372,6 +372,13 @@
 							<Anchor point="BOTTOM" x="-4"/>
 						</Anchors>
 					</Button>
+					<Frame parentKey="CharacterStatsBlock" inherits="ScenarioTrackerCharacterStatsBlockTemplate" hidden="true">
+						<Size x="210" y="80"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Container.List" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.Container.List" relativePoint="BOTTOMRIGHT" x="0" y="-4"/>
+						</Anchors>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame parentKey="ChallengeModeBlock" parentArray="FixedBlocks" mixin="ScenarioObjectiveTrackerChallengeModeMixin" hidden="true">

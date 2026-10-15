@@ -56,6 +56,8 @@ function ActionBarController_OnEvent(self, event, ...)
 	local arg1, arg2 = ...;
 	if ( event == "PLAYER_ENTERING_WORLD" ) then
 		ActionBarController_UpdateAll();
+		InputUtil.RegisterForInterfaceTransitions(ActionBarController);
+		InputUtil.RegisterMKBInit(ActionBarController, ActionBarController_UpdateAll);
 	end
 	
 	
@@ -141,6 +143,10 @@ function ActionBarController_OnEvent(self, event, ...)
 end
 
 function ActionBarController_UpdateAll(force)
+	if ( not InputUtil.IsMKBUIEnabled() ) then
+		return; -- Don't transition if MKB action bars are not active
+	end
+
 	PossessActionBar:Update();
 	StanceBar:Update();
 	CURRENT_ACTION_BAR_STATE = LE_ACTIONBAR_STATE_MAIN;

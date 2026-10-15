@@ -121,14 +121,18 @@ function QuickKeybindFrameMixin:OnLoad()
 		StaticPopup_Show("CONFIRM_RESET_TO_DEFAULT_KEYBINDINGS");
 	end);
 
-	self.UseCharacterBindingsButton.Text:SetText(HIGHLIGHT_FONT_COLOR_CODE..CHARACTER_SPECIFIC_KEYBINDINGS..FONT_COLOR_CODE_CLOSE);
-	self.UseCharacterBindingsButton:SetScript("OnClick", function(button, buttonName, down)
-		-- Button may be re-checked if the binding has been intercepted by a dialog. See OnCharacterBindingsChanged
-		-- where the check box will be updated once the backing value is actually updated.
-		Settings.TryChangeBindingSet(button);
-	end);
+	if C_GameRules.IsAccountKeyBindingsEnabled() then
+		self.UseCharacterBindingsButton.Text:SetText(HIGHLIGHT_FONT_COLOR_CODE..CHARACTER_SPECIFIC_KEYBINDINGS..FONT_COLOR_CODE_CLOSE);
+		self.UseCharacterBindingsButton:SetScript("OnClick", function(button, buttonName, down)
+			-- Button may be re-checked if the binding has been intercepted by a dialog. See OnCharacterBindingsChanged
+			-- where the check box will be updated once the backing value is actually updated.
+			Settings.TryChangeBindingSet(button);
+		end);
 
-	Settings.SetOnValueChangedCallback("PROXY_CHARACTER_SPECIFIC_BINDINGS", self.OnCharacterBindingsChanged, self);
+		Settings.SetOnValueChangedCallback("PROXY_CHARACTER_SPECIFIC_BINDINGS", self.OnCharacterBindingsChanged, self);
+	else
+		self.UseCharacterBindingsButton:Hide();
+	end
 
 	EventRegistry:RegisterCallback("KeybindListener.UnbindFailed", self.OnKeybindUnbindFailed, self);
 	EventRegistry:RegisterCallback("KeybindListener.RebindFailed", self.OnKeybindRebindFailed, self);
@@ -146,6 +150,8 @@ function QuickKeybindFrameMixin:OnShow()
 	self:ClearOutputText();
 
 	self.mouseOverButton = nil;
+
+	EventRegistry:TriggerEvent("QuickKeybindFrame.QuickKeybindModeEnabled");
 
 	ActionButtonUtil.ShowAllActionButtonGrids();
 	ActionButtonUtil.ShowAllQuickKeybindButtonHighlights();

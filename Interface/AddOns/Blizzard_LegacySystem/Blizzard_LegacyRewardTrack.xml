@@ -1,0 +1,140 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="LegacyRewardCardTemplate" mixin="RenownLevelMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="selectedIconBorderAtlas" value="Legacy-Rewards-Tracker-Icons-Frame" type="string"/>
+			<KeyValue key="earnedIconBorderAtlas" value="Legacy-Rewards-Tracker-Icons-Frame" type="string"/>
+			<KeyValue key="iconBorderAtlas" value="Legacy-Rewards-Tracker-Icons-Frame-Disable" type="string"/>
+			
+			<KeyValue key="lastEarnedBackgroundFrameAtlas" value="Legacy-Rewards-Tracker-Cards-Green" type="string"/>
+			<KeyValue key="earnedBackgroundFrameAtlas" value="Legacy-Rewards-Tracker-Cards" type="string"/>
+			<KeyValue key="backgroundFrameAtlas" value="Legacy-Rewards-Tracker-Cards-Disable" type="string"/>
+
+			<KeyValue key="lastEarnedLevelSquareFrameAtlas" value="Legacy-Rewards-Tracker-Diamond" type="string"/>
+			<KeyValue key="earnedLevelSquareFrameAtlas" value="Legacy-Rewards-Tracker-Diamond" type="string"/>
+			<KeyValue key="levelSquareFrameAtlas" value="Legacy-Rewards-Tracker-Diamond-Disable" type="string"/>
+
+			<KeyValue key="earnedLevelColor" value="WHITE_FONT_COLOR" type="global"/>
+			<KeyValue key="levelColor" value="DISABLED_FONT_COLOR" type="global"/>
+			
+			<KeyValue key="earnedRewardNameColor" value="WHITE_FONT_COLOR" type="global"/>
+			<KeyValue key="rewardNameColor" value="DISABLED_FONT_COLOR" type="global"/>
+		</KeyValues>
+		<Size x="216" y="241"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="RewardCardBG" setAllPoints="true" parentArray="Textures"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" parentArray="Textures">
+					<Size x="64" y="64"/>
+					<Anchors>
+						<Anchor point="TOP" y="-60"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="LevelSquare" parentArray="Textures">
+					<Anchors>
+						<Anchor point="TOP" y="18"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="EarnedCheckmark" atlas="worldquest-tracker-checkmark" useAtlasSize="true" parentArray="Textures">
+					<Anchors>
+						<Anchor point="TOPRIGHT" x="-20" y="-15"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="IconBorder" parentArray="Textures">
+					<Size x="80" y="80"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Level" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.LevelSquare"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="RewardName" inherits="GameFontHighlightMedium">
+					<Size x="120"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.IconBorder" relativePoint="BOTTOM" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+	
+	<Frame name="LegacyRewardTrackPageTemplate" parent="LegacySystemFrame" mixin="LegacyRewardTrackPageMixin" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" x="5" y="0"/>
+			<Anchor point="BOTTOMRIGHT" x="-5" y="6"/>
+		</Anchors>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="Legacy-Rewards-Tracker-background">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-2"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="Legacy-Rewards-Tracker-Icon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="TOP" y="-50"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Points" inherits="Game32Font_Shadow2" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.Icon" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="PointsLabel" inherits="SystemFont_Shadow_Large" justifyH="CENTER" text="LEGACY_REWARD_TRACK_POINTS">
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.Icon" relativePoint="BOTTOM"/>
+					</Anchors>
+				</FontString>
+				<Texture parentKey="ProgressBarBackground" atlas="Legacy-Progressbar-BG">
+					<Size x="850" y="12"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.PointsLabel" relativePoint="BOTTOM" y="-55"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<StatusBar parentKey="LegacyRewardProgressBar" inherits="LegacyProgressBarTemplate" frameLevel="100">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ProgressBarBackground" x="0"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ProgressBarBackground" x="0" y="3"/>
+				</Anchors>
+			</StatusBar>
+			<Frame parentKey="LegacyRewardProgressFrame" inherits="RewardProgressFrameTemplate" hidden="true" frameLevel="102">
+				<KeyValues>
+					<KeyValue key="elementWidth" value="216" type="number"/>
+					<KeyValue key="elementSpacing" value="-5" type="number"/>
+					<KeyValue key="rewardButtonXOffset" value="0" type="number"/>
+					<KeyValue key="elementTemplate" value="LegacyRewardCardTemplate" type="string"/>
+					<KeyValue key="scrollStartSound" value="SOUNDKIT.UI_MAJOR_FACTION_RENOWN_SLIDE_START" type="global"/>
+					<KeyValue key="scrollCenterChangeSound" value="SOUNDKIT.UI_MAJOR_FACTION_RENOWN_SLIDE_START" type="global"/>
+					<KeyValue key="fullAlphaRadius" value="1000" type="number"/>
+				</KeyValues>
+				<Size x="849" y="270"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.LegacyRewardProgressBar" relativePoint="BOTTOM" y="2"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -30,12 +30,17 @@ function TalentDisplayMixin:OnEnter()
 	local spellID = self:GetSpellID();
 	local spell = (spellID ~= nil) and Spell:CreateFromSpellID(spellID) or nil;
 	if spell and not spell:IsSpellEmpty() then
-		self.spellLoadCancel = spell:ContinueWithCancelOnSpellLoad(GenerateClosure(self.SetTooltipInternal, self));
+		self.spellLoadCancel = spell:ContinueWithCancelOnSpellLoad(GenerateFlatClosure(self.SetTooltipInternal, self));
 	else
 		self:SetTooltipInternal();
 	end
 
 	self:OnEnterVisuals();
+
+	local talentFrame = self:GetTalentFrame();
+	if talentFrame and talentFrame.OnEnterDisplayCallback then
+		talentFrame.OnEnterDisplayCallback(self);
+	end
 end
 
 function TalentDisplayMixin:OnLeave()
@@ -57,6 +62,11 @@ function TalentDisplayMixin:OnLeave()
 	end
 
 	self:OnLeaveVisuals();
+
+	local talentFrame = self:GetTalentFrame();
+	if talentFrame and talentFrame.OnLeaveDisplayCallback then
+		talentFrame.OnLeaveDisplayCallback(self);
+	end
 end
 
 function TalentDisplayMixin:Init(talentFrame)
@@ -298,7 +308,7 @@ function TalentDisplayMixin:AddTooltipInfo(tooltip)
 		if overrideSpellID ~= spellID then
 			local overrideSpell = Spell:CreateFromSpellID(overrideSpellID);
 			if overrideSpell and not overrideSpell:IsSpellDataCached() then
-				self.overrideSpellLoadCancel = overrideSpell:ContinueWithCancelOnSpellLoad(GenerateClosure(self.SetTooltipInternal, self));
+				self.overrideSpellLoadCancel = overrideSpell:ContinueWithCancelOnSpellLoad(GenerateFlatClosure(self.SetTooltipInternal, self));
 			elseif strcmputf8i(self:GetName(), overrideSpell:GetSpellName()) ~= 0 then
 				GameTooltip_AddBlankLineToTooltip(tooltip);
 				
@@ -408,12 +418,14 @@ function TalentDisplayMixin:IsInspecting()
 end
 
 function TalentDisplayMixin:UpdateMouseOverInfo()
-	if self:IsMouseMotionFocus() then
+	local hasGamePadFocus = InputUtil.IsGamepadUIEnabled() and self == SmartNavigation:GetCurrentButton();
+	if self:IsMouseMotionFocus() or hasGamePadFocus then
 		-- Multiple update steps can end up calling UpdateMouseOverInfo in the same frame, so ensure we only actually do it once at the end of all those updates
 		if not self.updateMouseInfoTimer then
 			self.updateMouseInfoTimer = C_Timer.NewTimer(0, function()
+				local hasGamePadFocus = InputUtil.IsGamepadUIEnabled() and self == SmartNavigation:GetCurrentButton();
 				self.updateMouseInfoTimer = nil;
-				if self:IsMouseMotionFocus() then
+				if self:IsMouseMotionFocus() or hasGamePadFocus then
 					self:OnEnter();
 				end
 			end)

@@ -1,5 +1,3 @@
-local HearthsteelAtlasMarkup = CreateAtlasMarkup("hearthsteel-icon-32x32", 16, 16, 0, -1);
-
 local timeRemainingFormatter = CreateFromMixins(SecondsFormatterMixin);
 timeRemainingFormatter:Init(
 	SecondsFormatterConstants.ZeroApproximationThreshold,
@@ -15,8 +13,9 @@ function FormatPriceStrings(productInfo)
 	local price;
 	local originalPrice;
 	if productInfo.isVCProduct then
-		price = productInfo.price.." "..HearthsteelAtlasMarkup;
-		originalPrice = productInfo.originalPrice.." "..HearthsteelAtlasMarkup;
+		local vcMarkup = CatalogShopUtil.GetVCMarkupByProductInfo(productInfo);
+		price = productInfo.price.." "..vcMarkup;
+		originalPrice = productInfo.originalPrice.." "..vcMarkup;
 	else
 		price = productInfo.price;
 		originalPrice = productInfo.originalPrice;
@@ -310,6 +309,14 @@ end
 
 function CatalogShopDefaultProductCardMixin:GetCurrentPrice()
 	return self.productInfo.price;
+end
+
+function CatalogShopDefaultProductCardMixin:OnSmartNavSelect()
+	-- Forbidden cards can't simulate a real click so select the underlying
+	-- element data directly via the scroll box's selection behavior instead
+	if self.selectionBehavior and self.GetElementData then
+		self.selectionBehavior:Select(self);
+	end
 end
 
 --------------------------------------------------

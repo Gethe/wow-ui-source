@@ -12,6 +12,9 @@
 		</Scripts>
 		<Frames>
 			<ItemButton parentKey="Item" registerForClicks="LeftButtonUp, RightButtonUp">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<!-- Override ItemButton to have no normal texture -->
 				<NormalTexture/>
 				<Size x="48" y="48"/>
@@ -229,6 +232,9 @@
 			</EventFrame>
 			
 			<DropdownButton parentKey="EncounterDropdown" inherits="WowStyle1DropdownTemplate" parentArray="uncommittedRegions">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="TOP" x="1" y="-32"/>
 				</Anchors>
@@ -428,4 +434,6 @@
 			</Layer>
 		</Layers>
 	</Frame>
+
+	<GameTooltip name="LootHistoryExtraTooltip" inherits="GameTooltipTemplate" parent="UIParent" />
 </Ui>

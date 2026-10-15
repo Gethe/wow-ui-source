@@ -42,21 +42,21 @@
 					<Anchor point="BOTTOM" relativeKey="$parent.ModelScene" y="-40"/>
 				</Anchors>
 				<Frames>
-			<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
-				<KeyValues>
+					<Button parentKey="LeaveButton" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
+						<KeyValues>
 							<KeyValue key="layoutIndex" value="0" type="number"/>
-					<KeyValue key="minimumWidth" value="164" type="number"/>
-				</KeyValues>
-			</Button>
+							<KeyValue key="minimumWidth" value="164" type="number"/>
+						</KeyValues>
+					</Button>
 					<Button parentKey="ExtraButton" mixin="MatchCelebrationExtraButtonMixin" inherits="UIPanelButtonNoTooltipResizeToFitTemplate">
-				<KeyValues>
+						<KeyValues>
 							<KeyValue key="layoutIndex" value="1" type="number"/>
-					<KeyValue key="minimumWidth" value="164" type="number"/>
-				</KeyValues>
-				<Scripts>
-					<OnClick method="OnClick"/>
-				</Scripts>
-					</Button>				
+							<KeyValue key="minimumWidth" value="164" type="number"/>
+						</KeyValues>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+					</Button>
 				</Frames>
 			</Frame>
 		</Frames>

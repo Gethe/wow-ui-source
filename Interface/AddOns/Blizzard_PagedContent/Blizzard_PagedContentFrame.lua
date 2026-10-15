@@ -346,6 +346,9 @@ function PagedContentFrameBaseMixin:InternalGetTemplateInfo(templateKey)
 	if templateKey == self.spacerTemplate then
 		templateInfo = C_XMLUtil.GetTemplateInfo(self.spacerTemplate);
 		templateInfo.template = self.spacerTemplate;
+	elseif templateKey == self.fillerTemplate then
+		templateInfo = C_XMLUtil.GetTemplateInfo(self.fillerTemplate);
+		templateInfo.template = self.fillerTemplate;
 	else
 		local templateData = self.elementTemplateData[templateKey];
 
@@ -399,21 +402,38 @@ function PagedContentFrameBaseMixin:SplitElementsIntoViewData()
 
 		if dataGroup.header then
 			local isHeader = true;
-			self:ProcessElement(splitData, dataGroup.header, -1, isHeader, dataGroup);
+			local isFiller = false;
+			self:ProcessElement(splitData, dataGroup.header, -1, isHeader, isFiller, dataGroup);
 		end
 
 		for elementIndex, elementData in ipairs(dataGroup.elements) do
 			local isHeader = false;
-			self:ProcessElement(splitData, elementData, elementIndex, isHeader, dataGroup);
+			local isFiller = false;
+			self:ProcessElement(splitData, elementData, elementIndex, isHeader, isFiller, dataGroup);
 		end
+
+		self:OnFillerStarted(splitData);
+		local fillerTemplateInfo = self:InternalGetTemplateInfo(self.fillerTemplate);
+		if fillerTemplateInfo then
+			local sizeForFiller = self:GetViewSpaceNeededForElement(splitData, nil, fillerTemplateInfo);
+			while self:ShouldContinueFiller(splitData.viewSpaceRemaining, sizeForFiller, splitData) do
+				local isHeader = false;
+				local isFiller = true;
+				local fillerElement = {};
+				fillerElement.templateKey = self.fillerTemplate;
+				self:ProcessElement(splitData, fillerElement, 0, isHeader, isFiller, dataGroup);
+			end
+		end
+
 	end
 	table.insert(splitData.viewDataList, splitData.currentViewData);
 
 	return splitData.viewDataList;
 end
 
-function PagedContentFrameBaseMixin:ProcessElement(splitData, elementData, elementIndex, isHeader, dataGroup)
+function PagedContentFrameBaseMixin:ProcessElement(splitData, elementData, elementIndex, isHeader, isFiller, dataGroup)
 	elementData.isHeader = isHeader;
+	elementData.isFiller = isFiller;
 	local elementTemplateInfo = self:InternalGetTemplateInfo(elementData.templateKey);
 
 	local isFirstElementInGroup = isHeader or (not dataGroup.header and elementIndex == 1);
@@ -445,7 +465,7 @@ function PagedContentFrameBaseMixin:ProcessElement(splitData, elementData, eleme
 		end
 
 		-- Not enough space, Start a new view
-		if self:ShouldStartNewView(splitData.viewSpaceRemaining, totalSizeNeededForElement, splitData) then
+		if self:ShouldStartNewView(splitData.viewSpaceRemaining, totalSizeNeededForElement, splitData) and not isFiller then
 			table.insert(splitData.viewDataList, splitData.currentViewData);
 			splitData.viewSpaceRemaining = splitData.totalViewSpace;
 			splitData.currentViewData = {};
@@ -481,6 +501,7 @@ function PagedContentFrameBaseMixin:DisplayViewsForCurrentPage()
 
 	local currentPage = self.PagingControls:GetCurrentPage();
 	local spacerTemplateInfo = self.spacerTemplate and self:InternalGetTemplateInfo(self.spacerTemplate) or nil;
+	local fillterTemplateInfo = self.fillerTemplate and self:InternalGetTemplateInfo(self.fillerTemplate) or nil;
 
 	for viewFrameIndex = 1, self.viewsPerPage do
 		local viewDataIndex = self:GetViewDataIndexForPage(currentPage, viewFrameIndex);
@@ -502,6 +523,18 @@ function PagedContentFrameBaseMixin:DisplayViewsForCurrentPage()
 						spacerFrame:SetParent(viewFrame);
 						table.insert(layoutFrames, spacerFrame);
 					end
+
+				elseif elementData.isFiller then
+					if fillterTemplateInfo then
+						local fillerPool = self.framePoolCollection:GetOrCreatePool(fillterTemplateInfo.type, nil, self.fillerTemplate);
+						local fillerFrame = fillerPool:Acquire();
+						fillerFrame.isFiller = true;
+						fillerFrame:SetupFiller();
+						self:ProcessElementFrame(fillerFrame, elementData, elementIndex);
+
+						fillerFrame:SetParent(viewFrame);
+						table.insert(layoutFrames, fillerFrame);
+					end					
 
 				-- Instantiate a regular element frame
 				else
@@ -658,4 +691,14 @@ function PagedContentFrameBaseMixin:TryGetMaxGridCountForTemplateInViewFrame(ele
 	-- Optional
 	-- Only applicable/useful for gridlike layouts
 	return nil, nil;
+end
+
+function PagedContentFrameBaseMixin:OnFillerStarted(splitData)
+	-- Optional
+	-- Do any specific setup related to filler template insertion
+end
+
+function PagedContentFrameBaseMixin:ShouldContinueFiller(viewSpaceRemaining, totalSizeNeededForElement, splitData)
+	-- Optional
+	-- If populating filler template instances, is there space for more filler frames?
 end

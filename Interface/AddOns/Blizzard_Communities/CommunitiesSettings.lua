@@ -10,27 +10,32 @@ end
 
 CommunitiesSettingsDialogMixin = {}
 
+function CommunitiesSettingsDialogMixin:SmartNavigationCloseHandler()
+	self.Cancel:Click();
+	return true;
+end
+
 function CommunitiesSettingsDialogMixin:UpdatedPostingInformationInit()
-	self:RegisterEvent("CLUB_FINDER_RECRUITMENT_POST_RETURNED"); 
-	if (self.clubId and self:GetClubType() == Enum.ClubType.Character) then 
-		if(C_ClubFinder.RequestPostingInformationFromClubId(self.clubId)) then 
+	self:RegisterEvent("CLUB_FINDER_RECRUITMENT_POST_RETURNED");
+	if (self.clubId and self:GetClubType() == Enum.ClubType.Character) then
+		if(C_ClubFinder.RequestPostingInformationFromClubId(self.clubId)) then
 			self.waitingForResponseToShow = true;
-		else 
+		else
 			self:OnUpdatedPostingInformationRecieved();
-		end 
-	else 
+		end
+	else
 		self:OnUpdatedPostingInformationRecieved();
 	end
-end 
+end
 
 
-function CommunitiesSettingsDialogMixin:OnUpdatedPostingInformationRecieved() 
-	self:UnregisterEvent("CLUB_FINDER_RECRUITMENT_POST_RETURNED"); 
-	self.waitingForResponseToShow = false; 
-	if(not self:IsShown()) then 
+function CommunitiesSettingsDialogMixin:OnUpdatedPostingInformationRecieved()
+	self:UnregisterEvent("CLUB_FINDER_RECRUITMENT_POST_RETURNED");
+	self.waitingForResponseToShow = false;
+	if(not self:IsShown()) then
 		self:Show();
 	end
-end 
+end
 
 function CommunitiesSettingsDialogMixin:InitDropdowns()
 	self.ClubFocusDropdown:SetupMenu();
@@ -57,38 +62,43 @@ function CommunitiesSettingsDialogMixin:OnShow()
 	local clubId = self:GetClubId()
 	local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
 	local isProperRecruitingRole =  myMemberInfo and  myMemberInfo.role and (myMemberInfo.role == Enum.ClubRoleIdentifier.Owner or myMemberInfo.role == Enum.ClubRoleIdentifier.Leader);
-	local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId); 
-	local shouldShowFinderOptions = C_ClubFinder.IsEnabled() and clubType == Enum.ClubType.Character and isProperRecruitingRole and C_ClubFinder.GetClubFinderDisableReason() == nil and not isPostingBanned;  
+	local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId);
+	local shouldShowFinderOptions = C_ClubFinder.IsEnabled() and clubType == Enum.ClubType.Character and isProperRecruitingRole and C_ClubFinder.GetClubFinderDisableReason() == nil and not isPostingBanned;
 	self:HideOrShowCommunityFinderOptions(shouldShowFinderOptions);
 	self.CrossFactionToggle:SetShown(clubType == Enum.ClubType.Character);
 
-	if (clubType == Enum.ClubType.Character) then 
-		self:UpdateSettingsInfoFromClubInfo(); 
+	if (clubType == Enum.ClubType.Character) then
+		self:UpdateSettingsInfoFromClubInfo();
 	end
-	self:SetDisabledStateOnCommunityFinderOptions(not self.ShouldListClub.Button:GetChecked()); 
+	self:SetDisabledStateOnCommunityFinderOptions(not self.ShouldListClub.Button:GetChecked());
+
+	if not GetBuildOption("CrossFactionCommunities") then
+		self.CrossFactionToggle:SetShown(false);
+		self.CrossFactionToggle.CheckButton:SetChecked(false);
+		self.CrossFactionToggle.CheckButton:SetEnabled(false);
+	end
 
 	HelpTip:Acknowledge(CommunitiesFrame, CLUB_FINDER_TUTORIAL_POSTING);
 	HelpTip:Acknowledge(CommunitiesFrame, CLUB_FINDER_TUTORIAL_LANGUAGE_FILTER);
 
 	self:RegisterEvent("CLUB_FINDER_POST_UPDATED");
-	
-	CommunitiesFrame:RegisterDialogShown(self);
 
+	CommunitiesFrame:RegisterDialogShown(self);
 end
 
-function CommunitiesSettingsDialogMixin:OnHide() 
+function CommunitiesSettingsDialogMixin:OnHide()
 	self:UnregisterEvent("CLUB_FINDER_POST_UPDATED");
-	self:UnregisterEvent("CLUB_FINDER_RECRUITMENT_POST_RETURNED"); 
+	self:UnregisterEvent("CLUB_FINDER_RECRUITMENT_POST_RETURNED");
 end
 
 function CommunitiesSettingsDialogMixin:OnEvent(event, ...)
-	if (event == "CLUB_FINDER_POST_UPDATED") then 
-		self:Hide(); 
-	elseif (event == "CLUB_FINDER_RECRUITMENT_POST_RETURNED") then 
-		if(self.waitingForResponseToShow) then 
+	if (event == "CLUB_FINDER_POST_UPDATED") then
+		self:Hide();
+	elseif (event == "CLUB_FINDER_RECRUITMENT_POST_RETURNED") then
+		if(self.waitingForResponseToShow) then
 			self:OnUpdatedPostingInformationRecieved();
 		end
-	end		
+	end
 end
 
 function CommunitiesSettingsDialogMixin:SetClubId(clubId)
@@ -150,8 +160,8 @@ function CommunitiesSettingsDialogMixin:GetMessageOfTheDay()
 	return self.MessageOfTheDay.EditBox:GetText();
 end
 
-function CommunitiesSettingsDialogMixin:GetCrossFaction() 
-	return self.CrossFactionToggle.CheckButton:GetChecked(); 
+function CommunitiesSettingsDialogMixin:GetCrossFaction()
+	return self.CrossFactionToggle.CheckButton:GetChecked();
 end
 
 function CommunitiesSettingsDialogMixin:UpdateCreateButton()
@@ -168,64 +178,64 @@ end
 
 function CommunitiesSettingsDialogMixin:PostClub(newName)
 	if(not C_ClubFinder.IsEnabled()) then
-		return true; 
-	end 
+		return true;
+	end
 
 	local clubInfo = C_Club.GetClubInfo(self.clubId);
-	local specsInList = self.LookingForDropdown:GetSpecsList(); 
-	local shouldHideNow = true; 
-	
-	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.MaxLevelOnly, self.MaxLevelOnly.Button:GetChecked()); 
-	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.AutoAccept, self.AutoAcceptApplications.Button:GetChecked()); 
+	local specsInList = self.LookingForDropdown:GetSpecsList();
+	local shouldHideNow = true;
+
+	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.MaxLevelOnly, self.MaxLevelOnly.Button:GetChecked());
+	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.AutoAccept, self.AutoAcceptApplications.Button:GetChecked());
 	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.EnableListing, self.ShouldListClub.Button:GetChecked());
 
 	local minItemLevel = self.MinIlvlOnly.EditBox:GetNumber();
-	local description = self.Description.EditBox:GetText(); 
+	local description = self.Description.EditBox:GetText();
 
-	if(clubInfo and clubInfo.clubType == Enum.ClubType.Character) then 
+	if(clubInfo and clubInfo.clubType == Enum.ClubType.Character) then
 		local postClubSuccessful = C_ClubFinder.PostClub(clubInfo.clubId, minItemLevel, newName, description, self:GetAvatarId(), specsInList, Enum.ClubFinderRequestType.Community, self:GetCrossFaction());
 		if (self.ShouldListClub.Button:GetChecked() and postClubSuccessful) then
 			shouldHideNow = false;
-		elseif(not postClubSuccessful) then 
+		elseif(not postClubSuccessful) then
 			shouldHideNow = false;
 		end
 	end
-	return shouldHideNow; 
+	return shouldHideNow;
 end
 
 function CommunitiesSettingsGetRecruitmentSettingByValue(value)
 	local clubSettings = C_ClubFinder.GetClubRecruitmentSettings();
-	if (value == Enum.ClubFinderSettingFlags.Dungeons) then 
+	if (value == Enum.ClubFinderSettingFlags.Dungeons) then
 		return clubSettings.playStyleDungeon;
-	elseif (value == Enum.ClubFinderSettingFlags.Raids) then 
+	elseif (value == Enum.ClubFinderSettingFlags.Raids) then
 		return clubSettings.playStyleRaids;
-	elseif (value == Enum.ClubFinderSettingFlags.PvP) then 
+	elseif (value == Enum.ClubFinderSettingFlags.PvP) then
 		return clubSettings.playStylePvp;
-	elseif (value == Enum.ClubFinderSettingFlags.RP) then 
+	elseif (value == Enum.ClubFinderSettingFlags.RP) then
 		return clubSettings.playStyleRP;
-	elseif (value == Enum.ClubFinderSettingFlags.Social) then 
+	elseif (value == Enum.ClubFinderSettingFlags.Social) then
 		return clubSettings.playStyleSocial;
 	elseif (value == Enum.ClubFinderSettingFlags.MaxLevelOnly) then
-		return clubSettings.maxLevelOnly; 
+		return clubSettings.maxLevelOnly;
 	elseif (value == Enum.ClubFinderSettingFlags.EnableListing) then
-		return clubSettings.enableListing; 
+		return clubSettings.enableListing;
 	elseif (value == Enum.ClubFinderSettingFlags.AutoAccept) then
-		return clubSettings.autoAccept; 
+		return clubSettings.autoAccept;
 	end
-end 
+end
 
 function CommunitiesSettingsDialogMixin:ResetClubFinderSettings()
 	self.MinIlvlOnly.Button:SetChecked(false);
-	self.MinIlvlOnly.EditBox:SetText(""); 
+	self.MinIlvlOnly.EditBox:SetText("");
 	self.MinIlvlOnly.EditBox.Text:Show();
 	self.MaxLevelOnly.Button:SetChecked(false);
 	self.AutoAcceptApplications.Button:SetChecked(false);
 	self.ShouldListClub.Button:SetChecked(false);
 
 	C_ClubFinder.SetRecruitmentSettings(Enum.ClubFinderSettingFlags.Social, true);
-	
+
 	self:InitDropdowns();
-end 
+end
 
 function CommunitiesSettingsDialogMixin:UpdateSettingsInfoFromClubInfo()
 	local clubInfo = C_Club.GetClubInfo(self.clubId);
@@ -241,35 +251,35 @@ function CommunitiesSettingsDialogMixin:UpdateSettingsInfoFromClubInfo()
 		return;
 	end
 
-	if(clubPostingInfo.comment ~= "") then 
+	if(clubPostingInfo.comment ~= "") then
 		self.Description.EditBox:SetText(clubPostingInfo.comment);
 	end
 	self.LookingForDropdown:SetupMenu(clubPostingInfo.recruitingSpecIds);
-	
+
 	C_ClubFinder.SetAllRecruitmentSettings(clubPostingInfo.recruitmentFlags);
-	
+
 	local index = C_ClubFinder.GetFocusIndexFromFlag(clubPostingInfo.recruitmentFlags);
 	C_ClubFinder.SetRecruitmentSettings(index, true);
 	self.ClubFocusDropdown:SetupMenu();
-	
+
 	self.LanguageDropdown:SetupMenu(clubPostingInfo.recruitmentLocale);
 
-	if (clubPostingInfo.minILvl > 0) then 
-		self.MinIlvlOnly.EditBox:SetText(clubPostingInfo.minILvl); 
+	if (clubPostingInfo.minILvl > 0) then
+		self.MinIlvlOnly.EditBox:SetText(clubPostingInfo.minILvl);
 		self.MinIlvlOnly.EditBox.Text:Hide();
 		self.MinIlvlOnly.Button:SetChecked(true);
 	else
 		self.MinIlvlOnly.Button:SetChecked(false);
-		self.MinIlvlOnly.EditBox:SetText(""); 
+		self.MinIlvlOnly.EditBox:SetText("");
 		self.MinIlvlOnly.EditBox.Text:Show();
 	end
-		
+
 	local isMaxLevelChecked = CommunitiesSettingsGetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.MaxLevelOnly);
 	self.MaxLevelOnly.Button:SetChecked(isMaxLevelChecked);
-	
+
 	local autoAccept = CommunitiesSettingsGetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.AutoAccept);
 	self.AutoAcceptApplications.Button:SetChecked(autoAccept);
-	
+
 	local enableListing = CommunitiesSettingsGetRecruitmentSettingByValue(Enum.ClubFinderSettingFlags.EnableListing);
 	-- Special case, where a posting could be banned, we don't want to allow the player to post again.
 	if (C_ClubFinder.IsPostingBanned(clubInfo.clubId)) then
@@ -285,7 +295,7 @@ end
 
 function CommunitiesSettingsDialogMixin:SetDisabledStateOnCommunityFinderOptions(shouldDisable)
 	self.AutoAcceptApplications.Button:SetEnabled(not shouldDisable);
-	self.MaxLevelOnly.Button:SetEnabled(not shouldDisable); 
+	self.MaxLevelOnly.Button:SetEnabled(not shouldDisable);
 	self.MinIlvlOnly.Button:SetEnabled(not shouldDisable);
 
 	local fontColor = shouldDisable and LIGHTGRAY_FONT_COLOR or HIGHLIGHT_FONT_COLOR;
@@ -296,23 +306,23 @@ function CommunitiesSettingsDialogMixin:SetDisabledStateOnCommunityFinderOptions
 	self.ClubFocusDropdown:SetEnabled(not shouldDisable);
 	self.LookingForDropdown:SetEnabled(not shouldDisable);
 	self.LanguageDropdown:SetEnabled(not shouldDisable);
-end 
+end
 
 function CommunitiesSettingsDialogMixin:HideOrShowCommunityFinderOptions(shouldShow)
 	local clubId = self:GetClubId();
-	local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId); 
+	local isPostingBanned = C_ClubFinder.IsPostingBanned(clubId);
 	local isClubFinderEnabled = C_ClubFinder.IsEnabled()
 	shouldShow = shouldShow and not isPostingBanned;
 
-	if(shouldShow) then 
-		self:SetHeight(740); 
+	if(shouldShow) then
+		self:SetHeight(740);
 	elseif (isPostingBanned and isClubFinderEnabled) then
-		self:SetHeight(500); 
+		self:SetHeight(500);
 	else
-		self:SetHeight(480); 
-	end 
+		self:SetHeight(480);
+	end
 
-	self.MaxLevelOnly.Button:SetShown(shouldShow); 
+	self.MaxLevelOnly.Button:SetShown(shouldShow);
 	self.MinIlvlOnly.Button:SetShown(shouldShow);
 	self.ClubFocusDropdown:SetShown(shouldShow);
 	self.LookingForDropdown:SetShown(shouldShow);
@@ -325,7 +335,7 @@ function CommunitiesSettingsDialogMixin:HideOrShowCommunityFinderOptions(shouldS
 	self.ShouldListClub:SetShown(shouldShow);
 	self.ClubFinderPostingBannedError:SetText(CLUB_FINDER_BANNED_POSTING_WARNING:format(CLUB_FINDER_COMMUNITY_TYPE));
 	self.ClubFinderPostingBannedError:SetShown(isPostingBanned and isClubFinderEnabled);
-end 
+end
 
 local function CommunitiesAvatarPickerDialog_OnOkay(self)
 	CommunitiesAvatarPickerDialog:Hide();
@@ -346,7 +356,7 @@ function CommunitiesSettingsDialogChangeAvatarButton_OnClick(self)
 	CommunitiesAvatarPicker_OpenDialog(communitiesSettingsDialog:GetClubType(), communitiesSettingsDialog:GetAvatarId(), CommunitiesAvatarPickerDialog_OnOkay, CommunitiesAvatarPickerDialog_OnCancel);
 	PlaySound(SOUNDKIT.GS_TITLE_OPTION_OK);
 end
-		
+
 function CommunitiesSettingsDialogAcceptButton_OnEnter(self)
 	local communitiesSettingsDialog = self:GetParent();
 	local name = communitiesSettingsDialog.NameEdit:GetText();
@@ -377,7 +387,7 @@ function CommunitiesSettingsDialogAcceptButton_OnClick(self)
 	C_Club.EditClub(communitiesSettingsDialog:GetClubId(), communitiesSettingsDialog:GetName(), communitiesSettingsDialog:GetShortName(), communitiesSettingsDialog:GetDescription(), communitiesSettingsDialog:GetAvatarId(), communitiesSettingsDialog:GetMessageOfTheDay(), communitiesSettingsDialog:GetCrossFaction());
 	local shouldHideNow = communitiesSettingsDialog:PostClub(communitiesSettingsDialog:GetName());
 
-	if (shouldHideNow) then 
+	if (shouldHideNow) then
 		communitiesSettingsDialog:Hide();
 	end
 
@@ -404,11 +414,11 @@ end
 function CommunitiesSettingsButton_OnClick(self)
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 
-	if (not CommunitiesSettingsDialog:IsShown()) then 
+	if (not CommunitiesSettingsDialog:IsShown()) then
 		local communitiesFrame = self:GetParent():GetParent();
 		OpenCommunitiesSettingsDialog(communitiesFrame:GetSelectedClubId());
 		HelpTip:Acknowledge(communitiesFrame, CLUB_FINDER_TUTORIAL_POSTING);
-	else 
+	else
 		CloseCommunitiesSettingsDialog();
 	end
 end
@@ -416,10 +426,10 @@ end
 CommunitiesSettingsCrossFactionToggleMixin = { };
 
 function CommunitiesSettingsCrossFactionToggleMixin:OnEnter()
-	GameTooltip:SetOwner(self.Label, "ANCHOR_TOPLEFT", 90); 
-	GameTooltip_AddNormalLine(GameTooltip, COMMUNITIES_SETTING_CROSS_FACTION_TOOLTIP); 
-	if(not self.CheckButton:IsEnabled()) then 
-		GameTooltip_AddColoredLine(GameTooltip, COMMUNITIES_SETTING_CROSS_FACTION_TOOLTIP_ERROR, RED_FONT_COLOR); 
-	end		
-	GameTooltip:Show(); 
-end		
+	GameTooltip:SetOwner(self.Label, "ANCHOR_TOPLEFT", 90);
+	GameTooltip_AddNormalLine(GameTooltip, COMMUNITIES_SETTING_CROSS_FACTION_TOOLTIP);
+	if(not self.CheckButton:IsEnabled()) then
+		GameTooltip_AddColoredLine(GameTooltip, COMMUNITIES_SETTING_CROSS_FACTION_TOOLTIP_ERROR, RED_FONT_COLOR);
+	end
+	GameTooltip:Show();
+end

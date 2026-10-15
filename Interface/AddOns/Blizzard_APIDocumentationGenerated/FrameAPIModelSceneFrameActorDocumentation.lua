@@ -402,6 +402,7 @@ local FrameAPIModelSceneFrameActor =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -1,0 +1,7 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="GameTooltipWoWHackDressUpButtonTemplate" inherits="UIPanelButtonNoTooltipResizeToFitTemplate" text="TOOLTIP_VIEW_IN_DRESSUP_FRAME" hidden="true" virtual="true">
+		<Size x="0" y="22"/>
+	</Button>
+</Ui>

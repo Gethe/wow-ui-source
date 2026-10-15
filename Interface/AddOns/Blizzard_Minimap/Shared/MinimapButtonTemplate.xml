@@ -1,0 +1,18 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="MiniMapButtonTemplate" virtual="true">
+		<Scripts>
+			<OnHide>
+				if (self.isDown) then
+					MinimapButton_OnMouseUp(self);
+				end
+			</OnHide>
+			<OnMouseDown>
+				MinimapButton_OnMouseDown(self, button);
+			</OnMouseDown>
+			<OnMouseUp>
+				MinimapButton_OnMouseUp(self, button);
+			</OnMouseUp>
+		</Scripts>
+	</Button>
+</Ui>

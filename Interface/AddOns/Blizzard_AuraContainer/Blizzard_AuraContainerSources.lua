@@ -18,7 +18,11 @@ function AuraContainerAuraSourceMixin:GetAllAuraInstanceIDs(_unitToken, _filterS
 	return auraInstanceIDs, hasMatchedFilterString;
 end
 
-function AuraContainerAuraSourceMixin:ApplySourceMetadata(auraData)
+function AuraContainerAuraSourceMixin:GetAuraCasterGUID(_unitToken, _auraInstanceID)
+	return nil;
+end
+
+function AuraContainerAuraSourceMixin:ApplySourceMetadata(_unitToken, auraData)
 	-- Source-specific metadata can be added here before the aura is stored.
 	auraData.auraType = AuraContainerAuraDataType.Aura;
 	auraData.isPrivate = self:IsPrivate();
@@ -35,6 +39,10 @@ function AuraContainerPublicAuraSourceMixin:GetAllAuraInstanceIDs(unitToken, fil
 	local hasMatchedFilterString = true;
 
 	return auraInstanceIDs, hasMatchedFilterString;
+end
+
+function AuraContainerPublicAuraSourceMixin:GetAuraCasterGUID(unitToken, auraInstanceID)
+	return C_UnitAuras.GetAuraCasterGUID(unitToken, auraInstanceID);
 end
 
 -- Private auras currently have their own source and APIs. The reason this has
@@ -59,6 +67,10 @@ function AuraContainerPrivateAuraSourceMixin:GetAllAuraInstanceIDs(unitToken, _f
 	local hasMatchedFilterString = false;
 
 	return auraInstanceIDs, hasMatchedFilterString;
+end
+
+function AuraContainerPrivateAuraSourceMixin:GetAuraCasterGUID(unitToken, auraInstanceID)
+	return C_UnitAurasPrivate.GetPrivateAuraCasterGUID(unitToken, auraInstanceID);
 end
 
 -- Edit Mode uses AuraUtil so containers can display placeholder/test aura data

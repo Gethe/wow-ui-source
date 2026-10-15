@@ -83,6 +83,21 @@ local AuraContainerUtil =
 			},
 		},
 		{
+			Name = "ProcessCustomAuraButtonCasterNameOptions",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "options", Type = "CustomAuraButtonCasterNameOptions", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "result", Type = "CustomAuraButtonCasterNameOptions", Nilable = false },
+			},
+		},
+		{
 			Name = "ProcessCustomAuraButtonDispelTypeTextOptions",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -228,6 +243,7 @@ local AuraContainerUtil =
 			Fields =
 			{
 				{ Name = "maxApplications", Type = "number", Nilable = false, Documentation = { "The maximum number of aura applications represented by the bar." } },
+				{ Name = "minApplications", Type = "number", Nilable = false, Default = 0, Documentation = { "The minimum number of aura applications represented by the bar." } },
 				{ Name = "interpolation", Type = "StatusBarInterpolation", Nilable = true, Documentation = { "Optional interpolation method used when updating the bar value." } },
 			},
 		},
@@ -237,6 +253,15 @@ local AuraContainerUtil =
 			Fields =
 			{
 				{ Name = "formatter", Type = "NumericFormatter", Nilable = true, Documentation = { "Optional formatter used to display aura application counts." } },
+			},
+		},
+		{
+			Name = "CustomAuraButtonCasterNameOptions",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "showRealmName", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, append realm names to the displayed string." } },
+				{ Name = "useClassColors", Type = "bool", Nilable = false, Default = false, Documentation = { "If true, apply class coloring to the text." } },
 			},
 		},
 		{
@@ -308,6 +333,7 @@ local AuraContainerUtil =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -365,7 +365,11 @@ SelectionBehaviorMixin:GenerateCallbackEvents(
 
 function SelectionBehaviorMixin.IsIntrusiveSelected(frame)
 	if frame then
-		return SelectionBehaviorMixin.IsElementDataIntrusiveSelected(frame:GetElementData());
+		local elementData = nil;
+		if frame.GetElementData then
+			elementData = frame:GetElementData();
+		end
+		return SelectionBehaviorMixin.IsElementDataIntrusiveSelected(elementData);
 	end
 	return false;
 end

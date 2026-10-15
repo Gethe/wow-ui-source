@@ -44,15 +44,8 @@ local LootConstants =
 				{ Name = "Currency", Type = "LootSlotType", EnumValue = 3 },
 			},
 		},
-		{
-			Name = "LootConsts",
-			Type = "Constants",
-			Values =
-			{
-				{ Name = "MasterLootQualityThreshold", Type = "number", Value = 5 },
-			},
-		},
 	},
+
 	Predicates =
 	{
 	},

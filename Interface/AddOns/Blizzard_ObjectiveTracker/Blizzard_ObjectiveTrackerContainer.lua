@@ -12,11 +12,19 @@ local settings = {
 	modules = {},			-- table containing all added modules
 };
 
+local BASE_TOP_PADDING = 38;
+
 ObjectiveTrackerContainerMixin = CreateFromMixins(DirtiableMixin, settings);
 
 function ObjectiveTrackerContainerMixin:OnLoad()
 	local dirtyUpdate = true;
+	self.topPaddingProviders = {};
+	EventRegistry:RegisterCallback("ObjectiveTrackerContainerMixin.AddTopPaddingProvider", self.AddTopPaddingProvider, self);
 	self:SetDirtyMethod(GenerateClosure(self.Update, self, dirtyUpdate));
+end
+
+function ObjectiveTrackerContainerMixin:AddTopPaddingProvider(topPaddingProvider)
+	self.topPaddingProviders[topPaddingProvider] = true;
 end
 
 function ObjectiveTrackerContainerMixin:OnSizeChanged()
@@ -46,6 +54,14 @@ function ObjectiveTrackerContainerMixin:GetAvailableHeight()
 	return self:GetHeight() - self.topModulePadding;
 end
 
+function ObjectiveTrackerContainerMixin:UpdateTopPadding()
+	local y = BASE_TOP_PADDING;
+	for topPaddingProvider in pairs(self.topPaddingProviders) do
+		y = y + topPaddingProvider:GetTopPadding();
+	end
+	self.topModulePadding = y;
+end
+
 function ObjectiveTrackerContainerMixin:Update(dirtyUpdate)
 	if self.needsSorting then
 		table.sort(self.modules, function(lhs, rhs)
@@ -58,6 +74,8 @@ function ObjectiveTrackerContainerMixin:Update(dirtyUpdate)
 	local availableHeight = self:GetAvailableHeight();
 	local contentsHeight = 0;
 	
+	self:UpdateTopPadding();
+
 	-- first update the modules with priority
 	for i, module in ipairs(self.modules) do
 		if module.hasDisplayPriority then

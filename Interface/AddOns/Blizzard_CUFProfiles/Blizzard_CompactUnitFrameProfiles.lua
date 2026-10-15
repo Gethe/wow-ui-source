@@ -125,6 +125,7 @@ CompactUnitFrameProfiles:Init({
 	raidFramesHealthText						= { option = "healthText", accessor = CUF_GetCVarString },
 	raidFramesDispelIndicatorOverlay			= { option = "dispelIndicatorOverlayType", accessor = CUF_GetCVarNumeric },
 	raidFramesDispelIndicatorOverlayAnimation	= { option = "dispelIndicatorOverlayAnimation" },
+	raidFramesDispelIndicatorAnimatedBorder		= { option = "dispelIndicatorAnimatedBorder" },
 	raidFramesCenterBigDefensive				= { option = "raidFramesCenterBigDefensive", },
 
 	-- Pvp

@@ -1,0 +1,116 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CopyCharacterFrameTemplate" inherits="ButtonFrameTemplate" toplevel="true" frameStrata="DIALOG" virtual="true">
+		<Size x="500" y="478"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="24"/>
+		</Anchors>
+		<Frames>
+			<Button parentKey="SearchButton" inherits="GlueButtonSmallTemplate" text="SEARCH" hidden="true">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-4" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CopyCharacterSearch_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="CopyButton" inherits="GlueButtonSmallTemplate" text="MENU_EDIT_COPY">
+				<Size x="80" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="322" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CopyCharacterCopy_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="CopyAccountData" inherits="GlueButtonSmallTemplate" text="COPY_ACCOUNT_DATA">
+				<Size x="150" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="4" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CopyAccountData_OnClick"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="CopyKeyBindings" inherits="GlueButtonSmallTemplate" text="COPY_KEY_BINDINGS">
+				<Size x="150" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="160" y="4"/>
+				</Anchors>
+				<Scripts>
+					<OnClick function="CopyKeyBindings_OnClick"/>
+				</Scripts>
+			</Button>
+			<DropdownButton name="$parentRegionID" inherits="WowStyle1DropdownTemplate" parentKey="RegionID">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="11" y="-35"/>
+				</Anchors>
+			</DropdownButton>
+			<EditBox parentKey="CharacterName" inherits="InputBoxTemplate" autoFocus="false" hidden="true">
+				<Size x="200" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.RegionID" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER" text="CHARACTER_NAME" >
+							<Size x="100" y="12"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="CopyCharacterEditBox_OnLoad"/>
+					<OnShow function="CopyCharacterEditBox_OnShow"/>
+					<OnEnterPressed function="CopyCharacterEditBox_OnEnterPressed"/>
+					<OnTabPressed function="CopyCharacterSurnameEditBox_OnTabPressed"/>
+				</Scripts>
+				<FontString inherits="CharCopyEditBoxFont"/>
+			</EditBox>
+			<EditBox parentKey="Surname" inherits="InputBoxTemplate" autoFocus="false" hidden="true">
+				<Size x="150" y="16"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.CharacterName" relativePoint="RIGHT" x="15" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontNormalSmall" justifyH="CENTER" text="SECONDARY_NAME">
+							<Size x="100" y="12"/>
+							<Anchors>
+								<Anchor point="TOP" x="0" y="15"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad function="CopyCharacterEditBox_OnLoad"/>
+					<OnShow function="CopyCharacterEditBox_OnShow"/>
+					<OnEnterPressed function="CopyCharacterEditBox_OnEnterPressed"/>
+					<OnTabPressed function="CopyCharacterCharacterNameEditBox_OnTabPressed"/>
+				</Scripts>
+				<FontString inherits="CharCopyEditBoxFont"/>
+			</EditBox>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList">
+				<Size x="450" y="382"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="18" y="-66"/>
+				</Anchors>
+			</Frame>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="11" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="11" y="-1"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad function="CopyCharacterFrame_OnLoad"/>
+			<OnEvent function="CopyCharacterFrame_OnEvent"/>
+			<OnShow function="CopyCharacterFrame_OnShow"/>
+			<OnHide function="CopyCharacterFrame_OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -15,6 +15,10 @@ VERTICAL_MULTI_BAR_HORIZONTAL_SPACING = 2;
 VERTICAL_MULTI_BAR_MIN_SCALE = 0.8333;
 
 local function IsMultibarVisible(index)
+	if C_GameRules.IsWoWHack() then
+		return index == 1 or index == 5 or index == 6;
+	end
+
 	if index == 1 then
 		return Settings.GetValue("PROXY_SHOW_ACTIONBAR_2");
 	elseif index == 2 then

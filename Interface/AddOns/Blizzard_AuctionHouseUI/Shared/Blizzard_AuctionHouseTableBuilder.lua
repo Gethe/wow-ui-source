@@ -822,6 +822,13 @@ function AuctionHouseTableCellLevelMixin:UpdateDisplay()
 
 	self:UnregisterEvent("EXTRA_BROWSE_INFO_RECEIVED");
 
+	if AuctionHouse_ShouldUseRequiredLevel() then
+		local itemKeyInfo = C_AuctionHouse.GetItemKeyInfo(self.rowData.itemKey);
+		if itemKeyInfo and itemKeyInfo.isEquipment then
+			extraInfo = math.max(1, C_AuctionHouse.GetItemKeyRequiredLevel(self.rowData.itemKey) or 0);
+		end
+	end
+
 	self.Text:SetText(extraInfo);
 end
 
@@ -1128,8 +1135,11 @@ function AuctionHouseTableBuilder.GetItemSellListLayout(owner, itemList, isEquip
 			local socketColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 24, 0, STANDARD_PADDING, nil, "AuctionHouseTableCellExtraInfoTemplate");
 			socketColumn:SetDisplayUnderPreviousHeader(true);
 
-			local itemLevelColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 50, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Level, "AuctionHouseTableCellAuctionsItemLevelTemplate");
-			itemLevelColumn:GetHeaderFrame():SetText(ITEM_LEVEL_ABBR);
+			if not AuctionHouse_ShouldUseRequiredLevel() then
+				local itemLevelColumn = tableBuilder:AddFixedWidthColumn(owner, 0, 50, STANDARD_PADDING, 0, Enum.AuctionHouseSortOrder.Level, "AuctionHouseTableCellAuctionsItemLevelTemplate");
+				itemLevelColumn:GetHeaderFrame():SetText(ITEM_LEVEL_ABBR);
+			end
+
 		elseif isPet then
 			tableBuilder:AddFixedWidthColumn(owner, 0, 90, 0, STANDARD_PADDING, nil, "AuctionHouseTableCellOwnersTemplate");
 		else

@@ -1,0 +1,35 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="LegacyChallengeDetailPaneTemplate" mixin="LegacyChallengeDetailPaneMixin" virtual ="true">
+		<Size x="560" y="490"/>
+		<KeyValues>
+			<KeyValue key="elementTemplate" value="LegacyChallengeTemplate" type="string"/>
+			<KeyValue key="buttonMixin" value="LegacyChallengeTemplateMixin" type="global"/>
+			<KeyValue key="collapsedHeight" value="122" type="number"/>
+			<KeyValue key="elementSpacing" value="5" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-3"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="5"/>
+				</Anchors>
+			</Frame>
+
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="6" y="-8"/>
+					<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="6" y="6"/>
+				</Anchors>
+			</EventFrame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

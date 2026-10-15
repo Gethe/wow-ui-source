@@ -75,4 +75,16 @@
 		<Size x="30" y="29"/>
 	</CheckButton>
 
+	<CheckButton name="CheckboxWithLabelTemplate" inherits="MinimalCheckboxArtTemplate" virtual="true">
+		<Size x="30" y="29"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString inherits="GameFontNormalSmall" parentKey="Text">
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="3" y="0"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</CheckButton>
 </Ui>

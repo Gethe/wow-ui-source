@@ -10,6 +10,22 @@ CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.FORCE_SHOW_UNIT_NAME_CVA
 
 local CAST_BAR_SPARK_EXTRA_HEIGHT = 8;
 
+local function GetNamePlateFontObject(setupOptions)
+	if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar then
+		return "SystemFont_NamePlate_Outlined";
+	end
+
+	if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.CenteredAboveHealthBar then
+		return "SystemFont_NamePlate_Outlined";
+	end
+
+	if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.AboveHealthBar and setupOptions.useOutlinedFontWhenAboveHealthBar then
+		return "SystemFont_NamePlate_Outlined";
+	end
+
+	return "SystemFont_NamePlate";
+end
+
 -- Displays the info about the unit to which the nameplate is attached.
 -- This mixin is a child of a frame that has been created in code and is using NamePlateBaseMixin.
 NamePlateUnitFrameMixin = {};
@@ -84,7 +100,8 @@ function NamePlateUnitFrameMixin:OnLoad()
 
 	self.totalAbsorbOverlay:SetAllPoints(self.totalAbsorb);
 
-	self.totalAbsorbOverlay:SetAllPoints(self.totalAbsorb);
+	-- Prevent flickering caused by nameplate movement, particularly on the borders
+	PixelUtil.SetRoundLayoutToNearestPixelRecursively(self, true);
 end
 
 function NamePlateUnitFrameMixin:OnEvent(event, ...)
@@ -124,7 +141,7 @@ function NamePlateUnitFrameMixin:OnUnitSet()
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.FORCE_SHOW_UNIT_NAME_CVAR, self.UpdateForceShowUnitName, self);
 
 	self:RegisterUnitEvent("UNIT_AURA", self.unit);
-	self:RegisterUnitEvent("UNIT_FACTION", self.unit);
+	self:RegisterUnitEvent("UNIT_FACTION", self.unit, "player");
 	self:RegisterUnitEvent("NAME_PLATE_UNIT_BEHIND_CAMERA_CHANGED", self.unit);
 	self:RegisterEvent("PLAYER_TARGET_CHANGED");
 	self:RegisterEvent("PLAYER_FOCUS_CHANGED");
@@ -204,35 +221,26 @@ function NamePlateUnitFrameMixin:ApplyFrameOptions(setupOptions, frameOptions)
 	self.CastBarsContainer.castBar.Text:SetTextHeight(setupOptions.castBarFontHeight);
 	self.CastBarsContainer.castBar.CastTargetNameText:SetTextHeight(setupOptions.castBarFontHeight);
 
-	if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar then
-		self.name:SetFontObject("SystemFont_NamePlate_Outlined");
-	else
-		-- Outlined font is harder to read when text is outside the health bar.
-		self.name:SetFontObject("SystemFont_NamePlate");
+	local fontObject = GetNamePlateFontObject(setupOptions);
+	self.name:SetFontObject(fontObject);
+	self.name:SetTextHeight(setupOptions.healthBarFontHeight);
+
+	local healthBar = self.HealthBarsContainer.healthBar;
+	for _, healthText in ipairs({ healthBar.Text, healthBar.LeftText, healthBar.RightText }) do
+		healthText:SetFontObject(fontObject);
+		healthText:SetTextHeight(setupOptions.healthBarFontHeight);
 	end
 
 	self:UpdateHitTestArea(setupOptions);
 
-	if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar or setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.CenteredAboveHealthBar then
-		-- Health text is inside the bar.
-		self.HealthBarsContainer.healthBar.Text:SetFontObject("SystemFont_NamePlate_Outlined");
-		self.HealthBarsContainer.healthBar.LeftText:SetFontObject("SystemFont_NamePlate_Outlined");
-		self.HealthBarsContainer.healthBar.RightText:SetFontObject("SystemFont_NamePlate_Outlined");
-	else
-		-- Health text is above the bar.
-		self.HealthBarsContainer.healthBar.Text:SetFontObject("SystemFont_NamePlate");
-		self.HealthBarsContainer.healthBar.LeftText:SetFontObject("SystemFont_NamePlate");
-		self.HealthBarsContainer.healthBar.RightText:SetFontObject("SystemFont_NamePlate");
-	end
-
-	self.name:SetTextHeight(setupOptions.healthBarFontHeight);
-	self.HealthBarsContainer.healthBar.Text:SetTextHeight(setupOptions.healthBarFontHeight);
-	self.HealthBarsContainer.healthBar.LeftText:SetTextHeight(setupOptions.healthBarFontHeight);
-	self.HealthBarsContainer.healthBar.RightText:SetTextHeight(setupOptions.healthBarFontHeight);
+	healthBar.selectedBorder:SetAtlas(NamePlateConstants.SELECTED_BORDER_ATLAS, TextureKitConstants.IgnoreAtlasSize);
 
 	self.ClassificationFrame:SetScale(setupOptions.classificationScale or 1.0);
-	self.PlayerLevelDiffFrame:SetScale(setupOptions.classificationScale or 1.0);
-
+	self.PlayerLevelDiffFrame:SetSize(setupOptions.playerLevelDiffWidth, setupOptions.playerLevelDiffHeight);
+	self.PlayerLevelDiffFrame.playerLevelDiffText:SetTextHeight(setupOptions.levelFontHeight);
+	if self.PlayerLevelDiffFrame.highLevelTexture then
+		self.PlayerLevelDiffFrame.highLevelTexture:SetSize(setupOptions.playerLevelDiffHeight, setupOptions.playerLevelDiffHeight);
+	end
 	CompactUnitFrame_SetOptionTable(self, frameOptions);
 
 	self:UpdateAnchors();
@@ -243,6 +251,7 @@ function NamePlateUnitFrameMixin:OnUnitFactionChanged()
 	CompactUnitFrame_UpdateHealthColor(self);
 	self:UpdateIsFriend();
 	CompactUnitFrame_UpdateLevel(self);
+	CompactUnitFrame_UpdatePlayerLevelDiff(self);
 end
 
 function NamePlateUnitFrameMixin:UpdateIsPlayer()
@@ -399,6 +408,7 @@ function NamePlateUnitFrameMixin:UpdateIsTarget()
 	self.isTarget = isTarget;
 
 	self.HealthBarsContainer.healthBar:SetIsTarget(isTarget);
+	self.PlayerLevelDiffFrame:SetIsTarget(isTarget);
 end
 
 function NamePlateUnitFrameMixin:ShouldBeFocus()
@@ -423,6 +433,7 @@ function NamePlateUnitFrameMixin:UpdateIsFocus()
 	self.isFocus = isFocus;
 
 	self.HealthBarsContainer.healthBar:SetIsFocus(isFocus);
+	self.PlayerLevelDiffFrame:SetIsFocus(isFocus);
 end
 
 function NamePlateUnitFrameMixin:GetRaidTargetIndex()
@@ -529,6 +540,7 @@ function NamePlateUnitFrameMixin:UpdateWidgetsOnlyMode()
 	self.widgetsOnlyMode = self.unit ~= nil and UnitNameplateShowsWidgetsOnly(self.unit);
 
 	CompactUnitFrame_UpdateName(self);
+	CompactUnitFrame_UpdatePlayerLevelDiff(self);
 
 	self.HealthBarsContainer.healthBar:SetWidgetsOnlyMode(self.widgetsOnlyMode);
 	self.CastBarsContainer.castBar:SetWidgetsOnlyMode(self.widgetsOnlyMode);
@@ -538,10 +550,12 @@ function NamePlateUnitFrameMixin:UpdateWidgetsOnlyMode()
 
 	self.WidgetContainer:ClearAllPoints();
 	if self.widgetsOnlyMode then
-		PixelUtil.SetPoint(self.WidgetContainer, "BOTTOM", self, "BOTTOM", 0, 0);
+		self.WidgetContainer:SetPoint("BOTTOM", self, "BOTTOM", 0, 0);
 	else
-		PixelUtil.SetPoint(self.WidgetContainer, "TOP", self.CastBarsContainer, "BOTTOM", 0, 0);
+		self.WidgetContainer:SetPoint("TOP", self.CastBarsContainer, "BOTTOM", 0, 0);
 	end
+
+	self:UpdateHitTestArea(NamePlateSetupOptions);
 end
 
 function NamePlateUnitFrameMixin:IsShowOnlyName()
@@ -566,13 +580,14 @@ function NamePlateUnitFrameMixin:UpdateShowOnlyName()
 	self.AurasFrame:SetShowOnlyName(showOnlyName);
 	self.ClassificationFrame:SetShowOnlyName(showOnlyName);
 	self.RaidTargetFrame:SetShowOnlyName(showOnlyName);
+	CompactUnitFrame_UpdatePlayerLevelDiff(self);
 
 	self:UpdateAnchors();
 	self:UpdateHitTestArea(NamePlateSetupOptions);
 end
 
 function NamePlateUnitFrameMixin:UpdateHitTestArea(setupOptions)
-	if self:IsShowOnlyName() then
+	if self:IsShowOnlyName() or self.widgetsOnlyMode then
 		self:GetNamePlateFrame():ClearAllHitTestPoints();
 	elseif setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar then
 		local extraXOffset = 10;
@@ -664,14 +679,25 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 	local customOptions = self.customOptions;
 	local setupOptions = NamePlateSetupOptions;
 
+	-- If we are displaying the level frame, we will need to adjust anchoring accordingly
+	local displayLevelFrame = self.PlayerLevelDiffFrame:ShouldDisplay(self.unit);
+	local levelFrameWidth = 0;
+	local levelFrameRelativeAnchor = nil;
+	if displayLevelFrame then
+		local _point, _relativeTo, relativePoint, offsetX = self.PlayerLevelDiffFrame:GetPoint();
+		levelFrameRelativeAnchor = relativePoint;
+		-- The anchor offset is the gap between the health bar and the level frame, so it has to be reserved alongside the width.
+		levelFrameWidth = self.PlayerLevelDiffFrame:GetWidth() + math.abs(offsetX);
+	end
+
 	-- Anchoring logic starts from bottom of the frame and works its way upwards.
 
 	-- Cast Bar
 	do
 		self.CastBarsContainer:ClearAllPoints();
 
-		PixelUtil.SetPoint(self.CastBarsContainer, "BOTTOMLEFT", self, "BOTTOMLEFT", setupOptions.insetWidth, 0);
-		PixelUtil.SetPoint(self.CastBarsContainer, "BOTTOMRIGHT", self, "BOTTOMRIGHT", -setupOptions.insetWidth, 0);
+		self.CastBarsContainer:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", setupOptions.insetWidth, 0);
+		self.CastBarsContainer:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -setupOptions.insetWidth, 0);
 
 		self.CastBarsContainer.castBar:ApplyStyleAndAnchoring(setupOptions);
 	end
@@ -680,9 +706,14 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 	do
 		self.HealthBarsContainer:ClearAllPoints();
 
-		PixelUtil.SetPoint(self.HealthBarsContainer, "BOTTOMLEFT", self.CastBarsContainer, "TOPLEFT", 0, setupOptions.castBarToHealthBarSpacing);
-		PixelUtil.SetPoint(self.HealthBarsContainer, "BOTTOMRIGHT", self.CastBarsContainer, "TOPRIGHT", 0, setupOptions.castBarToHealthBarSpacing);
-		PixelUtil.SetHeight(self.HealthBarsContainer, setupOptions.healthBarHeight);
+		local xOffset = 0;
+		if (displayLevelFrame and levelFrameRelativeAnchor == "RIGHT") then
+			xOffset = -levelFrameWidth;
+		end
+
+		self.HealthBarsContainer:SetPoint("BOTTOMLEFT", self.CastBarsContainer, "TOPLEFT", 0, setupOptions.castBarToHealthBarSpacing);
+		self.HealthBarsContainer:SetPoint("BOTTOMRIGHT", self.CastBarsContainer, "TOPRIGHT", xOffset, setupOptions.castBarToHealthBarSpacing);
+		self.HealthBarsContainer:SetHeight(setupOptions.healthBarHeight);
 
 		local healthBar = self.HealthBarsContainer.healthBar;
 		local healthBarText = healthBar.Text;
@@ -699,81 +730,98 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 
 		if setupOptions.useClassicHealthBar then
 			healthBar.barTexture:SetTexture("Interface\\TargetingFrame\\UI-TargetingFrame-BarFill");
-			PixelUtil.SetPoint(healthBar, "TOPLEFT", self.HealthBarsContainer, "TOPLEFT", 3.5 * setupOptions.horizontalScale, 0.5 * setupOptions.verticalScale);
-			PixelUtil.SetPoint(healthBar, "BOTTOMRIGHT", self.HealthBarsContainer, "BOTTOMRIGHT", -20.75 * setupOptions.horizontalScale, 0.5 * setupOptions.verticalScale);
+			healthBar:SetPoint("TOPLEFT", self.HealthBarsContainer, "TOPLEFT", 3.5 * setupOptions.horizontalScale, 0.5 * setupOptions.verticalScale);
+			healthBar:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer, "BOTTOMRIGHT", -20.75 * setupOptions.horizontalScale, 0.5 * setupOptions.verticalScale);
 		else
 			healthBar.barTexture:SetAtlas("UI-HUD-CoolDownManager-Bar", true);
-			PixelUtil.SetPoint(healthBar, "TOPLEFT", self.HealthBarsContainer, "TOPLEFT", 0, 0);
-			PixelUtil.SetPoint(healthBar, "BOTTOMRIGHT", self.HealthBarsContainer, "BOTTOMRIGHT", 0, 0);
+			healthBar:SetPoint("TOPLEFT", self.HealthBarsContainer, "TOPLEFT", 0, 0);
+			healthBar:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer, "BOTTOMRIGHT", 0, 0);
 		end
 
 		if self:IsShowOnlyName() then
 			self.name:SetJustifyH("CENTER");
 
 			if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar then
-				PixelUtil.SetPoint(self.name, "LEFT", self.HealthBarsContainer, "LEFT", 4, 0);
-				PixelUtil.SetPoint(self.name, "RIGHT", self.HealthBarsContainer, "RIGHT", -4, 0);
+				self.name:SetPoint("LEFT", self.HealthBarsContainer, "LEFT", 4, 0);
+				self.name:SetPoint("RIGHT", self.HealthBarsContainer, "RIGHT", -4, 0);
 			else
-				PixelUtil.SetPoint(self.name, "BOTTOMLEFT", self.HealthBarsContainer, "TOPLEFT", 4, 2);
-				PixelUtil.SetPoint(self.name, "BOTTOMRIGHT", self.HealthBarsContainer, "TOPRIGHT", -4, 2);
+				self.name:SetPoint("BOTTOMLEFT", self.HealthBarsContainer, "TOPLEFT", 4, 2);
+				self.name:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer, "TOPRIGHT", -4, 2);
 			end
 		else
 			-- Unit name needs to truncate if the health bar text is populated.
 			-- Left Text (percentage) is intentionally to the right of Right Text (numeric value)
 			if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar then
 				self.name:SetJustifyH("LEFT");
-				PixelUtil.SetPoint(healthBarLeftText, "RIGHT", self.HealthBarsContainer.healthBar, "RIGHT", -4, 0);
-				PixelUtil.SetPoint(healthBarRightText, "RIGHT", healthBarLeftText, "LEFT", -2, 0);
-				PixelUtil.SetPoint(healthBarText, "RIGHT", healthBarRightText, "LEFT", 2, 0);
-				PixelUtil.SetPoint(self.name, "LEFT", self.HealthBarsContainer, "LEFT", 4, 0);
-				PixelUtil.SetPoint(self.name, "RIGHT", healthBarText, "LEFT", -2, 0);
+				healthBarLeftText:SetPoint("RIGHT", self.HealthBarsContainer.healthBar, "RIGHT", -4, 0);
+				healthBarRightText:SetPoint("RIGHT", healthBarLeftText, "LEFT", -2, 0);
+				healthBarText:SetPoint("RIGHT", healthBarRightText, "LEFT", 2, 0);
+				self.name:SetPoint("LEFT", self.HealthBarsContainer, "LEFT", 4, 0);
+				self.name:SetPoint("RIGHT", healthBarText, "LEFT", -2, 0);
 			elseif setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.CenteredAboveHealthBar then
 				local yOffset = setupOptions.useClassicHealthBar and -0.5 or 0;
 				self.name:SetJustifyH("CENTER");
-				PixelUtil.SetPoint(healthBarLeftText, "RIGHT", self.HealthBarsContainer.healthBar, "RIGHT", -4, yOffset);
-				PixelUtil.SetPoint(healthBarRightText, "RIGHT", healthBarLeftText, "LEFT", -2, 0);
-				PixelUtil.SetPoint(healthBarText, "RIGHT", healthBarRightText, "LEFT", 2, 0);
-				PixelUtil.SetPoint(self.name, "BOTTOM", self.HealthBarsContainer, "TOP", 0, setupOptions.healthBarToNameAboveSpacing);
+				healthBarLeftText:SetPoint("RIGHT", self.HealthBarsContainer.healthBar, "RIGHT", -4, yOffset);
+				healthBarRightText:SetPoint("RIGHT", healthBarLeftText, "LEFT", -2, 0);
+				healthBarText:SetPoint("RIGHT", healthBarRightText, "LEFT", 2, 0);
+				self.name:SetPoint("BOTTOM", self.HealthBarsContainer, "TOP", 0, setupOptions.healthBarToNameAboveSpacing);
 			else -- NamePlateConstants.NAME_ANCHOR_STYLES.AboveHealthBar
-				self.name:SetJustifyH("LEFT");
-				PixelUtil.SetPoint(healthBarLeftText, "BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 2);
-				PixelUtil.SetPoint(healthBarRightText, "BOTTOMRIGHT", healthBarLeftText, "BOTTOMLEFT", -2, 0);
-				PixelUtil.SetPoint(healthBarText, "BOTTOMRIGHT", healthBarRightText, "BOTTOMLEFT", 2, 0);
-				PixelUtil.SetPoint(self.name, "BOTTOMLEFT", self.HealthBarsContainer, "TOPLEFT", 4, setupOptions.healthBarToNameAboveSpacing);
-				PixelUtil.SetPoint(self.name, "BOTTOMRIGHT", healthBarText, "BOTTOMLEFT", -2, 0);
+				self.name:SetJustifyH(setupOptions.nameJustificationWhenAboveHealthBar);
+				self.name:SetPoint("BOTTOMLEFT", self.HealthBarsContainer, "TOPLEFT", 0, setupOptions.healthBarToNameAboveSpacing);
+
+				if setupOptions.healthTextInsideBarWhenNameAboveHealthBar then
+					healthBarLeftText:SetPoint("RIGHT", self.HealthBarsContainer.healthBar, "RIGHT", -4, 0);
+					healthBarRightText:SetPoint("RIGHT", healthBarLeftText, "LEFT", -2, 0);
+					healthBarText:SetPoint("RIGHT", healthBarRightText, "LEFT", 2, 0);
+					if (displayLevelFrame and levelFrameRelativeAnchor == "RIGHT") then
+						self.name:SetPoint("RIGHT", self.PlayerLevelDiffFrame, "RIGHT", 0, 0);
+					else
+						self.name:SetPoint("RIGHT", self.HealthBarsContainer, "RIGHT", 0, 0);
+					end
+				else
+					healthBarLeftText:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 2);
+					healthBarRightText:SetPoint("BOTTOMRIGHT", healthBarLeftText, "BOTTOMLEFT", -2, 0);
+					healthBarText:SetPoint("BOTTOMRIGHT", healthBarRightText, "BOTTOMLEFT", 2, 0);
+					if (displayLevelFrame and levelFrameRelativeAnchor == "RIGHT") then
+						self.name:SetPoint("RIGHT", self.PlayerLevelDiffFrame, "RIGHT", 0, 0);
+					else
+						self.name:SetPoint("RIGHT", healthBarText, "LEFT", -2, 0);
+					end
+				end
 			end
 		end
 
-		PixelUtil.SetHeight(self.name, self.name:GetLineHeight());
+		self.name:SetFontHeight(self.name:GetLineHeight());
 
 		self.overAbsorbGlow:ClearAllPoints();
-		PixelUtil.SetPoint(self.overAbsorbGlow, "BOTTOMLEFT", self.HealthBarsContainer.healthBar, "BOTTOMRIGHT", -4, -1);
-		PixelUtil.SetPoint(self.overAbsorbGlow, "TOPLEFT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 1);
-		PixelUtil.SetHeight(self.overAbsorbGlow, 8);
+		self.overAbsorbGlow:SetPoint("BOTTOMLEFT", self.HealthBarsContainer.healthBar, "BOTTOMRIGHT", -4, -1);
+		self.overAbsorbGlow:SetPoint("TOPLEFT", self.HealthBarsContainer.healthBar, "TOPRIGHT", -4, 1);
+		self.overAbsorbGlow:SetHeight(8);
 
 		self.overHealAbsorbGlow:ClearAllPoints();
-		PixelUtil.SetPoint(self.overHealAbsorbGlow, "BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "BOTTOMLEFT", 2, -1);
-		PixelUtil.SetPoint(self.overHealAbsorbGlow, "TOPRIGHT", self.HealthBarsContainer.healthBar, "TOPLEFT", 2, 1);
-		PixelUtil.SetWidth(self.overHealAbsorbGlow, 8);
+		self.overHealAbsorbGlow:SetPoint("BOTTOMRIGHT", self.HealthBarsContainer.healthBar, "BOTTOMLEFT", 2, -1);
+		self.overHealAbsorbGlow:SetPoint("TOPRIGHT", self.HealthBarsContainer.healthBar, "TOPLEFT", 2, 1);
+		self.overHealAbsorbGlow:SetWidth(8);
 
 		if setupOptions.useClassicHealthBar then
 			bgTexture:SetTexture("Interface\\Tooltips\\Nameplate-Border");
 			bgTexture:SetTexCoord(0, 1, 0.5, 1);
 			bgTexture:SetTextureSliceMargins(0, 0, 0, 0);
 			bgTexture:SetDrawLayer("ARTWORK", 1);
-			PixelUtil.SetPoint(bgTexture, "CENTER", self.HealthBarsContainer, "CENTER", 0, 0);
+			bgTexture:SetPoint("CENTER", self.HealthBarsContainer, "CENTER", 0, 0);
 		else
 			bgTexture:SetAtlas("UI-HUD-CoolDownManager-Bar-BG", true);
 			bgTexture:SetTexCoord(0, 1, 0, 1);
 			bgTexture:SetDrawLayer("BACKGROUND");
-		PixelUtil.SetPoint(bgTexture, "TOPLEFT", healthBar, "TOPLEFT", -2, 3);
-		PixelUtil.SetPoint(bgTexture, "BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", 6, -6);
+			bgTexture:SetPoint("TOPLEFT", healthBar, "TOPLEFT", -2, 3);
+			bgTexture:SetPoint("BOTTOMRIGHT", healthBar, "BOTTOMRIGHT", 6, -6);
 		end
-		PixelUtil.SetSize(bgTexture, setupOptions.healthBarBorderWidth, setupOptions.healthBarBorderHeight);
+		bgTexture:SetSize(setupOptions.healthBarBorderWidth, setupOptions.healthBarBorderHeight);
 
 		local selectedBorder = healthBar.selectedBorder;
-		PixelUtil.SetPoint(selectedBorder, "TOPLEFT", bgTexture, "TOPLEFT", -1, 1);
-		PixelUtil.SetPoint(selectedBorder, "BOTTOMRIGHT", bgTexture, "BOTTOMRIGHT", -3, 3);
+		local selectedBorderOffsets = NamePlateConstants.SELECTED_BORDER_OFFSETS;
+		selectedBorder:SetPoint("TOPLEFT", bgTexture, "TOPLEFT", selectedBorderOffsets.topLeftX, selectedBorderOffsets.topLeftY);
+		selectedBorder:SetPoint("BOTTOMRIGHT", bgTexture, "BOTTOMRIGHT", selectedBorderOffsets.bottomRightX, selectedBorderOffsets.bottomRightY);
 
 		-- Aggro Highlight
 		for i, texture in ipairs(self.aggroHighlightTextures) do
@@ -795,17 +843,6 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 		end
 	end
 
-	-- Auras Frame
-	do
-		local debuffPadding = CVarCallbackRegistry:GetCVarNumberOrDefault(NamePlateConstants.DEBUFF_PADDING_CVAR);
-
-		if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar then
-			PixelUtil.SetPoint(self.AurasFrame.DebuffListFrame, "BOTTOM", self.HealthBarsContainer.healthBar, "TOP", 0, debuffPadding);
-		else
-			PixelUtil.SetPoint(self.AurasFrame.DebuffListFrame, "BOTTOM", self.name, "TOP", 0, debuffPadding);
-		end
-	end
-
 	-- Raid Target Frame
 	do
 		self.RaidTargetFrame:ClearAllPoints();
@@ -813,18 +850,42 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 		if self:IsShowOnlyName() then
 			PixelUtil.SetPoint(self.RaidTargetFrame, "BOTTOM", self.name, "TOP", 0, 10);
 		else
-			PixelUtil.SetPoint(self.RaidTargetFrame, "RIGHT", self.HealthBarsContainer, "LEFT", 0, 0);
+			local xOffset = 0;
+			if (displayLevelFrame and levelFrameRelativeAnchor == "LEFT") then
+				xOffset = -levelFrameWidth;
+			end
+
+			PixelUtil.SetPoint(self.RaidTargetFrame, "RIGHT", self.HealthBarsContainer, "LEFT", xOffset, 0);
 		end
+	end
+
+	-- Auras Frame
+	do
+		local debuffPadding = CVarCallbackRegistry:GetCVarNumberOrDefault(NamePlateConstants.DEBUFF_PADDING_CVAR);
+
+		if setupOptions.unitNameAnchorStyle == NamePlateConstants.NAME_ANCHOR_STYLES.InsideHealthBar then
+			self.AurasFrame.DebuffListFrame:SetPoint("BOTTOM", self.HealthBarsContainer.healthBar, "TOP", 0, debuffPadding);
+		else
+			self.AurasFrame.DebuffListFrame:SetPoint("BOTTOM", self.name, "TOP", 0, debuffPadding);
+		end
+
+		local rightManagedAuraOffset = 0;
+		if (displayLevelFrame and levelFrameRelativeAnchor == "RIGHT") then
+			rightManagedAuraOffset = levelFrameWidth;
+		end
+
+		self.AurasFrame.CrowdControlListFrame:SetPoint("LEFT", self.HealthBarsContainer, "RIGHT", 5 + rightManagedAuraOffset, 0);
+		self.AurasFrame.LossOfControlFrame:SetPoint("LEFT", self.HealthBarsContainer, "RIGHT", 5 + rightManagedAuraOffset, 0);
 	end
 
 	-- Level Frame
 	do
 		self.LevelFrame:ClearAllPoints();
-		PixelUtil.SetSize(self.LevelFrame, setupOptions.levelIconWidth, setupOptions.levelIconHeight);
+		self.LevelFrame:SetSize(setupOptions.levelIconWidth, setupOptions.levelIconHeight);
 		self.LevelFrame.LevelText:SetTextHeight(setupOptions.levelFontHeight);
 
 		if setupOptions.useClassicHealthBar then
-			PixelUtil.SetPoint(self.LevelFrame, "CENTER", self.HealthBarsContainer.healthBar.bgTexture, "RIGHT", -11 * setupOptions.horizontalScale, 0);
+			self.LevelFrame:SetPoint("CENTER", self.HealthBarsContainer.healthBar.bgTexture, "RIGHT", -11 * setupOptions.horizontalScale, 0);
 		end
 	end
 end
@@ -840,7 +901,9 @@ function NamePlateUnitFrameMixin:SetExplicitValues(explicitValues)
 	self:UpdateIsPlayer();
 	self:UpdateIsFriend();
 	self:UpdateIsSimplified();
-	self:UpdateNameOverride();
+	if (self.UpdateNameOverride) then
+		self:UpdateNameOverride();
+	end
 
 	self.AurasFrame:SetExplicitValues(explicitValues);
 	self.ClassificationFrame:SetExplicitValues(explicitValues);

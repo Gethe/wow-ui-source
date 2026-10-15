@@ -48,6 +48,7 @@ local RolesetSystem =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

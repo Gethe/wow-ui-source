@@ -1,0 +1,6 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Texture name="FreeTrialLogoTextureTemplate" parentKey="Logo" file="Interface/Glues/Common/Glues-WoW-FreeTrial" virtual="true">
+		<Size x="320" y="160"/>
+	</Texture>
+</Ui>

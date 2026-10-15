@@ -312,7 +312,7 @@ function HousingMarketCartFrameMixin:SetupDataManager()
 			CatalogShopTopUpFlowInboundInterface.SetShown(true, self:GetParent());
 		else
 			if #productIDList >= 1 then
-				C_CatalogShop.ConfirmHousingPurchase(productIDList);
+				C_CatalogShop.ConfirmVCProductPurchase(productIDList);
 			end
 		end
 	end);

@@ -155,6 +155,7 @@ local FrameAPIBlob =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

@@ -29,6 +29,18 @@ function PlayerChoiceBaseOptionTemplateMixin:OnHide()
 	self.WidgetContainer:UnregisterForWidgetSet();
 end
 
+function PlayerChoiceBaseOptionTemplateMixin:OnOptionEnter()
+	if C_GameRules.IsWoWHack() and self.optionInfo and self.optionInfo.spellID then
+		EventRegistry:TriggerEvent("PlayerChoiceOption.OnOptionEnter", self.optionInfo.spellID);
+	end
+end
+
+function PlayerChoiceBaseOptionTemplateMixin:OnOptionLeave()
+	if C_GameRules.IsWoWHack() then
+		EventRegistry:TriggerEvent("PlayerChoiceOption.OnOptionLeave");
+	end
+end
+
 function PlayerChoiceBaseOptionTemplateMixin:Reset()
 	self:SetHeight(1);
 
@@ -559,11 +571,19 @@ function PlayerChoiceBaseOptionButtonTemplateMixin:OnEnter()
 	end
 
 	self.UpdateTooltip = self.OnEnter;
+
+	if self.parentOption then
+		self.parentOption:OnOptionEnter();
+	end
 end
 
 function PlayerChoiceBaseOptionButtonTemplateMixin:OnLeave()
 	EmbeddedItemTooltip:Hide();
 	self.UpdateTooltip = nil;
+
+	if self.parentOption then
+		self.parentOption:OnOptionLeave();
+	end
 end
 
 function PlayerChoiceBaseOptionButtonTemplateMixin:SetPushed(pushed)

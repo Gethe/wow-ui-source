@@ -230,6 +230,7 @@ local PerksActivities =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

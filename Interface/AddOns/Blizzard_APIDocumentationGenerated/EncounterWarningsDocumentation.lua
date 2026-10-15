@@ -160,7 +160,7 @@ local EncounterWarnings =
 				{ Name = "tooltipSpellID", Type = "number", Nilable = false, SecretValue = true },
 				{ Name = "isDeadly", Type = "bool", Nilable = false, SecretValue = true },
 				{ Name = "color", Type = "colorRGBA", Mixin = "ColorMixin", Nilable = false, SecretValue = true },
-				{ Name = "duration", Type = "DurationSeconds", Nilable = false },
+				{ Name = "duration", Type = "Seconds", Nilable = false },
 				{ Name = "severity", Type = "EncounterEventSeverity", Nilable = false },
 				{ Name = "shouldPlaySound", Type = "bool", Nilable = false },
 				{ Name = "shouldShowChatMessage", Type = "bool", Nilable = false },
@@ -168,6 +168,7 @@ local EncounterWarnings =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

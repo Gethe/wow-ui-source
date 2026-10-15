@@ -119,15 +119,19 @@ function UnitPopupSharedUtil.GetFullPlayerName(contextData)
 	end
 
 	local name = contextData.name;
-	local server = contextData.server;
+	local surname = contextData.surname;
 	local unit = contextData.unit;
-	if server then
-		if (not unit) and (GetNormalizedRealmName() ~= server) then
-			return name.."-"..server;
+
+	if surname then
+		if (not unit) and (GetNormalizedRealmName() ~= surname) then
+			return name..Constants.CharacterNameSeparatorConsts.CHARACTERNAME_REALMNAME_SEPARATOR..surname;
+		elseif unit and RegionalUniqueNamesEnabled() then
+			return name..Constants.CharacterNameSeparatorConsts.CHARACTERNAME_SURNAME_SEPARATOR..surname;
 		elseif unit and (UnitRealmRelationship(unit) ~= LE_REALM_RELATION_SAME) then
-			return name.."-"..server;
-		end		
+			return name..Constants.CharacterNameSeparatorConsts.CHARACTERNAME_REALMNAME_SEPARATOR..surname;
+		end
 	end
+
 	return name; 
 end
 

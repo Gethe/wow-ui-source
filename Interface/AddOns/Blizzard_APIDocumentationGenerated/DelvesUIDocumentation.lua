@@ -18,6 +18,16 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "GetActiveTieredEntranceProgress",
+			Type = "Function",
+			Documentation = { "Returns the configured tracking quest progress for the active tiered entrance." },
+
+			Returns =
+			{
+				{ Name = "progress", Type = "table", InnerType = "TieredEntranceProgressInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCompanionInfoForActivePlayer",
 			Type = "Function",
 
@@ -397,6 +407,15 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "HasActiveTale",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsDelveEntranceTierEnabled",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -450,6 +469,10 @@ local DelvesUI =
 			{
 				{ Name = "isForCompanion", Type = "bool", Nilable = false },
 			},
+		},
+		{
+			Name = "RequestClearActiveTale",
+			Type = "Function",
 		},
 		{
 			Name = "RequestPartyEligibilityForDelveTiers",
@@ -532,6 +555,17 @@ local DelvesUI =
 			Documentation = { "Signaled when SpellScript indicates that a curio has been learned or upgraded. Will show the companion config UI." },
 		},
 		{
+			Name = "TaleRunClearResult",
+			Type = "Event",
+			LiteralName = "TALE_RUN_CLEAR_RESULT",
+			SynchronousEvent = true,
+			Documentation = { "Signaled when a request to clear (abandon) the player's active Tale run completes." },
+			Payload =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "WalkInDataUpdate",
 			Type = "Event",
 			LiteralName = "WALK_IN_DATA_UPDATE",
@@ -580,6 +614,16 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "TieredEntranceProgressInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "questID", Type = "number", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "completed", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "TieredEntranceRewardInfo",
 			Type = "Structure",
 			Fields =
@@ -608,6 +652,7 @@ local DelvesUI =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

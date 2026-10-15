@@ -1,7 +1,6 @@
 ## Title: Blizzard API Documentation Generated
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 1
-## AllowLoad: Both
 ## Dependencies: Blizzard_APIDocumentation
 
 # Start documentation files here
@@ -26,6 +25,7 @@ AssistedCombatDocumentation.lua
 AuctionHouseDocumentation.lua
 AuraContainerUtilDocumentation.lua
 AutoCompleteDocumentation.lua
+AutoLootDocumentation.lua
 AzeriteEmpoweredItemDocumentation.lua
 AzeriteEssenceDocumentation.lua
 AzeriteItemDocumentation.lua
@@ -38,6 +38,7 @@ BattleNetDocumentation.lua
 BattlePetDocumentation.lua
 BehavioralMessagingDocumentation.lua
 BlackMarketInfoDocumentation.lua
+BlizzCon2026Documentation.lua
 BrowserDocumentation.lua
 BuildDocumentation.lua
 CVarDocumentation.lua
@@ -112,6 +113,7 @@ ExpansionDocumentation.lua
 ExpansionInfoDocumentation.lua
 ExpansionTrialDocumentation.lua
 ExternalEventURLDocumentation.lua
+FlyoutDocumentation.lua
 FogOfWarDocumentation.lua
 FontDocumentation.lua
 FrameAPIArchaeologyDigsiteDocumentation.lua
@@ -137,9 +139,12 @@ FriendListDocumentation.lua
 GMTicketInfoDocumentation.lua
 GameCursorDocumentation.lua
 GameErrorDocumentation.lua
+GameModeExpBarUIDocumentation.lua
 GamePadDocumentation.lua
 GameRulesDocumentation.lua
 GameUIDocumentation.lua
+GamepadTargetingDocumentation.lua
+GamepadUIDocumentation.lua
 GarrisonInfoDocumentation.lua
 UIGenericWidgetDisplayDocumentation.lua
 GlueDocumentation.lua
@@ -168,10 +173,12 @@ ImmersiveInteractionManagerDocumentation.lua
 InGameNavigationDocumentation.lua
 IncomingSummonDocumentation.lua
 InputDocumentation.lua
+InputInterfaceStyleDocumentation.lua
 InstanceDocumentation.lua
 InstanceEncounterDocumentation.lua
 InstanceLeaverInfoDocumentation.lua
 InterfaceFileManifestDocumentation.lua
+IntlDocumentation.lua
 InvasionInfoDocumentation.lua
 IslandsInfoDocumentation.lua
 IslandsQueueUIDocumentation.lua
@@ -183,6 +190,7 @@ ItemUpgradeDocumentation.lua
 KeyBindingsDocumentation.lua
 LFGInfoDocumentation.lua
 LFGListInfoDocumentation.lua
+LFGListRolesDocumentation.lua
 LegendaryCraftingDocumentation.lua
 LevelLinkDocumentation.lua
 LevelSquishDocumentation.lua
@@ -194,6 +202,7 @@ LocaleDocumentation.lua
 LocalizationDocumentation.lua
 LogDocumentation.lua
 LootDocumentation.lua
+LootFrameDocumentation.lua
 LootHistoryDocumentation.lua
 LootJournalDocumentation.lua
 LoreTextDocumentation.lua
@@ -204,7 +213,10 @@ LuaCurveObjectBaseAPIDocumentation.lua
 LuaDurationClockAPIDocumentation.lua
 LuaDurationManualClockAPIDocumentation.lua
 LuaDurationObjectAPIDocumentation.lua
-LuaTableUtilDocumentation.lua
+LuaLocaleContextAPIDocumentation.lua
+LuaMathExtensionsDocumentation.lua
+LuaStringExtensionsDocumentation.lua
+LuaTableExtensionsDocumentation.lua
 MacOptionsDocumentation.lua
 MailInfoDocumentation.lua
 MajorFactionsDocumentation.lua
@@ -220,6 +232,7 @@ MovieDocumentation.lua
 MythicPlusInfoDocumentation.lua
 NamePlateDocumentation.lua
 NamePlateManagerDocumentation.lua
+NameUtilDocumentation.lua
 NeighborhoodInitiativeDocumentation.lua
 NewItemsDocumentation.lua
 NumericFormatterAPIDocumentation.lua
@@ -228,6 +241,7 @@ OsDocumentation.lua
 PaperDollInfoDocumentation.lua
 ParentalControlsDocumentation.lua
 PartyInfoDocumentation.lua
+PartyInfoSystemStatusDocumentation.lua
 PartyPoseUIDocumentation.lua
 PerformanceDocumentation.lua
 PerksActivitiesDocumentation.lua
@@ -270,6 +284,7 @@ RolesetSystemDocumentation.lua
 ScenarioInfoDocumentation.lua
 ScrappingMachineUIDocumentation.lua
 ScreenDocumentation.lua
+ScribeUIDocumentation.lua
 ScriptWarningsDocumentation.lua
 ScriptedAnimationsDocumentation.lua
 SeasonInfoDocumentation.lua
@@ -342,6 +357,7 @@ StreamingDocumentation.lua
 StringUtilDocumentation.lua
 SummonInfoDocumentation.lua
 SuperTrackManagerDocumentation.lua
+SwingTimerDocumentation.lua
 SystemDocumentation.lua
 SystemTimeDocumentation.lua
 TTSSettingsDocumentation.lua
@@ -350,6 +366,7 @@ TargetScriptDocumentation.lua
 TaxiMapDocumentation.lua
 TextureUtilsDocumentation.lua
 ThreatDocumentation.lua
+TimedSignalMapAPIDocumentation.lua
 TimerunningUIDocumentation.lua
 TitleDocumentation.lua
 TooltipComparisonDocumentation.lua
@@ -388,7 +405,10 @@ VignetteInfoDocumentation.lua
 VoiceChatDocumentation.lua
 WarCampaignDocumentation.lua
 WarbandSceneInfoDocumentation.lua
+WeatherScriptDocumentation.lua
 WeeklyRewardsDocumentation.lua
+WoWHackAppearanceDocumentation.lua
+WoWHackCharacterStatsDocumentation.lua
 WorldLootObjectDocumentation.lua
 WorldSafeLocsUIInternalDocumentation.lua
 WorldStateInfoDocumentation.lua
@@ -401,6 +421,7 @@ ZoneScriptDocumentation.lua
 AccountConstantsDocumentation.lua
 ActionDocumentation.lua
 ActionBarSharedDocumentation.lua
+AddOnConstantsDocumentation.lua
 AddOnProfilerConstantsDocumentation.lua
 AppearanceSourceDocumentation.lua
 ArrowCalloutConstantsDocumentation.lua
@@ -454,11 +475,11 @@ DamageConstantsDocumentation.lua
 DamageMeterConstantsDocumentation.lua
 DelvesConstantsDocumentation.lua
 DiscordConstantsDocumentation.lua
+DistrictConstantsDocumentation.lua
 DungeonEncounterConstantsDocumentation.lua
 DurationTextBindingSharedDocumentation.lua
 DyeColorInfoSharedDocumentation.lua
 EditModeManagerConstantsDocumentation.lua
-EditModeManagerConstants_MainlineDocumentation.lua
 EncodingUtilConstantsDocumentation.lua
 EncounterEventsSharedDocumentation.lua
 EncounterJournalConstantsDocumentation.lua
@@ -488,21 +509,26 @@ HousingLayoutUITypesDocumentation.lua
 HousingUISharedDocumentation.lua
 ImageSharingConstantsDocumentation.lua
 InputConstantsDocumentation.lua
+InstanceRunSaveMgrConstantsDocumentation.lua
+IntlSharedTypesDocumentation.lua
 ItemConstantsDocumentation.lua
 ItemConstants_MainlineDocumentation.lua
 ItemConstants_SharedDocumentation.lua
 ItemQualitiesDocumentation.lua
 ItemSharedDocumentation.lua
 LFGConstantsDocumentation.lua
+LegacyConstantsDocumentation.lua
 LegendaryCraftingTypesDocumentation.lua
 LevelConstantsDocumentation.lua
 LocalizationSharedDocumentation.lua
 LogConstantsDocumentation.lua
 LogicConstantsDocumentation.lua
 LootConstantsDocumentation.lua
+LootConstants_MainlineDocumentation.lua
 LossOfControlConstantsDocumentation.lua
 LuaCurveObjectConstantsDocumentation.lua
 LuaDurationObjectSharedDocumentation.lua
+LuaValuePredicatesDocumentation.lua
 MacroConstantsDocumentation.lua
 MajorFactionsConstantsDocumentation.lua
 MapConstantsDocumentation.lua
@@ -512,6 +538,7 @@ ModelAnimationSharedDocumentation.lua
 MoneyConstantsDocumentation.lua
 MountConstantsDocumentation.lua
 MythicPlusInfoSharedDocumentation.lua
+NameGenConstantsDocumentation.lua
 NamePlateConstantsDocumentation.lua
 NeighborhoodInitiativesConstantsDocumentation.lua
 NumericRuleFormatterSharedDocumentation.lua
@@ -521,6 +548,7 @@ PartyPoseUIConstantsDocumentation.lua
 PerksVendorConstantsDocumentation.lua
 PetBattleConstantsDocumentation.lua
 PetConstantsDocumentation.lua
+PetConstants_SharedDocumentation.lua
 PetScalingConstantsDocumentation.lua
 PingConstantsDocumentation.lua
 PingManagerSharedDocumentation.lua
@@ -543,6 +571,7 @@ QuestInfoSharedDocumentation.lua
 QuestRewardsDocumentation.lua
 QuestSessionConstantsDocumentation.lua
 QueueSpecificDocumentation.lua
+RaidMarkerConstantsDocumentation.lua
 RecentAlliesConstantsDocumentation.lua
 RecruitAFriendSharedDocumentation.lua
 RenownConstantsDocumentation.lua
@@ -565,6 +594,7 @@ SimpleStatusBarConstantsDocumentation.lua
 SocialConstantsDocumentation.lua
 SoftTargetConstantsDocumentation.lua
 SoulbindsConstantsDocumentation.lua
+SpecializationConstantsDocumentation.lua
 SpellBookConstantsDocumentation.lua
 SpellConstantsDocumentation.lua
 SpellDiminishConstantsDocumentation.lua
@@ -577,11 +607,13 @@ TalentAndGlyphConstantsDocumentation.lua
 TalentConstantsDocumentation.lua
 TextureSharedDocumentation.lua
 TimeDocumentation.lua
+TimedSignalMapSharedDocumentation.lua
 TimerConstantsDocumentation.lua
 TimerunningConstantsDocumentation.lua
 TooltipConstantsDocumentation.lua
 TooltipInfoSharedDocumentation.lua
 TradeSkillUITypesDocumentation.lua
+TrainerConstantsDocumentation.lua
 TraitConstantsDocumentation.lua
 TransformManipulatorConstantsDocumentation.lua
 TransmogConstantsDocumentation.lua
@@ -613,6 +645,7 @@ VectorSharedDocumentation.lua
 VignetteConstantsDocumentation.lua
 VisualAlertConstantsDocumentation.lua
 WarbandSceneInfoConstantsDocumentation.lua
+WeatherConstantsDocumentation.lua
 WeeklyRewardsSharedDocumentation.lua
 WorldElapsedTimerConstantsDocumentation.lua
 WowCSConstantsDocumentation.lua

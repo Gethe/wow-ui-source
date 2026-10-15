@@ -8,6 +8,18 @@ local ActionBarFrame =
 	Functions =
 	{
 		{
+			Name = "EnableActionCombatActionRangeCheck",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Used in conjunction with ActionCombatActionRangeCheckUpdate to inform the UI when an action goes in or out of range with its current target." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+				{ Name = "enable", Type = "bool", Nilable = false, Documentation = { "True if changes in range for the action should dispatch ActionCombatActionRangeCheckUpdate. False if the action no longer needs the event." } },
+			},
+		},
+		{
 			Name = "EnableActionRangeCheck",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -20,10 +32,27 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "EnterActionButton",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+		},
+		{
 			Name = "FindAssistedCombatActionButtons",
 			Type = "Function",
 			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the list of action bar slots that contain the Assisted Combat action spell." },
+
+			Arguments =
+			{
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
+			},
 
 			Returns =
 			{
@@ -39,6 +68,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "flyoutID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -55,6 +85,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "petActionID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -72,6 +103,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false, Documentation = { "Expects a base spell, so if a spell is overridden the base ID should be provided." } },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, NeverSecret = true, Default = "All" },
 			},
 
 			Returns =
@@ -383,6 +415,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "petActionID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -436,6 +469,22 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetSpellTypeRestrictionForAction",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "restrictionType", Type = "ActionBarSpellTypeRestriction", Nilable = false },
+			},
+		},
+		{
 			Name = "GetTempShapeshiftBarIndex",
 			Type = "Function",
 
@@ -473,6 +522,12 @@ local ActionBarFrame =
 		{
 			Name = "HasAssistedCombatActionButtons",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
+			},
 
 			Returns =
 			{
@@ -505,6 +560,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "flyoutID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -529,6 +585,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "petActionID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -544,6 +601,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "petActionID", Type = "number", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, Default = "All" },
 			},
 
 			Returns =
@@ -575,6 +633,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, NeverSecret = true, Default = "All" },
 			},
 
 			Returns =
@@ -823,6 +882,23 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsMacroActionWithShowTooltip",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns whether the given action button contains a macro with an explicit #showtooltip directive." },
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isMacroActionWithShowTooltip", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsOnBarOrSpecialBar",
 			Type = "Function",
 			SecretArguments = "AllowedWhenTainted",
@@ -830,6 +906,7 @@ local ActionBarFrame =
 			Arguments =
 			{
 				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+				{ Name = "setToSearch", Type = "ActionBarSet", Nilable = false, NeverSecret = true, Default = "All" },
 			},
 
 			Returns =
@@ -877,6 +954,17 @@ local ActionBarFrame =
 			{
 				{ Name = "isUsable", Type = "bool", Nilable = false },
 				{ Name = "isLackingResources", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "LeaveActionButton",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
 			},
 		},
 		{
@@ -931,6 +1019,32 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "ShouldShowKeyring",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isKeyringEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SpellMatchesActionSpellTypeRestriction",
+			Type = "Function",
+			RequiresValidActionSlot = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "actionID", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "actionMatchesSpellTypeRestriction", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "ToggleAutoCastPetAction",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -970,6 +1084,19 @@ local ActionBarFrame =
 
 	Events =
 	{
+		{
+			Name = "ActionCombatActionRangeCheckUpdate",
+			Type = "Event",
+			LiteralName = "ACTION_COMBAT_ACTION_RANGE_CHECK_UPDATE",
+			SynchronousEvent = true,
+			Documentation = { "Used in conjunction with EnableActionCombatActionRangeCheck to inform the UI when an action goes in or out of action combat range with its current target." },
+			Payload =
+			{
+				{ Name = "slot", Type = "luaIndex", Nilable = false },
+				{ Name = "isInRange", Type = "bool", Nilable = false, Documentation = { "Whether or not the current target is in range of the action. Should not be used if the 'checksRange' parameter is false." } },
+				{ Name = "checksRange", Type = "bool", Nilable = false, Documentation = { "Can be false if a range check was not made for any reason, for example there is not a current target." } },
+			},
+		},
 		{
 			Name = "ActionRangeCheckUpdate",
 			Type = "Event",
@@ -1080,7 +1207,36 @@ local ActionBarFrame =
 
 	Tables =
 	{
+		{
+			Name = "ActionBarSet",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "ActionBarSet", EnumValue = 0 },
+				{ Name = "Mkb", Type = "ActionBarSet", EnumValue = 1 },
+				{ Name = "Gamepad", Type = "ActionBarSet", EnumValue = 2 },
+				{ Name = "All", Type = "ActionBarSet", EnumValue = 3 },
+			},
+		},
+		{
+			Name = "ActionBarSpellTypeRestriction",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "None", Type = "ActionBarSpellTypeRestriction", EnumValue = 0 },
+				{ Name = "WoWHackOffensiveActions", Type = "ActionBarSpellTypeRestriction", EnumValue = 1 },
+				{ Name = "WoWHackDefensiveActions", Type = "ActionBarSpellTypeRestriction", EnumValue = 2 },
+				{ Name = "WoWHackUltimateActions", Type = "ActionBarSpellTypeRestriction", EnumValue = 3 },
+			},
+		},
 	},
+
 	Predicates =
 	{
 	},

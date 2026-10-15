@@ -21,28 +21,32 @@ end
 
 function UnitPopupManager:OpenMenu(which, contextData)
 	assertsafe(type(contextData) == "nil" or type(contextData) == "table", "extraContextData can only be a table if provided.");
-	
+
 	if contextData == nil then
-		contextData = 
+		contextData =
 		{
 			which = which,
 		};
 	else
 		contextData.which = which;
 
-		local name, server = nil, nil;
+		local name, surname = nil, nil;
 		local unit = contextData.unit;
+
 		if unit then
-			name, server = UnitNameUnmodified(unit);
+			name, surname = UnitNameUnmodified(unit);
 			contextData.name = name;
-			contextData.server = server;
+			contextData.surname = surname;
 		else
+			-- This could be John or John-ServerName. For this pop-up menu, we want to remove server names when they are present.
 			name = contextData.name;
-			if name then
-				local name2, server2 = strmatch(name, "^([^-]+)-(.*)");
+
+			-- When regionally unique names are not enabled the second part of the name is always a serverName.
+			if name and not RegionalUniqueNamesEnabled() then
+				local name2, surname2 = NameUtil.SplitPlayerNameIntoParts(name);
 				if name2 then
 					contextData.name = name2;
-					contextData.server = server2;
+					contextData.surname = surname2;
 				end
 			end
 		end
@@ -52,7 +56,7 @@ function UnitPopupManager:OpenMenu(which, contextData)
 	-- contextData to have it's player location overwritten.
 	assert(contextData.playerLocation == nil);
 	contextData.playerLocation = UnitPopupSharedUtil.TryCreatePlayerLocation(contextData);
-	
+
 	-- Remove this assert only if you've verified the intent for the inbound
 	-- contextData to have it's account info overwritten.
 	assert(contextData.accountInfo == nil);
@@ -101,8 +105,8 @@ function UnitPopupManager:OpenMenu(which, contextData)
 		end
 	end
 
-	local menuParent = nil;
-	MenuUtil.CreateContextMenu(menuParent, function(owner, rootDescription)
+	local menuParent = contextData.ownerFrame;
+	local contextMenu = MenuUtil.CreateContextMenu(menuParent, function(owner, rootDescription)
 		rootDescription:SetTag("MENU_UNIT_"..which, contextData);
 
 		local elementDescription = rootDescription:CreateTitle();
@@ -137,6 +141,8 @@ function UnitPopupManager:OpenMenu(which, contextData)
 			CreateEntries(entry, rootDescription, sectionData, contextData);
 		end
 	end);
+
+	return contextMenu;
 end
 
 function UnitPopupManager:GetMenu(which)
@@ -148,6 +154,5 @@ function UnitPopupManager:RegisterMenu(which, menu)
 end
 
 function UnitPopup_OpenMenu(which, contextData)
-	local anchor = nil;
-	UnitPopupManager:OpenMenu(which, contextData, anchor);
+	return UnitPopupManager:OpenMenu(which, contextData);
 end

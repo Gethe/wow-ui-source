@@ -79,6 +79,8 @@ function PartyUtil.GetPhasedReasonString(phaseReason, unitToken)
 		return PARTY_PHASED_MESSAGE;
 	elseif phaseReason == Enum.PhaseReason.Sharding then
 		return GetShardedString(unitToken);
+	elseif phaseReason == Enum.PhaseReason.RuleSet then
+		return PARTY_PLAYER_SHARDED_INCOMPATIBLE_RULESET;
 	end
 end
 

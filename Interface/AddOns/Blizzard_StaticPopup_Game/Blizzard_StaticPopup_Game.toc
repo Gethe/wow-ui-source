@@ -1,9 +1,10 @@
 ## Title: Blizzard_StaticPopup_Game
-## Dependencies: Blizzard_StaticPopup, Blizzard_ItemButton, Blizzard_AutoComplete, Blizzard_MoneyFrame, Blizzard_AccessibilityTemplates, Blizzard_GameMenuEsc
+## Dependencies: Blizzard_StaticPopup, Blizzard_ItemButton, Blizzard_AutoComplete, Blizzard_MoneyFrame, Blizzard_AccessibilityTemplates, Blizzard_GameMenuEsc, Blizzard_GamepadSharedUtility
 ## AllowLoad: game
 GameDialogDefsUtil.lua
 GameDialogDefs.lua
 [Family]\GameDialogDefs.lua
+[Game]\GameDialogDefs.lua [AllowLoadGameType camelot]
 
 GameDialog.lua
 [Family]\GameDialog.lua

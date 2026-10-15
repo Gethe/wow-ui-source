@@ -68,10 +68,15 @@ function ScriptErrorsFrameMixin:OnLoad()
 	end);
 
 	self:RegisterEvent("LUA_WARNING");
+
+	self:RegisterForInterfaceTransitions();
 end
 
 function ScriptErrorsFrameMixin:OnShow()
 	self:Update();
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
 end
 
 -- For outlier cases where it's necessary to provide the script error frame
@@ -210,6 +215,10 @@ function ScriptErrorsFrameMixin:Update()
 	parent:SetVerticalScroll(0);
 
 	self:UpdateButtons();
+	
+	if (InputUtil.IsGamepadUIEnabled() and self.inputLegend) then
+		self.inputLegend:Refresh(); -- Force refresh in case the frame was already open.
+	end
 end
 
 local function GetNavigationButtonEnabledStates(count, index)
@@ -257,6 +266,50 @@ end
 
 function ScriptErrorsFrameMixin:ShowNext()
 	self:ChangeDisplayedIndex(1);
+end
+
+function ScriptErrorsFrameMixin:RegisterForInterfaceTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+end
+
+function ScriptErrorsFrameMixin:SetupGamepad()
+	local function Setup()
+		local reloadUiAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, ReloadUI, FRAME_ACTION_RELOAD_UI);
+
+		local cycleErrorsPrompt = GamepadSharedUtility.CreateDoublePromptedBinding(GAMEPAD_DPAD_LEFT,
+																				   GAMEPAD_DPAD_RIGHT,
+																				   GenerateClosure(self.ShowPrevious, self),
+																				   GenerateClosure(self.ShowNext, self),
+																				   ACTION_LABEL_CYCLE_ERRORS);
+		cycleErrorsPrompt:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+		cycleErrorsPrompt:SetCustomDisplayKey(GAMEPAD_DPAD_HORIZONTAL);
+
+		local function HasMultipleErrors()
+			return self:GetCount() > 1;
+		end
+		cycleErrorsPrompt:AddCondition(HasMultipleErrors);
+
+		self.inputLegend = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ScriptErrorsFrame");
+		self.inputLegend:AddPromptedBinding(reloadUiAction);
+		self.inputLegend:AddPromptedBinding(cycleErrorsPrompt);
+		self.inputLegend:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
+		self.inputLegend:Finalize();
+
+		self.OnSmartNavFocus = function()
+			self.inputLegend:ShowAndActivateBindings();
+		end
+
+		self.UnfocusGamepad = function()
+			self.inputLegend:HideAndDeactivateBindings();
+		end
+
+		-- Ignoring buttons instead of hiding them, since a LUA error in gamepad mode may want mouse and keyboard attention.
+		SmartNavigation_MarkFrameIgnored(self);
+	end
+
+	-- Delay setup until GamepadSharedUtility is loaded so we can have access to the input legend logic.
+	EventUtil.ContinueOnAddOnLoaded("Blizzard_GamepadSharedUtility", Setup);
 end
 
 -- Some methods on the error frame need to be promoted to secure mixin methods

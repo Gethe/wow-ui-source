@@ -1,0 +1,5 @@
+<Bindings>
+	<Binding name="TOGGLEGROUPFINDER" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
+		LFGVanilla_ToggleFrame(1);
+	</Binding>
+</Bindings>

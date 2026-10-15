@@ -36,7 +36,9 @@ function ScrollingFlatPanelMixin:Resize()
 	local anchors = 26;
 	local extra = 20;
 	local height = self:CalculateElementsHeight() + anchors + extra;
-	self:SetHeight(math.min(height, self.panelMaxHeight));
+	local finalHeight = math.min(height, self.panelMaxHeight);
+	self:SetHeight(finalHeight);
+	NineSliceUtil.UpdateCornerCropping(self, finalHeight);
 
 	local showScrollBar = self.ScrollBox:HasScrollableExtent();
 	self:SetWidth(self.panelWidth + (showScrollBar and ScrollBarWidth or 0));

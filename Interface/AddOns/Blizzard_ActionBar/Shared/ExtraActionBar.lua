@@ -36,6 +36,11 @@ function ExtraActionBar_ForceEmpty()
 end
 
 function ExtraActionBar_ForceShowIfNeeded()
+	-- Quick Keybind mode force-shows the button so it can be bound; skip it in games that don't support the extra action button.
+	if ActionButtonUtil.IsExtraActionButtonDisabled() then
+		return;
+	end
+
 	local bar = ExtraActionBarFrame;
 	if not bar:IsShown() then
 		ExtraActionBar_ForceEmpty();

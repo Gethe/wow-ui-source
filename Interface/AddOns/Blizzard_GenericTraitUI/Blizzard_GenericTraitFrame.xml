@@ -33,7 +33,6 @@
 		</Layers>
 		
 		<Frames>
-			
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="5000">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-3" y="-10"/>
@@ -57,6 +56,22 @@
 							</Anchors>
 						</Texture>
 					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="FrameTitleContainer" frameLevel="500">
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOP"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY" textureSubLevel="4">
+					<FontString parentKey="FrameTitle" inherits="GameFontNormal">
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+					</FontString>
+				</Layer>
 				</Layers>
 			</Frame>
 

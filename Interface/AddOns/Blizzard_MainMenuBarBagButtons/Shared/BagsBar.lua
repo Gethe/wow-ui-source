@@ -4,8 +4,11 @@ BagsBarMixin = {};
 function BagsBarMixin:OnLoad()
 	self.initialHeight = self:GetHeight(); -- "Short axis" length. Store this off for layout later.
 
-	self.bagBarExpandToggleInitialWidth = self.hideExpandToggle and 0 or BagBarExpandToggle:GetWidth();
-	self.bagBarExpandToggleInitialHeight = self.hideExpandToggle and 0 or BagBarExpandToggle:GetHeight();
+	self.bagBarExpandToggleInitialWidth = self:ShouldShowExpandToggle() and BagBarExpandToggle:GetWidth() or 0;
+	self.bagBarExpandToggleInitialHeight = self:ShouldShowExpandToggle() and BagBarExpandToggle:GetHeight() or 0;
+	if (BagBarExpandToggle) then
+		BagBarExpandToggle:SetShown(self:ShouldShowExpandToggle());
+	end
 
 	local bagsUIDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.BagsUIDisabled);
 	if bagsUIDisabled then
@@ -56,7 +59,7 @@ function BagsBarMixin:GetBagBarLength()
 	end
 
 	-- Also include BagBarExpandToggle.
-	if (not self.hideExpandToggle) then
+	if (self:ShouldShowExpandToggle()) then
 		if (isHorizontal) then
 			totalLength = totalLength + self.bagBarExpandToggleInitialWidth;
 		else
@@ -93,7 +96,7 @@ function BagsBarMixin:Layout()
 	MainMenuBarBackpackButton:ClearAllPoints();
 	MainMenuBarBackpackButton:SetPoint(point, self, point);
 
-	if (not self.hideExpandToggle) then
+	if (self:ShouldShowExpandToggle()) then
 		if isHorizontal then
 			BagBarExpandToggle:SetSize(self.bagBarExpandToggleInitialWidth, self.bagBarExpandToggleInitialHeight);
 		else
@@ -108,13 +111,18 @@ function BagsBarMixin:Layout()
 	end
 
 	-- Update other bag button anchors
-	local anchorRelativeTo = self.hideExpandToggle and MainMenuBarBackpackButton or BagBarExpandToggle;
+	local anchorRelativeTo = self:ShouldShowExpandToggle() and BagBarExpandToggle or MainMenuBarBackpackButton;
 	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
 		if bagButton:IsShown() and bagButton ~= MainMenuBarBackpackButton then
 			bagButton:ClearAllPoints();
 			bagButton:SetPoint(point, anchorRelativeTo, relativePoint, xOffset, yOffset);
 			anchorRelativeTo = bagButton;
 		end
+	end
+
+	-- If button layout has changed then we may need to update the dividers we're showing between buttons
+	if self.useDividers then
+		self:UpdateDividers();
 	end
 end
 
@@ -128,6 +136,58 @@ end
 
 function BagsBarMixin:IsDirectionUp()
 	return not self:IsHorizontal() and self.direction == Enum.BagsDirection.Up;
+end
+
+function BagsBarMixin:UpdateDividers()
+	if not self.HorizontalDividersPool then
+		self.HorizontalDividersPool = CreateFramePool("FRAME", self, "HorizontalDividerTemplate");
+		self.VerticalDividersPool = CreateFramePool("FRAME", self, "VerticalDividerTemplate");
+	end
+	self.HorizontalDividersPool:ReleaseAll();
+	self.VerticalDividersPool:ReleaseAll();
+
+	local dividersPool = self.isHorizontal and self.HorizontalDividersPool or self.VerticalDividersPool;
+	local wasLastButtonShown = false;
+
+	for i, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
+		if bagButton:IsShown() then
+			if wasLastButtonShown  then
+				local divider = dividersPool:Acquire();
+				divider:ClearAllPoints();
+				if self.isHorizontal then
+					divider:SetPoint("TOP", bagButton, "TOP", 0, 0);
+					divider:SetPoint("BOTTOM", bagButton, "BOTTOM", 0, 0);
+
+					if self:IsDirectionLeft() then
+						divider:SetPoint("LEFT", bagButton, "RIGHT", -5, 0);
+					else
+						divider:SetPoint("RIGHT", bagButton, "LEFT", 5, 0);
+					end
+				else
+					divider:SetPoint("LEFT", bagButton, "LEFT", 0, 0);
+					divider:SetPoint("RIGHT", bagButton, "RIGHT", 0, 0);
+
+					if self:IsDirectionUp() then
+						divider:SetPoint("TOP", bagButton, "BOTTOM", 0, 5);
+					else
+						divider:SetPoint("BOTTOM", bagButton, "TOP", 0, -5);
+					end
+				end
+				divider:Show();
+			end
+			wasLastButtonShown = true;
+		else
+			wasLastButtonShown = false;
+		end	
+	end
+end
+
+function BagsBarMixin:ShouldShowExpandToggle()
+	return not self.hideExpandToggle;
+end
+
+function BagsBarMixin:OnUpdateEndCaps(show)
+	self:SetShown(show);
 end
 
 function BagsBarMixin:MainActionBarStateOverridden(overridden)

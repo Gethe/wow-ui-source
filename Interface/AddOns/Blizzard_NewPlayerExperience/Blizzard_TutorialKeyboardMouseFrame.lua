@@ -1,9 +1,4 @@
 
-function KeyboardMouseConfirmButton_OnClick()
-	TutorialKeyboardMouseFrame_Frame:HideTutorial();
-end
--- ------------------------------------------------------------------------------------------------------------
-
 
 TutorialKeyboardMouseFrameMixin = {};
 
@@ -86,6 +81,12 @@ function TutorialKeyboardMouseFrameMixin:_AnimateOut()
 	self.fadeOutModelUpdater = CreateObjectUpdater(data, Update, IsComplete, Finish);
 end
 
+function TutorialKeyboardMouseFrameMixin:KeyboardMouseConfirmButton_OnClick()
+end
+
+function TutorialKeyboardMouseFrameMixin:KeyboardMouseSkipTutorialButton_OnClick()
+end
+
 -- ------------------------------------------------------------------------------------------------------------
 TutorialWalkMixin = CreateFromMixins(TutorialMainFrameMixin);
 function TutorialWalkMixin:OnLoad()
@@ -135,4 +136,18 @@ function TutorialWalkMixin:HideTutorial(id)
 	if (self.Timer) then
 		self.Timer:Cancel();
 	end
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+
+function KeyboardMouseConfirmButton_OnClick()
+	TutorialKeyboardMouseFrame_Frame:HideTutorial();
+	TutorialKeyboardMouseFrame_Frame:KeyboardMouseConfirmButton_OnClick();
+end
+
+function KeyboardMouseSkipTutorialButton_OnClick()
+	EventRegistry:TriggerEvent("TutorialManager.SkipTutorial");
+	C_CVar.SetCVar("showTutorials", "0");
+	C_CVar.SetCVar("skipTutorialAchievement", "0");
+	TutorialKeyboardMouseFrame_Frame:KeyboardMouseSkipTutorialButton_OnClick();
 end

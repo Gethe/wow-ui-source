@@ -127,6 +127,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
 			elseif ( event == "UNIT_LEVEL" ) then
 				CompactUnitFrame_UpdateLevel(self);
+				CompactUnitFrame_UpdatePlayerLevelDiff(self);
 			elseif ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
 				CompactUnitFrame_UpdateAggroHighlight(self);
 				CompactUnitFrame_UpdateAggroFlash(self);
@@ -163,8 +164,6 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateStatusText(self);
 			elseif ( event == "UNIT_PHASE" or event == "UNIT_FLAGS" or event == "UNIT_CTR_OPTIONS" ) then
 				CompactUnitFrame_UpdateCenterStatusIcon(self);
-			elseif ( event == "UNIT_LEVEL" ) then
-				CompactUnitFrame_UpdatePlayerLevelDiff(self);
 			elseif ( event == "INCOMING_SUMMON_CHANGED" ) then
 				CompactUnitFrame_UpdateCenterStatusIcon(self);
 			elseif ( event == "UNIT_IN_RANGE_UPDATE" ) then
@@ -800,7 +799,7 @@ function ShouldShowName(frame)
 		if frame.optionTable.displayNameByPlayerNameRules then
 			if frame.IsSimplified and frame:IsSimplified() and (not frame.IsTarget or not frame:IsTarget()) then
 				failedRequirement = true;
-			elseif frame.forceShowUnitName then
+			elseif frame.forceShowUnitName and not UnitIsGameObject(frame.unit) then
 				-- If this is set, return true for all non-simplified nameplates.
 				return true;
 			elseif UnitShouldDisplayName(frame.unit) then
@@ -810,7 +809,7 @@ function ShouldShowName(frame)
 			failedRequirement = true;
 		end
 
-		if C_CVar.GetCVarBool("UnitNameFocused") and frame.optionTable.displayNameWhenSelected then
+		if GetCVarBool("UnitNameFocused") and frame.optionTable.displayNameWhenSelected then
 			if UnitIsUnit(frame.unit, "target") then
 				return true;
 			end
@@ -841,13 +840,8 @@ function CompactUnitFrame_UpdateName(frame)
 	if ( not shouldShowName ) then
 		frame.name:Hide();
 	else
-		local name;
-		if frame.optionTable.updateNameUsesGetUnitName then
-			local includeRealmName = not frame.hideRealmName;
-			name = GetUnitName(frame.unit, includeRealmName);
-		else
-			name = UnitName(frame.unit);
-		end
+		local showFullName = frame.optionTable.updateNameUsesGetUnitName and not frame.hideRealmName;
+		local name = GetUnitName(frame.unit, showFullName);
 
 		if ( C_Commentator.IsSpectating() and name ) then
 			local overrideName = C_Commentator.GetPlayerOverrideName(name);
@@ -1365,77 +1359,8 @@ function CompactUnitFrameUtil_UpdateFillBar(frame, previousTexture, bar, amount,
 	return bar, true;
 end
 
-local roles = {"TANK", "HEALER", "DAMAGER"};
-local frameToRole = {};
-local function GetUnitFrameRole(frame)
-	local role = UnitGroupRolesAssigned(frame.unit);
-	if EditModeManagerFrame:IsEditModeActive() and role == "NONE" then
-		if not frameToRole[frame] then
-			frameToRole[frame] = roles[math.random(#roles)];
-		end
-
-		return frameToRole[frame];
-	end
-
-	return role;
-end
-
-local raidRoleAtlases =
-{
-	["MAINTANK"] = "RaidFrame-Icon-MainTank",
-	["MAINASSIST"] = "RaidFrame-Icon-MainAssist"
-};
-
-local function GetUnitFrameRaidRole(frame)
-	local raidID = UnitInRaid(frame.unit);
-	if raidID then
-		local role = select(10, GetRaidRosterInfo(raidID));
-		return role;
-	end
-
-	return nil;
-end
-
 function CompactUnitFrame_UpdateRoleIcon(frame)
-	if not frame.roleIcon then
-		return;
-	end
-
-	local size = frame.roleIcon:GetHeight();	--We keep the height so that it carries from the set up, but we decrease the width to 1 to allow room for things anchored to the role (e.g. name).
-
-	if ( UnitInVehicle(frame.unit) and UnitHasVehicleUI(frame.unit) ) then
-		frame.roleIcon:SetAtlas("RaidFrame-Icon-Vehicle");
-		frame.roleIcon:Show();
-		frame.roleIcon:SetSize(size, size);
-		return;
-	end
-
-	if frame.optionTable.displayRaidRoleIcon then
-		local raidRole = GetUnitFrameRaidRole(frame);
-		if raidRole then
-			local raidRoleAtlas = raidRoleAtlases[raidRole];
-			if raidRoleAtlas then
-				frame.roleIcon:SetAtlas(raidRoleAtlas);
-				frame.roleIcon:Show();
-				frame.roleIcon:SetSize(size, size);
-				return;
-			end
-		end
-	end
-
-	local role = GetUnitFrameRole(frame);
-	if frame.optionTable.displayRoleIcon and role and role ~= "NONE" then
-		local roleAtlas = GetMicroIconForRole(role);
-		if roleAtlas then
-			frame.roleIcon:SetAtlas(roleAtlas);
-			frame.roleIcon:Show();
-			frame.roleIcon:SetSize(size, size);
-			return;
-		end
-	end
-
-	frame.roleIcon:Hide();
-	frame.roleIcon:SetSize(1, size);
+	UnitFrameUtil.UpdateUnitFrameRoleIcon(frame);
 end
 
 function CompactUnitFrame_UpdateReadyCheck(frame)
@@ -1597,32 +1522,25 @@ function CompactUnitFrame_UpdatePlayerLevelDiff(frame)
 	if (frame.PlayerLevelDiffFrame) then
 		local levelDiffIcon = frame.PlayerLevelDiffFrame.playerLevelDiffIcon;
 		local levelDiffText = frame.PlayerLevelDiffFrame.playerLevelDiffText;
+		local highLevelTexture = frame.PlayerLevelDiffFrame.highLevelTexture;
 
-		local isActivePlayer = UnitIsUnit(frame.unit, "player");
-		local playerNameplateDifficultyIcon = C_GameRules.IsGameRuleActive(Enum.GameRule.PlayerNameplateDifficultyIcon);
-		if (playerNameplateDifficultyIcon and UnitIsPlayer(frame.unit) and not isActivePlayer and not UnitInParty(frame.unit)) then
+		if (frame.PlayerLevelDiffFrame:ShouldDisplay(frame.unit)) then
 			local otherUnitLevel = UnitEffectiveLevel(frame.unit);
 			local playerTargetLevelDiff = otherUnitLevel - UnitEffectiveLevel("player");
+			local textColor = UNIT_LEVEL_NON_ATTACKABLE;
 
-			local xOffset = 0;
-			if (otherUnitLevel == 1 or otherUnitLevel == 10) then
-				xOffset = -1;
+			if (UnitCanAttack("player", frame.unit)) then
+				textColor = frame.PlayerLevelDiffFrame:GetDifficultyColor(playerTargetLevelDiff);
 			end
-
-			levelDiffText:SetPoint("CENTER", levelDiffIcon, "CENTER", xOffset, 0);
-
-			local textColor;
-			if (playerTargetLevelDiff <= -2) then
-				textColor = EASY_DIFFICULTY_COLOR;
-			elseif (playerTargetLevelDiff <= 1) then
-				textColor = FAIR_DIFFICULTY_COLOR;
-			elseif (playerTargetLevelDiff <= 3) then
-				textColor = DIFFICULT_DIFFICULTY_COLOR;
-			else
-				textColor = IMPOSSIBLE_DIFFICULTY_COLOR;
-			end
-
+			-- Set the color depending on the difficulty
+			levelDiffText:SetPoint("CENTER", levelDiffIcon, "CENTER", 0, 0);
 			levelDiffText:SetText(textColor:WrapTextInColorCode(otherUnitLevel));
+
+			if (highLevelTexture) then
+			-- Set the visibility of the skull texture
+				highLevelTexture:SetShown(otherUnitLevel <= 0);
+				levelDiffText:SetShown(otherUnitLevel > 0);
+			end
 
 			frame.PlayerLevelDiffFrame:Show();
 		else
@@ -1776,6 +1694,10 @@ function CompactUnitFrame_GetOptionDispelIndicatorOverlayAnimation(frame)
 	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.dispelIndicatorOverlayAnimation;
 end
 
+function CompactUnitFrame_GetOptionDispelIndicatorAnimatedBorder(frame)
+	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.dispelIndicatorAnimatedBorder;
+end
+
 function CompactUnitFrame_GetOptionShowBigDefensive(frame)
 	return not CompactUnitFrame_IsPvpFrame(frame) and frame.optionTable.raidFramesCenterBigDefensive;
 end
@@ -1848,6 +1770,7 @@ function CompactUnitFrame_OpenMenu(frame, unit, button, isKeyPress)
 	if ( which ) then
 		local contextData =
 		{
+			ownerFrame = frame,
 			unit = unit,
 			name = name,
 		};
@@ -2382,6 +2305,7 @@ function ContainerPrivateAuraBehaviorMixin:SetPrivateAuraAnchorSettings()
 	self:SetAttribute("display-larger-role-specific-debuffs", CompactUnitFrame_GetOptionDisplayLargerRoleSpecificDebuffs(self));
 	self:SetAttribute("dispel-indicator-overlay-type", CompactUnitFrame_GetOptionDispelIndicatorOverlayType(self));
 	self:SetAttribute("dispel-indicator-overlay-animation", CompactUnitFrame_GetOptionDispelIndicatorOverlayAnimation(self));
+	self:SetAttribute("dispel-indicator-animated-border", CompactUnitFrame_GetOptionDispelIndicatorAnimatedBorder(self));
 	self:SetAttribute("show-big-defensive", CompactUnitFrame_GetOptionShowBigDefensive(self));
 	self:SetAttribute("big-defensive-size", self:GetBigDefensiveAuraSize());
 	self:SetAttribute("debuff-size", self:GetDebuffAuraSize());

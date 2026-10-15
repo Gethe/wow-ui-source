@@ -23,6 +23,21 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "CanTradeSkillShowCraftingUI",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "tradeSkillSpellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "canShow", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CancelProfessionRespec",
 			Type = "Function",
 		},
@@ -1387,6 +1402,7 @@ local TradeSkillUI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

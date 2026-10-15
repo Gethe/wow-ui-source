@@ -41,7 +41,16 @@ local SpellConstants =
 				{ Name = "HEALTHSTONE_CATEGORY", Type = "number", Value = 1711 },
 			},
 		},
+		{
+			Name = "SpellUIConsts",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "CONFIRMATION_PROMPT_HIDE_ON_ESCAPE", Type = "bool", Value = true },
+			},
+		},
 	},
+
 	Predicates =
 	{
 	},

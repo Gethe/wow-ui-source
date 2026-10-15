@@ -3,6 +3,9 @@
 ## DefaultState: enabled
 ## Dependencies: Blizzard_GameTooltip, Blizzard_ManagedFrameSystem
 ## AllowLoad: game
-## AllowLoadGameType: classic
+## AllowLoadGameType: classic, camelot
+
+[Family]\Blizzard_QuestTimerOverrides.lua
+QuestTimerButtonTemplate.xml
 Blizzard_QuestTimer.lua
-Blizzard_QuestTimer.xml
+[Family]\Blizzard_QuestTimer.xml

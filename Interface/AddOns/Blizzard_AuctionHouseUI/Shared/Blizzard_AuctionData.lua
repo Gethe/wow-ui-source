@@ -11,6 +11,10 @@ MAXIMUM_BID_PRICE = 99999999999;
 AUCTION_CANCEL_COST =  5;	--5% of the current bid
 NUM_TOKEN_LOGS_TO_DISPLAY = 14;
 
+function AuctionHouse_ShouldUseRequiredLevel()
+	return false;
+end
+
 
 AuctionCategories = {};
 
@@ -89,6 +93,9 @@ function AuctionCategoryMixin:CreateSubCategory(classID, subClassID, inventoryTy
 	elseif classID then
 		name = C_Item.GetItemClassInfo(classID);
 	end
+
+	assert(name and #name > 0, "Failed to create category. classID: " .. tostring(classID) .. ", subClassID: " .. tostring(subClassID) .. ", inventoryType: " .. tostring(inventoryType) .. ", implicitFilter: " .. tostring(implicitFilter));
+
 	return self:CreateNamedSubCategory(name);
 end
 

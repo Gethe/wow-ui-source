@@ -8,6 +8,24 @@ local GameRules =
 	Functions =
 	{
 		{
+			Name = "AccountHasSDEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isSDEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "AlreadyShownOnce",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "alreadyShownOnce", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "AutoConnectToGameModeRealm",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -39,6 +57,24 @@ local GameRules =
 			Returns =
 			{
 				{ Name = "gameMode", Type = "GameMode", Nilable = false },
+			},
+		},
+		{
+			Name = "GetActiveGameModeForSplashScreen",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "activeGameModeForSplashScreen", Type = "GameMode", Nilable = true },
+			},
+		},
+		{
+			Name = "GetActiveGameModeRecIdForSplashScreen",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "activeGameModeRecIdForSplashScreen", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -81,6 +117,15 @@ local GameRules =
 			Returns =
 			{
 				{ Name = "gameModeRecordID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetForeverExperiencePreset",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "preset", Type = "ForeverExperiencePreset", Nilable = true },
 			},
 		},
 		{
@@ -165,6 +210,15 @@ local GameRules =
 			},
 		},
 		{
+			Name = "IsAccountKeyBindingsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCharacterlessLoginActive",
 			Type = "Function",
 
@@ -219,6 +273,15 @@ local GameRules =
 			},
 		},
 		{
+			Name = "IsHardcoreActive",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsMultiActionBarVisibilityForced",
 			Type = "Function",
 
@@ -247,6 +310,33 @@ local GameRules =
 			},
 		},
 		{
+			Name = "IsRewardsShopEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "enabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSDHDToggleEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsSelfFoundAllowed",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsStandard",
 			Type = "Function",
 
@@ -262,6 +352,46 @@ local GameRules =
 			Returns =
 			{
 				{ Name = "active", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetAlreadyShownOnce",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "alreadyShownOnce", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "SetForeverExperiencePreset",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "preset", Type = "ForeverExperiencePreset", Nilable = false },
+			},
+		},
+		{
+			Name = "SetSDHDToggleValue",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "setToSD", Type = "bool", Nilable = false },
+				{ Name = "usageLocation", Type = "SdToggleUsageLocationUI", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldShowGameModeSplashScreen",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shouldShowGameModeSplashScreen", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -311,10 +441,42 @@ local GameRules =
 				{ Name = "disabled", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "GameRulesChanged",
+			Type = "Event",
+			LiteralName = "GAME_RULES_CHANGED",
+			SynchronousEvent = true,
+		},
 	},
 
 	Tables =
 	{
+		{
+			Name = "ForeverExperiencePreset",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "Classic", Type = "ForeverExperiencePreset", EnumValue = 0 },
+				{ Name = "Modern", Type = "ForeverExperiencePreset", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "SdToggleUsageLocationUI",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "BeforeLogin", Type = "SdToggleUsageLocationUI", EnumValue = 0 },
+				{ Name = "CharacterCreation", Type = "SdToggleUsageLocationUI", EnumValue = 1 },
+				{ Name = "BarberShop", Type = "SdToggleUsageLocationUI", EnumValue = 2 },
+				{ Name = "OptionsMenu", Type = "SdToggleUsageLocationUI", EnumValue = 3 },
+			},
+		},
 		{
 			Name = "GameModeDisplayInfo",
 			Type = "Structure",
@@ -330,6 +492,7 @@ local GameRules =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

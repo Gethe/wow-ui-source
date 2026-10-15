@@ -3,16 +3,22 @@
 ## LoadOnDemand: 1
 ## AllowLoad: both
 
-# Data only
-Housing/Config.lua
-
 Blizzard_Kiosk_Bootstrap.lua [Bootstrap]
+
+# Data only
+Config.lua
+BlizzCon2026/Config.lua
 
 Kiosk.lua
 Kiosk.xml
 
-Housing/Glue.lua [AllowLoad Glue]
-Housing/Glue.xml [AllowLoad Glue]
+BlizzCon2026/Glue.lua [AllowLoad Glue]
+BlizzCon2026/Glue.xml [AllowLoad Glue]
 
-Housing/Game.lua [AllowLoad Game]
-Housing/Game.xml [AllowLoad Game]
+BlizzCon2026/Game.lua [AllowLoad Game]
+BlizzCon2026/Game.xml [AllowLoad Game]
+
+BlizzCon2026/Utils.lua [AllowLoadGameType camelot]
+BlizzCon2026/ColdSwap.lua [AllowLoadGameType camelot]
+
+ReadinessCheck.lua

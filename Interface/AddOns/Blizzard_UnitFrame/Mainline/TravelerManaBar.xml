@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="TravelerManaBarTemplate" inherits="ClassResourceBarTemplate" mixin="TravelerManaBarMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="powerToken" value="MANA" type="string"/>
+			<KeyValue key="powerType" value="Enum.PowerType.Mana" type="global"/>
+			<KeyValue key="resourcePointTemplate" value="TravelerManaPipTemplate" type="string"/>
+			<KeyValue key="resourcePointMixin" value="TravelerManaPipMixin" type="global"/>
+			<KeyValue key="spacing" value="2" type="number"/>
+			<KeyValue key="class" value="TRAVELER" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="TravelerManaBarFrame" inherits="TravelerManaBarTemplate">
+		<Size x="1" y="60"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="3" type="number"/>
+			<KeyValue key="topPadding" value="7" type="number"/>
+		</KeyValues>
+	</Frame>
+</Ui>

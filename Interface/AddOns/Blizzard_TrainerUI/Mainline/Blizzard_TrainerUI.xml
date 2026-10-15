@@ -1,34 +1,63 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
-..\..\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_TrainerUI.lua"/>
-	
-	
-	
-	
-	
-	
-	<!--	size=512,512
-	<Texture name="Trainer-FrameBg.png" >
-		<Size x="299" y="334"/>	
-		<TexCoords left="0.00195313" right="0.58593750" top="0.00195313" bottom="0.65429688"/>	
-	</Texture>
-	<Texture name="Trainer-ItemBg.png" >
-		<Size x="293" y="47"/>	
-		<TexCoords left="0.00195313" right="0.57421875" top="0.65820313" bottom="0.75000000"/>	
-	</Texture>
-	<Texture name="Trainer-Item-Highlight.png" >
-		<Size x="293" y="47"/>	
-		<TexCoords left="0.00195313" right="0.57421875" top="0.75390625" bottom="0.84570313"/>	
-	</Texture>
-	<Texture name="Trainer-Item-Selected.png" >
-		<Size x="293" y="47"/>	
-		<TexCoords left="0.00195313" right="0.57421875" top="0.84960938" bottom="0.94140625"/>	
-	</Texture-->
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-	<Button name="ClassTrainerSkillButtonTemplate" virtual="true">
+	<Button name="TrainerUICategoryTemplate" mixin="ClassTrainerCategoryButtonMixin" virtual="true">
+		<Size y="25"/>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_TrainerUICategory" type="string"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="1">
+				<FontString parentKey="Label" inherits="GameFontNormal_NoShadow" justifyH="LEFT">
+					<Size y="10"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10" y="2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="LeftPiece" atlas="Professions-recipe-header-left" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="LEFT" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="RightPiece" atlas="Professions-recipe-header-right" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" y="2"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="CenterPiece" atlas="Professions-recipe-header-middle" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeKey="$parent.LeftPiece"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" relativeKey="$parent.RightPiece"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="CollapseIcon">
+					<Anchors>
+						<Anchor point="RIGHT" x="-10" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture parentKey="CollapseIconAlphaAdd" alphaMode="ADD">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CollapseIcon"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+
+	<Button name="ClassTrainerSkillButtonTemplate" mixin="ClassTrainerSkillButtonMixin" virtual="true">
 		<Size x="298" y="47"/>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_TrainerUISkill" type="string"/>
+		</KeyValues>
 		<Frames>
-			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate" parentKey="money">
+			<Frame inherits="SmallMoneyFrameTemplate" parentKey="money">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="5" y="-7"/>
 				</Anchors>
@@ -52,13 +81,24 @@
 					<Size x="0" y="12"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"  relativeKey="$parent.icon" relativePoint="TOPRIGHT" x="6" y="-1"/>
-						<Anchor point="RIGHT" relativeKey="$parent.money" relativePoint="LEFT" x="-2" y="0"/>
 					</Anchors>
 				</FontString>
 				<FontString name="$parentSubText" inherits="SystemFont_Shadow_Small" justifyH="LEFT" justifyV="MIDDLE" parentKey="subText">
 					<Size x="240" y="30"/>
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.name" relativePoint="LEFT" x="0" y="-19"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentNameSubText" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="MIDDLE" parentKey="nameSubText">
+					<Size x="0" y="12"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativeKey="$parent.name" relativePoint="BOTTOMRIGHT" x="5" y="-1"/>
+					</Anchors>
+				</FontString>
+				<FontString inherits="GameFontNormalSmall" justifyH="RIGHT" justifyV="MIDDLE" parentKey="alternateCost" hidden="true">
+					<Size x="0" y="12"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.money" relativePoint="BOTTOMRIGHT" x="-15" y="0"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -106,8 +146,8 @@
 			</OnClick>
 		</Scripts>
 	</Button>
-	
-	<Frame name="ClassTrainerFrame" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
+
+	<Frame name="ClassTrainerFrame" mixin="ClassTrainerFrameMixin" inherits="ButtonFrameTemplate" toplevel="true" movable="true" parent="UIParent" enableMouse="true" hidden="true">
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture name="$parentMoneyBg" file="Interface\MoneyFrame\UI-MoneyFrame-Border">
@@ -125,9 +165,9 @@
 		</Layers>
 		<Frames>
 			<StatusBar name="ClassTrainerStatusBar" drawLayer="BACKGROUND" minValue="0" maxValue="1" defaultValue="0" enableMouse="false">
-				<Size x="136" y="18"/>
+				<Size x="130" y="18"/>
 				<Anchors>
-					<Anchor point="TOPLEFT" x="64" y="-36"/>
+					<Anchor point="TOPLEFT" x="64" y="-35"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -179,7 +219,16 @@
 					<Anchor point="TOPRIGHT" x="-13" y="-35"/>
 				</Anchors>
 			</DropdownButton>
-			<Button name="ClassTrainerTrainButton" inherits="MagicButtonTemplate" motionScriptsWhileDisabled="true" text="TRAIN">
+			<Frame parentKey="FilterInputHint" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<Size x="18" y="18"/>
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.FilterDropdown" relativePoint="LEFT" x="-8"/>
+				</Anchors>
+			</Frame>
+			<Button parentKey="TrainButton" name="ClassTrainerTrainButton" inherits="MagicButtonTemplate" motionScriptsWhileDisabled="true" text="TRAIN">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" />
 				</Anchors>
@@ -187,10 +236,31 @@
 					<OnClick function="ClassTrainerTrainButton_OnClick"/>
 				</Scripts>
 			</Button>
-			<Frame name="$parentMoneyFrame" inherits="SmallMoneyFrameTemplate">
+			<Frame inherits="SmallMoneyFrameTemplate" parentKey="money">
 				<Anchors>
 					<Anchor point="RIGHT" relativeTo="$parentMoneyBg" x="8" y="6"/>
 				</Anchors>
+			</Frame>
+			<Frame parentKey="trainingPoints" hidden="true">
+				<Size x="128" y="13"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentMoneyBg" x="8" y="6"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString name="$parentTrainingPointsLabel" parentKey="text" inherits="GameFontNormalSmall" text="TRAINING_POINTS"/>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter>
+						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+						GameTooltip:SetText(TRAINING_POINTS_TUTORIAL);
+						GameTooltip:Show();
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
 			</Frame>
 			<Button name="$parentSkillStepButton" inherits="ClassTrainerSkillButtonTemplate" parentKey="skillStepButton" hidden="true">
 				<Size x="316" y="40"/>
@@ -216,7 +286,7 @@
 						<Anchor point="TOPLEFT" relativeTo="$parentInset" relativePoint="BOTTOMLEFT" x="0" y="-3" />
 					</Anchors>
 			</Frame>
-		</Frames>	
+		</Frames>
 		<Scripts>
 			<OnLoad function="ClassTrainerFrame_OnLoad"/>
 			<OnShow function="ClassTrainerFrame_OnShow"/>

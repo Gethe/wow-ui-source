@@ -157,3 +157,9 @@ function UIButtonMixin:SetDisabledTooltip(disabledTooltip, disabledTooltipAnchor
 		self:SetMotionScriptsWhileDisabled(true);
 	end
 end
+
+UIPanelCloseButtonNarrationMixin = {};
+
+function UIPanelCloseButtonNarrationMixin:NarrationGetName()
+	return NARRATION_OBJECT_CLOSE_BUTTON;
+end

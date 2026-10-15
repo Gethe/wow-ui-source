@@ -1,0 +1,266 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="PersonalGrowingResourceDisplayTemplate" mixin="PersonalGrowingResourceDisplayMixin" virtual="true" hidden="true">
+		<Size x="242" y="60"/>
+		<KeyValues>
+			<KeyValue key="unit" value="player" type="string"/>
+			<KeyValue key="maxHealthCap" value="200" type="number"/>
+			<KeyValue key="maxEnergyCap" value="200" type="number"/>
+			<KeyValue key="maxManaPips" value="10" type="number"/>
+			<KeyValue key="barMaxWidth" value="220" type="number"/>
+			<KeyValue key="healthBarHeight" value="8" type="number"/>
+			<KeyValue key="energyBarHeight" value="3" type="number"/>
+			<KeyValue key="manaPipScaling" value="0.6" type="number"/>
+			<KeyValue key="manaPipSpacing" value="10" type="number"/>		
+			<KeyValue key="manaPipTopPadding" value="10" type="number"/>
+			<KeyValue key="elementPadding" value="5" type="number"/>
+			<KeyValue key="scale" value="0.9" type="number"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="LeaderIcon" file="Interface\GroupFrame\UI-Group-LeaderIcon" hidden="true">
+					<Size x="17" y="17"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="0"/>
+					</Anchors>
+				</Texture>
+				<FontString parentKey="NameText" inherits="GameFontNormal" justifyH="LEFT">
+					<Size x="204" y="15"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.LeaderIcon" relativePoint="RIGHT" x="2" y="-1"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="DamageBorder" alpha="0">
+					<Size x="1" y="1"/>
+					<Color r="1" g="0" b="0" a="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.HealthBarContainer" relativePoint="TOPLEFT" x="-3" y="3"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="HealthBarContainer" enableMouse="false">
+				<Size x="1" y="8"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LeaderIcon" relativePoint="BOTTOMLEFT" x="0" y="-5"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Border">
+							<Color r="0.1" g="0.1" b="0.1" a="1.0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-2" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture parentKey="Background">
+							<Color r="0.2" g="0.2" b="0.2" a="0.8"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<StatusBar parentKey="TempMaxHealthLoss" drawLayer="BACKGROUND" hidden="true" mixin="TempMaxHealthLossMixin">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<BarTexture atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-TempHPLoss"/>
+					</StatusBar>
+					<StatusBar parentKey="DamageHealth" drawLayer="BACKGROUND" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMLEFT"/>
+						</Anchors>
+						<BarTexture>
+							<Color r="1" g="0" b="0"/>
+						</BarTexture>
+						<Animations>
+							<AnimationGroup parentKey="DamageHealthAnimation" inherits="TargetsHiddenOnFinishedAnimGroupTemplate">
+								<Alpha order="1" duration="1" fromAlpha="1" toAlpha="0"/>
+							</AnimationGroup>
+						</Animations>
+					</StatusBar>
+					<StatusBar parentKey="Bar" drawLayer="ARTWORK" enableMouse="false">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMLEFT"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="HealAbsorbBar" inherits="HealAbsorbBarTemplate"/>
+						</Frames>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture parentKey="OverAbsorbGlow" inherits="OverAbsorbGlowTemplate" hidden="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-8"/>
+										<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-8"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="OverHealAbsorbGlow" inherits="OverHealAbsorbGlowTemplate" hidden="true">
+									<Anchors>
+										<Anchor point="TOPRIGHT" relativePoint="TOPLEFT" x="8"/>
+										<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT" x="8"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<BarTexture>
+							<Color r="0.0" g="0.8" b="0.0"/>
+						</BarTexture>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="HealthHoverText" inherits="TextStatusBarText" hidden="true">
+									<Anchors>
+										<Anchor point="LEFT" x="5"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</StatusBar>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="AbsorbBarContainer">
+				<Size x="220" y="8"/>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Border">
+							<Color r="0.1" g="0.1" b="0.1" a="1.0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-2" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture parentKey="Background">
+							<Color r="0.2" g="0.2" b="0.2" a="0.8"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<StatusBar parentKey="Bar" drawLayer="ARTWORK" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMLEFT"/>
+						</Anchors>
+						<BarTexture atlas="UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Status"/>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture parentKey="TotalAbsorbOverlay" file="Interface\RaidFrame\Shield-Overlay" vertTile="true" horizTile="true">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+								</Layer>
+						</Layers>
+					</StatusBar>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="EnergyBarContainer" enableMouse="false">
+				<Size x="220" y="8"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.HealthBarContainer" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="Border">
+							<Color r="0.1" g="0.1" b="0.1" a="1.0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-2" y="2"/>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-2"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture parentKey="Background">
+							<Color r="0.2" g="0.2" b="0.2" a="0.8"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<StatusBar parentKey="Bar" drawLayer="ARTWORK" enableMouse="false">
+						<Anchors>
+							<Anchor point="TOPLEFT"/>
+							<Anchor point="BOTTOMRIGHT"/>
+						</Anchors>
+						<BarTexture>
+							<Color r="0.9" g="0.9" b="0.0"/>
+						</BarTexture>
+						<Layers>
+							<Layer level="OVERLAY">
+								<FontString parentKey="EnergyHoverText" inherits="TextStatusBarText" hidden="true">
+									<Anchors>
+										<Anchor point="LEFT" x="5"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</StatusBar>
+				</Frames>
+			</Frame>
+
+			<Frame parentKey="ManaPipContainer" inherits="HorizontalLayoutFrame" scale="0.8">
+				<Size x="1" y="20"/>
+				<KeyValues>
+					<KeyValue key="spacing" value="8" type="number"/>
+				</KeyValues>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.EnergyBarContainer" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="DamageBorderAnimation">
+				<Alpha childKey="DamageBorder" order="1" duration="0.5" fromAlpha="0" toAlpha="1"/>
+				<Alpha childKey="DamageBorder" order="2" duration="0.5" fromAlpha="1" toAlpha="0"/>
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
+	</Button>
+
+	<Button name="PersonalGrowingResourceDisplay" inherits="PersonalGrowingResourceDisplayTemplate" parent="UIParent" hidden="true" frameStrata="LOW">
+		<KeyValues>
+			<KeyValue key="unit" value="player" type="string"/>
+			<KeyValue key="maxHealthCap" value="200" type="number"/>
+			<KeyValue key="maxEnergyCap" value="200" type="number"/>
+			<KeyValue key="maxManaPips" value="10" type="number"/>
+			<KeyValue key="barMaxWidth" value="220" type="number"/>
+			<KeyValue key="healthBarHeight" value="20" type="number"/>
+			<KeyValue key="energyBarHeight" value="8" type="number"/>
+			<KeyValue key="manaPipScaling" value="0.7" type="number"/>
+			<KeyValue key="manaPipSpacing" value="13" type="number"/>
+			<KeyValue key="manaPipTopPadding" value="10" type="number"/>
+			<KeyValue key="elementPadding" value="5" type="number"/>
+			<KeyValue key="scale" value="1" type="number"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="BOTTOM" relativeTo="UIParent" relativePoint="BOTTOM" x="0" y="300"/>
+		</Anchors>
+	</Button>
+
+</Ui>

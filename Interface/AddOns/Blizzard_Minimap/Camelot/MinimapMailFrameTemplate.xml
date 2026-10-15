@@ -1,0 +1,28 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="MiniMapMailFrameTemplate" virtual="true" mixin="MiniMapMailFrameMixin" enableMouse="true">
+		<Size x="32" y="24"/>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_MinimapHeader" type="string"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="TOPLEFT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture name="MiniMapMailIcon" parentKey="MailIcon" atlas="ui-hud-minimap-mail-icon" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Frame>
+</Ui>

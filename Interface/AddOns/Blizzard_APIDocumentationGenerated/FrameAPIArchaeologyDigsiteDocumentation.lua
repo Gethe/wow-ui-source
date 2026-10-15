@@ -15,6 +15,7 @@ local FrameAPIArchaeologyDigsite =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

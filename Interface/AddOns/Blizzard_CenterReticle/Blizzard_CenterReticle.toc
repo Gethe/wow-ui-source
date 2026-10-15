@@ -1,0 +1,6 @@
+## Title: Blizzard_CenterReticle
+## Dependencies: Blizzard_SharedXML
+## AllowLoadGameType: wowhack
+
+CenterReticle.lua
+CenterReticle.xml

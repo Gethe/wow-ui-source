@@ -3,6 +3,7 @@ local CovenantSanctumConstants =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

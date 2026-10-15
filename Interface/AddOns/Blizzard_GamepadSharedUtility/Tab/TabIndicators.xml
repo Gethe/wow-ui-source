@@ -1,0 +1,32 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="GamepadTabIndicatorButtonTemplate" mixin="GamepadTabIndicatorButtonMixin" registerForClicks="LeftButtonUp, LeftButtonDown" inherits="SmartNavigationIgnoredTemplate, InputIconTextureFrameTemplate" virtual="true" >
+		<Size x="26" y="26" />
+		<KeyValues>
+			<KeyValue key="useDropShadow" value="true" type="boolean"/>
+		</KeyValues>
+		<Scripts>
+			<OnClick method="OnClick" />
+		</Scripts>
+	</Button>
+
+	<Frame name="GamepadTabIndicatorsTemplate" mixin="GamepadTabIndicatorsMixin" virtual="true">
+		<Frames>
+			<Button name="$parentLeftTabButton" parentKey="LeftTabButton" inherits="GamepadTabIndicatorButtonTemplate">
+				<KeyValues>
+					<KeyValue key="offset" type="number" value="-1" />
+				</KeyValues>
+			</Button>
+			<Button name="$parentRightTabButton" parentKey="RightTabButton" inherits="GamepadTabIndicatorButtonTemplate">
+				<KeyValues>
+					<KeyValue key="offset" type="number" value="1" />
+				</KeyValues>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad" />
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide" />
+		</Scripts>
+	</Frame>
+</Ui>

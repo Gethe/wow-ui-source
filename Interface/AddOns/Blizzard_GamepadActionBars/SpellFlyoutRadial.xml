@@ -1,0 +1,21 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+	..\Blizzard_SharedXML\UI.xsd">
+
+	<CheckButton name="GamepadSpellFlyoutPopupButtonTemplate" inherits="GamepadFlyoutPopupButtonBaseTemplate, SpellFlyoutPopupButtonBaseTemplate" virtual="true">
+		<Mixins>
+			<Mixin key="SpellFlyoutPopupButtonMixin"/>
+			<Mixin key="GamepadFlyoutPopupButtonMixin"/>
+			<Mixin key="GamepadSpellFlyoutPopupButtonMixin"/>
+		</Mixins>
+	</CheckButton>
+
+	<Frame name="GamepadSpellFlyout" toplevel="true" hidden="true" inherits="GamepadFlyoutTemplate">
+		<Mixins>
+			<Mixin key="GamepadSpellFlyoutMixin"/>
+		</Mixins>
+		<KeyValues>
+			<KeyValue key="buttonTemplate" type="string" value="GamepadSpellFlyoutPopupButtonTemplate"/>
+		</KeyValues>
+	</Frame>
+
+</Ui>

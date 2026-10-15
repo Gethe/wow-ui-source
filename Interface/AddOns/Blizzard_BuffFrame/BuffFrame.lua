@@ -2,9 +2,15 @@ BUFF_WARNING_TIME = 31;
 BUFF_MAX_DISPLAY = 32;
 DEBUFF_MAX_DISPLAY = 16;
 
+BUFF_TOOLTIP_DELAY = 0.0;
+BUFF_TOOLTIP_DISPLAY_TIME = 4.0;
+BUFF_TOOLTIP_QUEUE_SIZE = 3;
+
 CVarCallbackRegistry:SetCVarCachable("buffDurations");
 CVarCallbackRegistry:SetCVarCachable("consolidateBuffs");
 CVarCallbackRegistry:SetCVarCachable("collapseExpandBuffs");
+CVarCallbackRegistry:SetCVarCachable("displayTemporaryEnchantIcon");
+CVarCallbackRegistry:SetCVarCachable("GamepadShowAutoAuraTooltip");
 
 local s_spellIDToHelpTipInfo = {
 	-- Pandaria remix Timerunner's Advantage
@@ -18,12 +24,26 @@ local s_spellIDToHelpTipInfo = {
 	},
 };
 
+
+--AubrieTODO: These texture mappings are sort of bad so for temp enchantments we are only showing temp enchants for weapon..
+--Which just seems wrong, so I still have to talk to designers and see if we want to invest in a system to show temp enchants other than weapon
+local textureMapping = {
+	[1] = 16,	--Main hand
+	[2] = 17,	--Off-hand
+	[3] = 18,	--Ranged
+};
+
 local CollapseAndExpandButton_Orientation_Horizontal = 0;
 local CollapseAndExpandButton_Orientation_Vertical = 1;
 local CollapseAndExpandButton_ExpandDirection_Left = 0;
 local CollapseAndExpandButton_ExpandDirection_Right = 1;
 local CollapseAndExpandButton_ExpandDirection_Down = CollapseAndExpandButton_ExpandDirection_Left;
 local CollapseAndExpandButton_ExpandDirection_Up = CollapseAndExpandButton_ExpandDirection_Right;
+
+local HORIZONTAL_LAYOUT_AURA_WIDTH = 30;
+local HORIZONTAL_LAYOUT_AURA_HEIGHT = 40;
+local VERTICAL_LAYOUT_AURA_WIDTH = 60;
+local VERTICAL_LAYOUT_AURA_HEIGHT = 30;
 
 AuraContainerWarningFaderMixin = {};
 
@@ -122,16 +142,16 @@ function AuraContainerMixin:UpdateGridLayout(auras, doNotAnchorDisabledFrames)
 	-- Also resize aura accordingly
 	local auraWidth, auraHeight, durationPoint, durationRelativePoint, iconPoint;
 	if newLayoutInfo.isHorizontal then
-		auraWidth = 30;
-		auraHeight = 40;
+		auraWidth = HORIZONTAL_LAYOUT_AURA_WIDTH;
+		auraHeight = HORIZONTAL_LAYOUT_AURA_HEIGHT;
 
 		durationPoint = newLayoutInfo.addIconsToTop and "BOTTOM" or "TOP";
 		durationRelativePoint = newLayoutInfo.addIconsToTop and "TOP" or "BOTTOM";
 
 		iconPoint = newLayoutInfo.addIconsToTop and "BOTTOM" or "TOP";
 	else
-		auraWidth = 60;
-		auraHeight = 30;
+		auraWidth = VERTICAL_LAYOUT_AURA_WIDTH;
+		auraHeight = VERTICAL_LAYOUT_AURA_HEIGHT;
 
 		durationPoint = newLayoutInfo.addIconsToRight and "LEFT" or "RIGHT";
 		durationRelativePoint = newLayoutInfo.addIconsToRight and "RIGHT" or "LEFT";
@@ -231,6 +251,24 @@ function AuraFrameMixin:UpdateAuraButtons()
 			end
 		end
 	end
+
+	if InputUtil.IsGamepadUIEnabled() and SmartNavigation:GetActiveFrame() == self then
+		-- Unfocus if there are no buffs available.
+		if not self:HasActiveAura() then
+			local otherFrame = (self == BuffFrame) and DebuffFrame or BuffFrame;
+			if not otherFrame:SetGamepadFocus() then
+				self:ClearGamepadFocus();
+			end
+			return;
+		end
+
+		-- Select the last aura button if an invalid button is selected after update.
+		local currentButton = SmartNavigation:GetCurrentButton();
+		if currentButton and not currentButton:IsShown() then
+			local lastAuraFrame = self:GetLastActiveAuraFrame();
+			SmartNavigation:SelectButton(lastAuraFrame);
+		end
+	end
 end
 
 function AuraFrameMixin:ShouldShowAura(potentialAuraInfo)
@@ -270,6 +308,23 @@ function AuraFrameMixin:UpdateSize(auraWidth, auraHeight, perRow, iconPadding, s
 	self:SetSize(totalWidth * scale, totalHeight * scale);
 end
 
+function AuraFrameMixin:HasActiveAura()
+	return #self.auraInfo >= 1;
+end
+
+function AuraFrameMixin:GetLastActiveAuraFrame()
+	local lastActiveAuraFrame;
+	for _, auraFrame in ipairs(self.auraFrames) do
+		if auraFrame.hasValidInfo then
+			lastActiveAuraFrame = auraFrame;
+		else
+			break;
+		end
+	end
+
+	return lastActiveAuraFrame;
+end
+
 AuraFrameEventListenerMixin = {};
 
 function AuraFrameEventListenerMixin:AuraFrameEventListener_OnLoad()
@@ -292,7 +347,7 @@ function AuraFrameEventListenerMixin:AuraFrameEventListener_OnEvent(event, ...)
 								or (unitAuraUpdateInfo.updatedAuraInstanceIDs ~= nil and #unitAuraUpdateInfo.updatedAuraInstanceIDs > 0));
 
 		if unit == PlayerFrame.unit and hasAurasToUpdate then
-			self:Update();
+			self:Update(unitAuraUpdateInfo);
 		end
 	elseif event == "GROUP_ROSTER_UPDATE" or event == "PLAYER_SPECIALIZATION_CHANGED" then
 		self:Update();
@@ -415,6 +470,19 @@ end
 
 BaseAuraFrameMixin = {};
 
+function BaseAuraFrameMixin:SetGamepadFocus()
+	if InputUtil.IsGamepadUIEnabled() and self:IsShown() and self:HasActiveAura() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+		return true;
+	end
+end
+
+function BaseAuraFrameMixin:ClearGamepadFocus()
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
+end
+
 function BaseAuraFrameMixin:GetIconLimitSettingEnum()
 	return Enum.EditModeAuraFrameSetting.IconLimitBuffFrame;
 end
@@ -458,6 +526,11 @@ function BuffFrameMixin:OnLoad()
 	-- Throttle for OnUpdate when checking when buffs should "fall out" of the collapsed/consolidated container.
 	self.hiddenBuffUpdateTimer = 0;
 	self.hiddenBuffUpdatePeriod = 0.2;
+	if InputUtil.IsGamepadUIEnabled() then
+		self.auraTooltipQueue = {}
+	end
+
+	self:RegisterForTransitions();
 end
 
 function BuffFrameMixin:OnEvent(event, ...)
@@ -500,6 +573,10 @@ function BuffFrameMixin:OnUpdate(elapsed)
 
 	-- Don't forget to reset the timer!
 	self:ResetHiddenBuffUpdateTimer();
+
+	if self.footer then
+		self.footer:Refresh();
+	end
 end
 
 function BuffFrameMixin:ResetHiddenBuffUpdateTimer()
@@ -587,10 +664,27 @@ function BuffFrameMixin:UpdateAuraContainerAnchor()
 	self.CollapseAndExpandButton:UpdateOrientation();
 end
 
-function BuffFrameMixin:Update()
+function BuffFrameMixin:Update(unitAuraUpdateInfo)
+	-- Aura tooltip is currently only used for GamepadUI
+	if self.auraTooltipQueue ~= nil and unitAuraUpdateInfo ~= nil and not unitAuraUpdateInfo.isFullUpdate and CVarCallbackRegistry:GetCVarValueBool("GamepadShowAutoAuraTooltip") then
+		for _, addedAura in ipairs(unitAuraUpdateInfo.addedAuras or {}) do
+			self:AddAuraForTooltip(addedAura.auraInstanceID, addedAura.isHarmful);
+		end
+		for _, updatedAuraID in ipairs(unitAuraUpdateInfo.updatedAuraInstanceIDs or {}) do
+			self:AddAuraForTooltip(updatedAuraID);
+		end
+		for _, removedAuraID in ipairs(unitAuraUpdateInfo.removedAuraInstanceIDs or {}) do
+			self:RemoveAuraForTooltip(removedAuraID);
+		end
+		self:ShowNextAuraForTooltip();
+	end
 	AuraFrameEditModeMixin.Update(self);
 
 	self:RefreshConsolidationFrameVisibility();
+
+	if self.footer then
+		self.footer:Refresh();
+	end
 end
 
 function BuffFrameMixin:IsExpanded()
@@ -612,7 +706,7 @@ end
 
 function BuffFrameMixin:RefreshConsolidationFrameVisibility()
 	self.ConsolidatedBuffs:SetShown(self.ConsolidatedBuffs:ShouldShow());
-	self.CollapseAndExpandButton:SetShown(self.numHideableBuffs > 0 and self.CollapseAndExpandButton:IsEnabled());
+	self.CollapseAndExpandButton:SetShown(self.numHideableBuffs > 0 and self.CollapseAndExpandButton:IsEnabled() and not InputUtil.IsGamepadUIEnabled());
 
 	if (self.CollapseAndExpandButton:IsEnabled()) then
 		self.CollapseAndExpandButton:SetChecked(self.isExpanded);
@@ -649,6 +743,7 @@ function BuffFrameMixin:UpdatePlayerBuffs()
 
 		self.auraInfo[auraInfoIndex] = {
 			auraType = "Buff",
+			auraInstanceID = auraData.auraInstanceID,
 			debuffType = auraData.dispelName,
 			index = auraIndex,
 			texture = auraData.icon,
@@ -664,31 +759,44 @@ function BuffFrameMixin:UpdatePlayerBuffs()
 	end, usePackedAura);
 end
 
+--AubrieTODO: Figure out how we want to refactor this function to include non-weapon enchants..
 function BuffFrameMixin:UpdateTemporaryEnchantmentBuffs()
-	-- Process slots in reverse equipment order to preserve legacy display ordering.
-	for _itemIndex, slot in ipairs({ INVSLOT_RANGED, INVSLOT_OFFHAND, INVSLOT_MAINHAND }) do
-		-- If we can't display any more buffs then stop
-		if #self.auraInfo > self.maxAuras then
-			break;
-		end
 
-		local enchantmentInfo = C_PaperDollInfo.GetTemporaryEnchantmentInfo(slot);
-		if enchantmentInfo and enchantmentInfo.hasExpirationTime then
-			local expirationTime = GetTime() + (enchantmentInfo.remainingTimeMs / 1000);
-			local hideUnlessExpanded = (enchantmentInfo.remainingTimeMs / 1000) > BUFF_DURATION_WARNING_TIME;
-			if hideUnlessExpanded then
-				self.numHideableBuffs = self.numHideableBuffs + 1;
+	for slotName,slotID in pairs(Enum.WeaponSlot) do
+		local enchants = C_Item.GetWeaponEnchantInfo(slotID);
+
+		for _,enchant in pairs(enchants) do
+			if #self.auraInfo > self.maxAuras then
+				break;
 			end
+			if enchant.hasEnchant then
+				-- Show buff durations if necessary
+				if enchant.timeLeft then
+					enchant.timeLeft = enchant.timeLeft / 1000;
+				end
+				local expirationTime =  GetTime() + enchant.timeLeft;
 
-			local aura = {
-				auraType = "TempEnchant",
-				texture = GetInventoryItemTexture("player", slot),
-				count = enchantmentInfo.chargesRemaining,
-				hideUnlessExpanded = hideUnlessExpanded,
-				expirationTime = expirationTime,
-				ID = slot
-			};
-			table.insert(self.auraInfo, aura);
+				local hideUnlessExpanded = enchant.timeLeft > BUFF_DURATION_WARNING_TIME;
+				if hideUnlessExpanded then
+					self.numHideableBuffs = self.numHideableBuffs + 1;
+				end
+
+				local aura = {
+					auraType = "TempEnchant",
+					texture = GetInventoryItemTexture("player", textureMapping[slotID + 1]),
+					count = enchant.charges,
+					hideUnlessExpanded = hideUnlessExpanded,
+					expirationTime = expirationTime,
+					ID = textureMapping[slotID + 1],
+					OnCancel = GenerateClosure(C_Spell.CancelItemTempEnchantment, slotID, enchant.enchantType or 0)
+				};
+
+				if CVarCallbackRegistry:GetCVarValueBool("displayTemporaryEnchantIcon") then
+					aura.texture = enchant.enchantIconID;
+				end
+
+				table.insert(self.auraInfo, aura);
+			end
 		end
 	end
 end
@@ -708,6 +816,10 @@ function BuffFrameMixin:UpdateAuras()
 	local onUpdateScript = self:HasHiddenBuffs() and self.OnUpdate or nil;
 	self:SetScript("OnUpdate", onUpdateScript);
 	self:ResetHiddenBuffUpdateTimer();
+
+	if self.footer then
+		self.footer:Refresh();
+	end
 end
 
 function BuffFrameMixin:SetBuffsExpandedState(expanded)
@@ -725,10 +837,177 @@ function BuffFrameMixin:SyncToConsolidatedBuffs()
 	end
 end
 
+function BuffFrameMixin:CancelSelectedBuff()
+	local focusedButton = SmartNavigation:GetCurrentButton();
+	if focusedButton then
+		focusedButton:Click("RightButton");
+	end
+end
+
+function BuffFrameMixin:IsCancelSelectedBuffContextActionValid()
+	local focusedButton = SmartNavigation:GetCurrentButton();
+	if focusedButton then
+		return focusedButton.auraType == "Buff" or focusedButton.auraType == "TempEnchant";
+	end
+end
+
+function BuffFrameMixin:SetupGamepad()
+	local cancelBuff = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.CancelSelectedBuff, self), CONTEXT_ACTION_LABEL_CANCEL_BUFF);
+	cancelBuff:AddButtonContext("ButtonContext_AuraButton");
+	cancelBuff:AddCondition(GenerateClosure(self.IsCancelSelectedBuffContextActionValid, self));
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(GameTooltip, "BuffFrameFooter")
+	self.footer:AddPromptedBinding(cancelBuff);
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+end
+
+function BuffFrameMixin:FocusGamepad()
+	self:ClearAuraTooltipQueue();
+	self.footer:ShowAndActivateBindings();
+	SmartNavigation:RegisterCallback("HitBottomEdge", DebuffFrame.SetGamepadFocus, DebuffFrame);
+end
+
+function BuffFrameMixin:UnfocusGamepad()
+	SmartNavigation:UnregisterCallback("HitBottomEdge", DebuffFrame);
+	self:ClearGamepadFocus();
+	self.footer:HideAndDeactivateBindings();
+end
+
+function BuffFrameMixin:InitializeGamepad()
+	self.CollapseAndExpandButton:Hide();
+end
+
+function BuffFrameMixin:UninitializeGamepad()
+	self:RefreshConsolidationFrameVisibility();
+end
+
+function BuffFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function BuffFrameMixin:SmartNavigationCloseHandler()
+	self:ClearGamepadFocus();
+end
+
+function BuffFrameMixin:GetNextAuraForTooltip()
+	return self.auraTooltipQueue and self.auraTooltipQueue[1];
+end
+
+function BuffFrameMixin:ShowNextAuraForTooltip()
+	local nextAuraID = self:GetNextAuraForTooltip();
+	if self.auraTooltipQueue == nil or nextAuraID == nil or self.auraTooltipTimer ~= nil then
+		return;
+	end
+
+	local delay = BUFF_TOOLTIP_DELAY;
+	local timer = BUFF_TOOLTIP_DISPLAY_TIME;
+	local frames = {self.auraFrames, DebuffFrame.auraFrames, ExternalDefensivesFrame.auraFrames}
+	local function showTooltipFunc()
+		for _, frameAuraFrames in ipairs(frames) do
+			for _, auraFrame in ipairs(frameAuraFrames) do
+				if auraFrame.hasValidInfo and auraFrame.buttonInfo ~= nil and auraFrame.buttonInfo.auraInstanceID == nextAuraID then
+					BuffFrameTooltip:SetOwner(auraFrame, "ANCHOR_BOTTOMLEFT");
+					BuffFrameTooltip:SetFrameLevel(auraFrame:GetFrameLevel() + 2);
+					BuffFrameTooltip:SetUnitAuraByAuraInstanceID(PlayerFrame.unit, nextAuraID);
+					return;
+				end
+			end
+		end
+	end;
+
+	local function hideTooltipFunc()
+		self:RemoveAuraForTooltip(nextAuraID);
+		self:ShowNextAuraForTooltip();
+	end
+
+	self.auraTooltipTimer = C_Timer.NewTimer(delay, showTooltipFunc);
+	C_Timer.After(timer + delay, hideTooltipFunc);
+end
+
+function BuffFrameMixin:AddAuraForTooltip(addedAuraInstanceID, highPriority)
+	if self.auraTooltipQueue == nil or addedAuraInstanceID == nil then
+		return;
+	end
+	if not self:ShouldProcessTooltipQueue() then
+		return;
+	end
+	if table.contains(self.auraTooltipQueue, addedAuraInstanceID) or #self.auraTooltipQueue >= BUFF_TOOLTIP_QUEUE_SIZE then
+		return;
+	end
+
+	if highPriority then
+		self:RemoveAuraForTooltip(self:GetNextAuraForTooltip());
+		table.insert(self.auraTooltipQueue, 1, addedAuraInstanceID);
+	else
+		table.insert(self.auraTooltipQueue, addedAuraInstanceID);
+	end
+end
+
+function BuffFrameMixin:RemoveAuraForTooltip(removedAuraInstanceID)
+	if self.auraTooltipQueue == nil or removedAuraInstanceID == nil then
+		return;
+	end
+	if removedAuraInstanceID == self:GetNextAuraForTooltip() then
+		BuffFrameTooltip:Hide();
+		if self.auraTooltipTimer ~= nil then
+			self.auraTooltipTimer:Cancel();
+			self.auraTooltipTimer = nil;
+		end
+	end
+	table.removevalue(self.auraTooltipQueue, removedAuraInstanceID);
+end
+
+function BuffFrameMixin:ClearAuraTooltipQueue()
+	self.auraTooltipQueue = {};
+	BuffFrameTooltip:Hide();
+
+	if self.auraTooltipTimer then
+		self.auraTooltipTimer:Cancel();
+		self.auraTooltipTimer = nil;
+	end
+end
+
+function BuffFrameMixin:ShouldProcessTooltipQueue()
+	local function IsAuraFrame(frame, recurse)
+		if not frame then
+			return false;
+		end
+
+		if frame == self
+			or (DebuffFrame and frame == DebuffFrame)
+			or (ExternalDefensivesFrame and frame == ExternalDefensivesFrame)
+		then
+			return true;
+		end
+
+		return recurse and IsAuraFrame(frame:GetParent(), true) or false;
+	end
+
+	local function IsAnyAuraButtonFrame(frames)
+		for _, frame in ipairs(frames) do
+			-- Only consider aura buttons within the frames we care about
+			if frame.auraType and IsAuraFrame(frame, true) then
+				return true;
+			end
+		end
+		return false;
+	end
+
+	return InputUtil.IsGamepadUIEnabled()
+		and not IsAuraFrame(SmartNavigation:GetActiveFrame())
+		and not IsAnyAuraButtonFrame(GetMouseFoci());
+end
+
 DebuffFrameMixin = { };
 
 function DebuffFrameMixin:OnLoad()
 	self.maxAuras = DEBUFF_MAX_DISPLAY;
+
+	self:RegisterForTransitions();
 end
 
 function DebuffFrameMixin:Update() -- Override
@@ -737,7 +1016,7 @@ function DebuffFrameMixin:Update() -- Override
 	if PlayerFrame.unit ~= self.unit then
 		self:UpdatePrivateAuraAnchors(PlayerFrame.unit);
 		self.unit = PlayerFrame.unit;
-	end	
+	end
 end
 
 function DebuffFrameMixin:UpdatePrivateAuraAnchors(unit)
@@ -763,6 +1042,7 @@ function DebuffFrameMixin:UpdateAuras()
 		-- TODO:: Rename usages in this file to match packed auraData names, then just use packed aura everywhere
 		self.auraInfo[index] = {
 			auraType = "Debuff",
+			auraInstanceID = auraData.auraInstanceID,
 			debuffType = auraData.dispelName,
 			index = index,
 			texture = auraData.icon,
@@ -856,6 +1136,32 @@ function DebuffFrameMixin:GetIconLimitSettingEnum()
 	return Enum.EditModeAuraFrameSetting.IconLimitDebuffFrame;
 end
 
+function DebuffFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+end
+
+function DebuffFrameMixin:SetupGamepad()
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(GameTooltip, "DebuffFrameFooter");
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+end
+
+function DebuffFrameMixin:FocusGamepad()
+	self.footer:ShowAndActivateBindings();
+	SmartNavigation:RegisterCallback("HitTopEdge", BuffFrame.SetGamepadFocus, BuffFrame);
+end
+
+function DebuffFrameMixin:UnfocusGamepad()
+	SmartNavigation:UnregisterCallback("HitTopEdge", BuffFrame);
+	self:ClearGamepadFocus();
+	self.footer:HideAndDeactivateBindings();
+end
+
+function DebuffFrameMixin:SmartNavigationCloseHandler()
+	self:ClearGamepadFocus();
+end
+
 -- If you make changes to this, consider making the same changes to PrivateAuraMixin
 AuraButtonMixin = { };
 
@@ -880,7 +1186,9 @@ function AuraButtonMixin:OnClick(button)
 		EventRegistry:TriggerEvent("BuffButton.OnClick", self, button);
 	elseif self.auraType == "TempEnchant" then
 		if button == "RightButton" then
-			C_PaperDollInfo.CancelTemporaryEnchantment(self:GetID());
+			if self.buttonInfo.OnCancel then
+				self.buttonInfo.OnCancel();
+			end
 		end
 	end
 end
@@ -888,6 +1196,10 @@ end
 function AuraButtonMixin:OnEnter()
 	if self.isExample then
 		return;
+	end
+
+	if InputUtil.IsGamepadUIEnabled() and BuffFrame then
+		BuffFrame:ClearAuraTooltipQueue();
 	end
 
 	if self.auraType == "TempEnchant" then
@@ -1343,4 +1655,9 @@ end
 function ConsolidatedBuffsTooltipAurasMixin:Update()
 	self:UpdateAuraButtons();
 	self:UpdateGridLayout();
+end
+
+function ConsolidatedBuffsTooltipAurasMixin:UpdateAuraContainerAnchor()
+	-- We can use default anchors since this is always within the tooltip,
+	-- so this function doesn't have to do anything.
 end

@@ -3,6 +3,7 @@ local MicroButtonNames = {
 	"CharacterMicroButton",
 	"ProfessionMicroButton",
 	"PlayerSpellsMicroButton",
+	"ScribeMicroButton",
 	"AchievementMicroButton",
 	"QuestLogMicroButton",
 	"GuildMicroButton",
@@ -11,6 +12,7 @@ local MicroButtonNames = {
 	"EJMicroButton",
 	"MainMenuMicroButton",
 	"QuickJoinToastButton",
+	"LegacyMicroButton",
 }
 
 function ActionButtonUtil.SetAllQuickKeybindButtonHighlights(show)
@@ -23,13 +25,18 @@ function ActionButtonUtil.SetAllQuickKeybindButtonHighlights(show)
 		PetActionBar.actionButtons[i]:DoModeChange(show);
 		StanceBar.actionButtons[i]:DoModeChange(show);
 	end
-	ExtraActionButton1:DoModeChange(show);
+	if not ActionButtonUtil.IsExtraActionButtonDisabled() then
+		ExtraActionButton1:DoModeChange(show);
+	end
 	MainActionBar.ActionBarPageNumber.UpButton:DoModeChange(show);
 	MainActionBar.ActionBarPageNumber.DownButton:DoModeChange(show);
 
-	for _, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
-		bagButton:DoModeChange(show);
-	end
+	local bagsUIEnabled = not C_GameRules.IsGameRuleActive(Enum.GameRule.BagsUIDisabled);
+	if bagsUIEnabled then
+		for _, bagButton in MainMenuBarBagManager:EnumerateBagButtons() do
+			bagButton:DoModeChange(show);
+		end
+	end 
 
 	for _, microButton in ipairs(MicroButtonNames) do
 		_G[microButton]:DoModeChange(show);

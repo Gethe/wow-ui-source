@@ -25,6 +25,7 @@ TransmogSlotOrder = {
 	INVSLOT_FEET,
 	INVSLOT_MAINHAND,
 	INVSLOT_OFFHAND,
+	INVSLOT_RANGED
 };
 
 local WARDROBE_MODEL_SETUP = {
@@ -278,6 +279,10 @@ function TransmogUtil.OpenCollectionToSet(setID)
 end
 
 function TransmogUtil.OpenCollectionUI()
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
+		return false;
+	end
+
 	if not CollectionsJournal then
 		CollectionsJournal_LoadUI();
 	end
@@ -625,7 +630,7 @@ do
 				if armorCategoryID == Enum.TransmogCollectionType.None then
 					armorCategoryID = nil;
 				end
-				TRANSMOG_SLOTS[lookupKey] = { location = location, armorCategoryID = armorCategoryID };
+				TRANSMOG_SLOTS[lookupKey] = { location = location, armorCategoryID = armorCategoryID, name = slotInfo.slotName };
 			end
 		end
 

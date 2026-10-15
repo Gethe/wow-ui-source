@@ -5,6 +5,7 @@ GameRulesUtil.ActionButtonTypeOverlayStrategy = {
 	None = 0, -- By default we show nothing.
 	HighlightMana = 1, -- Show a special icon for mana spenders and a default icon for everything else.
 	ManaAndEnergy = 2, -- Show a special icon for mana spenders and energy spenders and no icon for everything else.
+	ManaPipsAndEnergy = 3, -- Show pips for mana cost (1 pip per 10 mana) and an icon for energy spenders.
 };
 
 -- The queue status system is a way to skin/adjust the dungeon finder eye and the dungeon
@@ -128,7 +129,7 @@ function GameRulesUtil.EJShouldShowItemSets()
 end
 
 function GameRulesUtil.EJShouldShowTutorials()
-	return C_PlayerInfo.IsTutorialsTabAvailable();
+	return not C_GameRules.IsWoWHack() and C_PlayerInfo.IsTutorialsTabAvailable();
 end
 
 function GameRulesUtil.IsPlayerAtEffectiveMaxLevel()
@@ -137,6 +138,10 @@ end
 
 function GameRulesUtil.CanShowExperienceBar()
 	return not GameRulesUtil.IsPlayerAtEffectiveMaxLevel() and not IsXPUserDisabled() and not C_GameRules.IsGameRuleActive(Enum.GameRule.ExperienceBarDisabled);
+end
+
+function GameRulesUtil.ShowGameModeExperienceBar()
+	return C_GameRules.IsWoWHack();
 end
 
 function GameRulesUtil.GetActionButtonTypeOverlayStrategy()
@@ -189,6 +194,8 @@ function GameRulesUtil.OnActiveGameModeUpdated()
 	end
 end
 
+EventRegistry:RegisterFrameEventAndCallback("ACTIVE_GAME_MODE_UPDATED", GameRulesUtil.OnActiveGameModeUpdated, GameRulesUtil);
+
 function GameRulesUtil.GetEffectiveMaxLevelForPlayer()
 	-- Timerunners levels can go above the purchased max level to the max current expansion level
 	local maxLevelForExpansion = (PlayerIsTimerunning() and not IsTrialAccount()) and GetMaxLevelForLatestExpansion() or GetMaxLevelForPlayerExpansion();
@@ -196,4 +203,35 @@ function GameRulesUtil.GetEffectiveMaxLevelForPlayer()
 	return math.min(maxLevelForExpansion, maxPlayerLevel);
 end
 
-EventRegistry:RegisterFrameEventAndCallback("ACTIVE_GAME_MODE_UPDATED", GameRulesUtil.OnActiveGameModeUpdated, GameRulesUtil);
+function GameRulesUtil.SeparateSpellBookAndTalentFrame()
+	return C_GameRules.IsWoWHack();
+end
+
+function GameRulesUtil.SharedSpellAndTalentMicroButtonDisabled()
+	return GameRulesUtil.SeparateSpellBookAndTalentFrame() or C_GameRules.IsGameRuleActive(Enum.GameRule.TalentsPanelDisabled);
+end
+
+function GameRulesUtil.SpellBookMicroButtonDisabled()
+	return not GameRulesUtil.SeparateSpellBookAndTalentFrame();
+end
+
+function GameRulesUtil.TalentMicroButtonDisabled()
+	return not GameRulesUtil.SeparateSpellBookAndTalentFrame() or C_GameRules.IsGameRuleActive(Enum.GameRule.TalentsPanelDisabled);
+end
+
+function GameRulesUtil.ScribeMicroButtonDisabled()
+	return not C_GameRules.IsWoWHack();
+end
+
+function GameRulesUtil.IsAnyChatControlledByEditMode()
+	return not C_GameRules.IsWoWHack();
+end
+
+function GameRulesUtil.IsChatFrameControlledByEditMode(chatFrame)
+	return chatFrame == DEFAULT_CHAT_FRAME and GameRulesUtil.IsAnyChatControlledByEditMode();
+end
+
+function GameRulesUtil.IsCharacterFrameEnabled()
+	-- Depending on the game mode, we might not load the CharacterFrame
+	return not not CharacterFrame;
+end

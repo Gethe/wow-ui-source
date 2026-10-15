@@ -1,0 +1,52 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	
+	<Frame name="SpellTypeIconOverlayManaPipTemplate" virtual="true">
+		<Size x="25" y="25"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Shadow" atlas="talebound-manapip-bg-shadow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="Background" atlas="talebound-manapip-bg" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" atlas="talebound-manapip-icon-teal" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="SpellTypeIconOverlaySmallManaPipTemplate" inherits="SpellTypeIconOverlayManaPipTemplate" scale="0.5" virtual="true"/>
+
+	<Frame name="SpellTypeIconOverlayTemplate" mixin="SpellTypeIconOverlayMixin" virtual="true" frameStrata="HIGH" fixedFrameStrata="true" frameLevel="6">
+		<Size x="1" y="1"/>
+		<KeyValues>
+			<KeyValue key="useSmallPips" value="true" type="boolean"/>
+		</KeyValues>
+		<Layers>
+			<Layer>
+				<Texture parentKey="Texture">
+					<Size x="21" y="24"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+</Ui>

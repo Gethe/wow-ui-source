@@ -111,11 +111,22 @@ function TryUseActionButton(self, checkingFromDown)
 	local isSecureAction = true;
 	local usedActionButton = SecureActionButton_OnClick(self, "LeftButton", checkingFromDown, isKeyPress, isSecureAction);
 	if usedActionButton then
+		local actionType = GetActionInfo(self.action);
+		if actionType == "item" then
+			if C_Spell.TargetSpellIsEnchanting() then
+				ItemButtonUtil.MarkItemSelectionFromActionBarItem();
+			else
+				ItemButtonUtil.ClearPendingItemSelectionSource();
+			end
+		end
+	end
+	if usedActionButton then
 		if GetNewActionHighlightMark(self.action) then
 			ClearNewActionHighlight(self.action);
 			self:UpdateHighlightMark();
 		end
 	end
+	self:HandleInsufficientResourceFlash(checkingFromDown);
 	self:UpdateState();
 end
 
@@ -363,14 +374,13 @@ function ActionBarButtonUpdateFrameMixin:UnregisterFrame(frame)
 	self.frames[frame] = nil;
 end
 
-ActionBarButtonRangeCheckFrameMixin = {};
+ActionBarButtonRangeCheckBaseMixin = {};
 
-function ActionBarButtonRangeCheckFrameMixin:OnLoad()
+function ActionBarButtonRangeCheckBaseMixin:OnLoad()
 	self.actions = {};
-	self:RegisterEvent("ACTION_RANGE_CHECK_UPDATE");
 end
 
-function ActionBarButtonRangeCheckFrameMixin:OnEvent(event, ...)
+function ActionBarButtonRangeCheckBaseMixin:OnEvent(event, ...)
 	local action, inRange, checksRange = ...;
 
 	-- pass event down to the buttons
@@ -382,7 +392,7 @@ function ActionBarButtonRangeCheckFrameMixin:OnEvent(event, ...)
 	end
 end
 
-function ActionBarButtonRangeCheckFrameMixin:RegisterFrame(action, frame)
+function ActionBarButtonRangeCheckBaseMixin:RegisterFrame(action, frame)
 	if not self.actions[action] then
 		self.actions[action] = {};
 	end
@@ -390,15 +400,38 @@ function ActionBarButtonRangeCheckFrameMixin:RegisterFrame(action, frame)
 		return;
 	end
 	self.actions[action][frame] = frame;
-	C_ActionBar.EnableActionRangeCheck(action, true);
+	self.enableActionRangeCheckCB(action, true);
 end
 
-function ActionBarButtonRangeCheckFrameMixin:UnregisterFrame(action, frame)
+function ActionBarButtonRangeCheckBaseMixin:UnregisterFrame(action, frame)
 	if not self.actions[action] or not self.actions[action][frame] then
 		return;
 	end
 	self.actions[action][frame] = nil;
-	C_ActionBar.EnableActionRangeCheck(action, false);
+	self.enableActionRangeCheckCB(action, false);
+end
+
+-- These check are the regular spell range checks that occur for action bars based on spell data
+-- based on a specific target
+ActionBarButtonRangeCheckFrameMixin = CreateFromMixins(ActionBarButtonRangeCheckBaseMixin);
+
+function ActionBarButtonRangeCheckFrameMixin:OnLoad()
+	self:RegisterEvent("ACTION_RANGE_CHECK_UPDATE");
+	self.enableActionRangeCheckCB = C_ActionBar.EnableActionRangeCheck;
+
+	ActionBarButtonRangeCheckBaseMixin.OnLoad(self);
+end
+
+-- These checks do an iteration of entities in the area of the player if the required gamerule is
+-- on. This is based on range visualization data setup by design to determine the area to check
+-- around the player for valid targets that could potentially be hit
+ActionBarButtonActionCombatRangeCheckFrameMixin = CreateFromMixins(ActionBarButtonRangeCheckBaseMixin);
+
+function ActionBarButtonActionCombatRangeCheckFrameMixin:OnLoad()
+	self:RegisterEvent("ACTION_COMBAT_ACTION_RANGE_CHECK_UPDATE");
+	self.enableActionRangeCheckCB = C_ActionBar.EnableActionCombatActionRangeCheck;
+
+	ActionBarButtonRangeCheckBaseMixin.OnLoad(self);
 end
 
 ActionBarButtonUsableWatcherFrameMixin = {};
@@ -540,6 +573,8 @@ function ActionBarActionButtonMixin:UpdateAction(force)
 		C_ActionBar.RegisterActionUIButton(self, action, self.cooldown);
 
 		local isAssistedCombatRotation = self:UpdateAssistedCombatRotationFrame();
+		self:UpdateCastingAnimation();
+		self:ClearInterruptDisplay();
 
 		self:Update();
 
@@ -670,28 +705,62 @@ function ActionBarActionButtonMixin:UpdateSpellHighlightMark()
 	end
 end
 
+function ActionBarActionButtonMixin:UpdateCastingAnimation()
+	local type, id = GetActionInfo(self.action);
+
+	if (self:HasAction() and type == "spell" and id) then
+		local channeledSpellID, isEmpowered = select(8, UnitChannelInfo("player"));
+		local castingSpellID = select(9, UnitCastingInfo("player"));
+
+		-- Depending on the casting animation type, display the animation at the current progress that has been casted/channeled.
+		if (channeledSpellID == id) then
+			if (isEmpowered) then
+				self:PlaySpellCastAnim(ActionButtonCastType.Empowered, true);
+			else
+				self:PlaySpellCastAnim(ActionButtonCastType.Channel, true);
+			end
+			return;
+		elseif (castingSpellID == id) then
+			self:PlaySpellCastAnim(ActionButtonCastType.Cast, true);
+			return;
+		end
+	end
+
+	--[[
+		The action in this slot doesn't have the action being casted/channeled, so
+		stop the animation in case it was playing before the update occured.
+	]]
+	for _, castTypeVal in pairs(ActionButtonCastType) do
+		self:StopSpellCastAnim(true, castTypeVal);
+	end
+end
+
 function ActionBarActionButtonMixin:UpdateState()
 	local action = self.action;
 	local isChecked = (C_ActionBar.IsCurrentAction(action) or C_ActionBar.IsAutoRepeatAction(action)) and not C_ActionBar.IsAutoCastPetAction(action);
 	self:SetChecked(isChecked);
 end
 
-function ActionBarActionButtonMixin:UpdateUsable(action, isUsable, notEnoughMana)
+function ActionBarActionButtonMixin:UpdateUsable(action, isUsable, notEnoughMana, isLevelLinkLocked)
 	local icon = self.icon;
 
 	assertsafe(action == nil or action == self.action);
 	if isUsable == nil or notEnoughMana == nil then
 		isUsable, notEnoughMana = C_ActionBar.IsUsableAction(self.action);
 	end
-	if ( isUsable ) then
-		icon:SetVertexColor(1.0, 1.0, 1.0);
-	elseif ( notEnoughMana ) then
-		icon:SetVertexColor(0.5, 0.5, 1.0);
-	else
-		icon:SetVertexColor(0.4, 0.4, 0.4);
+	if ( not self.actionCombatIndicationEnabled ) then
+		if ( isUsable ) then
+			icon:SetVertexColor(1.0, 1.0, 1.0);
+		elseif ( notEnoughMana ) then
+			icon:SetVertexColor(0.5, 0.5, 1.0);
+		else
+			icon:SetVertexColor(0.4, 0.4, 0.4);
+		end
 	end
 
-	local isLevelLinkLocked = C_LevelLink and C_LevelLink.IsActionLocked(self.action);
+	if isLevelLinkLocked == nil then
+		isLevelLinkLocked = C_LevelLink and C_LevelLink.IsActionLocked(self.action);
+	end
 	if isLevelLinkLocked then
 		icon:SetDesaturated(true);
 	end
@@ -733,70 +802,18 @@ function ActionBarActionButtonMixin:ClearProfessionQuality()
 	end
 end
 
-function ActionBarActionButtonMixin:GetOrCreateTypeOverlay(atlas)
+function ActionBarActionButtonMixin:GetOrCreateTypeOverlay()
 	if not self.TypeIconOverlayFrame then
-		self.TypeIconOverlayFrame = self:CreateTextureOverlayFrame();
-		self.TypeIconOverlayFrame:SetPoint("CENTER", self, "BOTTOM", 0, 3);
-		self.TypeIconOverlayFrame:SetFrameLevel(self:GetFrameLevel() + 100);
-		self.TypeIconOverlayFrame.Texture:SetSize(21, 24);
+		self.TypeIconOverlayFrame = CreateFrame("Frame", nil, self, "SpellTypeIconOverlayTemplate");
+		self.TypeIconOverlayFrame:Attach(self);
 	end
 
-	self.TypeIconOverlayFrame.Texture:SetAtlas(atlas, TextureKitConstants.IgnoreAtlasSize);
 	return self.TypeIconOverlayFrame;
 end
 
 function ActionBarActionButtonMixin:UpdateTypeOverlay()
-	if self.TypeIconOverlayFrame then
-		self.TypeIconOverlayFrame:Hide();
-	end
-
-	local strategy = GameRulesUtil.GetActionButtonTypeOverlayStrategy();
-	if strategy == GameRulesUtil.ActionButtonTypeOverlayStrategy.None then
-		return;
-	end
-
-	if strategy == GameRulesUtil.ActionButtonTypeOverlayStrategy.HighlightMana then
-		local typeOverlayFrameAtlas = "plunderstorm-icon-utility";
-
-		local actionType, actionID = GetActionInfo(self.action);
-		if (actionType == "spell") and actionID then
-			local costTable = C_Spell.GetSpellPowerCost(actionID);
-			if costTable then
-				for _i, costInfo in pairs(costTable) do
-					if costInfo.type == Enum.PowerType.Mana then
-						typeOverlayFrameAtlas = "plunderstorm-icon-offensive";
-						break;
-					end
-				end
-			end
-		end
-
-		local typeIconOverlayFrame = self:GetOrCreateTypeOverlay(typeOverlayFrameAtlas);
-		typeIconOverlayFrame:Show();
-	elseif strategy == GameRulesUtil.ActionButtonTypeOverlayStrategy.ManaAndEnergy then
-		local typeOverlayFrameAtlas = nil;
-
-		local actionType, actionID = GetActionInfo(self.action);
-		if (actionType == "spell") and actionID then
-			local costTable = C_Spell.GetSpellPowerCost(actionID);
-			if costTable then
-				for _i, costInfo in pairs(costTable) do
-					-- Mana is high priority if a spell costs both.
-					if costInfo.type == Enum.PowerType.Mana then
-						typeOverlayFrameAtlas = "plunderstorm-icon-offensive";
-						break;
-					elseif costInfo.type == Enum.PowerType.Energy then
-						typeOverlayFrameAtlas = "plunderstorm-icon-utility";
-					end
-				end
-			end
-		end
-
-		if typeOverlayFrameAtlas then
-			local typeIconOverlayFrame = self:GetOrCreateTypeOverlay(typeOverlayFrameAtlas);
-			typeIconOverlayFrame:Show();
-		end
-	end
+	local overlay = self:GetOrCreateTypeOverlay();
+	overlay:Update(self);
 end
 
 function ActionBarActionButtonMixin:ClearTypeOverlay()
@@ -920,11 +937,21 @@ end
 
 function ActionBarActionButtonMixin:RegisterActionBarButtonCheckFrames(action)
 	ActionBarButtonRangeCheckFrame:RegisterFrame(action, self);
+
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.ActionCombatSpellHitIndicationEnabled) then
+		ActionBarButtonActionCombatRangeCheckFrame:RegisterFrame(action, self);
+	end
+
 	ActionBarButtonUsableWatcherFrame:RegisterFrame(action, self);
 end
 
 function ActionBarActionButtonMixin:UnregisterActionBarButtonCheckFrames(action)
 	ActionBarButtonRangeCheckFrame:UnregisterFrame(action, self);
+
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.ActionCombatSpellHitIndicationEnabled) then
+		ActionBarButtonActionCombatRangeCheckFrame:UnregisterFrame(action, self);
+	end
+
 	ActionBarButtonUsableWatcherFrame:UnregisterFrame(action, self);
 end
 
@@ -1027,6 +1054,9 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 	elseif ( event == "ACTION_RANGE_CHECK_UPDATE" ) then
 		local inRange, checksRange = select(2, ...);
 		ActionButton_UpdateRangeIndicator(self, checksRange, inRange);
+	elseif ( event == "ACTION_COMBAT_ACTION_RANGE_CHECK_UPDATE" ) then
+		local inRange, checksRange = select(2, ...);
+		self:UpdateActionCombatRangeIndication(checksRange, inRange);
 	elseif (event == "UNIT_SPELLCAST_INTERRUPTED") then
 		self:PlaySpellInterruptedAnim();
 	elseif (event == "UNIT_SPELLCAST_START") then
@@ -1139,6 +1169,9 @@ function ActionBarActionButtonMixin:OnShow()
 		self:Update();
 		self:RegisterActionBarButtonCheckFrames(self.action);
 	end
+	if self.InterruptDisplay then
+		self.InterruptDisplay:Hide(); -- Cancel out any events that may trigger a delayed interrupt display show call when this button was hidden.
+	end
 end
 
 function ActionBarActionButtonMixin:OnHide()
@@ -1172,7 +1205,7 @@ function ActionBarActionButtonMixin:ClearInterruptDisplay()
 	end
 end
 
-function ActionBarActionButtonMixin:PlaySpellCastAnim(actionButtonCastType)
+function ActionBarActionButtonMixin:PlaySpellCastAnim(actionButtonCastType, progressToCurrentElapsed)
 	if (not self:SpellFXEnabled()) then
 		return;
 	end
@@ -1181,7 +1214,7 @@ function ActionBarActionButtonMixin:PlaySpellCastAnim(actionButtonCastType)
 	self.hideCooldownFrame = true;
 	self:ClearInterruptDisplay();
 	self:ClearReticle();
-	self.SpellCastAnimFrame:Setup(actionButtonCastType);
+	self.SpellCastAnimFrame:Setup(actionButtonCastType, progressToCurrentElapsed);
 	self.actionButtonCastType = actionButtonCastType;
 end
 
@@ -1260,8 +1293,41 @@ function ActionButton_UpdateRangeIndicator(self, checksRange, inRange)
 	end
 end
 
+function ActionBarActionButtonMixin:UpdateActionCombatRangeIndication(checksRange, inRange)
+	if checksRange and not inRange then
+		self.icon:SetVertexColor(0.4, 0.4, 0.4);
+		self.actionCombatIndicationEnabled = true;
+	elseif self.actionCombatIndicationEnabled then
+		-- Only update if the indication was enabled
+		self.actionCombatIndicationEnabled = false;
+		self:UpdateUsable();
+	end
+end
+
 function ActionBarActionButtonMixin:GetPagedID()
     return self.action;
+end
+
+-- Returns true if the action cannot be used due to insufficient resources (mana/energy)
+-- or because all charges are depleted.
+local function IsActionLackingRequirements(action)
+	if not action then
+		return false;
+	end
+
+	-- Check charges first.
+	local chargeInfo = C_ActionBar.GetActionCharges(action);
+	if chargeInfo and chargeInfo.maxCharges > 0 and chargeInfo.currentCharges == 0 then
+		return true;
+	end
+
+	-- Check for insufficient power resources (mana/energy).
+	local isUsable, notEnoughMana = C_ActionBar.IsUsableAction(action);
+	if not isUsable and notEnoughMana then
+		return true;
+	end
+
+	return false;
 end
 
 function ActionBarActionButtonMixin:UpdateFlash()
@@ -1295,6 +1361,8 @@ function ActionBarActionButtonMixin:UpdateFlash()
 end
 
 function ActionBarActionButtonMixin:ClearFlash()
+	self:StopFlash();
+
 	if ( self.AutoCastOverlay ) then
 		self.AutoCastOverlay:ShowAutoCastEnabled(false);
 		self.AutoCastOverlay:Hide();
@@ -1332,6 +1400,33 @@ function ActionBarActionButtonMixin:SetButtonStateOverride(state)
 	self:SetButtonStateBase(state);
 end
 
+--[[
+	Calls the SecureActionButton_OnClick function for the button. Pulled out of
+	the ActionBarActionButtonMixin:OnClick function so that the gamepad action button
+	can override it separately from the OnClick function which both the MKB and gamepad
+	buttons use.
+]]
+function ActionBarActionButtonMixin:TriggerSecureClick(button, down)
+	local isKeyPress = false;
+	local isSecureAction = true;
+	SecureActionButton_OnClick(self, button, down, isKeyPress, isSecureAction);
+end
+
+function ActionBarActionButtonMixin:HandleInsufficientResourceFlash(down) 
+	if down and C_GameRules.IsGameRuleActive(Enum.GameRule.FlashActionButtonOnInsufficientResource) and self.action then
+		if IsActionLackingRequirements(self.action) then
+			if not self.InsufficientResourceFlash:IsShown() then
+				self.InsufficientResourceFlash:Show();
+				C_Timer.After(0.5, function() 
+					self.InsufficientResourceFlash:Hide();
+				end);
+			end
+
+			return;
+		end
+	end
+end
+
 function ActionBarActionButtonMixin:OnClick(button, down)
 	if ( KeybindFrames_InQuickKeybindMode() ) then
 		local cursorType = GetCursorInfo();
@@ -1360,9 +1455,8 @@ function ActionBarActionButtonMixin:OnClick(button, down)
 				return;
 			end
 
-			local isKeyPress = false;
-			local isSecureAction = true;
-			SecureActionButton_OnClick(self, button, down, isKeyPress, isSecureAction);
+			self:HandleInsufficientResourceFlash(down);
+			self:TriggerSecureClick(button, down);
 		end
 	end
 end
@@ -1380,7 +1474,14 @@ function ActionBarActionButtonMixin:OnDragStart()
 end
 
 function ActionBarActionButtonMixin:OnReceiveDrag()
-	PlaceAction(self.action);
+	local type, _, _, spellID = GetCursorInfo();
+	local restrictedSlot = false;
+	if type == "spell" and not C_ActionBar.SpellMatchesActionSpellTypeRestriction(spellID, self.action) then
+		-- nothing for now
+	else
+		PlaceAction(self.action);
+	end
+
 	self:UpdateState();
 	self:UpdateFlash();
 end
@@ -1396,6 +1497,8 @@ function ActionBarActionButtonMixin:OnEnter()
 	if self.bindingAction then
 		ActionButtonBindingHighlightCallbackRegistry:TriggerEvent(self.bindingAction, true);
 	end
+
+	C_ActionBar.EnterActionButton(self.action);
 end
 
 function ActionBarActionButtonMixin:OnLeave()
@@ -1405,6 +1508,8 @@ function ActionBarActionButtonMixin:OnLeave()
 	if self.bindingAction then
 		ActionButtonBindingHighlightCallbackRegistry:TriggerEvent(self.bindingAction, false);
 	end
+
+	C_ActionBar.LeaveActionButton(self.action);
 end
 
 -- Override for BaseActionButtonInfoMixin.
@@ -1639,6 +1744,10 @@ function BaseActionButtonMixin:UpdateFlyout(isButtonDownOverride)
 		self:SetPopupDirection(popupDirection);
 	end
 
+	self:UpdateFlyoutPopup(actionType);
+end
+
+function BaseActionButtonMixin:UpdateFlyoutPopup(actionType)
 	if actionType == "flyout" and SpellFlyout then
 		self:SetPopup(SpellFlyout);
 	else
@@ -1731,7 +1840,7 @@ end
 
 ActionButtonCastingAnimFrameMixin = { };
 
-function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
+function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType, progressToCurrentElapsed)
 	local startTime, endTime, totalTimeInSeconds;
 
 	local isChannelCast = actionButtonCastType == ActionButtonCastType.Channel;
@@ -1745,24 +1854,16 @@ function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
 
 	self.EndBurst:Hide();
 
-	local fillFrame = self.Fill;
-	fillFrame.CastFill:ClearAllPoints();
+	self.Fill.CastFill:ClearAllPoints();
 	local castingAnim = self.Fill.CastingAnim;
 	local finishCastAnim = self.EndBurst.FinishCastAnim;
 
+	local castingAnimCurrentElapsed = castingAnim:GetElapsed();
+
 	castingAnim:Stop();
 	finishCastAnim:Stop();
-	if (isChannelCast) then
-		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Channel-Fill", true);
-		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Channel-InnerGlow", true);
-		fillFrame.CastFill:SetPoint("CENTER", 45, 0);
-		fillFrame.CastingAnim.CastFillTranslation:SetOffset(-43, 0);
-	else
-		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Cast-Fill", true);
-		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Casting-InnerGlow", true);
-		fillFrame.CastFill:SetPoint("CENTER", -45, 0);
-		fillFrame.CastingAnim.CastFillTranslation:SetOffset(43, 0);
-	end
+	self:SetupAnimAtlases(isChannelCast);
+
 
 	if not isEmpoweredCast and (not startTime or not endTime)  then
 
@@ -1772,7 +1873,13 @@ function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType)
 	end
 
 	castingAnim.CastFillTranslation:SetDuration(totalTimeInSeconds);
-	castingAnim:Play();
+
+	if (progressToCurrentElapsed) then
+		castingAnim:Play(false, castingAnimCurrentElapsed);
+	else
+		castingAnim:Play();
+	end
+
 	self:Show();
 end
 
@@ -1786,6 +1893,22 @@ end
 function ActionButtonCastingAnimFrameMixin:FinishAnimAndPlayBurst()
 	self.Fill.CastingAnim:Stop();
 	self.Fill.CastingAnim:OnFinished();
+end
+
+function ActionButtonCastingAnimFrameMixin:SetupAnimAtlases(isChannelCast)
+	local fillFrame = self.Fill;
+
+	if (isChannelCast) then
+		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Channel-Fill", true);
+		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Channel-InnerGlow", true);
+		fillFrame.CastFill:SetPoint("CENTER", 45, 0);
+		fillFrame.CastingAnim.CastFillTranslation:SetOffset(-43, 0);
+	else
+		fillFrame.CastFill:SetAtlas("UI-HUD-ActionBar-Cast-Fill", true);
+		fillFrame.InnerGlowTexture:SetAtlas("UI-HUD-ActionBar-Casting-InnerGlow", true);
+		fillFrame.CastFill:SetPoint("CENTER", -45, 0);
+		fillFrame.CastingAnim.CastFillTranslation:SetOffset(43, 0);
+	end
 end
 
 ActionButtonCastingAnimationFillMixin = { };

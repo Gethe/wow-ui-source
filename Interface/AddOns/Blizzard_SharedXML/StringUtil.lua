@@ -18,12 +18,6 @@ function StringSplitIntoTable(sep, string)
 	return { strsplit(sep, string) };
 end
 
-function StringContains(string, substring)
-	local index = 1;
-	local plain = true;
-	return string.find(string, substring, index, plain) ~= nil;
-end
-
 StringUtil = {};
 
 function StringUtil.RemoveTrailingSpaces(str)

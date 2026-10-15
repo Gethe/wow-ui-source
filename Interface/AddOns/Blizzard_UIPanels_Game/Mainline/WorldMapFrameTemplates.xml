@@ -199,6 +199,9 @@
 
 	<Frame name="WorldMapActionButtonTemplate" frameStrata="HIGH" secureMixin="WorldMapActionButtonMixin" virtual="true">
 		<Size x="101" y="86" />
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="ActionFrameTexture" atlas="worldquest-followerabilityframe" useAtlasSize="true">

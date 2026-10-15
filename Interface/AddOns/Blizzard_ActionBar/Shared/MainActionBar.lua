@@ -5,7 +5,8 @@ MainActionBarMixin = {};
 function MainActionBarMixin:OnLoad()
 	self:RegisterEvent("ACTIONBAR_PAGE_CHANGED");
 	self:RegisterEvent("NEUTRAL_FACTION_SELECT_RESULT");
-
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+	
 	self.state = "player";
 	MainActionBar.ActionBarPageNumber.Text:SetText(C_ActionBar.GetActionBarPage());
 end
@@ -27,11 +28,37 @@ function MainActionBarMixin:GetYOffset()
 	return self.yOffset;
 end
 
+local function SetBarsShown(shown, ...)
+	for i = 1, select("#", ...) do
+		local bar = select(i, ...);
+		if (bar) then
+			bar:SetShown(shown);
+		end
+	end
+end
+
+function MainActionBar_InitializeGamepad()
+	SetBarsShown(false, MainActionBar, StanceBar, MicroMenu, BagsBar);
+end
+
+function MainActionBar_InitializeMKB()
+	SetBarsShown(true, MainActionBar, MicroMenu, BagsBar);
+end
+
+function MainActionBar_UnInitializeMKB()
+	SetBarsShown(false, MainActionBar, StanceBar, MicroMenu, BagsBar);
+end
+
 function MainActionBarMixin:OnEvent(event, ...)
 	if ( event == "ACTIONBAR_PAGE_CHANGED" ) then
 		MainActionBar.ActionBarPageNumber.Text:SetText(C_ActionBar.GetActionBarPage());
 	elseif ( event == "NEUTRAL_FACTION_SELECT_RESULT" ) then
 		self:UpdateEndCaps(self.hideBarArt);
+	elseif ( event == "PLAYER_ENTERING_WORLD" ) then
+		InputUtil.RegisterForInterfaceTransitions(MainActionBar);
+		InputUtil.RegisterGamepadInit(MainActionBar, MainActionBar_InitializeGamepad);
+		InputUtil.RegisterMKBInit(MainActionBar, MainActionBar_InitializeMKB);
+		InputUtil.RegisterMKBUninit(MainActionBar, MainActionBar_UnInitializeMKB);
 	end
 end
 
@@ -70,7 +97,8 @@ function MainActionBarMixin:SetQuickKeybindModeEffectsShown(showEffects)
 end
 
 function MainActionBarMixin:UpdateEndCaps(forceHide)
-	self.EndCaps:SetShown(not forceHide);
+	local show = (not forceHide) and (not InputUtil.IsGamepadUIEnabled());
+	self.EndCaps:SetShown(show);
 end
 
 function MainActionBarMixin:EditModeSetScale(newScale)
@@ -153,7 +181,6 @@ end
 function MainActionBarDownButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
-
 -- For arrow buttons that need to swap their textures between two styles.
 -- Currently used by Classic.
 MainActionBarSwappableButtonMixin = {};

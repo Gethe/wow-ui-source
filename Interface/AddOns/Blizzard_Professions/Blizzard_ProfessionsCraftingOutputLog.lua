@@ -340,12 +340,15 @@ function ProfessionsCraftingOutputLogMixin:OnEvent(event, ...)
 		local resultData = ...;
 		resultData.reagent = Professions.CreateItemReagent(resultData.itemID);
 		self:ProcessResultData(resultData);
-
 	elseif event == "TRADE_SKILL_CURRENCY_REWARD_RESULT" then
 		local resultData = ...;
 		resultData.reagent = Professions.CreateCurrencyReagent(resultData.currencyID);
 		self:ProcessResultData(resultData);
 	end
+end
+
+function ProfessionsCraftingOutputLogMixin:ShouldAutoOpen()
+	return true;
 end
 
 function ProfessionsCraftingOutputLogMixin:FinalizeResultData()
@@ -378,7 +381,9 @@ function ProfessionsCraftingOutputLogMixin:FinalizeResultData()
 	if self:IsShown() then
 		self:Resize();
 	else
-		self:Open();
+		if self:ShouldAutoOpen() then
+			self:Open();
+		end
 	end
 
 	self.ScrollBox:ScrollToEnd();

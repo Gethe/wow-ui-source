@@ -48,6 +48,7 @@ local QuestHubInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

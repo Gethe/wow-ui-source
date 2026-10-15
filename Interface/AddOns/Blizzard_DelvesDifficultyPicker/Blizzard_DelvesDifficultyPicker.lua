@@ -2,6 +2,7 @@
 local DELVES_DIFFICULTY_PICKER_EVENTS = {
 	"WALK_IN_DATA_UPDATE",
 	"ACTIVE_DELVE_DATA_UPDATE",
+	"TALE_RUN_CLEAR_RESULT",
 	"PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED",
 	"PARTY_LEADER_CHANGED",
 	"GROUP_LEFT",
@@ -37,6 +38,13 @@ local DelvesDisplayMode = EnumUtil.MakeEnum(
 	"Default",
 	"Traits"
 );
+
+StaticPopupDialogs["CONFIRM_CLEAR_INSTANCE_RUN"] = {
+	text = DELVES_DIFFICULTY_PICKER_CONFIRM_START_NEW,
+	button1 = OKAY,
+	button2 = CANCEL,
+	OnAccept = function(dialog, data) C_DelvesUI.RequestClearActiveTale(); end,
+};
 
 local function GetPlayerKeyState()
 	local normalKeyInfo = C_CurrencyInfo.GetCurrencyInfo(Constants.DelvesConsts.DELVES_NORMAL_KEY_CURRENCY_ID);
@@ -81,6 +89,22 @@ local LAIRS_TIERED_ENTRANCE_TYPE_DATA = {
 	dropdownDisabledTooltip = LAIRS_GROUP_DIFFICULTY_DISABLED_TOOLTIP,
 };
 
+local TALE_TIERED_ENTRANCE_TYPE_DATA = {
+	entranceType = Enum.TieredEntranceType.Tale,
+	menuTag = "MENU_TALE_DIFFICULTY",-- not a player facing string
+	lockedTooltipText = function(tierInfo)
+			return tierInfo.lockedReason;
+		end,
+	unlockedTooltipText = function(tierInfo)
+			return tierInfo.tierDescription;
+		end,
+	tierDescription = function(tierInfo)
+		return tierInfo.tierDescription;
+	end,
+	partyIneligibleTooltip = TALE_PARTY_MEMBER_INELIGIBLE_FOR_TIER_TOOLTIP,
+	dropdownDisabledTooltip = TALE_GROUP_DIFFICULTY_DISABLED_TOOLTIP,
+};
+
 --[[ Difficulty Picker ]]
 DelvesDifficultyPickerFrameMixin = {};
 
@@ -103,11 +127,15 @@ function DelvesDifficultyPickerFrameMixin:OnLoad()
 	self.tieredEntranceStaticData = {};
 	self.tieredEntranceStaticData[Enum.TieredEntranceType.Delve] = DELVES_TIERED_ENTRANCE_TYPE_DATA;
 	self.tieredEntranceStaticData[Enum.TieredEntranceType.Lairs] = LAIRS_TIERED_ENTRANCE_TYPE_DATA;
+	self.tieredEntranceStaticData[Enum.TieredEntranceType.Tale] = TALE_TIERED_ENTRANCE_TYPE_DATA;
 end
 
 function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
 	if event == "ACTIVE_DELVE_DATA_UPDATE" or event == "WALK_IN_DATA_UPDATE" then
 		self:CheckForActiveDelveAndUpdate();
+	elseif event == "TALE_RUN_CLEAR_RESULT" then
+		local success = ...;
+		self:OnRunClearResult(success);
 	elseif event == "PARTY_ELIGIBILITY_FOR_DELVE_TIERS_CHANGED" then
 		local playerName, maxEligibleLevel = ...;
 		self:OnPartyEligibilityChanged(playerName, maxEligibleLevel);
@@ -122,6 +150,9 @@ function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
 		self:UpdatePortalButtonState();
 		if self.displayMode == DelvesDisplayMode.Traits then
 			self.ChallengesContainerFrame:CheckPartyLeader();
+		end
+		if self.entranceType == Enum.TieredEntranceType.Tale then
+			self.StartNewRunButton:CheckPartyLeader();
 		end
 	end
 end
@@ -173,11 +204,21 @@ function DelvesDifficultyPickerFrameMixin:CheckAndSetDisplayMode()
 		displayMode = DelvesDisplayMode.Traits;
 	end
 
-	if self.displayMode == displayMode then
-		return;
-	end
-	self.displayMode = displayMode;
+	if self.displayMode ~= displayMode or self.prevTraitTreeID ~= traitTreeID then
+		self.displayMode = displayMode;
 
+		self:CheckAndSetDisplayModeInternal(displayMode, traitTreeID);
+
+		self.prevTraitTreeID = traitTreeID;
+	end
+
+	self:UpdateChallengesVisibility();
+
+	-- this is going to be affected by displayMode
+	self:UpdatePortalButtonState();
+end
+
+function DelvesDifficultyPickerFrameMixin:CheckAndSetDisplayModeInternal(displayMode, traitTreeID)
 	local enterButton = self.EnterDelveButton;
 	local modifiersContainer = self.DelveModifiersWidgetContainer;
 	local rewardsContainer = self.DelveRewardsContainerFrame;
@@ -201,7 +242,6 @@ function DelvesDifficultyPickerFrameMixin:CheckAndSetDisplayMode()
 		rewardsContainer.RewardText:ClearAllPoints();
 		rewardsContainer.RewardText:SetPoint("TOP", -5, 0);
 
-		challengesContainer:Show();
 		local systemID = C_Traits.GetSystemIDByTreeID(traitTreeID);
 		challengesContainer:SetConfigIDBySystemID(systemID);
 
@@ -232,13 +272,9 @@ function DelvesDifficultyPickerFrameMixin:CheckAndSetDisplayMode()
 		rewardsContainer.RewardText:ClearAllPoints();
 		rewardsContainer.RewardText:SetPoint("TOPLEFT", 15, 0);
 
-		challengesContainer:Hide();
 		self:UnregisterEvent("TRAIT_CONFIG_UPDATED");
 		challengesContainer:UnregisterCallback(TalentFrameBaseMixin.Event.CommitStatusChanged, self);
 	end
-
-	-- this is going to be affected by displayMode
-	self:UpdatePortalButtonState();
 end
 
 function DelvesDifficultyPickerFrameMixin:OnChallengesCommitStatusChanged()
@@ -255,6 +291,8 @@ end
 function DelveChallengesContainerFrameMixin:OnShow()
 	TalentFrameBaseMixin.OnShow(self);
 	self:CheckPartyLeader();
+	self.entranceType = C_DelvesUI.GetTieredEntranceType();
+	self.Title:SetText(self.entranceType == Enum.TieredEntranceType.Tale and TIERED_ENTRANCE_TALE or TIERED_ENTRANCE_CHALLENGES);
 end
 
 function DelveChallengesContainerFrameMixin:CheckPartyLeader()
@@ -268,7 +306,28 @@ function DelveChallengesContainerFrameMixin:CheckPartyLeader()
 	self.BlockingFrame:SetShown(doShow);
 end
 
-function DelveChallengesContainerFrameMixin:GetTemplateForTalentType(_nodeInfo, _talentType, _useLarge)
+DelvesDifficultyPickerStartNewRunButtonMixin = {};
+
+function DelvesDifficultyPickerStartNewRunButtonMixin:OnShow()
+	self:CheckPartyLeader();
+end
+
+function DelvesDifficultyPickerStartNewRunButtonMixin:CheckPartyLeader()
+	-- show blocking frame if in a group and not leader, since only the leader can clear the shared run
+	local doShow = false;
+	if UnitInParty("player") then
+		if not UnitIsGroupLeader("player") then
+			doShow = true;
+		end
+	end
+	self.BlockingFrame:SetShown(doShow);
+end
+
+function DelvesDifficultyPickerStartNewRunButtonMixin:OnClick()
+	StaticPopup_Show("CONFIRM_CLEAR_INSTANCE_RUN");
+end
+
+function DelveChallengesContainerFrameMixin.GetTemplateForTalentType(_nodeInfo, _talentType, _useLarge)
 	return "TalentButtonDelveChallengeCircleTemplate";
 end
 
@@ -371,6 +430,29 @@ function DelvesDifficultyPickerFrameMixin:UpdateDropdownState(enabled)
 	end
 end
 
+function DelvesDifficultyPickerFrameMixin:UpdateTaleChallengesVisibility()
+	local hasActiveRun = C_DelvesUI.HasActiveTale();
+	self.ChallengesContainerFrame:SetShown(not hasActiveRun);
+	self.StartNewRunButton:SetShown(hasActiveRun);
+end
+
+function DelvesDifficultyPickerFrameMixin:UpdateChallengesVisibility()
+	if self.entranceType == Enum.TieredEntranceType.Tale then
+		self:UpdateTaleChallengesVisibility();
+		return;
+	end
+
+	self.ChallengesContainerFrame:SetShown(self.displayMode == DelvesDisplayMode.Traits);
+	self.StartNewRunButton:Hide();
+end
+
+function DelvesDifficultyPickerFrameMixin:OnRunClearResult(success)
+	if not success then
+		return;
+	end
+	self:CheckForActiveDelveAndUpdate();
+end
+
 function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
 	if C_DelvesUI.HasActiveDelve() then
 		local activeDelveTierInfo = C_DelvesUI.GetActiveDelveTier();
@@ -386,10 +468,10 @@ function DelvesDifficultyPickerFrameMixin:CheckForActiveDelveAndUpdate()
 		self.DelveRewardsContainerFrame:SetRewards();
 		self.Dropdown:Update();
 		self:UpdateDropdownState(false);
-		self:UpdatePortalButtonState();
 	else
 		self:UpdateDropdownState(true);
 	end
+	self:UpdatePortalButtonState();
 	self:CheckAndSetDisplayMode();
 
 	-- update the DividingLine here, has to be done after widgets are updated and displayMode is set
@@ -518,10 +600,8 @@ function DelvesDifficultyPickerFrameMixin:CanEnterDelve()
 			return false;
 		end
 
-		if UnitInParty("player") then
-			if not UnitIsGroupLeader("player") then
-				return false;
-			end
+		if UnitInParty("player") and not UnitIsGroupLeader("player") then
+			return false;
 		end
 	end
 
@@ -559,6 +639,11 @@ function DelvesDifficultyPickerFrameMixin:UpdatePortalButtonState()
 	local canEnter, failureReason = self:CanEnterDelve();
 	self.EnterDelveButton:SetEnabled(canEnter);
 	self.EntranceErrorText:SetText(failureReason);
+	if self.entranceType == Enum.TieredEntranceType.Tale then
+		self.EnterDelveButton:SetText(C_DelvesUI.HasActiveTale() and DELVES_DIFFICULTY_PICKER_CONTINUE or DELVES_DIFFICULTY_PICKER_ENTER);
+	else
+		self.EnterDelveButton:SetText(DELVES_DIFFICULTY_PICKER_ENTER);
+	end
 end
 
 function DelvesDifficultyPickerFrameMixin:GetTierInfos()
@@ -598,8 +683,9 @@ function DelvesDifficultyPickerFrameMixin:SetInitialTier()
 	local lastSelectedTier = GetCVarTableValue(LAST_TIER_SELECTED_CVAR, pdeID, defaultTier);
 
 	if self.tierInfos then
-		DelvesDifficultyPickerFrame:SetSelectedTierInfo(self.tierInfos[1]);
-		DelvesDifficultyPickerFrame:SetPreviouslySelectedTierInfo(self.tierInfos[1]);
+		local firstTierInfo = self.tierInfos[1];
+		DelvesDifficultyPickerFrame:SetSelectedTierInfo(firstTierInfo);
+		DelvesDifficultyPickerFrame:SetPreviouslySelectedTierInfo(firstTierInfo);
 
 		-- If last selected tier is 0, then the player is opening Delves for the first time. We'll force them to pick a tier.
 		-- Otherwise, try to use their last selected tier. Failing that, use the highest unlocked tier
@@ -700,6 +786,7 @@ end
 
 function DelvesDifficultyPickerFrameMixin:TryShow(textureKit)
 	self.textureKit = textureKit;
+	self.entranceType = C_DelvesUI.GetTieredEntranceType();
 	self.ScenarioLabel:SetText(C_DelvesUI.GetDelveEntranceTitleString() or DELVE_LABEL);
 	self.Title:SetText(C_DelvesUI.GetDelveEntranceHeaderString());
 	self.Description:SetText(C_DelvesUI.GetDelveEntranceDescriptionString());
@@ -772,17 +859,45 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnEnter()
 		end
 	else
 		local partyTierEligibility = self:GetParent():GetPartyTierEligibility();
-		if partyTierEligibility ~= nil then
+		local entranceTypeData = self:GetParent():GetTieredEntranceTypeData();
+		local tieredEntranceProgress = {};
+		if C_DelvesUI.HasActiveDelve() then
+			tieredEntranceProgress = C_DelvesUI.GetActiveTieredEntranceProgress();
+		end
+
+		if partyTierEligibility ~= nil or #tieredEntranceProgress > 0 then
 			GameTooltip:SetOwner(self, "ANCHOR_TOPRIGHT", 50);
 			local ineligibleParty = false;
-			for playerName,maxEligibleLevel in pairs(partyTierEligibility) do
-				if maxEligibleLevel < selectedTierInfo.tier then
-					GameTooltip_AddErrorLine(GameTooltip, DELVES_PARTY_MEMBER_INELIGIBLE_FOR_TIER_TOOLTIP:format(playerName), false);
-					ineligibleParty = true;
+			if partyTierEligibility ~= nil then
+				for playerName, maxEligibleLevel in pairs(partyTierEligibility) do
+					if maxEligibleLevel < selectedTierInfo.tier then
+						GameTooltip_AddErrorLine(GameTooltip, entranceTypeData.partyIneligibleTooltip:format(playerName), false);
+						ineligibleParty = true;
+					end
 				end
 			end
 
-			if ineligibleParty then
+			if #tieredEntranceProgress > 0 then
+				local completedCount = 0;
+				for _, progressEntry in ipairs(tieredEntranceProgress) do
+					if progressEntry.completed then
+						completedCount = completedCount + 1;
+					end
+				end
+
+				if DelvesDifficultyPickerFrame.entranceType == Enum.TieredEntranceType.Tale then
+					GameTooltip_SetTitle(GameTooltip, WOWHACK_TIERED_ENTRANCE_PROGRESS_TOOLTIP_HEADER, GREEN_FONT_COLOR);
+				end
+
+				for _, progressEntry in ipairs(tieredEntranceProgress) do
+					-- use an empty atlas if not completed to preserve string indentation
+					local checkmarkAtlas = progressEntry.completed and "common-icon-checkmark" or "";
+					local checkmarkMarkup = CreateAtlasMarkup(checkmarkAtlas, 16, 16, 0, -1);
+					GameTooltip_AddColoredLine(GameTooltip, checkmarkMarkup .. " " .. progressEntry.description, progressEntry.completed and HIGHLIGHT_FONT_COLOR or GRAY_FONT_COLOR);
+				end
+			end
+
+			if ineligibleParty or #tieredEntranceProgress > 0 then
 				GameTooltip:Show();
 			end
 		end
@@ -821,6 +936,17 @@ function DelveRewardsContainerFrameMixin:OnLoad()
 		SetItemButtonCount(frame, nil);
 		frame.Name:SetText("");
 		frame.Name:SetTextColor(HIGHLIGHT_FONT_COLOR:GetRGB());
+		if frame.itemCancelFunc then
+			frame.itemCancelFunc();
+		end
+		frame.id = nil;
+		frame.rewardType = nil;
+		frame.quantity = nil;
+		frame.tooltipQuantity = nil;
+		frame.isCurrencyContainer = nil;
+		frame.context = nil;
+		frame.itemLink = nil;
+		frame.itemCancelFunc = nil;
 		frame:ClearAllPoints();
 		frame:Hide();
 	end
@@ -828,6 +954,11 @@ function DelveRewardsContainerFrameMixin:OnLoad()
 	self.rewardPool = CreateFramePool("FRAME", self, "DelveRewardItemButtonTemplate", RewardResetter);
 
 	local function InitializeReward(button, rewardInfo)
+		if button.itemCancelFunc then
+			button.itemCancelFunc();
+		end
+		button.itemCancelFunc = nil;
+		button.itemLink = nil;
 		SetItemButtonTexture(button, rewardInfo.texture);
 		SetItemButtonQuality(button, rewardInfo.quality);
 		button.Name:SetText(rewardInfo.name);
@@ -842,6 +973,13 @@ function DelveRewardsContainerFrameMixin:OnLoad()
 		end
 
 		button.id = rewardInfo.id;
+		button.rewardType = rewardInfo.rewardType;
+		button.quantity = rewardInfo.quantity;
+		button.tooltipQuantity = rewardInfo.tooltipQuantity;
+		if rewardInfo.tooltipQuantity then
+			button.quantity = rewardInfo.tooltipQuantity;
+		end
+		button.isCurrencyContainer = rewardInfo.isCurrencyContainer;
 		button.context = rewardInfo.context;
 		button:Show();
 	end
@@ -874,12 +1012,12 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 			continuableContainer:AddContinuable(item);
 		else
 			local isCurrencyContainer = C_CurrencyInfo.IsCurrencyContainer(reward.id, reward.quantity);
-			if IsCurrencyContainer then
-				local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, quantity);
-				table.insert(rewardInfo, {id = reward.id, texture = texture, quantity = quantity, quality = quality, name = name, isCurrencyContainer = true});
+			if isCurrencyContainer then
+				local name, texture, quantity, quality = CurrencyContainerUtil.GetCurrencyContainerInfo(reward.id, reward.quantity);
+				table.insert(rewardInfo, {id = reward.id, rewardType = reward.rewardType, texture = texture, quantity = quantity, tooltipQuantity = reward.quantity, quality = quality, name = name, isCurrencyContainer = true});
 			else
 				local currencyInfo = C_CurrencyInfo.GetCurrencyInfo(reward.id);
-				table.insert(rewardInfo, {id = reward.id, texture = currencyInfo.iconFileID, quantity = reward.quantity, quality = currencyInfo.quality, name = currencyInfo.name, isCurrencyContainer = false});
+				table.insert(rewardInfo, {id = reward.id, rewardType = reward.rewardType, texture = currencyInfo.iconFileID, quantity = reward.quantity, quality = currencyInfo.quality, name = currencyInfo.name, isCurrencyContainer = false});
 			end
 		end
 	end
@@ -889,7 +1027,7 @@ function DelveRewardsContainerFrameMixin:SetRewards()
 			if	reward.rewardType == Enum.TieredEntranceRewardType.Item then
 				local name, _, quality, _, _, _, _, _, _, itemIcon = C_Item.GetItemInfo(reward.id);
 				local contextQuality = reward.context and C_Item.GetDelvePreviewItemQuality(reward.id, reward.context) or nil;
-				table.insert(rewardInfo, {id = reward.id, quality = contextQuality or quality, quantity = reward.quantity, texture = itemIcon, name = name, context = reward.context});
+				table.insert(rewardInfo, {id = reward.id, rewardType = reward.rewardType, quality = contextQuality or quality, quantity = reward.quantity, texture = itemIcon, name = name, context = reward.context});
 			end
 		end
 
@@ -926,7 +1064,19 @@ function DelveRewardsButtonMixin:OnEnter()
 	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	if self.rewardType == Enum.TieredEntranceRewardType.Currency then
+		if self.isCurrencyContainer then
+			local currencyLink = C_CurrencyInfo.GetCurrencyLink(self.id, self.quantity);
+			GameTooltip:SetHyperlink(currencyLink);
+		else
+			GameTooltip:SetCurrencyByID(self.id);
+		end
+		GameTooltip:Show();
+		return;
+	end
+
 	local item = Item:CreateFromItemID(self.id);
+	self.itemLink = nil;
 	self.itemCancelFunc = item:ContinueWithCancelOnItemLoad(function()
 		if GameTooltip:GetOwner() == self then
 			if self.context then
@@ -941,6 +1091,10 @@ function DelveRewardsButtonMixin:OnEnter()
 end
 
 function DelveRewardsButtonMixin:OnUpdate()
+	if self.rewardType ~= Enum.TieredEntranceRewardType.Item then
+		return;
+	end
+
 	if TooltipUtil.ShouldDoItemComparison(GameTooltip) then
 		GameTooltip_ShowCompareItem(GameTooltip);
 	else
@@ -949,7 +1103,7 @@ function DelveRewardsButtonMixin:OnUpdate()
 end
 
 function DelveRewardsButtonMixin:OnMouseDown()
-	if not self.itemLink then
+	if self.rewardType ~= Enum.TieredEntranceRewardType.Item or not self.itemLink then
 		return;
 	end
 

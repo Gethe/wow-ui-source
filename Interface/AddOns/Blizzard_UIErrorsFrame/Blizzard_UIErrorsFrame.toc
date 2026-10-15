@@ -2,3 +2,4 @@
 ## Dep: Blizzard_SharedXML
 [Family]\UIErrorsFrame.lua
 [Family]\UIErrorsFrame.xml
+[Game]\UIErrorsFrameOverrides.lua [AllowLoadGameType camelot]

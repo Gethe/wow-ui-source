@@ -685,7 +685,7 @@ function ProgressThresholdMixin:ShowTooltip()
 				GameTooltip_AddNormalLine(GameTooltip, info.description);
 				GameTooltip_AddBlankLineToTooltip(GameTooltip);
 				if info.maxQuantity == 0 then
-					GameTooltip_AddColoredLine(GameTooltip, CURRENCY_TOTAL:format("", info.quantity), currencyColor);
+					GameTooltip_AddColoredLine(GameTooltip, ENDEAVOR_TOOLTIP_CURRENCY_TOTAL_NO_MAX:format(info.quantity), currencyColor);
 				else
 					GameTooltip_AddColoredLine(GameTooltip, ENDEAVOR_TOOLTIP_CURRENCY_TOTAL:format(info.quantity, info.maxQuantity), currencyColor);
 				end

@@ -13,7 +13,7 @@
 			<Frame parentKey="ControlsFrame" setAllPoints="true">
 				<Layers>
 					<Layer level="ARTWORK">
-						<FontString parentKey="TransferRealmLabel" inherits="GameFontNormalMed3" justifyH="LEFT" text="PCT_FLOW_DESTINATION_REALM_LABEL">
+						<FontString parentKey="TransferRealmLabel" mixin="TransferRealmLabelMixin" inherits="GameFontNormalMed3" justifyH="LEFT" text="PCT_FLOW_DESTINATION_REALM_LABEL">
 							<Size x="0" y="20"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" x="90" y="-102"/>
@@ -22,7 +22,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<EditBox parentKey="TransferRealmEditbox" mixin="TransferRealmEditboxMixin" inherits="CharacterServicesEditBoxWithAutoCompleteTemplate">
+					<EditBox parentKey="TransferRealmEditbox" mixin="TransferRealmEditboxMixin" inherits="CharacterServicesEditBoxWithAutoCompleteTemplate" hidden="true">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmLabel" relativePoint="BOTTOMLEFT" x="2" y="-2"/>
 						</Anchors>
@@ -33,6 +33,11 @@
 							<OnEnter method="OnEnter"/>
 						</Scripts>
 					</EditBox>
+					<Frame parentKey="TransferSuperDistrictPCTContainer" mixin="TransferSuperDistrictPCTContainerMixin" inherits="SuperDistrictSelectorPCTTemplate" hidden="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmLabel" relativePoint="TOPLEFT"/>
+						</Anchors>
+					</Frame>
 					<Frame parentKey="TransferAccountContainer" inherits="AccountSelectorTemplate">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.TransferRealmEditbox" relativePoint="BOTTOMLEFT" x="-2" y="-32"/>

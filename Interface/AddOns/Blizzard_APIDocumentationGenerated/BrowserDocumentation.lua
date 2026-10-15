@@ -74,6 +74,7 @@ local Browser =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

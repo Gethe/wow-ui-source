@@ -1,6 +1,6 @@
 REQUIRED_REST_HOURS = 5;
 
-function PlayerFrame_OnLoad(self)
+function PlayerFrame_OnLoadBase(self)
 	local healthBarContainer = PlayerFrame_GetHealthBarContainer();
 	local healthBar = PlayerFrame_GetHealthBar();
 	local manaBar = PlayerFrame_GetManaBar();
@@ -29,14 +29,14 @@ function PlayerFrame_OnLoad(self)
 	healthBarTexture:AddMaskTexture(healthBarContainer.HealthBarMask);
 	healthBarTexture:SetTexelSnappingBias(0);
 	healthBarTexture:SetSnapToPixelGrid(false);
-	
+
 	local healthLossTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.PlayerFrameHealthBarAnimatedLoss:GetStatusBarTexture();
 	healthLossTexture:AddMaskTexture(healthBarContainer.HealthBarMask);
 	healthLossTexture:SetTexelSnappingBias(0);
 	healthLossTexture:SetSnapToPixelGrid(false);
-	
+
 	tempMaxHealthLossBar:InitializeMaxHealthLossBar(healthBarContainer, healthBar, healthBarContainer.TempMaxHealthLossDivider);
-	
+
 	local tempMaxHPLossTexture = tempMaxHealthLossBar:GetStatusBarTexture();
 	tempMaxHPLossTexture:AddMaskTexture(healthBarContainer.HealthBarMask);
 	tempMaxHPLossTexture:SetTexelSnappingBias(0);
@@ -70,6 +70,7 @@ function PlayerFrame_OnLoad(self)
 	self:RegisterEvent("PVP_TIMER_UPDATE");
 	self:RegisterEvent("PLAYER_ROLES_ASSIGNED");
 	self:RegisterEvent("HONOR_LEVEL_UPDATE");
+	self:RegisterEvent("PLAYER_PVP_FLAG_CHANGED");
 	self:RegisterUnitEvent("UNIT_COMBAT", "player", "vehicle");
 	self:RegisterUnitEvent("UNIT_MAXPOWER", "player", "vehicle");
 
@@ -81,7 +82,8 @@ function PlayerFrame_OnLoad(self)
 	local function OpenContextMenu(frame, unit, button, isKeyPress)
 		local which = nil;
 		local contextData = {
-			fromPlayerFrame = true;
+			fromPlayerFrame = true,
+			ownerFrame = frame,
 		};
 
 		if unit == "vehicle" then
@@ -91,6 +93,7 @@ function PlayerFrame_OnLoad(self)
 			which = "SELF";
 			contextData.unit = "player";
 		end
+
 		UnitPopup_OpenMenu(which, contextData);
 	end
 
@@ -101,6 +104,12 @@ function PlayerFrame_OnLoad(self)
 	if C_GameRules.IsGameRuleActive(Enum.GameRule.PlayerFrameDisabled) then
 		self:Hide();
 	end
+
+	self:RegisterForInterfaceTransitions();
+end
+
+function PlayerFrame_OnLoad(self)
+	PlayerFrame_OnLoadBase(self);
 end
 
 function PlayerFrame_OnEvent(self, event, ...)
@@ -189,6 +198,13 @@ function PlayerFrame_OnEvent(self, event, ...)
 		PlayerFrame_UpdateRolesAssigned();
 	elseif (event == "HONOR_LEVEL_UPDATE") then
 		PlayerFrame_UpdatePvPStatus();
+	elseif (event == "PLAYER_PVP_FLAG_CHANGED") then
+		local isPvpFlagged = arg1;
+		local canPlaySound = isPvpFlagged and PlayerFrame_CanPlayPVPUpdateSound();
+		local displayInfo = PlayerFrame_UpdatePvPStatus();
+		if (canPlaySound and displayInfo.showPvPIcon) then
+			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
+		end
 	end
 end
 
@@ -240,6 +256,16 @@ function PlayerFrame_GetPlayerFrameContentContextual()
 	return PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual;
 end
 
+-- Overridden per game type to point UnitFrameUtil at whichever regions that flavor actually renders.
+function PlayerFrame_GetPvPIndicatorElements()
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	return {
+		pvpIcon = playerFrameTargetContextual.PVPIcon,
+		prestigePortrait = playerFrameTargetContextual.PrestigePortrait,
+		prestigeBadge = playerFrameTargetContextual.PrestigeBadge,
+	};
+end
+
 function PlayerFrame_GetHealthBar()
 	return PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.HealthBarsContainer.HealthBar;
 end
@@ -286,6 +312,10 @@ function PlayerFrame_Update()
 	end
 end
 
+function PlayerFrame_GetLevelRGBA()
+	return 1.0, 0.82, 0.0, 1.0;
+end
+
 function PlayerFrame_UpdateLevel()
 	if (UnitExists("player")) then
 		local level = UnitLevel(PlayerFrame.unit);
@@ -293,7 +323,7 @@ function PlayerFrame_UpdateLevel()
 		if (effectiveLevel ~= level) then
 			PlayerLevelText:SetVertexColor(0.1, 1.0, 0.1, 1.0);
 		else
-			PlayerLevelText:SetVertexColor(1.0, 0.82, 0.0, 1.0);
+			PlayerLevelText:SetVertexColor(PlayerFrame_GetLevelRGBA());
 		end
 		PlayerLevelText:SetText(effectiveLevel);
 	end
@@ -317,103 +347,82 @@ function PlayerFrame_CanPlayPVPUpdateSound()
 end
 
 function PlayerFrame_UpdatePvPStatus()
+	local elements = PlayerFrame_GetPvPIndicatorElements();
+
+	local displayInfo = UnitFrameUtil.GetUnitPvPIndicatorDisplayInfo("player", true);
+
+	UnitFrameUtil.UpdateUnitPvPIndicator(elements, "player", true);
+
+	PlayerFrame_UpdatePvPTimerText(displayInfo, elements);
+
+	return displayInfo;
+end
+
+function PlayerFrame_UpdatePvPTimerText(displayInfo, elements)
+	-- Always reposition to match whichever badge/icon is active, even while hidden below, so a later
+	-- Show() (driven elsewhere by an actual RBG timer value) uses the right anchor.
+	if (displayInfo.showPrestigePortrait) then
+		PlayerPVPTimerText:SetPoint("TOP", elements.prestigePortrait, "BOTTOM", 0, 10);
+	elseif (displayInfo.showPvPIcon) then
+		PlayerPVPTimerText:SetPoint("TOP", elements.pvpIcon, "BOTTOM", 0, 2);
+	end
+
+	-- An RBG queue/match countdown doesn't apply in FFA pits, so force-hide it there even if a real timer was running.
+	if (displayInfo.isFreeForAll or not (displayInfo.showPrestigePortrait or displayInfo.showPvPIcon)) then
+		PlayerPVPTimerText:Hide();
+		PlayerPVPTimerText.timeLeft = nil;
+	end
+end
+
+function PlayerFrame_ShowPrestigeWithAtlas(atlas, factionGroup, honorRewardInfo)
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
 	local pvpIcon = playerFrameTargetContextual.PVPIcon;
 	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
 	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
-	local unitFramePvPContextualDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.UnitFramePvPContextualDisabled);
-	if unitFramePvPContextualDisabled then
-		prestigePortrait:Hide();
-		prestigeBadge:Hide();
-		pvpIcon:Hide();
-		PlayerPVPTimerText:Hide();
-		PlayerPVPTimerText.timeLeft = nil;
-		return;
+
+	prestigePortrait:SetAtlas(atlas, TextureKitConstants.IgnoreAtlasSize);
+	prestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
+	prestigePortrait:Show();
+	prestigeBadge:Show();
+	pvpIcon:Hide();
+	return prestigePortrait;
+end
+
+function PlayerFrame_ShowPvPIcon(factionGroup)
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	local pvpIcon = playerFrameTargetContextual.PVPIcon;
+	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
+	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
+
+	prestigePortrait:Hide();
+	prestigeBadge:Hide();
+	if (factionGroup == "Horde") then
+		pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-HordeIcon", TextureKitConstants.UseAtlasSize);
+	elseif (factionGroup == "Alliance") then
+		pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-AllianceIcon", TextureKitConstants.UseAtlasSize);
+	elseif (factionGroup == "FFA") then
+		pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-FFAIcon", TextureKitConstants.UseAtlasSize);
 	end
 
-	local factionGroup, factionName = UnitFactionGroup("player");
-	local activePvPBadgeContainer = nil;
+	pvpIcon:Show();
+	return pvpIcon;
+end
 
-	if (UnitIsPVPFreeForAll("player")) then
-		if (PlayerFrame_CanPlayPVPUpdateSound()) then
-			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
-		end
-		local honorLevel = UnitHonorLevel("player");
-		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
-		if (honorRewardInfo) then
-			prestigePortrait:SetAtlas("honorsystem-portrait-neutral", TextureKitConstants.IgnoreAtlasSize);
-			prestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
-			prestigePortrait:Show();
-			prestigeBadge:Show();
-			pvpIcon:Hide();
-			activePvPBadgeContainer = prestigePortrait;
-		else
-			prestigePortrait:Hide();
-			prestigeBadge:Hide();
-			pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-FFAIcon", TextureKitConstants.UseAtlasSize);
-			pvpIcon:Show();
-			activePvPBadgeContainer = pvpIcon;
-		end
+function PlayerFrame_HidePvPFrames()
+	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
+	local pvpIcon = playerFrameTargetContextual.PVPIcon;
+	local prestigePortrait = playerFrameTargetContextual.PrestigePortrait;
+	local prestigeBadge = playerFrameTargetContextual.PrestigeBadge;
 
-		PlayerPVPTimerText:Hide();
-		PlayerPVPTimerText.timeLeft = nil;
-	elseif (factionGroup and factionGroup ~= "Neutral" and UnitIsPVP("player")) then
-		if (PlayerFrame_CanPlayPVPUpdateSound()) then
-			PlaySound(SOUNDKIT.IG_PVP_UPDATE);
-		end
+	prestigePortrait:Hide();
+	prestigeBadge:Hide();
+	pvpIcon:Hide();
+	PlayerPVPTimerText:Hide();
+	PlayerPVPTimerText.timeLeft = nil;
+end
 
-		local honorLevel = UnitHonorLevel("player");
-		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
-		if (honorRewardInfo) then
-			-- ugly special case handling for mercenary mode
-			if (UnitIsMercenary("player")) then
-				if (factionGroup == "Horde") then
-					factionGroup = "Alliance";
-				elseif (factionGroup == "Alliance") then
-					factionGroup = "Horde";
-				end
-			end
-
-			prestigePortrait:SetAtlas("honorsystem-portrait-"..factionGroup, TextureKitConstants.IgnoreAtlasSize);
-			prestigeBadge:SetTexture(honorRewardInfo.badgeFileDataID);
-			prestigePortrait:Show();
-			prestigeBadge:Show();
-			pvpIcon:Hide();
-			activePvPBadgeContainer = prestigePortrait;
-		else
-			prestigePortrait:Hide();
-			prestigeBadge:Hide();
-			if (factionGroup == "Horde") then
-				pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-HordeIcon", TextureKitConstants.UseAtlasSize);
-			elseif (factionGroup == "Alliance") then
-				pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-AllianceIcon", TextureKitConstants.UseAtlasSize);
-			end
-
-			-- ugly special case handling for mercenary mode
-			if (UnitIsMercenary("player")) then
-				if (factionGroup == "Horde") then
-					pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-AllianceIcon", TextureKitConstants.UseAtlasSize);
-				elseif ( factionGroup == "Alliance" ) then
-					pvpIcon:SetAtlas("UI-HUD-UnitFrame-Player-PVP-HordeIcon", TextureKitConstants.UseAtlasSize);
-				end
-			end
-
-			pvpIcon:Show();
-			activePvPBadgeContainer = pvpIcon;
-		end
-	else
-		prestigePortrait:Hide();
-		prestigeBadge:Hide();
-		pvpIcon:Hide();
-		PlayerPVPTimerText:Hide();
-		PlayerPVPTimerText.timeLeft = nil;
-	end
-
-	if activePvPBadgeContainer == prestigePortrait then
-		PlayerPVPTimerText:SetPoint("TOP", prestigePortrait, "BOTTOM", 0, 10);
-	elseif activePvPBadgeContainer == pvpIcon then
-		PlayerPVPTimerText:SetPoint("TOP", pvpIcon, "BOTTOM", 0, 2);
-	end
+function PlayerFrame_ShowRoleIconInsideInstances()
+	return true;
 end
 
 function PlayerFrame_UpdateRolesAssigned()
@@ -422,7 +431,7 @@ function PlayerFrame_UpdateRolesAssigned()
 
 	-- Only show role icons when in instanced content areas (raids, dungeons, battleground, etc.)
 	local _, instanceType = GetInstanceInfo();
-	if instanceType ~= "none" then
+	if instanceType ~= "none" and PlayerFrame_ShowRoleIconInsideInstances() then
 		local role = UnitGroupRolesAssignedEnum("player");
 		if (role == Enum.LFGRole.Tank) then
 			roleIcon:SetAtlas("roleicon-tiny-tank", TextureKitConstants.IgnoreAtlasSize);
@@ -570,11 +579,9 @@ end
 function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrame.state = "vehicle";
 
-	local healthBarContainer = PlayerFrame_GetHealthBarContainer();
+	--Swap pet and player frames
 	local healthBar = PlayerFrame_GetHealthBar();
 	local manaBar = PlayerFrame_GetManaBar();
-
-	--Swap pet and player frames
 	UnitFrame_SetUnit(self, "vehicle", healthBar, manaBar);
 	UnitFrame_SetUnit(PetFrame, "player", PetFrameHealthBar, PetFrameManaBar);
 
@@ -583,36 +590,13 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	PlayerFrame.PlayerFrameContainer.VehicleFrameTexture:Show();
 	PlayerFrame.PlayerFrameContainer.AlternatePowerFrameTexture:Hide();
 
-	-- Update Flash and Status Textures
-	local frameFlash = PlayerFrame.PlayerFrameContainer.FrameFlash;
-	frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Vehicle-InCombat", TextureKitConstants.UseAtlasSize);
-	frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -3.5, 1);
+	-- Update flash and status textures
+	PlayerFrame_UpdateFlashTextureVisuals();
+	PlayerFrame_UpdateStatusTextureVisuals();
 
-	local statusTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture;
-	statusTexture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Vehicle-Status", TextureKitConstants.UseAtlasSize);
-	statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 11, -8);
-
-	-- Update health bar
-	healthBarContainer:SetWidth(118);
-	
-	if UNIT_FRAME_SHOW_HEALTH_ONLY then 
-		healthBar:SetHeight(32);
-		healthBarContainer:SetHeight(32);
-	else 
-		healthBar:SetHeight(20);
-		healthBarContainer:SetHeight(20);
-	end
-	healthBarContainer:SetPoint("TOPLEFT", 91, -40);
-
-	healthBarContainer.HealthBarMask:SetPoint("TOPLEFT", healthBarContainer, "TOPLEFT", -8, 6);
-
-	-- Update mana bar
-	manaBar:SetWidth(118);
-	manaBar:SetHeight(10);
-	manaBar:SetPoint("TOPLEFT",91,-61);
-
-	manaBar.ManaBarMask:SetWidth(121);
-	manaBar.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask");
+	-- Update health and mana bars
+	PlayerFrame_UpdateHealthBarVisuals();
+	PlayerFrame_UpdateManaBarVisuals();
 
 	-- Update alternate power bar
 	PlayerFrameAlternatePowerBarArea:Hide();
@@ -630,14 +614,16 @@ function PlayerFrame_ToVehicleArt(self, vehicleType)
 	elseif class == "DEATHKNIGHT" then
 		RuneFrame:Hide();
 	end
-	EssencePlayerFrame:Setup();
+
+	if EssencePlayerFrame then
+		EssencePlayerFrame:Setup();
+	end
 
 	-- Update other stuff
 	PlayerFrame_Update();
 	PetFrame:Update();
 	BuffFrame:Update();
 	DebuffFrame:Update();
-	ComboFrame_Update(ComboFrame);
 
 	PlayerFrame_UpdateRolesAssigned();
 	PlayerFrame_UpdatePlayerNameTextAnchor();
@@ -656,12 +642,11 @@ end
 function PlayerFrame_ToPlayerArt(self)
 	PlayerFrame.state = "player";
 
-	local healthBarContainer = PlayerFrame_GetHealthBarContainer();
-	local healthBar = PlayerFrame_GetHealthBar();
-	local manaBar = PlayerFrame_GetManaBar();
 	local alternatePowerBar = PlayerFrame_GetAlternatePowerBar();
 
 	-- Unswap pet and player frames
+	local healthBar = PlayerFrame_GetHealthBar();
+	local manaBar = PlayerFrame_GetManaBar();
 	UnitFrame_SetUnit(self, "player", healthBar, manaBar);
 	UnitFrame_SetUnit(PetFrame, "pet", PetFrameHealthBar, PetFrameManaBar);
 
@@ -677,49 +662,13 @@ function PlayerFrame_ToPlayerArt(self)
 		PlayerFrame.PlayerFrameContainer.AlternatePowerFrameTexture:SetShown(alternatePowerBar ~= nil);
 	end
 
-	-- Update Flash and Status Textures
-	local frameFlash = PlayerFrame.PlayerFrameContainer.FrameFlash;
-	if UNIT_FRAME_SHOW_HEALTH_ONLY then
-		frameFlash:SetAtlas("plunderstorm-ui-hud-unitframe-player-portraiton-incombat", TextureKitConstants.UseAtlasSize);
-		frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -1, 0.5);
-	elseif alternatePowerBar then
-		frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-ClassResource-InCombat", TextureKitConstants.UseAtlasSize);
-		frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -2, 0.5);
-	else
-		frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
-		frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -1.5, 1);
-	end
+	-- Update flash and status textures
+	PlayerFrame_UpdateFlashTextureVisuals();
+	PlayerFrame_UpdateStatusTextureVisuals();
 
-	local statusTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture;
-	statusTexture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Status", TextureKitConstants.UseAtlasSize);
-	statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 18, -14);
-
-	healthBarContainer:SetWidth(124);
-	healthBarContainer:SetPoint("TOPLEFT", 85, -41);
-
-	healthBarContainer.HealthBarMask:SetPoint("TOPLEFT", healthBar, "TOPLEFT", -2, 6);
-
-	if UNIT_FRAME_SHOW_HEALTH_ONLY then
-		healthBar:SetHeight(32);
-		healthBarContainer:SetHeight(32);
-		healthBarContainer.HealthBarMask:SetAtlas("plunderstorm-ui-hud-unitframe-player-portraiton-bar-health-mask");
-		healthBarContainer.HealthBarMask:SetHeight(37);
-	else
-		healthBar:SetHeight(19);
-		healthBarContainer:SetHeight(19);
-		healthBarContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Mask");
-		healthBarContainer.HealthBarMask:SetHeight(31);
-	end
-
-	-- Update mana bar
-	manaBar:SetHeight(10);
-	manaBar:SetWidth(124);
-	manaBar:SetPoint("TOPLEFT", 85, -61);
-
-	manaBar.ManaBarMask:SetWidth(128);
-
-	local maskTexture = alternatePowerBar and "Unit_BarMask" or "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask";
-	manaBar.ManaBarMask:SetAtlas(maskTexture, TextureKitConstants.UseAtlasSize);
+	-- Update health and mana bars
+	PlayerFrame_UpdateHealthBarVisuals();
+	PlayerFrame_UpdateManaBarVisuals();
 
 	-- Update alternate power bar area
 	if alternatePowerBar then
@@ -731,29 +680,29 @@ function PlayerFrame_ToPlayerArt(self)
 
 	-- Update power bar
 	local _, class = UnitClass("player");
-	if (PlayerFrame.classPowerBar) then
+	if PlayerFrame.classPowerBar then
 		PlayerFrame.classPowerBar:Setup();
-	elseif (class == "SHAMAN") then
-		TotemFrame:Update(); 
-	elseif (class == "DEATHKNIGHT") then
+	elseif class == "SHAMAN" then
+		TotemFrame:Update();
+	elseif class == "DEATHKNIGHT" then
 		RuneFrame:Show();
+	elseif class == "EVOKER" then
+		EssencePlayerFrame:Setup();
 	end
-	EssencePlayerFrame:Setup();
 
 	-- Update other stuff
 	PlayerFrame_Update();
 	PetFrame:Update();
 	BuffFrame:Update();
 	DebuffFrame:Update();
-	ComboFrame_Update(ComboFrame);
 
 	PlayerFrame_UpdateRolesAssigned();
 	PlayerFrame_UpdatePlayerNameTextAnchor();
 	local playerFrameTargetContextual = PlayerFrame_GetPlayerFrameContentContextual();
 	playerFrameTargetContextual.GroupIndicator:SetPoint("BOTTOMRIGHT", PlayerFrame, "TOPLEFT", 210, -29);
 	playerFrameTargetContextual.RoleIcon:SetPoint("TOPLEFT", 196, -27);
-	local playerBottomManagedFrameContainer = GetPlayerBottomManagedFrameContainer();
 
+	local playerBottomManagedFrameContainer = GetPlayerBottomManagedFrameContainer();
 	if alternatePowerBar then
 		playerBottomManagedFrameContainer:SetPoint("TOP", PlayerFrame, "BOTTOM", 30, 15);
 	else
@@ -762,6 +711,94 @@ function PlayerFrame_ToPlayerArt(self)
 
 	if playerBottomManagedFrameContainer:IsShown() then
 		playerBottomManagedFrameContainer:Layout();
+	end
+end
+
+function PlayerFrame_UpdateFlashTextureVisuals()
+	local frameFlash = PlayerFrame.PlayerFrameContainer.FrameFlash;
+	if PlayerFrame.unit == "vehicle" then
+		frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Vehicle-InCombat", TextureKitConstants.UseAtlasSize);
+		frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -3.5, 1);
+	else
+		local alternatePowerBar = PlayerFrame_GetAlternatePowerBar();
+		if UNIT_FRAME_SHOW_HEALTH_ONLY then
+			frameFlash:SetAtlas("plunderstorm-ui-hud-unitframe-player-portraiton-incombat", TextureKitConstants.UseAtlasSize);
+			frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -1, 0.5);
+		elseif alternatePowerBar then
+			frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-ClassResource-InCombat", TextureKitConstants.UseAtlasSize);
+			frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -2, 0.5);
+		else
+			frameFlash:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
+			frameFlash:SetPoint("CENTER", frameFlash:GetParent(), "CENTER", -1.5, 1);
+		end
+	end
+end
+
+function PlayerFrame_UpdateStatusTextureVisuals()
+	local statusTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture;
+	local frameFlash = PlayerFrame.PlayerFrameContainer.FrameFlash;
+	if PlayerFrame.unit == "vehicle" then
+		statusTexture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Vehicle-Status", TextureKitConstants.UseAtlasSize);
+		statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 11, -8);
+	else
+		statusTexture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Status", TextureKitConstants.UseAtlasSize);
+		statusTexture:SetPoint("TOPLEFT", frameFlash:GetParent(), "TOPLEFT", 18, -14);
+	end
+end
+
+function PlayerFrame_UpdateHealthBarVisuals()
+	local healthBarContainer = PlayerFrame_GetHealthBarContainer();
+	local healthBar = PlayerFrame_GetHealthBar();
+	if PlayerFrame.unit == "vehicle" then
+		healthBarContainer:SetWidth(118);
+		healthBarContainer:SetPoint("TOPLEFT", 91, -40);
+
+		healthBarContainer.HealthBarMask:SetPoint("TOPLEFT", healthBarContainer, "TOPLEFT", -8, 6);
+
+		if UNIT_FRAME_SHOW_HEALTH_ONLY then
+			healthBar:SetHeight(32);
+			healthBarContainer:SetHeight(32);
+		else
+			healthBar:SetHeight(20);
+			healthBarContainer:SetHeight(20);
+		end
+	else
+		healthBarContainer:SetWidth(124);
+		healthBarContainer:SetPoint("TOPLEFT", 85, -41);
+
+		healthBarContainer.HealthBarMask:SetPoint("TOPLEFT", healthBar, "TOPLEFT", -2, 6);
+
+		if UNIT_FRAME_SHOW_HEALTH_ONLY then
+			healthBar:SetHeight(32);
+			healthBarContainer:SetHeight(32);
+			healthBarContainer.HealthBarMask:SetAtlas("plunderstorm-ui-hud-unitframe-player-portraiton-bar-health-mask");
+			healthBarContainer.HealthBarMask:SetHeight(37);
+		else
+			healthBar:SetHeight(19);
+			healthBarContainer:SetHeight(19);
+			healthBarContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Health-Mask");
+			healthBarContainer.HealthBarMask:SetHeight(31);
+		end
+	end
+end
+
+function PlayerFrame_UpdateManaBarVisuals()
+	local manaBar = PlayerFrame_GetManaBar();
+	manaBar:SetHeight(10);
+	if PlayerFrame.unit == "vehicle" then
+		manaBar:SetWidth(118);
+		manaBar:SetPoint("TOPLEFT", 91, -61);
+
+		manaBar.ManaBarMask:SetWidth(121);
+		manaBar.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask");
+	else
+		manaBar:SetWidth(124);
+		manaBar:SetPoint("TOPLEFT", 85, -61);
+
+		manaBar.ManaBarMask:SetWidth(128);
+		local alternatePowerBar = PlayerFrame_GetAlternatePowerBar();
+		local maskTexture = alternatePowerBar and "Unit_BarMask" or "UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana-Mask";
+		manaBar.ManaBarMask:SetAtlas(maskTexture, TextureKitConstants.UseAtlasSize);
 	end
 end
 

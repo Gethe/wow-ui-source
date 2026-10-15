@@ -202,14 +202,6 @@
 			<KeyValue key="animInEndDelay" value="4.5" type="number"/>
 		</KeyValues>
 		<Animations>
-			<AnimationGroup parentKey="showAnim" inherits="ShowToastAnimGroupTemplate">
-				<Alpha childKey="BannerFrame" fromAlpha="0" toAlpha="1" duration="0.7" startDelay="0.7" order="2" parentKey="anim2"/>
-			</AnimationGroup>
-
-			<AnimationGroup parentKey="hideAnim" inherits="HideToastAnimGroupTemplate">
-				<Alpha childKey="BannerFrame" fromAlpha="1" toAlpha="0" duration="0.5" startDelay="1.8" order="1" parentKey="anim2"/>
-			</AnimationGroup>
-
 			<AnimationGroup parentKey="NewStageTextureKit" setToFinalAlpha="true">
 				<Scale childKey="BG1" duration="0.33" order="1" fromScaleX="0.001" fromScaleY="1" toScaleX="1" toScaleY="1"/>
 				<Alpha childKey="Background" duration="0" order="1" fromAlpha="0" toAlpha="1"/>
@@ -244,7 +236,7 @@
 				</FontString>
 			</Layer>
 			<Layer level="BORDER">
-				<Texture parentKey="BG1" hidden="true" alphaMode="BLEND" atlas="legioninvasion-title-bg" setAllPoints="true">
+				<Texture parentKey="BG1" hidden="true" alphaMode="BLEND" atlas="evergreen-scenario-titlebg" setAllPoints="true">
 					<KeyValues>
 						<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 					</KeyValues>
@@ -286,40 +278,6 @@
 				</Texture>
 			</Layer>
 		</Layers>
-		<Frames>
-			<Frame parentKey="BannerFrame" alpha="0" setAllPoints="true" hidden="true">
-				<KeyValues>
-					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
-				</KeyValues>
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOM" relativePoint="TOP" x="0" y="-6"/>
-							</Anchors>
-						</Texture>
-						<Texture atlas="evergreen-scenario-pattern-background" useAtlasSize="true" alpha="0.5">
-							<Anchors>
-								<Anchor point="TOP" relativePoint="BOTTOM" x="0" y="-2"/>
-							</Anchors>
-							<TexCoords left="0" right="1" bottom="0" top="1"/>
-						</Texture>
-					</Layer>
-					<Layer level="OVERLAY">
-						<Texture atlas="evergreen-scenario-filigree-top" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="TOP" x="0" y="2"/>
-							</Anchors>
-						</Texture>
-						<Texture atlas="evergreen-scenario-filigree-bottom" useAtlasSize="true">
-							<Anchors>
-								<Anchor point="BOTTOM" x="0" y="-7"/>
-							</Anchors>
-						</Texture>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
 	</Button>
 
 	<Button name="EventToastScenarioToastTemplate" inherits="EventToastScenarioBaseToastTemplate" mixin="EventToastScenarioToastMixin" alpha="0" virtual="true">

@@ -319,6 +319,37 @@
 					<Anchor point="TOPLEFT" x="7" y="-63"/>
 					<Anchor point="BOTTOMRIGHT" x="-9" y="28"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="BGBottomLeft" hidden="true">
+							<Size y="90"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent" relativePoint="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" x="-85"/>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0" bottom="0.588"/>
+						</Texture>
+						<Texture parentKey="BGBottomRight" hidden="true">
+							<Size x="85" y="90"/>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+							<TexCoords left="0" right="1" top="0" bottom="0.588"/>
+						</Texture>
+						<Texture parentKey="BGTopLeft" hidden="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGBottomLeft" relativePoint="TOPRIGHT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BGTopRight" hidden="true">
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativeKey="$parent" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMLEFT" relativeKey="$parent.BGBottomRight" relativePoint="TOPLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Frames>
 					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate" >
 						<Anchors>

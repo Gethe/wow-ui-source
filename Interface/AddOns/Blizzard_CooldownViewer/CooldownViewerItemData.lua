@@ -1,4 +1,15 @@
 local scanUnits = { "player", "target" };
+local CooldownDataSource = EnumUtil.MakeEnum(
+	"Spell",
+	"Category"
+);
+
+local CooldownDisplayDataType = EnumUtil.MakeEnum(
+	"Name",
+	"Icon",
+	"Tooltip",
+	"Cooldown"
+);
 
 CooldownViewerItemDataMixin = {};
 
@@ -161,14 +172,14 @@ function CooldownViewerItemDataMixin:UpdateLinkedSpell(spellID)
 end
 
 function CooldownViewerItemDataMixin:UpdateFromSpellCategory(spellID, baseSpellID, spellCategory, itemID)
-	local cooldownInfo = self:GetCooldownInfo();
-	if cooldownInfo and spellCategory and cooldownInfo.spellCategoryID == spellCategory then
-		if itemID then
+	if itemID and spellCategory and spellCategory ~= 0 then
+		local cooldownInfo = self:GetCooldownInfo();
+		if cooldownInfo and cooldownInfo.spellCategoryID == spellCategory then
 			spellID = baseSpellID or spellID;
 			local overrideSpellID = baseSpellID and spellID;
 
-			cooldownInfo.spellID = spellID;
-			cooldownInfo.overrideSpellID = overrideSpellID;
+			cooldownInfo.spellIDForCategory = spellID;
+			cooldownInfo.overrideSpellIDForCategory = overrideSpellID;
 			cooldownInfo.lastItemIDForCategory = itemID;
 			cooldownInfo.lastItemIDForCategoryIcon = C_Item.GetItemIconByID(itemID);
 			return true;
@@ -204,16 +215,17 @@ end
 
 --[[
 	NOTE: In general the order of precedence for getting the spellID from a cooldown item is:
-	1. Active Aura
-	2. Active Linked Spell (usually because a matching aura is active)
-	3. Override tooltip spell even if the linked spell is not active, it will always be one of the associated linkedSpellIDs
-	4. Override Spell
-	5. Base Spell
+	- Active Aura
+	- If the user wants the category data source, then use the last cast spell set from a category update (usuall OnUse from an item)
+	- Active Linked Spell (usually because a matching aura is active)
+	- Override tooltip spell even if the linked spell is not active, it will always be one of the associated linkedSpellIDs
+	- Override Spell
+	- Base Spell
 
 	There are some cases where the base spell may be preferred over the override spell, because the client API for spells already takes overrides into account.
 	In those cases, the aura/tooltip override is checked manually.
 --]]
-function CooldownViewerItemDataMixin:GetSpellID()
+function CooldownViewerItemDataMixin:GetSpellID(optDataSource)
 	if self:PreferAuraDataOverSpellData() then
 		local auraSpellID = self:GetAuraSpellID();
 		if auraSpellID then
@@ -223,6 +235,16 @@ function CooldownViewerItemDataMixin:GetSpellID()
 
 	local cooldownInfo = self:GetCooldownInfo();
 	if cooldownInfo then
+		if optDataSource == CooldownDataSource.Category then
+			if cooldownInfo.spellIDForCategory then
+				return cooldownInfo.spellIDForCategory;
+			end
+
+			if cooldownInfo.overrideSpellIDForCategory then
+				return cooldownInfo.overrideSpellIDForCategory;
+			end
+		end
+
 		local usesDynamicAppearance = self:UsesDynamicAppearance();
 		if usesDynamicAppearance and cooldownInfo.linkedSpellID then
 			return cooldownInfo.linkedSpellID;
@@ -378,8 +400,27 @@ function CooldownViewerItemDataMixin:OnAuraInstanceInfoCleared(_auraSpellID, _au
 end
 
 function CooldownViewerItemDataMixin:GetSpellCooldownInfo()
-	local spellID = self:GetSpellID();
-	return spellID and C_Spell.GetSpellCooldown(spellID);
+	local dataSource = self:GetCooldownDataSource(CooldownDisplayDataType.Cooldown);
+	local spellID = self:GetSpellID(dataSource);
+
+	if dataSource == CooldownDataSource.Category then
+		local cooldownInfo = self:GetCooldownInfo();
+		if cooldownInfo and cooldownInfo.lastItemIDForCategory then
+			local itemCooldown = C_Spell.GetItemCooldown(cooldownInfo.lastItemIDForCategory);
+			if itemCooldown then
+				return itemCooldown, spellID;
+			end
+		end
+	end
+
+	-- If the item used to start the cooldown couldn't be found or wasn't on cooldown, fall back
+	-- to using the spellID.
+	if spellID then
+		local spellCooldown = C_Spell.GetSpellCooldown(spellID);
+		return spellCooldown, spellID;
+	end
+
+	return nil;
 end
 
 function CooldownViewerItemDataMixin:GetSpellChargeInfo()
@@ -546,9 +587,13 @@ local function GetSpellTextureForSpellID(spellID, usesDynamicAppearance)
 end
 
 function CooldownViewerItemDataMixin:GetSpellTexture()
-	local spellCategoryIcon = self:GetSpellCategoryIcon();
-	if spellCategoryIcon then
-		return spellCategoryIcon;
+	local dataSource = self:GetCooldownDataSource(CooldownDisplayDataType.Icon);
+
+	if dataSource == CooldownDataSource.Category then
+		local spellCategoryIcon = self:GetSpellCategoryIcon();
+		if spellCategoryIcon then
+			return spellCategoryIcon;
+		end
 	end
 
 	local usesDynamicAppearance = self:UsesDynamicAppearance();
@@ -609,7 +654,7 @@ function CooldownViewerItemDataMixin:GetNameText()
 		return C_Item.GetItemName(itemLocation);
 	end
 
-	local spellID = self:GetSpellID();
+	local spellID = self:GetSpellID(self:GetCooldownDataSource(CooldownDisplayDataType.Name));
 	if spellID then
 		return C_Spell.GetSpellName(spellID);
 	end
@@ -624,6 +669,15 @@ function CooldownViewerItemDataMixin:GetNameText()
 	end
 
 	return "";
+end
+
+local function AddSpellFilterData(tags, spellID)
+	if spellID then
+		local spellName = C_Spell.GetSpellName(spellID);
+		if spellName then
+			table.insert(tags, spellName);
+		end
+	end
 end
 
 function CooldownViewerItemDataMixin:BuildFilterString()
@@ -645,14 +699,15 @@ function CooldownViewerItemDataMixin:BuildFilterString()
 	end
 
 	local spellCategoryTitle = self:GetSpellCategoryTooltipTitle();
-	if  spellCategoryTitle then
+	if spellCategoryTitle then
 		table.insert(tags, spellCategoryTitle);
 	end
 
-	local spellID = self:GetBaseSpellID();
-	if spellID then
-		local spellName = C_Spell.GetSpellName(spellID);
-		table.insert(tags, spellName);
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo then
+		AddSpellFilterData(tags, cooldownInfo.spellID);
+		AddSpellFilterData(tags, cooldownInfo.overrideSpellID);
+		AddSpellFilterData(tags, cooldownInfo.overrideTooltipSpellID);
 	end
 
 	return table.concat(tags, " ");
@@ -687,8 +742,16 @@ local function GetUnitAurasCached(unit, timeNow)
 	return targetAuraCache[unit];
 end
 
-function CooldownViewer_MarkAuraCacheDirty()
-	targetAuraCacheTime = {};
+local targetCacheInvalidatorGUID;
+function CooldownViewer_MarkAuraCacheDirty(invalidatorGUID)
+	-- Control when cache resets happen by tracking the target guid that caused the invalidation.
+	-- nil guid means always clear cache.
+	-- TODO: Add centralized CooldownViewer event handling so that a single point can perform
+	-- bookkeeping tasks like this, and then forward the event data to the viewers to handle.
+	if not invalidatorGUID or targetCacheInvalidatorGUID ~= invalidatorGUID then
+		targetCacheInvalidatorGUID = invalidatorGUID;
+		targetAuraCacheTime = {};
+	end
 end
 
 local function IsAuraActive(aura, timeNow)
@@ -1004,8 +1067,11 @@ end
 function CooldownViewerItemDataMixin:RefreshTooltipInternal()
 	local tooltip = GetAppropriateTooltip();
 
-	if self:CheckDisplaySpellCategoryTooltip(tooltip) then
-		return tooltip;
+	local displaySource = self:GetCooldownDataSource(CooldownDisplayDataType.Tooltip);
+	if displaySource == CooldownDataSource.Category then
+		if self:CheckDisplaySpellCategoryTooltip(tooltip) then
+			return tooltip;
+		end
 	end
 
 	if self:UsesDynamicAppearance() then
@@ -1100,3 +1166,26 @@ function CooldownViewerItemDataMixin:PreferAuraDataOverSpellData()
 	return false; -- Use the spell data by default; this is typically for the layout manager.
 end
 
+local spellAndCategoryDisplayTypeSources =
+{
+	[CooldownDisplayDataType.Name] = CooldownDataSource.Spell,
+	[CooldownDisplayDataType.Icon] = CooldownDataSource.Spell,
+	[CooldownDisplayDataType.Tooltip] = CooldownDataSource.Spell,
+	[CooldownDisplayDataType.Cooldown] = CooldownDataSource.Category
+};
+
+function CooldownViewerItemDataMixin:GetCooldownDataSource(cooldownDataType)
+	local cooldownInfo = self:GetCooldownInfo();
+	if cooldownInfo then
+		local hasCategoryDataSource = cooldownInfo.spellCategoryID ~= nil;
+		local hasSpellDataSource = cooldownInfo.spellID ~= nil;
+
+		if hasCategoryDataSource and hasSpellDataSource then
+			return spellAndCategoryDisplayTypeSources[cooldownDataType];
+		elseif hasCategoryDataSource then
+			return CooldownDataSource.Category;
+		else
+			return CooldownDataSource.Spell;
+		end
+	end
+end

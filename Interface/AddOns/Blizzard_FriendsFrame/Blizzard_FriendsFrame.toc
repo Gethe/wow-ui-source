@@ -1,25 +1,27 @@
 ## Title: Blizzard_FriendsFrame
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_TimerunningUtil, Blizzard_AddFriend
+## Dep: Blizzard_TimerunningUtil
+## Dep: Blizzard_AddFriend
 ## OptionalDeps: Blizzard_GlueStubs, Blizzard_ActionBar, Blizzard_SocialUIShared, Blizzard_RecentAllies, Blizzard_UnitPopupShared, Blizzard_UnitPopup
 ## AllowLoad: both
 ## AllowLoadGameType: mainline
 
-Mainline\FriendsListConstants.lua
+[Family]\FriendsListConstants.lua
 
-Mainline\FriendsListUtil.lua
+[Family]\FriendsListUtil.lua
 
-Mainline\FriendsFriendsFrame.lua
-Mainline\FriendsFriendsFrame.xml
+[Family]\FriendsFriendsFrame.lua
+[Family]\FriendsFriendsFrame.xml
 
-Mainline\FriendsFrame.lua
-Mainline\FriendsFrame.xml
+[Family]\FriendsFrame.lua	[ExcludeLoadGameType camelot]
+[Game]\FriendsFrame.lua		[AllowLoadGameType camelot]
 
-Mainline\FriendRequestsListTemplates.lua
-Mainline\FriendRequestsListTemplates.xml
+[Family]\FriendsFrame.xml	[ExcludeLoadGameType camelot]
+[Game]\FriendsFrame.xml		[AllowLoadGameType camelot]
 
-Mainline\FriendsListTemplates.lua
-Mainline\FriendsListTemplates.xml
+[Family]\FriendRequestsListTemplates.lua
+[Family]\FriendRequestsListTemplates.xml
 
-Mainline\Localization.lua
+[Family]\FriendsListTemplates.lua
+[Family]\FriendsListTemplates.xml
+
+[Family]\Localization.lua

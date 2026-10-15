@@ -1,0 +1,42 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\UI.xsd">
+
+	<!--
+		These QuestPortrait templates date back to the Vanilla QuestFrame
+		and they're also used by some other frames, like GuildNews!
+	-->
+	
+	<Texture name="QuestPortrait-MrBrownstone" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="197" y="230"/>
+		<TexCoords left="0.00390625" right="0.77343750" top="0.00195313" bottom="0.45117188"/>
+	</Texture>
+	<Texture name="QuestPortrait-Corner_UL" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.00195313" bottom="0.07421875"/>
+	</Texture>
+	<Texture name="QuestPortrait-Corner_UR" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.07812500" bottom="0.15039063"/>
+	</Texture>
+	<Texture name="QuestPortrait-Corner_BL" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.15429688" bottom="0.22656250"/>
+	</Texture>
+	<Texture name="QuestPortrait-Corner_BR" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="37" y="37"/>
+		<TexCoords left="0.78125000" right="0.92578125" top="0.23046875" bottom="0.30273438"/>
+	</Texture>
+	<Texture name="QuestPortrait-Nameplate" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="199" y="44"/>
+		<TexCoords left="0.00390625" right="0.78125000" top="0.45507813" bottom="0.54101563"/>
+	</Texture>
+	<Texture name="QuestPortrait-Divider_noname" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="199" y="44"/>
+		<TexCoords left="0.00390625" right="0.78125000" top="0.54492188" bottom="0.63085938"/>
+	</Texture>
+	<Texture name="QuestPortrait-StoneSwirls-Top" file="Interface\QuestFrame\QuestPortrait" virtual="true" >
+		<Size x="195" y="18"/>
+		<TexCoords left="0.00390625" right="0.76562500" top="0.63476563" bottom="0.66992188"/>
+	</Texture>
+	
+</Ui>

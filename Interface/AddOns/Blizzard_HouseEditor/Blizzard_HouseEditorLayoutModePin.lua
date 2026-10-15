@@ -275,7 +275,7 @@ function HousingLayoutRoomPinMixin:OnLoad()
 		end
 
 		if not C_HousingBlueprint.CanExportRoom(self:GetPin():GetRoomGUID()) then
-			self.OptionsContainer.ExportButton.disabledTooltip = ERR_HOUSING_LAYOUT_RESTRICTION_BASE_ROOM;
+			self.OptionsContainer.ExportButton.disabledTooltip = ERR_HOUSING_RESULT_BLUEPRINT_BASE_ROOM;
 			return true;
 		end
 

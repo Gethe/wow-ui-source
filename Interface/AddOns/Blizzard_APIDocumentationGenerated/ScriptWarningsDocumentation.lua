@@ -26,6 +26,7 @@ local ScriptWarnings =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

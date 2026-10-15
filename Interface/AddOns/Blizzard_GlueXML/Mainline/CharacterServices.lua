@@ -376,7 +376,7 @@ function CharacterSelectBlockBase:FormatResult()
 
 	local basicInfo = GetBasicCharacterInfo(characterGuid);
 	if basicInfo.classFilename then
-		local coloredName = NORMAL_FONT_COLOR:WrapTextInColorCode(basicInfo.name);
+		local coloredName = NORMAL_FONT_COLOR:WrapTextInColorCode(basicInfo.fullName);
 
 		local color = CreateColor(GetClassColor(basicInfo.classFilename));
 		local coloredClassName = color:WrapTextInColorCode(basicInfo.className);

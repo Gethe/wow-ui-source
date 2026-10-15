@@ -42,6 +42,7 @@ local PlayerLocation =
 		{
 			Name = "GetName",
 			Type = "Function",
+			MayReturnNothing = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -51,7 +52,7 @@ local PlayerLocation =
 
 			Returns =
 			{
-				{ Name = "name", Type = "string", Nilable = true },
+				{ Name = "name", Type = "string", Nilable = false },
 			},
 		},
 		{
@@ -123,6 +124,7 @@ local PlayerLocation =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

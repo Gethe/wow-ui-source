@@ -6,3 +6,5 @@ Blizzard_GenericTraitUI_Bootstrap.lua [Bootstrap]
 Blizzard_GenericTraitUtil.lua
 Blizzard_GenericTraitFrame.lua
 Blizzard_GenericTraitFrame.xml
+
+WoWHack\Blizzard_GenericWoWHackTraitsLayouts.lua [AllowLoadGameType wowhack]

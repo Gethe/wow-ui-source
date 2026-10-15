@@ -96,6 +96,10 @@ function AlertFrameQueueMixin:OnLoad(alertFrameTemplate, setUpFunction, maxAlert
 	self.maxQueue = maxQueue or 6;
 end
 
+function AlertFrameQueueMixin:SetShouldIgnoreAlertsFunction(func)
+	self.shouldIgnoreAlertsFunc = func;
+end
+
 function AlertFrameQueueMixin:SetAlwaysReplace(alwaysReplace)
 	self.alwaysReplace = alwaysReplace;
 end
@@ -112,6 +116,9 @@ function AlertFrameQueueMixin:OnFrameHide(frame)
 end
 
 function AlertFrameQueueMixin:AddAlert(...)
+	if self.shouldIgnoreAlertsFunc and self.shouldIgnoreAlertsFunc() then
+		return false;
+	end
 	if self:CanShowMore() then
 		self:ShowAlert(...);
 		return true;

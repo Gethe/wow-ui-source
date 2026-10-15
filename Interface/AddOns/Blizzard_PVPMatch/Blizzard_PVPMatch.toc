@@ -1,7 +1,7 @@
 ## Title: Blizzard_PVPMatch
 ## LoadOnDemand: 0
 ## RequiredDep: Blizzard_UIWidgets, Blizzard_LFGUtil
-## AllowLoadGameType: standard
+## AllowLoadGameType: standard, camelot
 PVPMatchUtil.lua
 PVPMatchTable.xml
 PVPMatchResults.xml

@@ -4,7 +4,6 @@
 		<Size x="386" y="1"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture parentKey="Backdrop" atlas="glues-characterselect-card-all-bg" setAllPoints="true"/>
 				<FontString parentKey="UndeleteLabel" inherits="GlueFontDisableLarge" hidden="true" text="UNDELETE_LABEL">
 					<Size x="350" y="25"/>
 					<Anchors>
@@ -25,8 +24,24 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Background" inherits="CharacterSelectListBGTemplate" frameLevel="0"/>
 			<EditBox parentKey="SearchBox" mixin="CharSelectSearchMixin" inherits="SearchBoxTemplate" letters="80">
+				<KeyValues>
+					<KeyValue key="smartNavigationCanFocus" value="true" type="boolean"/>
+				</KeyValues>
 				<Size x="297" y="24"/>
+				<Frames>
+					<Frame parentKey="FocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_LEFT" type="global"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="28" y="28"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-2" y="-2"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 				<Anchors>
 					<Anchor point="TOPLEFT" x="19" y="-25"/>
 				</Anchors>

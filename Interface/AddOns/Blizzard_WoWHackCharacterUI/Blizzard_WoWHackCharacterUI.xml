@@ -1,0 +1,104 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="WoWHackCharacterUITemplate" mixin="WoWHackCharacterUIMixin" inherits="PortraitFrameTemplate" virtual="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="talebound-character-sheet-background">
+					<Size x="1196" y="893"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="PlayerInfo">
+				<Size x="600" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="4" y="-22"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="PlayerName" inherits="ResizeLayoutFrame">
+						<Anchors>
+							<Anchor point="TOPLEFT" x="20" y="-36"/>
+							<Anchor point="TOPRIGHT" x="20" y="-36"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Name" inherits="GameFontHighlightHuge2" justifyH="CENTER">
+									<Anchors>
+										<Anchor point="TOPLEFT" y="-24"/>
+										<Anchor point="TOPRIGHT" y="24"/>
+									</Anchors>
+									<Color color="HIGHLIGHT_FONT_COLOR"/>
+								</FontString>
+								<FontString parentKey="SpecName" inherits="GameFontNormalLarge" justifyH="CENTER">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+										<Anchor point="TOPRIGHT" relativeKey="$parent.Name" relativePoint="BOTTOMRIGHT" x="0" y="-2"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<ModelScene parentKey="ModelScene" inherits="PanningModelSceneMixinTemplate" frameLevel="4000">
+				<Size x="648" y="1"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.PlayerInfo" relativePoint="BOTTOM" x="0" y="-96"/>
+					<Anchor point="BOTTOMLEFT" x="4" y="4"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="ControlFrame" inherits="ModelSceneControlFrameTemplate">
+						<Anchors>
+							<Anchor point="TOP" x="0" y="-10"/>
+						</Anchors>
+					</Frame>
+				</Frames>
+			</ModelScene>
+
+			<Frame parentKey="StatSummary" inherits="CharacterStatSummaryTemplate">
+				<Size x="650" y="314"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0" y="-52"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="CurrencySummary" inherits="CharacterCurrencySummaryTemplate">
+				<Size x="650" y="204"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.StatSummary" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ProgressionSummary" inherits="CharacterProgressionSummaryTemplate">
+				<Size x="650" y="261"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.CurrencySummary" relativePoint="BOTTOM" x="0" y="-10"/>
+				</Anchors>
+			</Frame>
+
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="5000">
+				<Anchors>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="WoWHackCharacterUI" inherits="WoWHackCharacterUITemplate" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
+		<Size x="1203" y="902"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+	</Frame>
+</Ui>

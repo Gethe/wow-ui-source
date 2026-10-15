@@ -34,11 +34,20 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "BypassAchievementRequirement",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "force", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CloseCatalogShopInteraction",
 			Type = "Function",
 		},
 		{
-			Name = "ConfirmHousingPurchase",
+			Name = "ConfirmVCProductPurchase",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -287,6 +296,21 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "GetSelectionGroupInfo",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "bundleProductID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "selectionGroups", Type = "table", InnerType = "CatalogShopSelectionGroupInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetSpellVisualInfoForMount",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -335,6 +359,15 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "IsFinishedLoadingVirtualCurrencies",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isDone", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsProductIncludedInAnyBundle",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -374,6 +407,15 @@ local CatalogShop =
 		},
 		{
 			Name = "OpenCatalogShopInteractionFromHouse",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "OpenCatalogShopInteractionFromRewards",
 			Type = "Function",
 
 			Returns =
@@ -434,6 +476,23 @@ local CatalogShop =
 			},
 		},
 		{
+			Name = "PurchaseProductWithSelectedProducts",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "productID", Type = "number", Nilable = false },
+				{ Name = "selectedProductIDs", Type = "table", InnerType = "number", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "canPurchase", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "RefreshRefundableDecors",
 			Type = "Function",
 		},
@@ -445,6 +504,21 @@ local CatalogShop =
 			Arguments =
 			{
 				{ Name = "currencyCode", Type = "string", Nilable = false },
+			},
+		},
+		{
+			Name = "ShouldDisplayUsesTemporaryCharactersWarningText",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "catalogShopProductId", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "shouldShow", Type = "bool", Nilable = false },
 			},
 		},
 		{
@@ -464,6 +538,21 @@ local CatalogShop =
 			Arguments =
 			{
 				{ Name = "productID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ValidateOverrideShopInteraction",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "shoppingSessionUUIDStr", Type = "string", Nilable = true },
+			},
+
+			Returns =
+			{
+				{ Name = "isValid", Type = "bool", Nilable = false },
 			},
 		},
 	},
@@ -667,6 +756,7 @@ local CatalogShop =
 				{ Name = "childProductID", Type = "number", Nilable = false },
 				{ Name = "displayOrder", Type = "number", Nilable = false },
 				{ Name = "quantityInBundle", Type = "number", Nilable = false },
+				{ Name = "selectionConstraint", Type = "SelectionConstraint", Nilable = true },
 			},
 		},
 		{
@@ -772,6 +862,13 @@ local CatalogShop =
 				{ Name = "decorQuantity", Type = "DecorQuantity", Nilable = true },
 				{ Name = "isVCProduct", Type = "bool", Nilable = false },
 				{ Name = "containsHousingItem", Type = "bool", Nilable = false },
+				{ Name = "deferredGameTimeDays", Type = "number", Nilable = false },
+				{ Name = "vcCurrencyCode", Type = "string", Nilable = true },
+				{ Name = "hasAllRequiredAchievements", Type = "bool", Nilable = true },
+				{ Name = "missingAchievementName", Type = "string", Nilable = true },
+				{ Name = "doNotShowWebString", Type = "bool", Nilable = false },
+				{ Name = "purchaseEligibility", Type = "CatalogShopPurchaseEligibility", Nilable = false },
+				{ Name = "purchaseEligibilityText", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -785,6 +882,18 @@ local CatalogShop =
 				{ Name = "cardType", Type = "string", Nilable = true },
 				{ Name = "scrollGridSize", Type = "number", Nilable = true },
 				{ Name = "shouldShowRecommendationOptOutDisclaimer", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "CatalogShopSelectionGroupInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "description", Type = "string", Nilable = false },
+				{ Name = "quantity", Type = "number", Nilable = false },
+				{ Name = "inclusionMode", Type = "InclusionMode", Nilable = false },
+				{ Name = "products", Type = "table", InnerType = "CatalogShopBundleChildInfo", Nilable = false },
 			},
 		},
 		{
@@ -843,9 +952,11 @@ local CatalogShop =
 				{ Name = "timeRemainingSeconds", Type = "time_t", Nilable = false },
 				{ Name = "name", Type = "string", Nilable = false },
 				{ Name = "price", Type = "string", Nilable = false },
+				{ Name = "currencyCode", Type = "string", Nilable = false },
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

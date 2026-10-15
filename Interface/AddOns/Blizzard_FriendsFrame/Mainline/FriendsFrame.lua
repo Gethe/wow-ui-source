@@ -218,6 +218,7 @@ function FriendsFrame_ShowDropdown(name, connected, lineID, chatType, chatFrame,
 			chatFrame = chatFrame,
 			bnetIDAccount = nil,
 			guid = guid,
+			ownerFrame = chatFrame,
 		};
 
 		-- MENU RETEST IsOnGlueScreen
@@ -242,6 +243,7 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 			chatFrame = chatFrame,
 			bnetIDAccount = bnetIDAccount,
 			battleTag = battleTag,
+			ownerFrame = chatFrame,
 		};
 
 		-- MENU RETEST IsOnGlueScreen
@@ -436,7 +438,7 @@ function FriendsFrame_OnShow(self)
 		PanelTemplates_SetTabEnabled(self, 3, enableRaidTab);
 	end
 
-	if enableRaidTab then
+	if enableRaidTab or not ShouldDisplayStoryModeTooltipInSocialFrame() then
 		FriendsFrameTab3:SetScript("OnEnter", nil);
 	else
 		FriendsFrameTab3:SetScript("OnEnter", function()
@@ -765,7 +767,8 @@ function FriendsFrameInviteTemplateMixin:OnLoad()
 			ReportFrame:InitiateReport(reportInfo, name, playerLocation, bnetIDAccount ~= nil);
 		end);
 
-		if StaticPopup_Show then
+		local canShowBlockInvitesButton = StaticPopup_Show and FriendsListUtil.CanAddFriendRequestSenderToBattleNetBlockList(self.inviteIndex);
+		if canShowBlockInvitesButton then
 			rootDescription:CreateButton(BLOCK_INVITES, function()
 				local inviteInfo = C_BattleNet.GetFriendInviteInfo(self.inviteIndex);
 				local inviteID = inviteInfo and inviteInfo.inviteID or nil;
@@ -1394,7 +1397,7 @@ function FriendsFrameUnsquelchButton_OnClick(self)
 		C_FriendList.DelIgnoreByIndex(C_FriendList.GetSelectedIgnore());
 	elseif ( selectedSquelchType == SQUELCH_TYPE_BLOCK_INVITE ) then
 		local blockID = BNGetBlockedInfo(BNGetSelectedBlock());
-		BNSetBlocked(blockID, false);
+		C_BattleNet.SetBlocked(blockID, false);
 	end
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
@@ -1420,7 +1423,7 @@ function FriendsFrame_UnIgnore(button, name)
 end
 
 function FriendsFrame_UnBlock(button, blockID)
-	BNSetBlocked(blockID, false);
+	C_BattleNet.SetBlocked(blockID, false);
 end
 
 function FriendsFrame_RemoveFriend()

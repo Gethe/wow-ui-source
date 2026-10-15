@@ -3,6 +3,9 @@
 
 	<ScopedModifier useForbiddenObjectTable="true">
 		<AuraButton name="TargetFrameAuraButtonTemplate" virtual="true">
+			<KeyValues>
+				<KeyValue key="smartNavigationCanFocus" value="true" type="boolean"/>
+			</KeyValues>
 			<Mixins>
 				<Mixin key="TargetFrameAuraButtonInboundMixin" source="secure" targetPartition="public" inboundPartition="forbidden" secureDelegates="true"/>
 				<Mixin key="TargetFrameAuraButtonPrivateMixin" source="secure"/>

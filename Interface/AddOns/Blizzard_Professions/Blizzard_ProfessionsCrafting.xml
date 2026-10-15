@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_ProfessionsCrafting.lua"/>
 
 	<Button name="CraftingSearchSMTemplate" mixin="SearchBoxListElementMixin" virtual="true">
 		<Size x="275" y="27"/>
@@ -141,8 +140,7 @@
 				</Anchors>
 			</Frame>
 
-			<Frame parentKey="SchematicForm" inherits="ProfessionsRecipeSchematicFormTemplate" useParentLevel="true">
-				<Size x="793" y="553"/>
+			<Frame parentKey="SchematicForm" inherits="SchematicFormCraftingTemplate">
 				<KeyValues>
 					<KeyValue key="layoutType" value="InsetFrameTemplate" type="string"/>
 				</KeyValues>
@@ -202,26 +200,22 @@
 				</Anchors>
 			</Frame>
 
-			<Button parentKey="CreateButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
-				<Size x="80" y="22"/>
-			</Button>
-
 			<EditBox parentKey="CreateMultipleInputBox" inherits="NumericInputSpinnerTemplate">
 				<KeyValues>
 					<KeyValue key="clampIfInputExceedsRange" value="true" type="boolean"/>
 					<KeyValue key="highlightIfInputExceedsRange" value="true" type="boolean"/>
 				</KeyValues>
-				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.CreateButton" relativePoint="LEFT" x="-30"/>
-				</Anchors>
 			</EditBox>
 
-			<Button parentKey="CreateAllButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true">
-				<Size x="80" y="22"/>
+			<Frame parentKey="GamepadCreateMultiple" inherits="InputPromptOneIconWithTextTemplate">
+				<KeyValues>
+					<KeyValue key="Icon1" value="GAMEPAD_STICK_RIGHT_PRESS" type="global"/>
+					<KeyValue key="Text" value="Set Amount" type="string"/>
+				</KeyValues>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.CreateMultipleInputBox" relativePoint="LEFT" x="-30"/>
+					<Anchor point="BOTTOMRIGHT" x="10" y="10"/>
 				</Anchors>
-			</Button>
+			</Frame>
 
 			<Button parentKey="ViewGuildCraftersButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="GUILD_TRADE_SKILL_VIEW_CRAFTERS" hidden="true">
 				<Size x="120" y="22"/>
@@ -359,22 +353,32 @@
 				</Layers>
 			</Frame>
 
-			<DropdownButton parentKey="LinkButton">
-				<Size x="30" y="30"/>
+			<DropdownButton parentKey="LinkButton" mixin="ProfessionsLinkButtonMixin">
+				<Size x="23" y="23"/>
 				<Anchors>
-					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.RankBar" x="0" y="-2"/>
+					<Anchor point="LEFT" relativePoint="RIGHT" relativeKey="$parent.RankBar" x="-2" y="-4"/>
 				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Background"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Icon">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
 				<Scripts>
-					<OnEnter>
-						GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
-						GameTooltip:SetText(LINK_TRADESKILL_TOOLTIP, nil, nil, nil, nil, true);
-						GameTooltip:Show();
-					</OnEnter>
-					<OnLeave function="GameTooltip_Hide"/>
+					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+					<OnMouseDown method="OnMouseDown"/>
+					<OnMouseUp method="OnMouseUp"/>
+					<OnEnable method="OnEnable"/>
+					<OnDisable method="OnDisable"/>
 				</Scripts>
-				<NormalTexture file="Interface\Buttons\UI-LinkProfession-Up"/>
-				<PushedTexture file="Interface\Buttons\UI-LinkProfession-Down"/>
-				<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 			</DropdownButton>
 
 			<Frame parentKey="OverlayCastBarAnchor">
@@ -382,6 +386,15 @@
 				<!-- Anchored dynamically -->
 			</Frame>
 		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="ProfessionsBookPageTemplate" inherits="ProfessionsBookFrameTemplate" mixin="ProfessionsBookPageFrameMixin" parent="ProfessionsFrame" setAllPoints="true"  virtual="true">
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>

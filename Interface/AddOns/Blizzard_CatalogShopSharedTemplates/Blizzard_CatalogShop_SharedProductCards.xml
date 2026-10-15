@@ -41,6 +41,7 @@
 			<ModelScene parentKey="ModelScene" frameLevel="200" hidden="true" inherits="NoCameraControlModelSceneMixinTemplate">
 				<KeyValues>
 					<KeyValue key="allowOverlappedModels" value="true" type="boolean"/>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 				</KeyValues>
 			</ModelScene>
 

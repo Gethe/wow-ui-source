@@ -4,6 +4,7 @@
 
 GlueDialogDefs.lua
 [Family]\GlueDialogDefs.lua
+[Game]\GlueDialogDefs.lua			[AllowLoadGameType camelot]
 
 GlueDialog.lua
 [Family]\GlueDialog.lua

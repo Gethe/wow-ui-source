@@ -10,8 +10,7 @@
 	spec [global] - the spec for the power bar to show
 	resourceBarMixin [global] - override the default inherited mixin: ClassPowerBar
 	resourcePointTemplate [string] - template for the horizontal layout frame to instantiate from
-	resourcePointSetupFunc [global] - function on the resource point for any custom setup
-	resourcePointReleaseFunc [global] - function on the resource point for any custom on-release reset logic
+	resourcePointMixin [global] - mixin that provides Setup and OnRelease for pooled resource points
 	showTooltip [boolean] - show the tooltip on the mouseover
 	shouldShowBarFunc [global] - custom function for whether or not the bar should show
 	showBarFunc [global] - custom function for showing the bar
@@ -22,7 +21,11 @@ ClassResourceBarMixin = {};
 
 function ClassResourceBarMixin:OnLoad()
 	if self.usePooledResourceButtons then
-		self.classResourceButtonPool = CreateFramePool("FRAME", self, self.resourcePointTemplate, self.resourcePointReleaseFunc);
+		assertsafe(self.resourcePointMixin, "ClassResourceBarMixin requires resourcePointMixin when usePooledResourceButtons is true");
+		assertsafe(self.resourcePointMixin.Setup, "ClassResourceBarMixin requires resourcePointMixin.Setup when usePooledResourceButtons is true");
+		assertsafe(self.resourcePointMixin.OnRelease, "ClassResourceBarMixin requires resourcePointMixin.OnRelease when usePooledResourceButtons is true");
+
+		self.classResourceButtonPool = CreateFramePool("FRAME", self, self.resourcePointTemplate, self.resourcePointMixin.OnRelease);
 		self.classResourceButtonTable = { };
 	end
 
@@ -149,9 +152,7 @@ function ClassResourceBarMixin:UpdateMaxPower()
 		for i = 1, self.maxUsablePoints do
 			local resourcePoint = self.classResourceButtonPool:Acquire();
 			self.classResourceButtonTable[i] = resourcePoint;
-			if(self.resourcePointSetupFunc) then
-				self.resourcePointSetupFunc(resourcePoint);
-			end
+			self.resourcePointMixin.Setup(resourcePoint);
 			resourcePoint.layoutIndex = i;
 			resourcePoint:Show();
 		end

@@ -744,8 +744,7 @@ function DamageMeterSessionWindowMixin:UpdateExistingDataProvider(dataProvider)
 		Mixin(currentProvider.collection[i], dataProvider.collection[i]);
 	end
 
-	self:GetScrollBox():ForEachFrame(function(frame)
-		local elementData = currentProvider:Find(frame:GetOrderIndex());
+	self:GetScrollBox():ForEachFrame(function(frame, elementData)
 		self:InitEntry(frame, elementData);
 	end);
 

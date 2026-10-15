@@ -14,6 +14,7 @@ local ChatShared =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

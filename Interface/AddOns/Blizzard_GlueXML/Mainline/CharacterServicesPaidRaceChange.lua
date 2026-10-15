@@ -3,6 +3,7 @@ local function RequestAssignPRCForResults(results, isValidationOnly)
 	return C_CharacterServices.AssignRaceOrFactionChangeDistribution(
 		results.selectedCharacterGUID,
 		"",
+		"",
 		isValidationOnly,
 		Enum.ValueAddedServiceType.PaidRaceChange
 	);

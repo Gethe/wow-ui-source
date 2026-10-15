@@ -1,0 +1,119 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="GameModeInfoDisplayTemplate" mixin="GameModeInfoDisplayMixin" inherits="CharacterSelectBlockingFrameTemplate" virtual="true">
+		<Frames>
+			<Frame parentKey="InfoPanel">
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Size x="575" y="370"/>
+				<Layers>
+					<Layer level="BORDER">
+						<Texture parentKey="Border" atlas="ui-frame-chamfered" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-17" y="14"/>
+								<Anchor point="BOTTOMRIGHT" x="17" y="-31"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="1">
+						<Texture parentKey="Background" atlas="timerunning-infographic-background">
+							<Anchors>
+								<Anchor point="CENTER" y="-8"/>
+							</Anchors>
+							<Size x="576" y="382"/>
+						</Texture>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Logo" scale="0.7">
+							<Anchors>
+								<Anchor point="CENTER" relativePoint="TOPLEFT" x="175" y="-70"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="TopDescription" inherits="GameFontNormalOutline" text="" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.Logo" relativePoint="RIGHT" x="-40" y="3"/>
+							</Anchors>
+							<Size x="210"/>
+						</FontString>
+						<FontString parentKey="QuestsHeader" inherits="GameFontHighlightMed2Outline" text="" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Logo" relativePoint="BOTTOMLEFT" x="80" y="-20"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="QuestsBullet" atlas="timerunning-infographic-bullet" useAtlasSize="true" scale="0.6">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.QuestsHeader" x="-7"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="QuestsDescription" inherits="GameFontNormalSmallOutline" text="" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.QuestsHeader" relativePoint="BOTTOMLEFT" y="-3"/>
+							</Anchors>
+							<Size x="220"/>
+						</FontString>
+						<FontString parentKey="ItemsHeader" inherits="GameFontHighlightMed2Outline" text="" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.QuestsDescription" relativePoint="BOTTOMLEFT" y="-21"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="ItemsBullet" atlas="timerunning-infographic-bullet" useAtlasSize="true" scale="0.6">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.ItemsHeader" x="-7"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="ItemsDescription" inherits="GameFontNormalSmallOutline" text="" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemsHeader" relativePoint="BOTTOMLEFT" y="-3"/>
+							</Anchors>
+							<Size x="220"/>
+						</FontString>
+						<FontString parentKey="RewardsHeader" inherits="GameFontHighlightMed2Outline" text="" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ItemsDescription" relativePoint="BOTTOMLEFT" y="-21"/>
+							</Anchors>
+						</FontString>
+						<Texture parentKey="RewardsBullet" atlas="timerunning-infographic-bullet" useAtlasSize="true" scale="0.6">
+							<Anchors>
+								<Anchor point="RIGHT" relativePoint="LEFT" relativeKey="$parent.RewardsHeader" x="-7"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="RewardsDescription" inherits="GameFontNormalSmallOutline" text="" justifyH="LEFT">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.RewardsHeader" relativePoint="BOTTOMLEFT" y="-3"/>
+							</Anchors>
+							<Size x="220"/>
+						</FontString>
+						<Texture parentKey="RewardsBird" atlas="timerunning-infographic-rewards" useAtlasSize="true" scale="0.7">
+							<Anchors>
+								<Anchor point="CENTER" x="193" y="-53"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
+						<Anchors>
+							<Anchor point="TOPRIGHT" x="3" y="3"/>
+						</Anchors>
+					</Button>
+					<Button parentKey="PlayNowButton" inherits="GlueButtonSmallTemplate">
+						<Anchors>
+							<Anchor point="BOTTOM" x="0" y="5"/>
+						</Anchors>
+						<Size x="300" y="56"/>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnKeyDown method="OnKeyDown"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GameModeInfoDisplay" inherits="GameModeInfoDisplayTemplate" parent="GlueParent" frameStrata="DIALOG" setAllPoints="true" hidden="true">
+	</Frame>
+</Ui>

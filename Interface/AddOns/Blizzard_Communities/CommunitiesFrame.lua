@@ -1,6 +1,10 @@
 
 g_clubIdToSeenApplicants = g_clubIdToSeenApplicants or nil;
 
+function CommunitiesFrame_ShouldDisplayPersonalAchievements()
+	return true;
+end
+
 CommunitiesFrameMixin = CreateFromMixins(CallbackRegistryMixin);
 
 CommunitiesFrameMixin:GenerateCallbackEvents(
@@ -123,6 +127,39 @@ function CommunitiesFrameMixin:OnLoad()
 	self.GuildNameAlertFrame:SetScript("OnClick", GenerateClosure(self.OnGuildNameAlertFrameClicked, self));
 
 	EventRegistry:RegisterCallback("AccountInfo.ChatDisabled", self.OnChatDisabledChanged, self);
+
+	self:RegisterForTransitions();
+end
+
+function CommunitiesFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+end
+
+function CommunitiesFrameMixin:SetupGamepad()
+	local function RightClick()
+		local button = SmartNavigation:GetCurrentButton();
+		button:Click("RightButton");
+	end
+
+	local openContextMenu = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, RightClick, CONTEXT_ACTION_LABEL_MORE_ACTIONS);
+	openContextMenu:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	openContextMenu:AddButtonContext("ButtonContext_CommunitiesMemberListEntryButton");
+	openContextMenu:AddButtonContext("ButtonContext_CommunitiesListEntryButton");
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CommunitiesFooter");
+	self.footer:AddPromptedBinding(openContextMenu);
+	self.footer:AddStandardSelectPrompt();
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+end
+
+function CommunitiesFrameMixin:FocusGamepad()
+	self.footer:ShowAndActivateBindings();
+end
+
+function CommunitiesFrameMixin:UnfocusGamepad()
+	self.footer:HideAndDeactivateBindings();
 end
 
 function CommunitiesFrameMixin:OnShow()
@@ -609,6 +646,12 @@ COMMUNITIES_FRAME_DISPLAY_MODES = {
 		"CommunitiesControlFrame",
 	},
 
+	GUILD_PREFERRED_PLAY_SETTINGS = {
+		"CommunitiesList",
+		"GuildPreferredPlaySettingsFrame",
+		"CommunitiesControlFrame",
+	},
+
 	MINIMIZED = {
 		"CommunitiesListDropdown",
 		"Chat",
@@ -704,6 +747,7 @@ function CommunitiesFrameMixin:SetDisplayMode(displayMode)
 	end
 
 	if (displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS) then
+		self.GuildBenefitsFrame.GuildAchievementPointDisplay:SetShown(C_AchievementInfo.AreGuildAchievementsEnabled());
 		if (not C_GuildInfo.IsGuildReputationEnabled()) then
 			self.GuildBenefitsFrame.Rewards:Hide();
 			self.GuildBenefitsFrame.GuildRewardsTutorialButton:Hide();
@@ -979,7 +1023,7 @@ function CommunitiesFrameMixin:ValidateDisplayMode()
 	local clubId = self:GetSelectedClubId();
 	if clubId then
 		local displayMode = self:GetDisplayMode();
-		local guildDisplay = displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO;
+		local guildDisplay = displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO or displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_PREFERRED_PLAY_SETTINGS;
 		local clubInfo = C_Club.GetClubInfo(clubId);
 		self.accountMuted = C_Club.IsAccountMuted(clubId);
 		self.accountChatDisabled = C_SocialRestrictions.IsChatDisabled();
@@ -1038,10 +1082,12 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 	self.RosterTab:Hide();
 	self.GuildBenefitsTab:Hide();
 	self.GuildInfoTab:Hide();
+	self.GuildPreferredPlaySettingsTab:Hide();
 	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT or
 			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or
 			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_BENEFITS or
 			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO or
+			displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_PREFERRED_PLAY_SETTINGS or
 			self:IsShowingApplicantList() then
 		self.ChatTab:Show();
 		self.RosterTab:Show();
@@ -1052,6 +1098,9 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 				local benefitsEnabled = GetNumGuildPerks() > 0 or C_GuildInfo.IsGuildReputationEnabled();
 				self.GuildBenefitsTab:SetShown(clubInfo.clubType == Enum.ClubType.Guild and benefitsEnabled);
 				self.GuildInfoTab:SetShown(clubInfo.clubType == Enum.ClubType.Guild);
+
+				local canChangeLocale, canChangeDatacenterLocality = C_GuildInfo.GetPreferredPlaySettingsFeatures();
+				self.GuildPreferredPlaySettingsTab:SetShown(clubInfo.clubType == Enum.ClubType.Guild and (canChangeLocale or canChangeDatacenterLocality));
 
 				if(not benefitsEnabled) then
 					self.GuildInfoTab:SetPoint("TOPLEFT", self.RosterTab, "BOTTOMLEFT", 0, -20);
@@ -1071,6 +1120,7 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 	self.RosterTab:SetChecked(false);
 	self.GuildBenefitsTab:SetChecked(false);
 	self.GuildInfoTab:SetChecked(false);
+	self.GuildPreferredPlaySettingsTab:SetChecked(false);
 	if displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.CHAT then
 		self.ChatTab:SetChecked(true);
 	elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.ROSTER or self:IsShowingApplicantList() then
@@ -1079,6 +1129,8 @@ function CommunitiesFrameMixin:UpdateCommunitiesTabs()
 		self.GuildBenefitsTab:SetChecked(true);
 	elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_INFO then
 		self.GuildInfoTab:SetChecked(true);
+	elseif displayMode == COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_PREFERRED_PLAY_SETTINGS then
+		self.GuildPreferredPlaySettingsTab:SetChecked(true);
 	end
 end
 

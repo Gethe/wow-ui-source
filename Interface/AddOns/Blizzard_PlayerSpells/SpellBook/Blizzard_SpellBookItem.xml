@@ -102,6 +102,7 @@
 					<KeyValue key="popupCrossAxisSize" value="42" type="number"/>
 					<KeyValue key="openArrowOffset" value="2" type="number"/>
 					<KeyValue key="closedArrowOffset" value="4" type="number"/>
+					<KeyValue key="buttonContext" value="ButtonContext_SpellButton" type="string"/>
 				</KeyValues>
 				<Size x="40" y="40"/>
 				<Anchors>
@@ -114,6 +115,15 @@
 							<Size x="56" y="56"/>
 							<Anchors>
 								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<!-- Override the FlyoutButtonTemplate's default action bar shadow with the spellbook-specific shadow -->
+					<Layer level="ARTWORK" textureSubLevel="1">
+						<Texture parentKey="BorderShadow" atlas="spellbook-item-iconframe-shadow">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-12" y="3"/>
+								<Anchor point="BOTTOMRIGHT" x="2" y="-8"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -248,7 +258,7 @@
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent.Icon" x="2" y="-2"/>
 							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" x="-2" y="2"/>
-						</Anchors>		
+						</Anchors>
 					</Cooldown>
 					<ModelScene parentKey="FxModelScene" inherits="ScriptAnimatedModelSceneTemplate" useParentLevel="true" drawLayer="BACKGROUND" >
 						<Anchors>
@@ -296,4 +306,5 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
+	<Frame name="SpellBookOutfitItemTemplate" inherits="SpellBookItemTemplate" mixin="SpellBookOutfitItemMixin" virtual="true"/>
 </Ui>

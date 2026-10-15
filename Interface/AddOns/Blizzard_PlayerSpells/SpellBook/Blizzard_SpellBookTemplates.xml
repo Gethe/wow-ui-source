@@ -2,25 +2,16 @@
 ..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Script file="Blizzard_SpellBookTemplates.lua"/>
 	
-	<Frame name="SpellBookHeaderTemplate" mixin="SpellBookHeaderMixin" virtual="true">
-		<Size x="300" y="51"/>
+	<Frame name="SpellBookHeaderTemplate" mixin="SpellBookHeaderMixin" inherits="SpellBookHeaderSizeTemplate" virtual="true">
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>
 		<Layers>
-			<Layer level="BACKGROUND">
-				<Texture parentKey="Backplate" atlas="spellbook-list-backplate" alpha="0.65">
-					<Size x="416" y="106"/>
-					<Anchors>
-						<Anchor point="LEFT" x="-85" y="10"/>
-					</Anchors>
-				</Texture>
-			</Layer>
 			<Layer level="ARTWORK">
-				<FontString parentKey="Text" inherits="SystemFont_Huge2" setAllPoints="true" justifyH="LEFT">
+				<FontString parentKey="Text" inherits="SystemFont_Huge2" justifyH="LEFT">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-8" y="0"/>
-						<Anchor point="TOPRIGHT" x="-60"/>
+						<Anchor point="LEFT" x="-8" y="14"/>
+						<Anchor point="RIGHT" x="-60" y="14"/>
 					</Anchors>
 					<Color color="SPELLBOOK_FONT_COLOR" />
 				</FontString>
@@ -29,6 +20,14 @@
 					<Anchors>
 						<Anchor point="BOTTOMLEFT" x="-32"/>
 						<Anchor point="BOTTOMRIGHT" x="-60"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Backplate" atlas="spellbook-list-backplate" alpha="0.65">
+					<Size x="416" y="106"/>
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.Text" x="-77" y="-4"/>
 					</Anchors>
 				</Texture>
 			</Layer>

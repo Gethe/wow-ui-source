@@ -13,7 +13,7 @@ function HousingTutorialsItemAcquisitionMixin:Init()
 			offsetX = -45,
 			system = itemAcquisitionTutorialSystem,
 		},
-	
+
 		[BagTutorialHelpTipKeys.ItemInfo] = {
 			text = HOUSING_USE_ITEM_TUTORIAL_TEXT,
 			buttonStyle = HelpTip.ButtonStyle.Close,
@@ -42,7 +42,7 @@ function HousingTutorialsItemAcquisitionMixin:IsValidItem(itemHyperlink)
 	local _name, _enchantLink, _displayQuality, _itemLevel, _requiredLevel, _className, _subclassName, _isStackable, _inventoryType, _iconFile, _sellPrice, itemClassID, itemSubclassID, _boundState, _expansionID, _itemSetID, _isTradeskill = C_Item.GetItemInfo(itemHyperlink);
 
 	local housingItemClass = Enum.ItemClass.Housing;
-	local decorItemSubClass = Enum.ItemHousingSubclass.Decor; 
+	local decorItemSubClass = Enum.ItemHousingSubclass.Decor;
 	return itemClassID == housingItemClass and itemSubclassID == decorItemSubClass;
 end
 
@@ -59,12 +59,12 @@ HousingTutorialsNewPipMixin = {};
 function HousingTutorialsNewPipMixin:Init()
 	EventRegistry:RegisterCallback("HousingDashboard.Toggled", self.OnHousingDashboardToggled, self);
 
-	HousingMicroButton.NotificationOverlay:Show();
+	HousingMicroButton:SetHasNotification(true);
 end
 
 function HousingTutorialsNewPipMixin:OnHousingDashboardToggled()
 	if HousingDashboardFrame:IsShown() then
-		HousingMicroButton.NotificationOverlay:Hide();
+		HousingMicroButton:SetHasNotification(false);
 		C_CVar.SetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingNewPip, true);
 	end
 end
@@ -145,17 +145,17 @@ HousingTutorialsHouseTeleportMixin = CreateFromMixins(HelpTipStateMachineBasedTu
 
 function HousingTutorialsHouseTeleportMixin:Init()
 	self.helpTipInfos = HousingTutorialData.HousingTeleportToHouseTutorial.HousingHouseTeleportHelpTipInfos;
-	
+
 	local microButtonHelpTipInfo = self.helpTipInfos[HousingTutorialStates.TeleportToHouseTutorial.MicroButton]
 	microButtonHelpTipInfo.parent = BagsBar;
 	microButtonHelpTipInfo.relativeRegion = HousingTutorialUtil.GetFrameFromData(HousingTutorialData.HousingTeleportToHouseTutorial.HousingMicroButton);
-	
+
 	local teleportButtonHelpTipInfo = self.helpTipInfos[HousingTutorialStates.TeleportToHouseTutorial.TeleportButton];
 	teleportButtonHelpTipInfo.onAcknowledgeCallback = function()
 		self:AcknowledgeTutorial();
 		HousingTutorialsHouseTeleportWatcher:StopWatching();
 	end
-	
+
 	HelpTipStateMachineBasedTutorialMixin.Init(
 		self,
 		self.helpTipInfos,

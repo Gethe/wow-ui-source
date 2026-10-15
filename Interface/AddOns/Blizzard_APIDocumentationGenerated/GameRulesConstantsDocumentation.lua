@@ -43,7 +43,20 @@ local GameRulesConstants =
 				{ Name = "Bool", Type = "GameRuleType", EnumValue = 2 },
 			},
 		},
+		{
+			Name = "RewardsShopFlags",
+			Type = "Enumeration",
+			NumValues = 2,
+			MinValue = 0,
+			MaxValue = 1,
+			Fields =
+			{
+				{ Name = "None", Type = "RewardsShopFlags", EnumValue = 0 },
+				{ Name = "Enabled", Type = "RewardsShopFlags", EnumValue = 1 },
+			},
+		},
 	},
+
 	Predicates =
 	{
 	},

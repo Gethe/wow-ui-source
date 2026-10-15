@@ -7,6 +7,7 @@ function RequestAssignPNCForResults(results, isValidationOnly)
 	return C_CharacterServices.AssignNameChangeDistribution(
 		results.selectedCharacterGUID,
 		results.name,
+		results.surname,
 		isValidationOnly,
 		Enum.ValueAddedServiceType.PaidNameChange
 	);
@@ -39,20 +40,33 @@ end
 PNCNameSelectBlock = {
 	FrameName = "PNCNameSelect",
 	Back = true,
-	ActiveLabel = PNC_FLOW_SLECT_NAME_ACTIVE,
-	ResultsLabel = PNC_FLOW_SLECT_NAME_RESULTS,
+	ActiveLabel = C_CharacterCreation.AreRegionalUniqueNamesEnabled() and PNC_FLOW_SLECT_FULL_NAME_ACTIVE or PNC_FLOW_SLECT_NAME_ACTIVE,
+	ResultsLabel = C_CharacterCreation.AreRegionalUniqueNamesEnabled() and PNC_FLOW_SLECT_FULL_NAME_RESULTS or PNC_FLOW_SLECT_NAME_RESULTS,
 };
 
 function PNCNameSelectBlock:Initialize(results, wasFromRewind)
+	local newNameEditbox = self.frame.ControlsFrame.NewNameEditbox;
+	local newSurnameLabel = self.frame.ControlsFrame.NewSurnameLabel;
+	local newSurnameEditbox = self.frame.ControlsFrame.NewSurnameEditbox;
+
 	if not wasFromRewind then
 		local checkUpdate = function()
 			self:CheckUpdate();
 		end
 
-		self.frame.ControlsFrame.NewNameEditbox:SetOnTextChangedCallback(checkUpdate);
+		newNameEditbox:SetOnTextChangedCallback(checkUpdate);
+		newSurnameEditbox:SetOnTextChangedCallback(checkUpdate);
 	end
 
-	self.frame.ControlsFrame.NewNameEditbox:Initialize(results, wasFromRewind);
+	newNameEditbox:Initialize(results, wasFromRewind);
+	newSurnameEditbox:Initialize(results, wasFromRewind);
+
+	newSurnameLabel:SetShown(newSurnameLabel:ShouldShow());
+	newSurnameEditbox:SetShown(newSurnameEditbox:ShouldShow());
+
+	if C_CharacterCreation.AreRegionalUniqueNamesEnabled() then
+		self.frame.ControlsFrame.NewNameLabel:SetText(PNC_FLOW_NEW_MAIN_NAME_LABEL);
+	end
 
 	self:CheckUpdate();
 end
@@ -63,8 +77,10 @@ end
 
 function PNCNameSelectBlock:GetResult()
 	local formatedName = toCharacterNameCasing(self.frame.ControlsFrame.NewNameEditbox:GetNewName());
+	local formattedSurname = toCharacterNameCasing(self.frame.ControlsFrame.NewSurnameEditbox:GetNewSurname());
 	return {
-		name = formatedName
+		name = formatedName,
+		surname = formattedSurname,
 	}
 end
 
@@ -74,8 +90,13 @@ function PNCNameSelectBlock:IsFinished(wasFromRewind)
 	end
 
 	local result = self:GetResult();
+	local hasValidName = result.name and #result.name > 2;
+	local hasValidSurname = true;
+	if self.frame.ControlsFrame.NewSurnameEditbox:IsShown() then
+		hasValidSurname = result.surname and #result.surname > 2;
+	end
 
-	if result.name then
+	if hasValidName and hasValidSurname then
 		return true;
 	end
 
@@ -107,6 +128,71 @@ end
 
 function NewNameEditboxMixin:SetOnTextChangedCallback(callback)
 	self.callback = callback;
+end
+
+function NewNameEditboxMixin:OnTextChanged()
+	if self.callback then
+		self.callback();
+	end
+end
+
+function NewNameEditboxMixin:OnTabPressed()
+	if (not self:GetParent().NewSurnameEditbox:IsShown()) then
+		return;
+	end
+
+	self:ClearFocus();
+	EditBox_ClearHighlight(self);
+	self:GetParent().NewSurnameEditbox:SetFocus();
+end
+
+NewSurnameLabelMixin = {};
+
+function NewSurnameLabelMixin:ShouldShow()
+	return C_CharacterCreation.AreRegionalUniqueNamesEnabled();
+end
+
+NewSurnameEditboxMixin = {};
+
+function NewSurnameEditboxMixin:Initialize(_, wasFromRewind)
+	if not wasFromRewind then
+		self:SetText("");
+	end
+	self:SetMaxLetters(12); -- From CharacterNameStringConsts::SURNAMEUSERINPUT in CharacterConstants.tag.
+end
+
+function NewSurnameEditboxMixin:OnEnter()
+	GetAppropriateTooltip():SetOwner(self, "ANCHOR_RIGHT");
+	GetAppropriateTooltip():SetText(VAS_NAME_CHANGE_TOOLTIP);
+	GetAppropriateTooltip():Show();
+end
+
+function NewSurnameEditboxMixin:OnLeave()
+	GetAppropriateTooltip():Hide();
+end
+
+function NewSurnameEditboxMixin:GetNewSurname()
+	return self:IsShown() and self:GetText() or "";
+end
+
+function NewSurnameEditboxMixin:SetOnTextChangedCallback(callback)
+	self.callback = callback;
+end
+
+function NewSurnameEditboxMixin:OnTextChanged()
+	if self.callback then
+		self.callback();
+	end
+end
+
+function NewSurnameEditboxMixin:OnTabPressed()
+	self:ClearFocus();
+	EditBox_ClearHighlight(self);
+	self:GetParent().NewNameEditbox:SetFocus();
+end
+
+function NewSurnameEditboxMixin:ShouldShow()
+	return C_CharacterCreation.AreRegionalUniqueNamesEnabled();
 end
 
 -- PNCAssignConfirmationBlock

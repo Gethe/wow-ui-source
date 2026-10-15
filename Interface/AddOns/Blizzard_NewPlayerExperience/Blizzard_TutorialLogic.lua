@@ -64,8 +64,11 @@ function TutorialLogic:Begin()
 	self.vendorQuestID = self.factionData.UseVendorQuest;
 	self.specQuestID = self.factionData.SpecQuestTrackID;
 	
+	self:AddTutorials();
+end
+
+function TutorialLogic:AddTutorials()
 	TutorialQuestManager:RegisterForCallbacks(self);-- Certain tutorials kick off when quests are accepted
-	
 	Dispatcher:RegisterEvent("PLAYER_LEVEL_CHANGED", self);
 	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);
 	if self.playerClass == "ROGUE" or self.playerClass == "DRUID" then
@@ -216,6 +219,8 @@ function TutorialLogic:Shutdown()
 	TutorialManager:ShutdownTutorial(Class_Death_ResurrectPrompt.name);
 	TutorialManager:ShutdownTutorial(Class_LootCorpse.name);
 	TutorialManager:ShutdownTutorial(Class_LootPointer.name);
+	TutorialManager:ShutdownTutorial(Class_Intro_TargetCreatureInRange.name);
+	TutorialManager:ShutdownTutorial(Class_EnterHostileZone.name);
 
 	TutorialQueue:Status();
 end
@@ -224,7 +229,7 @@ function TutorialLogic:Quest_Accepted(questData)
 	local questID = questData.QuestID;
 
 	local tutorialKey, args;
-	if (questID == self.factionData.StartingQuest) then
+	if (questID == self.factionData:GetStartingQuest()) then
 		tutorialKey = Class_Intro_CombatDummyInRange.name;
 	elseif (questID == self.factionData.UseMapQuest) then
 		tutorialKey = Class_Intro_OpenMap.name;
@@ -261,6 +266,10 @@ function TutorialLogic:Quest_Accepted(questData)
 	if tutorialKey then
 		TutorialManager:Queue(tutorialKey, args)
 	end
+end
+
+function TutorialLogic:IsNPEAllowed()
+	return true;
 end
 
 -- ------------------------------------------------------------------------------------------------------------

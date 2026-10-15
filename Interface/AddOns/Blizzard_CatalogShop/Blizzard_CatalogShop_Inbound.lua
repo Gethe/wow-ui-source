@@ -17,6 +17,20 @@ function CatalogShopInboundInterface.SetShown(shown, contextKey)
 	CatalogShopFrame:SetAttribute("action", shown and "Show" or "Hide");
 end
 
+function CatalogShopInboundInterface.ShowRewardsShop()
+	if not CatalogShopInboundInterface.IsShown() then
+		C_StorePublic.EventStoreUISetShown(true);
+	end
+	CatalogShopFrame:SetAttribute("action", "ShowRewardsShop");
+end
+
+function CatalogShopInboundInterface.HideRewardsShop()
+	if CatalogShopInboundInterface.IsShown() then
+		C_StorePublic.EventStoreUISetShown(false);
+	end
+	CatalogShopFrame:SetAttribute("action", "HideRewardsShop");
+end
+
 function CatalogShopInboundInterface.IsShown()
 	return CatalogShopFrame:GetAttribute("isshown");
 end

@@ -16,9 +16,13 @@ function ToggleAchievementFrame(stats)
 	end
 end
 
-function ShowAchievementFrameForAchievement(achievementID)
+function ShowAchievementFrameForAchievement(achievementID, closeOtherWindows)
 	if AchievementFrame_LoadUI() then
 		if not AchievementFrame:IsShown() then
+			if closeOtherWindows then
+				CloseAllWindows();
+			end
+
 			AchievementFrame_ToggleAchievementFrame(false, C_AchievementInfo.IsGuildAchievement(achievementID));
 		end
 

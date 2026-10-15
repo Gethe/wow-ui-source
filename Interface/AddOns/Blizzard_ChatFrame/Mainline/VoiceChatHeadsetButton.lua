@@ -8,6 +8,18 @@ function VoiceChatHeadsetButtonMixin:OnLoad()
 	self:RegisterEvent("VOICE_CHAT_LOGOUT");
 	self:RegisterEvent("VOICE_CHAT_PENDING_CHANNEL_JOIN_STATE");
 	self:RegisterEvent("VOICE_CHAT_ERROR");
+
+	EventRegistry:RegisterCallback("ChannelFrame.VoiceChannelRequestCompleted", self.OnVoiceChannelRequestCompleted, self);
+end
+
+function VoiceChatHeadsetButtonMixin:OnVoiceChannelRequestCompleted()
+	if self.awaitingVoiceChannelRequest then
+		self.awaitingVoiceChannelRequest = nil;
+
+		if not self:GetVoiceChannel() then
+			self:ClearPendingState();
+		end
+	end
 end
 
 function VoiceChatHeadsetButtonMixin:OnEvent(event, ...)
@@ -94,6 +106,7 @@ end
 function VoiceChatHeadsetButtonMixin:OnClick()
 	local operationRequested = true;
 	local voiceChannel = self:GetVoiceChannel();
+
 	if voiceChannel then
 		local isActive = C_VoiceChat.GetActiveChannelID() == voiceChannel.channelID;
 		if isActive then
@@ -101,6 +114,10 @@ function VoiceChatHeadsetButtonMixin:OnClick()
 		else
 			C_VoiceChat.ActivateChannel(voiceChannel.channelID);
 		end
+	elseif ChannelFrame:IsVoiceChannelRequestInProgress() then
+		-- Another channel's join/login is still in flight; don't interrupt it. Show pending until it completes.
+		operationRequested = false;
+		self.awaitingVoiceChannelRequest = true;
 	elseif self:IsCommunityChannel() then
 		operationRequested = ChannelFrame:TryJoinCommunityStreamChannel(self.clubId, self.streamId);
 	else
@@ -174,14 +191,16 @@ function VoiceChatHeadsetButtonMixin:SetCommunityInfo(clubId, streamInfo)
 	self.clubId = clubId;
 	self.streamId = streamInfo.streamId;
 	self:SetChannelName(streamInfo.name);
-	self:SetChannelType(Enum.ChatChannelType.Communities);
+
+	local channelType = Enum.ChatChannelType.Communities;
+	self:SetChannelType(channelType);
 	self:GetParent():SetVoiceChannel(C_VoiceChat.GetChannelForCommunityStream(clubId, streamInfo.streamId));
-	self:GetParent():SetPendingState(C_VoiceChat.IsChannelJoinPending(Enum.ChatChannelType.Communities, self.clubId, self.streamId));
+	self:GetParent():SetPendingState(C_VoiceChat.IsChannelJoinPending(channelType, self.clubId, self.streamId));
 	self:SetEnabled(self:ShouldEnable());
 end
 
 function VoiceChatHeadsetButtonMixin:IsCommunityChannel()
-	return self.clubId and self.streamId;
+	return self.channelType == Enum.ChatChannelType.Communities and self.clubId and self.streamId;
 end
 
 function VoiceChatHeadsetButtonMixin:SetVoiceActive(voiceActive)
@@ -225,7 +244,10 @@ function VoiceChatHeadsetButtonMixin:ShowTooltip()
 	tooltip:SetOwner(self, "ANCHOR_RIGHT");
 
 	local errorReason = self:GetClubErrorReason();
-	if errorReason then
+	if C_SocialRestrictions.IsAgeVerificationRestricted() then
+		local errMsg = C_SocialRestrictions.IsAgeVerificationRestrictedMinor() and AGE_RESTRICTED_VOICE_CHAT_MINOR_TOOLTIP or AGE_RESTRICTED_VOICE_CHAT_UNVERIFIED_TOOLTIP;
+		GameTooltip_SetTitle(tooltip, errMsg, RED_FONT_COLOR);
+	elseif errorReason then
 		if errorReason == Enum.VoiceChannelErrorReason.IsBattleNetChannel then
 			GameTooltip_SetTitle(tooltip, ERR_GROUPS_VOICE_CHAT_DISABLED, RED_FONT_COLOR);
 		else
@@ -238,6 +260,10 @@ function VoiceChatHeadsetButtonMixin:ShowTooltip()
 	else
 		GameTooltip_SetTitle(tooltip, message);
 	end
+
+	if self:GetChannelType() == Enum.ChatChannelType.DiscordParty and (GetCVarBool("remoteTextToSpeech") or GetCVarBool("speechToText")) then
+		GameTooltip_AddErrorLine(tooltip, DISCORD_VOICE_TTS_STT_UNSUPPORTED, true);
+	end
 	tooltip:Show();
 end
 
@@ -246,11 +272,16 @@ function VoiceChatHeadsetButtonMixin:ShouldShow()
 		return false;
 	end
 
+	local channelType = self:GetChannelType();
+
+	if C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord and channelType == Enum.ChatChannelType.DiscordParty then
+		return true;
+	end
+
 	if self:GetVoiceChannel() or self:IsCommunityChannel() then
 		return true;
 	end
 
-	local channelType = self:GetChannelType();
 	if channelType then
 		return C_ChatInfo.IsPartyChannelType(channelType);
 	end
@@ -260,6 +291,10 @@ end
 
 function VoiceChatHeadsetButtonMixin:ShouldEnable()
 	if not C_VoiceChat.CanPlayerUseVoiceChat() then
+		return false;
+	end
+
+	if C_SocialRestrictions.IsAgeVerificationRestricted() then
 		return false;
 	end
 

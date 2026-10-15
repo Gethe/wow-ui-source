@@ -117,6 +117,7 @@ function RecruitAFriendFrameSocialViewMixin:OnLoad()
 	self:InitializeNoRecruitsScrollBox();
 	RecruitAFriendFrameMixin.OnLoad(self);
 
+	self:InitializeSocialSystemsDisabledText();
 	self:InitializeRecruitHeader();
 	self:InitializeTopDividerAnchoring();
 	self:InitializeActionButton();
@@ -167,6 +168,10 @@ function RecruitAFriendFrameSocialViewMixin:InitializeNoRecruitsScrollBox()
 	ScrollUtil.InitScrollBoxWithScrollBar(self.NoRecruitsScrollBox, self.NoRecruitsScrollBar, view);
 end
 
+function RecruitAFriendFrameSocialViewMixin:InitializeSocialSystemsDisabledText()
+	self.FriendsDisabledText:SetText(SOCIAL_TAB_UNAVAILABLE:format(SOCIAL_UI_RECRUIT_A_FRIEND_TAB_NAME));
+end
+
 function RecruitAFriendFrameSocialViewMixin:OnHide()
 	RecruitAFriendFrameMixin.OnHide(self);
 
@@ -180,6 +185,8 @@ function RecruitAFriendFrameSocialViewMixin:OnShow()
 
 	-- We stop listening for scale changes while we're hidden, so refresh everything that scales with the font size
 	self:OnTextScaleUpdated();
+
+	self:RefreshElementVisibilityForSocialRestrictions();
 end
 
 function RecruitAFriendFrameSocialViewMixin:OnTextScaleUpdated()
@@ -192,6 +199,26 @@ function RecruitAFriendFrameSocialViewMixin:OnTextScaleUpdated()
 	end
 
 	self:SetNoRecruitsText(RAF_NO_RECRUITS_DESC);
+end
+
+function RecruitAFriendFrameSocialViewMixin:RefreshElementVisibilityForSocialRestrictions()
+	local isFriendsEnabled = not C_SocialRestrictions.IsFriendsDisabled();
+
+	-- If social restrictions are in place we need to hide everything...
+	self.RewardClaiming:SetShown(isFriendsEnabled);
+	self.Header:SetShown(isFriendsEnabled);
+	self.Count:SetShown(isFriendsEnabled);
+	if isFriendsEnabled then
+		self:AnchorTopDividerBelowHeader();
+	else
+		self:AnchorTopDividerToTop();
+	end
+
+	-- ...And show our disabled text in the UI
+	self.FriendsDisabledText:SetShown(not isFriendsEnabled);
+
+	self:RefreshRecruitContentVisibility(self:HasRecruits());
+	self.ActionButton:RefreshEnabledState();
 end
 
 function RecruitAFriendFrameSocialViewMixin:GetScrollBoxPadding()
@@ -226,11 +253,17 @@ function RecruitAFriendFrameSocialViewMixin:ScrollElementExtentCalculator(_dataI
 end
 
 -- At any given time we should only be showing either the recruit list or the "no recruit" scrollable text
-function RecruitAFriendFrameSocialViewMixin:HideShowContents(anyRecruits)
-	self.ScrollBox:SetShown(anyRecruits);
-	self.ScrollBar:SetShown(anyRecruits);
-	self.NoRecruitsScrollBox:SetShown(not anyRecruits);
-	self.NoRecruitsScrollBar:SetShown(not anyRecruits);
+-- If friends are disabled we don't show either of them
+function RecruitAFriendFrameSocialViewMixin:RefreshRecruitContentVisibility(anyRecruits)
+	local isFriendsEnabled = not C_SocialRestrictions.IsFriendsDisabled();
+
+	local showRecruitList = isFriendsEnabled and anyRecruits;
+	self.ScrollBox:SetShown(showRecruitList);
+	self.ScrollBar:SetShown(showRecruitList);
+
+	local showNoRecruitsText = isFriendsEnabled and not showRecruitList;
+	self.NoRecruitsScrollBox:SetShown(showNoRecruitsText);
+	self.NoRecruitsScrollBar:SetShown(showNoRecruitsText);
 end
 
 function RecruitAFriendFrameSocialViewMixin:HasRecruits()
@@ -316,29 +349,4 @@ function RecruitAFriendSocialViewClaimOrViewRewardButtonMixin:LayoutScaledClaimG
 	local edgeOverhang = CLAIM_REWARD_GLOW_BASE_EDGE_OVERHANG * weightedScale;
 	self.YellowGlow:SetPoint("LEFT", self, "LEFT", -edgeOverhang, 0);
 	self.YellowGlow:SetPoint("RIGHT", self, "RIGHT", edgeOverhang, 0);
-end
-
-function RecruitAFriendFrameSocialViewInitializeAADC(tabData)
-	local frame = tabData.contentFrame;
-	local isFriendsEnabled = not C_SocialRestrictions.IsFriendsDisabled();
-
-	frame.RewardClaiming:SetShown(isFriendsEnabled);
-	frame.Header:SetShown(isFriendsEnabled);
-	frame.Count:SetShown(isFriendsEnabled);
-	frame.FriendsDisabledText:SetShown(not isFriendsEnabled);
-
-	if isFriendsEnabled then
-		frame:AnchorTopDividerBelowHeader();
-		-- Show only the recruit list or the empty-state scrollbox, never both.
-		frame:HideShowContents(frame:HasRecruits());
-	else
-		frame:AnchorTopDividerToTop();
-		frame.FriendsDisabledText:SetText(SOCIAL_TAB_UNAVAILABLE:format(tabData.tabName));
-		frame.ScrollBox:Hide();
-		frame.ScrollBar:Hide();
-		frame.NoRecruitsScrollBox:Hide();
-		frame.NoRecruitsScrollBar:Hide();
-	end
-
-	frame.ActionButton:RefreshEnabledState();
 end

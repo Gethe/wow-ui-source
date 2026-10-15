@@ -18,6 +18,15 @@ local ToyBoxInfo =
 			},
 		},
 		{
+			Name = "HasAnyToy",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "hasToy", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsToySourceValid",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -92,6 +101,7 @@ local ToyBoxInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

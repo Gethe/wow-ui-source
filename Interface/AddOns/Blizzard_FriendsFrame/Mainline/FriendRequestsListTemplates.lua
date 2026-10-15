@@ -520,6 +520,10 @@ function FriendRequestsListSocialCardDeclineButtonMixin:OnLoad()
 
 		local declineButton = rootDescription:CreateButton(DECLINE, function()
 			ClosePendingFriendRequestDialogs();
+			if not self.inviteID then
+				return;
+			end
+
 			BNDeclineFriendInvite(self.inviteID);
 		end);
 		declineButton:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
@@ -534,7 +538,8 @@ function FriendRequestsListSocialCardDeclineButtonMixin:OnLoad()
 		end);
 		reportButton:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);
 
-		if ModeSupportsStaticPopups() then
+		local canShowBlockInvitesButton = ModeSupportsStaticPopups() and FriendsListUtil.CanAddFriendRequestSenderToBattleNetBlockList(self.inviteIndex);
+		if canShowBlockInvitesButton then
 			local blockButton = rootDescription:CreateButton(BLOCK_INVITES, function()
 				local inviteInfo = C_BattleNet.GetFriendInviteInfo(self.inviteIndex);
 				local inviteID = inviteInfo and inviteInfo.inviteID or nil;

@@ -1,5 +1,5 @@
 function ChatFrameEditBoxMixin:ShouldDeactivateChatOnEditFocusLost()
-	return self:GetText() == "";
+	return self:GetText() == "" and not self.chatFrame:IsGamepadMenuOpen();
 end
 
 function ChatFrameEditBoxMixin:UpdateLanguageHeader()

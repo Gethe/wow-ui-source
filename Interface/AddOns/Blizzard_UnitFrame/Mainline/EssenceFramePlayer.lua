@@ -49,16 +49,31 @@ function EssencePowerBar:UpdateChargedPowerPoints()
 	self:UpdatePower();
 end
 
-function EssencePowerBar:SetupEvoker()
-	local showBar = false;
-	local _, myclass = UnitClass("player");
-	if myclass == "EVOKER" then
-		showBar = true;
-	end
-	return showBar;
+EssencePointButtonMixin = { }; 
+
+local function ResetEssencePointButton(self, showEmpty)
+	self.EssenceFilling.FillingAnim:Stop();
+	self.EssenceFilling.CircleAnim:Stop();
+	self.EssenceDepleting.AnimIn:Stop();
+	self:SetScript("OnUpdate", nil);
+
+	self.EssenceFilling:Hide();
+	self.EssenceFillDone:Hide();
+	self.EssenceFull:Hide();
+	self.EssenceDepleting:Hide();
+	self.EssenceEmpty:SetShown(showEmpty);
 end
 
-EssencePointButtonMixin = { }; 
+function EssencePointButtonMixin:Setup()
+	ResetEssencePointButton(self, true);
+	self:Show();
+end
+
+function EssencePointButtonMixin.OnRelease(framePool, self)
+	ResetEssencePointButton(self, false);
+	Pool_HideAndClearAnchors(framePool, self);
+end
+
 function EssencePointButtonMixin:OnUpdate(elapsed) 
 	local peace,interrupted = GetPowerRegenForPowerType(Enum.PowerType.Essence)
 	if (peace == nil or peace == 0) then

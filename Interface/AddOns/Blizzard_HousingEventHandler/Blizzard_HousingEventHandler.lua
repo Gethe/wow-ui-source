@@ -152,6 +152,16 @@ function HousingFramesUtil.ZoomLayoutCamera(zoom)
 	end
 end
 
+function HousingFramesUtil.MoveLayoutCameraFloor(up)
+	local currentFloor = C_HousingLayout.GetViewedFloor();
+	local newFloor = up and (currentFloor + 1) or (currentFloor - 1);
+
+	if C_HousingLayout.CanSetViewedFloor(newFloor) then
+		PlaySound(up and SOUNDKIT.HOUSING_VIEW_FLOOR_UP or SOUNDKIT.HOUSING_VIEW_FLOOR_DOWN);
+		C_HousingLayout.SetViewedFloor(newFloor);
+	end
+end
+
 function HousingFramesUtil.RotateBasicDecorSelection(direction)
 	if C_HousingBasicMode.IsDecorSelected() then
 		C_HousingBasicMode.RotateDecor(direction);

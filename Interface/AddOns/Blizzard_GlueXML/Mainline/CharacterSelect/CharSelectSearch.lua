@@ -78,7 +78,7 @@ local function CheckCharacterDataForMatch(data, words)
 					break;
 				end
 			else
-				if StringMatch(data.name, word) then
+				if StringMatch(data.fullName, word) then
 					matched = true;
 					break;
 				elseif StringMatch(data.raceName, word) then

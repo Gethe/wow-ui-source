@@ -661,8 +661,9 @@ function CurrencyTransferLogMixin:OnLoad()
 end
 
 function CurrencyTransferLogMixin:OnShow()
-	-- This popup occupies the same space as the transfer log
-	TokenFramePopup:Hide();
+	if TokenFramePopup then
+		TokenFramePopup:Hide();
+	end
 
 	FrameUtil.RegisterFrameForEvents(self, CURRENCY_TRANSFER_LOG_EVENTS);
 	self:Refresh();

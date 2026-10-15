@@ -28,6 +28,7 @@ local ProceduralSpawnConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

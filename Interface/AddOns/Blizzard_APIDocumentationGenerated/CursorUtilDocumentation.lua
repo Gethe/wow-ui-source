@@ -25,6 +25,7 @@ local CursorUtil =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

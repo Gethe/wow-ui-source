@@ -413,6 +413,26 @@ function AchievementFrame_RefreshBackButton(showBackButton)
 	AchievementFrame.HeaderDetails.Back:SetEnabled(HasAchievementSelectionHistory());
 end
 
+-- Overridden by other flavors
+function AchievementFrame_ShowDateCompleted(parent, show)
+	parent.DateCompleted:SetShown(show);
+end
+
+-- Overridden by other flavors
+function AchievementFrame_SetDateCompleted(frame, day, month, year)
+	frame.DateCompleted:SetText(FormatShortDate(day, month, year));
+end
+
+-- Overridden by other flavors
+function AchievementFrame_ShowAsComplete(completed, wasEarnedByMe)
+	return completed or wasEarnedByMe;
+end
+
+-- Overridden by other flavors
+function AchievementFrame_GetOverridePoints(points, achievementId)
+	return points;
+end
+
 local function OpenToSelectedCategory()
 	-- Build out the data provider of our new categories, then get or select an appropriate category.
 	AchievementFrameCategories_UpdateDataProvider();
@@ -891,20 +911,23 @@ function AchievementFrameAchievements_OnLoad (self)
 		end
 	end
 
+	local buttonMixin = self.buttonMixin or AchievementTemplateMixin;
+
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementExtentCalculator(function(dataIndex, elementData)
 		if SelectionBehaviorMixin.IsElementDataIntrusiveSelected(elementData) then
-			return AchievementTemplateMixin.CalculateSelectedHeight(elementData);
+			return buttonMixin.CalculateSelectedHeight(elementData, self.collapsedHeight);
 		else
-			return ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
+			return self.collapsedHeight or ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
 		end
 	end);
 	local function AchievementInitializer(button, elementData)
+		button:SetCollapsedHeight(self.collapsedHeight);
 		button:Init(elementData);
 	end;
-	view:SetElementInitializer("AchievementTemplate", AchievementInitializer);
+	view:SetElementInitializer(self.elementTemplate, AchievementInitializer);
 	view:SetElementResetter(AchievementResetter);
-	view:SetPadding(2,0,0,4,0);
+	view:SetPadding(2,0,0,4, self.elementSpacing or 0);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
 	g_achievementSelectionBehavior = ScrollUtil.AddSelectionBehavior(self.ScrollBox, SelectionBehaviorFlags.Deselectable, SelectionBehaviorFlags.Intrusive);
@@ -1095,23 +1118,36 @@ function AchievementTemplateMixin:OnLoad()
 	self.Tracked:SetScript("OnClick", GenerateClosure(self.OnCheckClicked, self));
 	self.Shield:SetScript("OnClick", GenerateClosure(self.OnShieldClicked, self));
 
+	local trackingDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.TrackAchievementsDisabled);
+	if trackingDisabled then
+		-- Hide the tracked toggle.
+		self.Tracked:ClearAllPoints();
+	end
+
 	self:Collapse();
+end
+
+function AchievementTemplateMixin:LinkInChat()
+	local handled = false;
+	local elementData = self:GetElementData();
+	local achievementLink = GetAchievementLink(elementData.id);
+	if achievementLink then
+		handled = ChatFrameUtil.InsertLink(achievementLink);
+		if handled then
+			AchievementFrame_OnAchievementLinkedInChat(elementData.id);
+		end
+	end
+	return handled;
 end
 
 function AchievementTemplateMixin:ProcessClick(buttonName, down)
 	local handled = false;
 	if IsModifiedClick() then
-		local elementData = self:GetElementData();
 		if IsModifiedClick("CHATLINK") then
-			local achievementLink = GetAchievementLink(elementData.id);
-			if achievementLink then
-				handled = ChatFrameUtil.InsertLink(achievementLink);
-				if handled then
-					AchievementFrame_OnAchievementLinkedInChat(elementData.id);
-				end
-			end
+			handled = self:LinkInChat();
 		end
 		if not handled and IsModifiedClick("QUESTWATCHTOGGLE") then
+			local elementData = self:GetElementData();
 			self:ToggleTracking(elementData.id);
 			handled = true;
 		end
@@ -1126,8 +1162,12 @@ function AchievementTemplateMixin:OnClick(buttonName, down)
 	self:ProcessClick(buttonName, down);
 end
 
+function AchievementTemplateMixin:SetHighlightShown(shown)
+	self.Highlight:SetShown(shown);
+end
+
 function AchievementTemplateMixin:OnEnter()
-	self.Highlight:Show();
+	self:SetHighlightShown(true);
 
 	if ( not self.id ) then
 		return; -- This happens when we create buttons
@@ -1138,37 +1178,45 @@ end
 
 function AchievementTemplateMixin:OnLeave()
 	if not self:IsSelected() then
-		self.Highlight:Hide();
+		self:SetHighlightShown(false);
 	end
     EventRegistry:TriggerEvent("AchievementFrameAchievement.OnLeave", self);
 end
 
-function AchievementTemplateMixin:UpdatePlusMinusTexture()
+function AchievementTemplateMixin:ShouldShowPlusMinus()
 	local id = self.id;
 	if ( not id ) then
+		return false;
+	elseif ( GetAchievementNumCriteria(id) ~= 0 ) then
+		return true;
+	elseif ( self.completed and GetPreviousAchievement(id) ) then
+		return true;
+	elseif ( not self.completed and GetAchievementGuildRep(id) ) then
+		return true;
+	end
+	return false;
+end
+
+function AchievementTemplateMixin:UpdatePlusMinusArt()
+	if ( self.collapsed and self.saturatedStyle ) then
+		self.PlusMinus:SetTexCoord(0, .5, TEXTURES_OFFSET, TEXTURES_OFFSET + 0.25);
+	elseif ( self.collapsed ) then
+		self.PlusMinus:SetTexCoord(.5, 1, TEXTURES_OFFSET, TEXTURES_OFFSET + 0.25);
+	elseif ( self.saturatedStyle ) then
+		self.PlusMinus:SetTexCoord(0, .5, TEXTURES_OFFSET + 0.25, TEXTURES_OFFSET + 0.50);
+	else
+		self.PlusMinus:SetTexCoord(.5, 1, TEXTURES_OFFSET + 0.25, TEXTURES_OFFSET + 0.50);
+	end
+end
+
+function AchievementTemplateMixin:UpdatePlusMinusTexture()
+	if ( not self.id ) then
 		return; -- This happens when we create buttons
 	end
 
-	local display = false;
-	if ( GetAchievementNumCriteria(id) ~= 0 ) then
-		display = true;
-	elseif ( self.completed and GetPreviousAchievement(id) ) then
-		display = true;
-	elseif ( not self.completed and GetAchievementGuildRep(id) ) then
-		display = true;
-	end
-
-	if ( display ) then
+	if ( self:ShouldShowPlusMinus() ) then
 		self.PlusMinus:Show();
-		if ( self.collapsed and self.saturatedStyle ) then
-			self.PlusMinus:SetTexCoord(0, .5, TEXTURES_OFFSET, TEXTURES_OFFSET + 0.25);
-		elseif ( self.collapsed ) then
-			self.PlusMinus:SetTexCoord(.5, 1, TEXTURES_OFFSET, TEXTURES_OFFSET + 0.25);
-		elseif ( self.saturatedStyle ) then
-			self.PlusMinus:SetTexCoord(0, .5, TEXTURES_OFFSET + 0.25, TEXTURES_OFFSET + 0.50);
-		else
-			self.PlusMinus:SetTexCoord(.5, 1, TEXTURES_OFFSET + 0.25, TEXTURES_OFFSET + 0.50);
-		end
+		self:UpdatePlusMinusArt();
 	else
 		self.PlusMinus:Hide();
 	end
@@ -1191,15 +1239,7 @@ function AchievementTemplateMixin:GetObjectiveFrame()
 	return AchievementFrameAchievementsObjectives;
 end
 
-function AchievementTemplateMixin:Init(elementData)
-	self.index = elementData.index;
-	self.id = elementData.id;
-	local category = elementData.category;
-
-	-- reset button info to get proper saturation/desaturation
-	self.completed = nil;
-
-	-- title
+function AchievementTemplateMixin:UpdateHeaderArt()
 	if InGuildView() then
 		self.TitleBar:SetAlpha(1);
 		self.Icon.frame:SetTexture("Interface\\AchievementFrame\\UI-Achievement-Guild");
@@ -1229,6 +1269,62 @@ function AchievementTemplateMixin:Init(elementData)
 		topTsunami:SetAlpha(0.3);
 		self.Glow:SetTexCoord(0, 1, 0.00390625, 0.25390625);
 	end
+end
+
+function AchievementTemplateMixin:UpdateShieldArt(points)
+	if ( points > 0 ) then
+		self.Shield.Icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
+	else
+		self.Shield.Icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
+	end
+end
+
+function AchievementTemplateMixin:ShowGuildArt()
+	if ( self.completed ) then
+		self.Tabard:Show();
+		self.Shield:SetFrameLevel(self.Tabard:GetFrameLevel() + 1);
+		SetLargeGuildTabardTextures("player", self.Tabard.Emblem, self.Tabard.Background, self.Tabard.Border);
+	end
+	self.GuildCornerL:Show();
+	self.GuildCornerR:Show();
+end
+
+function AchievementTemplateMixin:HideGuildArt()
+	self.Tabard:Hide();
+	self.GuildCornerL:Hide();
+	self.GuildCornerR:Hide();
+end
+
+function AchievementTemplateMixin:GetCollapsedHeight()
+	return self.collapsedHeight or ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
+end
+
+function AchievementTemplateMixin.GetMaxCollapsedLines()
+	return ACHIEVEMENTUI_MAX_LINES_COLLAPSED;
+end
+
+function AchievementTemplateMixin:SetCollapsedHeight(height)
+	if ( self.collapsedHeight == height ) then
+		return;
+	end
+
+	self.collapsedHeight = height;
+	self.collapsed = nil; -- Invalidate so Collapse re-applies the new height.
+end
+
+function AchievementTemplateMixin:UpdateBackgroundForHeight(height)
+	self.Background:SetTexCoord(0, 1, math.max(0, 1 - (height / 256)), 1);
+end
+
+function AchievementTemplateMixin:Init(elementData)
+	self.index = elementData.index;
+	self.id = elementData.id;
+	local category = elementData.category;
+
+	-- reset button info to get proper saturation/desaturation
+	self.completed = nil;
+
+	self:UpdateHeaderArt();
 
 	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy;
 	if self.index then
@@ -1238,6 +1334,7 @@ function AchievementTemplateMixin:Init(elementData)
 		id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(self.id);
 		category = GetAchievementCategory(self.id);
 	end
+	points = AchievementFrame_GetOverridePoints(points, id);
 
 	local saturatedStyle;
 	if ( bit.band(flags, ACHIEVEMENT_FLAGS_ACCOUNT) == ACHIEVEMENT_FLAGS_ACCOUNT ) then
@@ -1261,11 +1358,7 @@ function AchievementTemplateMixin:Init(elementData)
 		AchievementShield_SetPoints(points, self.Shield.Points, AchievementPointsFont, AchievementPointsFontSmall);
 	end
 
-	if ( points > 0 ) then
-		self.Shield.Icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields]]);
-	else
-		self.Shield.Icon:SetTexture([[Interface\AchievementFrame\UI-Achievement-Shields-NoPoints]]);
-	end
+	self:UpdateShieldArt(points);
 
 	if ( isGuild ) then
 		self.Shield.Points:Show();
@@ -1281,32 +1374,20 @@ function AchievementTemplateMixin:Init(elementData)
 	self.HiddenDescription:SetText(description);
 	self.numLines = math.ceil(self.HiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
 	self.Icon.texture:SetTexture(icon);
-	if ( completed or wasEarnedByMe ) then
+	if ( AchievementFrame_ShowAsComplete(completed, wasEarnedByMe) ) then
 		self.completed = true;
-		self.DateCompleted:SetText(FormatShortDate(day, month, year));
-		self.DateCompleted:Show();
+		AchievementFrame_SetDateCompleted(self, day, month, year);
+		AchievementFrame_ShowDateCompleted(self, true);
 		if ( self.saturatedStyle ~= saturatedStyle ) then
 			self:Saturate();
 		end
 	else
 		self.completed = nil;
-		self.DateCompleted:Hide();
+		AchievementFrame_ShowDateCompleted(self, false);
 		self:Desaturate();
 	end
 
-	if ( rewardText == "" ) then
-		self.Reward:Hide();
-		self.RewardBackground:Hide();
-	else
-		self.Reward:SetText(rewardText);
-		self.Reward:Show();
-		self.RewardBackground:Show();
-		if ( self.completed ) then
-			self.RewardBackground:SetVertexColor(1, 1, 1);
-		else
-			self.RewardBackground:SetVertexColor(0.35, 0.35, 0.35);
-		end
-	end
+	self:InitRewards(rewardText);
 
 	local noSound = true;
 	if ( C_ContentTracking.IsTracking(Enum.ContentTrackingType.Achievement, id) ) then
@@ -1322,7 +1403,7 @@ function AchievementTemplateMixin:Init(elementData)
 		local height = self:DisplayObjectives(self.id, self.completed);
 		self:Expand(height);
 
-		self.Highlight:Show();
+		self:SetHighlightShown(true);
 
 		if ( not completed or (not wasEarnedByMe and not isGuild) ) then
 			self.Tracked:Show();
@@ -1334,7 +1415,7 @@ function AchievementTemplateMixin:Init(elementData)
 		end
 
 		if ( not self:IsMouseOver() ) then
-			self.Highlight:Hide();
+			self:SetHighlightShown(false);
 		end
 
 		self:Collapse();
@@ -1348,20 +1429,31 @@ function AchievementTemplateMixin:Collapse()
 
 	self.collapsed = true;
 	self:UpdatePlusMinusTexture();
-	self:SetHeight(ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT);
-	self.Background:SetTexCoord(0, 1, 1-(ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT / 256), 1);
+	local height = self:GetCollapsedHeight();
+	self:SetHeight(height);
+	self:UpdateBackgroundForHeight(height);
 	if ( not self.Tracked:GetChecked() ) then
 		self.Tracked:Hide();
 	end
-	self.Tabard:Hide();
-	self.GuildCornerL:Hide();
-	self.GuildCornerR:Hide();
+	self:HideGuildArt();
 
 	self.Description:Show();
 	self.HiddenDescription:Hide();
 
 	if ( not self:IsMouseOver() ) then
-		self.Highlight:Hide();
+		self:SetHighlightShown(false);
+	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local button = SmartNavigation:GetCurrentButton();
+		local objectivesFrame = button:GetParent();
+		local achievementButtonFrame = nil;
+		if objectivesFrame then
+			achievementButtonFrame = objectivesFrame:GetParent();
+		end
+		if achievementButtonFrame and (achievementButtonFrame == self) then
+			SmartNavigation:SelectButton(self);
+		end
 	end
 end
 
@@ -1376,17 +1468,11 @@ function AchievementTemplateMixin:Expand(height)
 		if ( height < GUILDACHIEVEMENTBUTTON_MINHEIGHT ) then
 			height = GUILDACHIEVEMENTBUTTON_MINHEIGHT;
 		end
-		if ( self.completed ) then
-			self.Tabard:Show();
-			self.Shield:SetFrameLevel(self.Tabard:GetFrameLevel() + 1);
-			SetLargeGuildTabardTextures("player", self.Tabard.Emblem, self.Tabard.Background, self.Tabard.Border);
-		end
-		self.GuildCornerL:Show();
-		self.GuildCornerR:Show();
+		self:ShowGuildArt();
 	end
 	self:SetHeight(height);
 	self:GetHeight(); -- debug check
-	self.Background:SetTexCoord(0, 1, math.max(0, 1-(height / 256)), 1);
+	self:UpdateBackgroundForHeight(height);
 
 	self.HiddenDescription:Show();
 	self.Description:Hide();
@@ -1418,7 +1504,7 @@ function AchievementTemplateMixin:Saturate()
 	self.Glow:SetVertexColor(1.0, 1.0, 1.0);
 	self.Icon:Saturate();
 	self.Shield:Saturate();
-	self.Reward:SetVertexColor(1, .82, 0);
+	self:SetRewardVertexColor(1, .82, 0);
 	self.Label:SetVertexColor(1, 1, 1);
 	self.Description:SetTextColor(0, 0, 0, 1);
 	self.Description:SetShadowOffset(0, 0);
@@ -1445,7 +1531,7 @@ function AchievementTemplateMixin:Desaturate()
 	self.Icon:Desaturate();
 	self.Shield:Desaturate();
 	self.Shield.Points:SetVertexColor(.65, .65, .65);
-	self.Reward:SetVertexColor(.8, .8, .8);
+	self:SetRewardVertexColor(.8, .8, .8);
 	self.Label:SetVertexColor(.65, .65, .65);
 	self.Description:SetTextColor(1, 1, 1, 1);
 	self.Description:SetShadowOffset(1, -1);
@@ -1455,8 +1541,9 @@ end
 
 -- Mirrors the implementations of AchievementObjectives_DisplayCriteria and
 -- AchievementObjectives_DisplayProgressiveAchievement.
-function AchievementTemplateMixin.CalculateSelectedHeight(elementData)
-	local totalHeight = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
+function AchievementTemplateMixin.CalculateSelectedHeight(elementData, collapsedHeight)
+	local baseHeight = collapsedHeight or ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
+	local totalHeight = baseHeight;
 	local objectivesHeight = 0;
 
 
@@ -1559,7 +1646,7 @@ function AchievementTemplateMixin.CalculateSelectedHeight(elementData)
 
 	AchievementFrame.PlaceholderHiddenDescription:SetText(description);
 	local numLines = math.ceil(AchievementFrame.PlaceholderHiddenDescription:GetHeight() / ACHIEVEMENTUI_FONTHEIGHT);
-	if (totalHeight ~= ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT) or (numLines > ACHIEVEMENTUI_MAX_LINES_COLLAPSED) then
+	if (totalHeight ~= baseHeight) or (numLines > AchievementTemplateMixin.GetMaxCollapsedLines()) then
 		local descriptionHeight = AchievementFrame.PlaceholderHiddenDescription:GetHeight();
 		totalHeight = totalHeight + descriptionHeight - ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT;
 
@@ -1579,7 +1666,8 @@ function AchievementTemplateMixin:DisplayObjectives(id, completed)
 	local topAnchor = self.HiddenDescription;
 	objectivesFrame:ClearAllPoints();
 	objectivesFrame.completed = completed;
-	local height = ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT;
+	local collapsedHeight = self:GetCollapsedHeight();
+	local height = collapsedHeight;
 
 	if ( completed and GetPreviousAchievement(id) ) then
 		objectivesFrame:Clear();
@@ -1601,10 +1689,10 @@ function AchievementTemplateMixin:DisplayObjectives(id, completed)
 
 	height = height + objectivesFrame:GetHeight();
 
-	if ( height ~= ACHIEVEMENTBUTTON_COLLAPSEDHEIGHT or self.numLines > ACHIEVEMENTUI_MAX_LINES_COLLAPSED ) then
+	if ( height ~= collapsedHeight or self.numLines > AchievementTemplateMixin.GetMaxCollapsedLines() ) then
 		local descriptionHeight = self.HiddenDescription:GetHeight();
 		height = height + descriptionHeight - ACHIEVEMENTBUTTON_DESCRIPTIONHEIGHT;
-		if ( self.Reward:IsShown() ) then
+		if ( self.Reward and self.Reward:IsShown() ) then
 			height = height + 4;
 		end
 	end
@@ -1614,6 +1702,10 @@ function AchievementTemplateMixin:DisplayObjectives(id, completed)
 end
 
 function AchievementTemplateMixin:ToggleTracking()
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.TrackAchievementsDisabled) then
+		return;
+	end
+
 	local id = self.id;
 	if ( trackedAchievements[id] ) then
 		C_ContentTracking.StopTracking(Enum.ContentTrackingType.Achievement, id, Enum.ContentTrackingStopType.Manual);
@@ -1643,7 +1735,9 @@ function AchievementTemplateMixin:ToggleTracking()
 end
 
 function AchievementTemplateMixin:SetAsTracked(tracked, noSound)
-	self.Check:SetShown(tracked);
+	if self.Check then
+		self.Check:SetShown(tracked);
+	end
 	self.Tracked:ApplyChecked(tracked, noSound);
 	if tracked then
 		self.Tracked:Show();
@@ -1662,9 +1756,29 @@ function AchievementTemplateMixin:OnShieldClicked(o, buttonName, down)
 	self:ProcessClick(buttonName, down);
 end
 
-AchivementButtonCheckMixin = {};
+function AchievementTemplateMixin:InitRewards(rewardText)
+	if ( rewardText == "" ) then
+		self.Reward:Hide();
+		self.RewardBackground:Hide();
+	else
+		self.Reward:SetText(rewardText);
+		self.Reward:Show();
+		self.RewardBackground:Show();
+		if ( self.completed ) then
+			self.RewardBackground:SetVertexColor(1, 1, 1);
+		else
+			self.RewardBackground:SetVertexColor(0.35, 0.35, 0.35);
+		end
+	end
+end
 
-function AchivementButtonCheckMixin:ApplyChecked(checked, noSound)
+function AchievementTemplateMixin:SetRewardVertexColor(r, g, b)
+	self.Reward:SetVertexColor(1, .82, 0);
+end
+
+AchievementButtonCheckMixin = {};
+
+function AchievementButtonCheckMixin:ApplyChecked(checked, noSound)
 	if not noSound then
 		if checked then
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
@@ -1675,7 +1789,7 @@ function AchivementButtonCheckMixin:ApplyChecked(checked, noSound)
 	self:SetChecked(checked);
 end
 
-function AchivementButtonCheckMixin:OnEnter()
+function AchievementButtonCheckMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	if ( self:GetChecked() ) then
 		GameTooltip:SetText(UNTRACK_ACHIEVEMENT_TOOLTIP, nil, nil, nil, nil, true);
@@ -1684,7 +1798,7 @@ function AchivementButtonCheckMixin:OnEnter()
 	end
 end
 
-function AchivementButtonCheckMixin:OnLeave()
+function AchievementButtonCheckMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
@@ -1719,10 +1833,20 @@ function AchievementsObjectivesMixin:OnLoad()
 end
 
 function AchievementsObjectivesMixin:OnHide()
-	self:Clear();
+	if self.clearOnClose then
+		self:Clear();
+	end
 end
 
 function AchievementsObjectivesMixin:Clear()
+	if InputUtil.IsGamepadUIEnabled() then
+		if self.metas then
+			for i, button in ipairs(self.metas) do
+				SmartNavigation_ClearJumpNavigationOverrides(button);
+			end
+		end
+	end
+
 	self.pools:ReleaseAll();
 	self.criterias = {};
 	self.progressBars = {};
@@ -1904,6 +2028,8 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 	local numMetaRows = 0;
 	local numCriteriaRows = 0;
 	local numExtraCriteriaRows = 0;
+	local isGamepadUI = InputUtil.IsGamepadUIEnabled();
+	local achievementButtonFrame = objectivesFrame:GetParent();
 
 	local function AddExtraCriteriaRow()
 		numExtraCriteriaRows = numExtraCriteriaRows + 1;
@@ -1960,13 +2086,29 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 				-- this will be anchored below, we need to know how many text criteria there are
 				firstMetaCriteria = metaCriteria;
 				numMetaRows = numMetaRows + 1;
+				if isGamepadUI then
+					SmartNavigation_AddJumpNavigationOverride(metaCriteria, SMART_NAV_INPUT_DIRECTION.LEFT, achievementButtonFrame);
+					SmartNavigation_AddJumpNavigationOverride(metaCriteria, SMART_NAV_INPUT_DIRECTION.UP, achievementButtonFrame);
+				end
 			elseif ( math.fmod(metas, 2) == 0 ) then
 				local anchorMeta = objectivesFrame:GetMeta(metas-1);
 				metaCriteria:SetPoint("LEFT", anchorMeta, "RIGHT", 35, 0);
+				if isGamepadUI then
+					SmartNavigation_AddBidirectionalJumpNavigationOverride(anchorMeta, SMART_NAV_INPUT_DIRECTION.RIGHT, metaCriteria);
+					SmartNavigation_AddJumpNavigationOverride(metaCriteria, SMART_NAV_INPUT_DIRECTION.RIGHT, achievementButtonFrame);
+
+					if numMetaRows == 1 then
+						SmartNavigation_AddJumpNavigationOverride(metaCriteria, SMART_NAV_INPUT_DIRECTION.UP, achievementButtonFrame);
+					end
+				end
 			else
 				local anchorMeta = objectivesFrame:GetMeta(metas-2);
 				metaCriteria:SetPoint("TOPLEFT", anchorMeta, "BOTTOMLEFT", -0, 2);
 				numMetaRows = numMetaRows + 1;
+				if isGamepadUI then
+					SmartNavigation_AddBidirectionalJumpNavigationOverride(anchorMeta, SMART_NAV_INPUT_DIRECTION.DOWN, metaCriteria);
+					SmartNavigation_AddJumpNavigationOverride(metaCriteria, SMART_NAV_INPUT_DIRECTION.LEFT, achievementButtonFrame);
+				end
 			end
 
 			local achievementId, achievementName, points, achievementCompleted, month, day, year, description, achFlags, iconpath = GetAchievementInfo(assetID);
@@ -2146,6 +2288,14 @@ function AchievementObjectives_DisplayCriteria (objectivesFrame, id)
 		else
 			firstMetaCriteria:SetPoint("TOPLEFT", objectivesFrame, "TOPLEFT", 20, yOffsetMeta);
 		end
+	end
+
+	if ( (metas > 0) and isGamepadUI ) then
+		if ( metas >= 2) then
+			SmartNavigation_AddJumpNavigationOverride(objectivesFrame:GetMeta(metas - 1), SMART_NAV_INPUT_DIRECTION.DOWN, achievementButtonFrame);
+		end
+
+		SmartNavigation_AddJumpNavigationOverride(objectivesFrame:GetMeta(metas), SMART_NAV_INPUT_DIRECTION.DOWN, achievementButtonFrame);
 	end
 
 	local height = numMetaRows * ACHIEVEMENTBUTTON_METAROWHEIGHT + numCriteriaRows * ACHIEVEMENTBUTTON_CRITERIAROWHEIGHT;
@@ -2410,6 +2560,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 		if ( i <= numAchievements ) then
 			achievementID = select(i, ...);
 			id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
+			points = AchievementFrame_GetOverridePoints(points, id);
 
 			local saturatedStyle;
 			if ( bit.band(flags, ACHIEVEMENT_FLAGS_ACCOUNT) == ACHIEVEMENT_FLAGS_ACCOUNT ) then
@@ -2445,7 +2596,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 			button.id = id;
 
 			if ( completed ) then
-				button.DateCompleted:SetText(FormatShortDate(day, month, year));
+				AchievementFrame_SetDateCompleted(button, day, month, year);
 			else
 				button.DateCompleted:SetText("");
 			end
@@ -2468,6 +2619,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 					break;
 				end
 				id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(achievementID);
+				points = AchievementFrame_GetOverridePoints(points, id);
 				if ( completed ) then
 					defaultAchievementCount = defaultAchievementCount+1;
 				else
@@ -2484,7 +2636,7 @@ function AchievementFrameSummary_UpdateAchievements(...)
 					button.Icon.texture:SetTexture(icon);
 					button.id = id;
 					if ( month ) then
-						button.DateCompleted:SetText(FormatShortDate(day, month, year));
+						AchievementFrame_SetDateCompleted(button, day, month, year);
 					else
 						button.DateCompleted:SetText("");
 					end
@@ -2517,7 +2669,7 @@ function AchievementFrameSummaryAchievement_OnLoad(self)
 	AchievementFrameSummaryAchievements.buttons = AchievementFrameSummaryAchievements.buttons or {};
 	tinsert(AchievementFrameSummaryAchievements.buttons, self);
 	self.TitleBar:SetVertexColor(1,1,1,0.5);
-	self.DateCompleted:Show();
+	AchievementFrame_ShowDateCompleted(self, true);
 end
 
 function AchievementFrameSummaryAchievement_SetGuildTextures(button)
@@ -2696,6 +2848,8 @@ function AchievementFrame_SelectAndScrollToAchievementId(scrollBox, achievementI
 			-- Selection expands and modifies the size. We need to update the scroll box for the alignment to be correct.
 			scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
 			scrollBox:ScrollToElementData(elementData, ScrollBoxConstants.AlignCenter);
+
+			return elementData;
 		end
 	end
 end
@@ -2726,6 +2880,7 @@ function AchievementComparisonTemplateMixin:Init(elementData)
 	local category = elementData.category;
 	local index = elementData.index;
 	local id, name, points, completed, month, day, year, description, flags, icon, rewardText, isGuild, wasEarnedByMe, earnedBy = GetAchievementInfo(category, index);
+	points = AchievementFrame_GetOverridePoints(points, id);
 
 	assertsafe(id ~= nil, "Missing AchievementInfo for category '%d' index '%d'", category, index);
 
@@ -2773,14 +2928,14 @@ function AchievementComparisonTemplateMixin:Init(elementData)
 
 		if ( completed ) then
 			player.completed = true;
-			player.DateCompleted:SetText(FormatShortDate(day, month, year));
-			player.DateCompleted:Show();
+			AchievementFrame_SetDateCompleted(player, day, month, year);
+			AchievementFrame_ShowDateCompleted(player, true);
 			if ( player.saturatedStyle ~= saturatedStyle ) then
 				player:Saturate();
 			end
 		else
 			player.completed = nil;
-			player.DateCompleted:Hide();
+			AchievementFrame_ShowDateCompleted(player, false);
 			player:Desaturate();
 		end
 

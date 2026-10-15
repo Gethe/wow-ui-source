@@ -54,6 +54,9 @@
 			<OnMouseUp method="OnMouseUp"/>
 			<OnClick method="OnClick"/>
 		</Scripts>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_SkillsHeader" type="string"/>
+		</KeyValues>
 	</Button>
 
 	<Button name="ReputationSubHeaderTemplate" inherits="ReputationEntryTemplate" mixin="ReputationSubHeaderMixin" virtual="true">

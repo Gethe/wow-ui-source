@@ -1,0 +1,7 @@
+## Title: Blizzard_SpellTypeIconOverlay
+## Author: Blizzard Entertainment
+## DefaultState: enabled
+## AllowLoad: Game
+
+Blizzard_SpellTypeIconOverlay.xml
+Blizzard_SpellTypeIconOverlay.lua

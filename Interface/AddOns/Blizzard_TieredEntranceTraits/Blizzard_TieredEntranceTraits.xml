@@ -46,7 +46,7 @@
 						<MaskedTexture childKey="Icon"/>
 					</MaskedTextures>
 				</MaskTexture>
-				<Texture atlas="themed-scenario-challenge-gold-circle" useAtlasSize="true">
+				<Texture parentKey="GoldCircle" atlas="themed-scenario-challenge-gold-circle" useAtlasSize="true">
 					<Anchors>
 						<Anchor point="CENTER" relativeKey="$parent.Icon"/>
 					</Anchors>
@@ -71,7 +71,7 @@
 				<Anchor point="CENTER"/>
 			</Anchors>
 		</PushedTexture>
-		<DisabledTexture parentKey="NormalTexture" atlas="themed-scenario-challenge-button-up" useAtlasSize="true" desaturated="true">
+		<DisabledTexture parentKey="DisabledTexture" atlas="themed-scenario-challenge-button-up" useAtlasSize="true" desaturated="true">
 			<Anchors>
 				<Anchor point="CENTER"/>
 			</Anchors>
@@ -99,6 +99,7 @@
 		<Scripts>
 			<OnHide method="OnHide"/>
 			<OnClick method="OnClick"/>
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Button>
 </Ui>

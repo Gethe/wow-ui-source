@@ -44,6 +44,7 @@ local CharacterCreationConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -7,6 +7,9 @@ do
 		allowOtherPanels = 1,
 		checkFit = 1,
 	};
+	if professionsFrameWidthOverride then
+		attributes["width"] = professionsFrameWidthOverride
+	end
 	RegisterUIPanel(ProfessionsFrame, attributes);
 end
 

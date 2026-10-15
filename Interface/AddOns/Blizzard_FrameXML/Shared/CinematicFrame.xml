@@ -80,6 +80,9 @@
 				</Scripts>
 			</Frame>
 		</Frames>
+		<KeyValues>
+			<KeyValue key="useCustomNavigation" value="true" type="boolean"/>
+		</KeyValues>
 		<Scripts>
 			<OnLoad function="CinematicFrame_OnLoad"/>
 			<OnHide function="CinematicFrame_OnHide"/>

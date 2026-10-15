@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="Blizzard_ToyBox.lua"/>
 
   <CheckButton name="ToySpellButtonTemplate" inherits="CollectionsSpellButtonTemplate" virtual="true">
     <Scripts>
@@ -24,8 +23,8 @@
 
   <Frame name="ToyBox" parent="CollectionsJournal" setAllPoints="true" hidden="true">
 		<Frames>
-			<StatusBar parentKey="progressBar" inherits="CollectionsProgressBarTemplate" />
-			
+			<StatusBar parentKey="ProgressTracker" inherits="ToyProgressTracker" />
+
 			<!-- Searching -->
 			<EditBox parentKey="searchBox" inherits="SearchBoxTemplate" letters="40">
 				<Size x="115" y="20"/>

@@ -109,7 +109,7 @@ function EditModeSystemMixin:PrepareForSave()
 		self:BreakSnappedFrames();
 	end
 
-	if not self:IsInDefaultPosition() and (self.alwaysUseTopLeftAnchor or self.alwaysUseTopRightAnchor) then
+	if not self:IsInDefaultPosition() and (self.alwaysUseTopLeftAnchor or self.alwaysUseTopRightAnchor or self.alwaysUseTopCenterAnchor) then
 		self:BreakFrameSnap();
 	end
 end
@@ -744,6 +744,10 @@ function EditModeSystemMixin:BreakFrameSnap(deltaX, deltaY)
 		if self.alwaysUseTopRightAnchor then
 			offsetX = -((UIParent:GetWidth() - self:GetRight() * scale) / scale);
 			anchorPoint = "TOPRIGHT";
+		elseif self.alwaysUseTopCenterAnchor then
+			local centerX = (self:GetLeft() + self:GetRight()) / 2;
+			offsetX = (centerX * scale - UIParent:GetWidth() / 2) / scale;
+			anchorPoint = "TOP";
 		else
 			offsetX = self:GetLeft();
 			anchorPoint = "TOPLEFT";
@@ -1011,7 +1015,7 @@ end
 function EditModeActionBarSystemMixin:RefreshBarArt(force)
 	if (self.barArtDirty or force) then
 		-- Used by MainActionBar.
-		if self.dynamicEndCaps then
+		if self.manageEndCaps then
 			self:UpdateEndCaps(self.hideBarArt);
 		end
 
@@ -1233,6 +1237,74 @@ function EditModeActionBarSystemMixin:AddExtraButtons(extraButtonPool)
 	return true;
 end
 
+EditModeGamepadMainActionBarSystemMixin = {};
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		return;
+	end
+
+	if not self:HasSetting(setting) then
+		return;
+	end
+
+	if setting == Enum.EditModeGamepadMainActionBarSetting.Compact then
+		self:UpdateSystemSettingCompact();
+	elseif setting == Enum.EditModeGamepadMainActionBarSetting.ShowEmptyBars then
+		self:UpdateSystemSettingShowEmptyBars();
+	elseif setting == Enum.EditModeGamepadMainActionBarSetting.ShowButtonPrompts then
+		self:UpdateSystemSettingShowButtonPrompts();
+	elseif setting == Enum.EditModeGamepadMainActionBarSetting.ShowHighlight then
+		self:UpdateSystemSettingShowHighlight();
+	elseif setting == Enum.EditModeGamepadMainActionBarSetting.ShouldExpand then
+		self:UpdateSystemSettingShouldExpand();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSettingCompact()
+	local val = self:GetSettingValueBool(Enum.EditModeGamepadMainActionBarSetting.Compact);
+	local oldVal = self:SetUseCompactLayout(val);
+	if oldVal ~= val then
+		self:RefreshCompactLayout();
+	end
+end
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSettingShowEmptyBars()
+	local val = self:GetSettingValueBool(Enum.EditModeGamepadMainActionBarSetting.ShowEmptyBars);
+	local oldVal = self:SetShowEmptyBars(val);
+	if oldVal ~= val then
+		self:RefreshSecondaryActionbarVisibility();
+	end
+end
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSettingShowButtonPrompts()
+	local val = self:GetSettingValueBool(Enum.EditModeGamepadMainActionBarSetting.ShowButtonPrompts);
+	local oldVal = self:SetShowButtonPrompts(val);
+	if oldVal ~= val then
+		self:RefreshActiveActionBar();
+	end
+end
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSettingShowHighlight()
+	local val = self:GetSettingValueBool(Enum.EditModeGamepadMainActionBarSetting.ShowHighlight);
+	local oldVal = self:SetShowHighlight(val);
+	if oldVal ~= val then
+		self:RefreshActiveActionBar();
+	end
+end
+
+function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSettingShouldExpand()
+	local val = self:GetSettingValueBool(Enum.EditModeGamepadMainActionBarSetting.ShouldExpand);
+	local oldVal = self:SetShouldExpand(val);
+	if oldVal ~= val then
+		self:RefreshActiveActionBar();
+	end
+end
+
 EditModeUnitFrameSystemMixin = {};
 
 local function OpenRaidFrameSettings()
@@ -1342,6 +1414,11 @@ function EditModeUnitFrameSystemMixin:ShouldShowSetting(setting)
 	elseif setting == Enum.EditModeUnitFrameSetting.FrameSize then
 		local shouldHideSetting = self:HasSetting(Enum.EditModeUnitFrameSetting.UseLargerFrame) and not self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseLargerFrame);
 		return not shouldHideSetting;
+	elseif setting == Enum.EditModeUnitFrameSetting.UseHorizontalLayout then
+		return self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss;
+	elseif setting == Enum.EditModeUnitFrameSetting.GrowDirection then
+		return self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss
+			and self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseHorizontalLayout);
 	end
 
 	return true;
@@ -1443,6 +1520,18 @@ end
 function EditModeUnitFrameSystemMixin:UpdateSystemSettingCastBarOnSide()
 	if self.SetCastBarPosition then
 		self:SetCastBarPosition(self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.CastBarOnSide));
+	end
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingUseHorizontalLayout()
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
+		BossTargetFrameContainer:SetUseHorizontalLayout(self:GetSettingValueBool(Enum.EditModeUnitFrameSetting.UseHorizontalLayout));
+	end
+end
+
+function EditModeUnitFrameSystemMixin:UpdateSystemSettingGrowDirection(entireSystemUpdate)
+	if self.systemIndex == Enum.EditModeUnitFrameSystemIndices.Boss then
+		BossTargetFrameContainer:SetGrowDirection(self:GetSettingValue(Enum.EditModeUnitFrameSetting.GrowDirection), entireSystemUpdate);
 	end
 end
 
@@ -1584,6 +1673,10 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 			self:UpdateSystemSettingUseHorizontalGroups();
 		elseif setting == Enum.EditModeUnitFrameSetting.CastBarOnSide then
 			self:UpdateSystemSettingCastBarOnSide();
+		elseif setting == Enum.EditModeUnitFrameSetting.UseHorizontalLayout then
+			self:UpdateSystemSettingUseHorizontalLayout();
+		elseif setting == Enum.EditModeUnitFrameSetting.GrowDirection then
+			self:UpdateSystemSettingGrowDirection(entireSystemUpdate);
 		elseif setting == Enum.EditModeUnitFrameSetting.ShowCastTime then
 			self:UpdateSystemSettingShowCastTime();
 		elseif setting == Enum.EditModeUnitFrameSetting.ViewRaidSize then
@@ -1621,6 +1714,11 @@ function EditModeUnitFrameSystemMixin:UpdateSystemSetting(setting, entireSystemU
 end
 
 EditModeBossUnitFrameSystemMixin = {};
+
+function EditModeBossUnitFrameSystemMixin:ResetToDefaultPosition()
+	self:UpdateSystemSettingValue(Enum.EditModeUnitFrameSetting.GrowDirection, Enum.BossFrameGrowDirection.Right);
+	EditModeSystemMixin.ResetToDefaultPosition(self);
+end
 
 function EditModeBossUnitFrameSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);
@@ -2378,6 +2476,15 @@ function EditModeMicroMenuSystemMixin:OnEditModeExit()
 	QueueStatusFrame:Update();
 end
 
+function EditModeMicroMenuSystemMixin:ApplySystemAnchor()
+	EditModeSystemMixin.ApplySystemAnchor(self);
+
+	if (QueueStatusButton) then
+		-- In Modern WoW, the QueueStatusButton's position can change based on the Micro Menu's position. Apply that logic.
+		QueueStatusButton:UpdateDefaultAnchor();
+	end
+end
+
 function EditModeMicroMenuSystemMixin:OnAnyEditModeSystemAnchorChanged()
 	EditModeSystemMixin.OnAnyEditModeSystemAnchorChanged(self);
 
@@ -2388,6 +2495,11 @@ function EditModeMicroMenuSystemMixin:OnDragStop()
 	EditModeSystemMixin.OnDragStop(self);
 
 	self:Layout();
+
+	if (QueueStatusButton) then
+		-- In Modern WoW, the QueueStatusButton's position can change based on the Micro Menu's position. Apply that logic.
+		QueueStatusButton:UpdateDefaultAnchor();
+	end
 end
 
 function EditModeMicroMenuSystemMixin:UpdateSystem(systemInfo)
@@ -2408,10 +2520,6 @@ function EditModeMicroMenuSystemMixin:UpdateSystemSettingSize()
 	MicroMenu:SetNormalScale(self:GetSettingValue(Enum.EditModeMicroMenuSetting.Size) / 100);
 end
 
-function EditModeMicroMenuSystemMixin:UpdateSystemSettingEyeSize()
-	MicroMenu:SetQueueStatusScale(self:GetSettingValue(Enum.EditModeMicroMenuSetting.EyeSize) / 100);
-end
-
 function EditModeMicroMenuSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
 
@@ -2426,12 +2534,12 @@ function EditModeMicroMenuSystemMixin:UpdateSystemSetting(setting, entireSystemU
 		self:UpdateSystemSettingOrder();
 	elseif setting == Enum.EditModeMicroMenuSetting.Size and self:HasSetting(Enum.EditModeMicroMenuSetting.Size) then
 		self:UpdateSystemSettingSize();
-	elseif setting == Enum.EditModeMicroMenuSetting.EyeSize and self:HasSetting(Enum.EditModeMicroMenuSetting.EyeSize) then
-		self:UpdateSystemSettingEyeSize();
 	end
 
 	if not entireSystemUpdate then
 		self:Layout();
+		-- In Modern WoW, the QueueStatusButton's position can change based on the Micro Menu's position. Apply that logic.
+		QueueStatusButton:UpdateDefaultAnchor();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -2538,6 +2646,7 @@ end
 function EditModeStatusTrackingBarSystemMixin:ApplySystemAnchor()
 	EditModeSystemMixin.ApplySystemAnchor(self);
 
+	StatusTrackingBarManager:CheckForLayoutChange();
 	StatusTrackingBarManager:UpdateBarVisuals(true);
 end
 
@@ -2550,7 +2659,9 @@ function EditModeStatusTrackingBarSystemMixin:UpdateSystemSetting(setting, entir
 	end
 
 	if setting == Enum.EditModeStatusTrackingBarSetting.Size and self:HasSetting(Enum.EditModeStatusTrackingBarSetting.Size) then
-		self:SetScale(self:GetSettingValue(Enum.EditModeStatusTrackingBarSetting.Size) / 100);
+		self:SetSize(StatusTrackingBarManager:GetExpectedWidth() * self:GetSettingValue(Enum.EditModeStatusTrackingBarSetting.Size) / 100, self:GetHeight());
+		StatusTrackingBarManager:CheckForLayoutChange();
+		StatusTrackingBarManager:UpdateBarVisuals(true);
 	end
 
 	self:ClearDirtySetting(setting);
@@ -2671,6 +2782,80 @@ function EditModeTimerBarsSystemMixin:UpdateSystemSetting(setting, entireSystemU
 
 	if setting == Enum.EditModeTimerBarsSetting.Size and self:HasSetting(Enum.EditModeTimerBarsSetting.Size) then
 		self:UpdateSystemSettingSize();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeSwingTimerSystemMixin = {};
+
+function EditModeSwingTimerSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+	self:SetIsInEditMode(false);
+end
+
+-- A managed frame is sized and positioned by its container, so resizing it requires the container to lay out again.
+function EditModeSwingTimerSystemMixin:UpdateFramePositions()
+	if self.isManagedFrame and self:IsInDefaultPosition() then
+		ManageFramePositions();
+	end
+end
+
+function EditModeSwingTimerSystemMixin:UpdateSystemSettingScale()
+	self:SetScale(self:GetSettingValue(Enum.EditModeSwingTimerSetting.Scale) / 100);
+end
+
+function EditModeSwingTimerSystemMixin:UpdateSystemSettingOpacity()
+	self:SetAlpha(self:GetSettingValue(Enum.EditModeSwingTimerSetting.Opacity) / 100);
+end
+
+function EditModeSwingTimerSystemMixin:UpdateSystemSettingVisibility()
+	self.visibility = self:GetSettingValue(Enum.EditModeSwingTimerSetting.Visibility);
+	self:UpdateShownStateAndRegistration();
+end
+
+function EditModeSwingTimerSystemMixin:UpdateSystemSettingWidth()
+	self:SetWidth(self:GetSettingValue(Enum.EditModeSwingTimerSetting.Width));
+	self:UpdateFramePositions();
+end
+
+function EditModeSwingTimerSystemMixin:UpdateSystemSettingHeight()
+	self:SetHeight(self:GetSettingValue(Enum.EditModeSwingTimerSetting.Height));
+	self:UpdateFramePositions();
+end
+
+function EditModeSwingTimerSystemMixin:UpdateSystemSettingShowBarTitle()
+	local showBarTitle = self:GetSettingValueBool(Enum.EditModeSwingTimerSetting.ShowBarTitle);
+	self:GetTypeLabel():SetShown(showBarTitle);
+	self:GetTypeLabelShadow():SetShown(showBarTitle);
+end
+
+function EditModeSwingTimerSystemMixin:UpdateSystemSettingShowTime()
+	self:GetTimeLabel():SetShown(self:GetSettingValueBool(Enum.EditModeSwingTimerSetting.ShowTime));
+end
+
+function EditModeSwingTimerSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeSwingTimerSetting.Scale and self:HasSetting(Enum.EditModeSwingTimerSetting.Scale) then
+		self:UpdateSystemSettingScale();
+	elseif setting == Enum.EditModeSwingTimerSetting.Opacity and self:HasSetting(Enum.EditModeSwingTimerSetting.Opacity) then
+		self:UpdateSystemSettingOpacity();
+	elseif setting == Enum.EditModeSwingTimerSetting.Visibility and self:HasSetting(Enum.EditModeSwingTimerSetting.Visibility) then
+		self:UpdateSystemSettingVisibility();
+	elseif setting == Enum.EditModeSwingTimerSetting.Width and self:HasSetting(Enum.EditModeSwingTimerSetting.Width) then
+		self:UpdateSystemSettingWidth();
+	elseif setting == Enum.EditModeSwingTimerSetting.Height and self:HasSetting(Enum.EditModeSwingTimerSetting.Height) then
+		self:UpdateSystemSettingHeight();
+	elseif setting == Enum.EditModeSwingTimerSetting.ShowBarTitle and self:HasSetting(Enum.EditModeSwingTimerSetting.ShowBarTitle) then
+		self:UpdateSystemSettingShowBarTitle();
+	elseif setting == Enum.EditModeSwingTimerSetting.ShowTime and self:HasSetting(Enum.EditModeSwingTimerSetting.ShowTime) then
+		self:UpdateSystemSettingShowTime();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -3375,6 +3560,11 @@ function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingShowBarTe
 	self:SetShowBarText(showBarText);
 end
 
+function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSettingAllowMouseoverThrough()
+	local allowMouseoverThrough = self:GetSettingValueBool(Enum.EditModePersonalResourceDisplaySetting.AllowMouseoverThrough);
+	self:SetAllowMouseoverThrough(allowMouseoverThrough);
+end
+
 function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
 	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
 
@@ -3410,6 +3600,8 @@ function EditModePersonalResourceDisplaySystemMixin:UpdateSystemSetting(setting,
 		self:UpdateSystemSettingBarWidth();
 	elseif setting == Enum.EditModePersonalResourceDisplaySetting.ShowBarText and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.ShowBarText) then
 		self:UpdateSystemSettingShowBarText();
+	elseif setting == Enum.EditModePersonalResourceDisplaySetting.AllowMouseoverThrough and self:HasSetting(Enum.EditModePersonalResourceDisplaySetting.AllowMouseoverThrough) then
+		self:UpdateSystemSettingAllowMouseoverThrough();
 	end
 
 	self:ClearDirtySetting(setting);
@@ -3597,6 +3789,80 @@ function EditModeRaidWarningSystemMixin:OnEditModeExit()
 	EditModeSystemMixin.OnEditModeExit(self);
 
 	self:SetIsInEditMode(false);
+end
+
+EditModeMainActionBarEndCapSystemMixin = {};
+
+function EditModeMainActionBarEndCapSystemMixin:AnchorSelectionFrame()
+	if self.systemIndex ~= self.lastSystemIndex then
+		self.lastSystemIndex = self.systemIndex;
+
+		self.Selection:ClearAllPoints();
+		if self.systemIndex == Enum.EditModeMainActionBarEndCapSystemIndices.EndCapLeft then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 26, -5);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -34, 2);
+		elseif self.systemIndex == Enum.EditModeMainActionBarEndCapSystemIndices.EndCapRight then
+			self.Selection:SetPoint("TOPLEFT", self, "TOPLEFT", 34, -5);
+			self.Selection:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -26, 2);
+		end
+	end
+
+	self:UpdateClampOffsets();
+end
+
+function EditModeMainActionBarEndCapSystemMixin:UpdateSystemSettingVisibility()
+	local visible = not self:GetSettingValueBool(Enum.EditModeMainActionBarEndCapSetting.Hidden);
+	self:SetVisibilitySetting(visible);
+end
+
+function EditModeMainActionBarEndCapSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeMainActionBarEndCapSetting.Hidden and self:HasSetting(Enum.EditModeMainActionBarEndCapSetting.Hidden) then
+		self:UpdateSystemSettingVisibility();
+	end
+
+	self:ClearDirtySetting(setting);
+end
+
+EditModeGroupFinderSystemMixin = {};
+
+function EditModeGroupFinderSystemMixin:ApplySystemAnchor()
+	EditModeSystemMixin.ApplySystemAnchor(self);
+
+	-- The QueueStatusButton's default position can change based on other frames. Apply that logic.
+	self:UpdateDefaultAnchor();
+end
+
+function EditModeGroupFinderSystemMixin:OnDragStop()
+	EditModeSystemMixin.OnDragStop(self);
+
+	-- QueueStatusFrame (the mouseover tooltip) changes anchors based on our position.
+	QueueStatusFrame:UpdatePosition(FrameUtil.GetScreenQuadrant(self), true);
+end
+
+function EditModeGroupFinderSystemMixin:UpdateSystemSettingSize()
+	self:SetScale(self:GetSettingValue(Enum.EditModeGroupFinderSetting.Size) / 100);
+end
+
+function EditModeGroupFinderSystemMixin:UpdateSystemSetting(setting, entireSystemUpdate)
+	EditModeSystemMixin.UpdateSystemSetting(self, setting, entireSystemUpdate);
+
+	if not self:IsSettingDirty(setting) then
+		-- If the setting didn't change we have nothing to do
+		return;
+	end
+
+	if setting == Enum.EditModeGroupFinderSetting.Size and self:HasSetting(Enum.EditModeGroupFinderSetting.Size) then
+		self:UpdateSystemSettingSize();
+	end
+
+	self:ClearDirtySetting(setting);
 end
 
 EditModeLossOfControlSystemMixin = {};

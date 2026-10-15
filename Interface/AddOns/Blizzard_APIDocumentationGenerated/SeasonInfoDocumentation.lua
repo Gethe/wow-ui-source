@@ -25,6 +25,15 @@ local SeasonInfo =
 				{ Name = "seasonID", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "GetTimeUntilCurrentPVPSeasonEnd",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "timeInSeconds", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -34,6 +43,7 @@ local SeasonInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

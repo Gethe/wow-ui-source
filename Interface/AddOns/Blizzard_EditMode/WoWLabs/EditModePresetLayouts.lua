@@ -1,4 +1,5 @@
-MAIN_ACTION_BAR_DEFAULT_OFFSET_Y = 60;
+MAIN_ACTION_BAR_OFFSET_Y = 60;
+MAIN_ACTION_BAR_MANAGE_END_CAPS = true;
 RIGHT_ACTION_BAR_DEFAULT_OFFSET_X = -5;
 RIGHT_ACTION_BAR_DEFAULT_PADDING_X = 0;
 RIGHT_ACTION_BAR_DEFAULT_OFFSET_Y = -77;
@@ -27,7 +28,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = MainBarOffsetX,
-				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 			},
 		},
 
@@ -46,7 +47,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = Bar2OffsetX,
-				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 			},
 		},
 
@@ -65,7 +66,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = Bar3OffsetX,
-				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 			},
 		},
 
@@ -332,6 +333,8 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 				[Enum.EditModeUnitFrameSetting.CastBarOnSide] = 1,
 				-- [Enum.EditModeUnitFrameSetting.ShowCastTime] = 0,
 				[Enum.EditModeUnitFrameSetting.FrameSize] = 0,
+				[Enum.EditModeUnitFrameSetting.UseHorizontalLayout] = 0,
+				[Enum.EditModeUnitFrameSetting.GrowDirection] = Enum.BossFrameGrowDirection.Right,
 			},
 			anchorInfo = {
 				point = "RIGHT",
@@ -587,7 +590,7 @@ local spectateModeSystemMap =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = MainBarOffsetX,
-				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 			},
 		},
 
@@ -606,7 +609,7 @@ local spectateModeSystemMap =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = Bar2OffsetX,
-				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 			},
 		},
 
@@ -625,7 +628,7 @@ local spectateModeSystemMap =
 				relativeTo = "UIParent",
 				relativePoint = "BOTTOM",
 				offsetX = Bar3OffsetX,
-				offsetY = MAIN_ACTION_BAR_DEFAULT_OFFSET_Y,
+				offsetY = MAIN_ACTION_BAR_OFFSET_Y,
 			},
 		},
 	},

@@ -117,53 +117,10 @@ function PetActionBarMixin:OnUpdate(elapsed)
 end
 
 function PetActionBarMixin:Update()
-	local petActionButton, petActionIcon, petAutoCastOverlay;
+	local petActionButton;
 	for i=1, NUM_PET_ACTION_SLOTS, 1 do
 		petActionButton = self.actionButtons[i];
-		petActionIcon = petActionButton.icon;
-		petAutoCastOverlay = petActionButton.AutoCastOverlay;
-		local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(i);
-		if ( not isToken ) then
-			petActionIcon:SetTexture(texture);
-			petActionButton.tooltipName = name;
-		else
-			petActionIcon:SetTexture(_G[texture]);
-			petActionButton.tooltipName = _G[name];
-		end
-		petActionButton.isToken = isToken;
-		if spellID then
-			local spell = Spell:CreateFromSpellID(spellID);
-			petActionButton.spellDataLoadedCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
-				petActionButton.tooltipSubtext = spell:GetSpellSubtext();
-			end);
-		end
-		if ( isActive ) then
-			if ( IsPetAttackAction(i) ) then
-				petActionButton:StartFlash();
-				-- the checked texture looks a little confusing at full alpha (looks like you have an extra ability selected)
-				petActionButton:GetCheckedTexture():SetAlpha(0.5);
-			else
-				petActionButton:StopFlash();
-				petActionButton:GetCheckedTexture():SetAlpha(1.0);
-			end
-			petActionButton:SetChecked(true);
-		else
-			petActionButton:StopFlash();
-			petActionButton:SetChecked(false);
-		end
-		petAutoCastOverlay:SetShown(autoCastAllowed);
-		petAutoCastOverlay:ShowAutoCastEnabled(autoCastEnabled);
-		if ( texture ) then
-			if ( GetPetActionSlotUsable(i) ) then
-				petActionIcon:SetVertexColor(1, 1, 1);
-			else
-				petActionIcon:SetVertexColor(0.4, 0.4, 0.4);
-			end
-			petActionIcon:Show();
-		else
-			petActionIcon:Hide();
-		end
-
+		petActionButton:UpdateButtonState();
 		SharedActionButton_RefreshSpellHighlight(petActionButton, HasPetActionHighlightMark(i));
 	end
 	self:UpdateCooldowns();
@@ -231,6 +188,11 @@ function PetActionBarMixin:SetBackgroundArtShown(shown)
 			texture:SetShown(shown);
 		end
 	end
+end
+
+function PetActionBarMixin:GamepadModeVisibilityHandler(externalVisibility)
+	self:HideBase();
+	EventRegistry:TriggerEvent("PetActionBar.GamepadVisibilityHandler", externalVisibility);
 end
 
 PetActionButtonMixin = {}
@@ -402,3 +364,49 @@ function PetActionButtonMixin:GetActionButtonInfo()
 
 	return info;
 end
+
+function PetActionButtonMixin:UpdateButtonState()
+	local petActionButtonID = self:GetID();
+	local name, texture, isToken, isActive, autoCastAllowed, autoCastEnabled, spellID = GetPetActionInfo(petActionButtonID);
+	if ( not isToken ) then
+		self.icon:SetTexture(texture);
+		self.tooltipName = name;
+	else
+		self.icon:SetTexture(_G[texture]);
+		self.tooltipName = _G[name];
+	end
+	self.isToken = isToken;
+	if spellID then
+		local spell = Spell:CreateFromSpellID(spellID);
+		self.spellDataLoadedCancelFunc = spell:ContinueWithCancelOnSpellLoad(function()
+			self.tooltipSubtext = spell:GetSpellSubtext();
+		end);
+	end
+	if ( isActive ) then
+		if ( IsPetAttackAction(petActionButtonID) ) then
+			self:StartFlash();
+			-- the checked texture looks a little confusing at full alpha (looks like you have an extra ability selected)
+			self:GetCheckedTexture():SetAlpha(0.5);
+		else
+			self:StopFlash();
+			self:GetCheckedTexture():SetAlpha(1.0);
+		end
+		self:SetChecked(true);
+	else
+		self:StopFlash();
+		self:SetChecked(false);
+	end
+	self.AutoCastOverlay:SetShown(autoCastAllowed);
+	self.AutoCastOverlay:ShowAutoCastEnabled(autoCastEnabled);
+	if ( texture ) then
+		if ( GetPetActionSlotUsable(petActionButtonID) ) then
+			self.icon:SetVertexColor(1, 1, 1);
+		else
+			self.icon:SetVertexColor(0.4, 0.4, 0.4);
+		end
+		self.icon:Show();
+	else
+		self.icon:Hide();
+	end
+end
+

@@ -1,6 +1,6 @@
 ## Title: Blizzard Shared Talent UI
 ## LoadOnDemand: 0
-## Dependencies: Blizzard_SpellSearch
+## Dependencies: Blizzard_SpellSearch, Blizzard_SpellTypeIconOverlay
 
 Blizzard_SharedTalentUtil.lua
 Blizzard_SharedTalentEdgeTemplates.xml
@@ -34,5 +34,9 @@ Blizzard_TalentFrameList.lua
 Blizzard_TalentFrameList.xml
 Blizzard_TalentFrameGrid.lua
 Blizzard_TalentFrameGrid.xml
+WoWHack\Blizzard_TalentFrameGridSelection.lua [AllowLoadGameType wowhack]
+WoWHack\Blizzard_TalentFrameGridSelection.xml [AllowLoadGameType wowhack]
+Blizzard_ClassTalentSearch.lua
 Blizzard_AutoCommitTraitFrame.lua
 Blizzard_AutoCommitTraitFrame.xml
+[Game]\Blizzard_SharedTalentOverrides.lua [AllowLoadGameType camelot]

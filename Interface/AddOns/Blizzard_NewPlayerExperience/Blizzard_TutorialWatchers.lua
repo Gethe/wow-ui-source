@@ -156,7 +156,7 @@ function Class_UI_Watcher:StartWatching()
 		showSpellbookButton = true;
 	end
 
-	if C_QuestLog.IsQuestFlaggedCompleted(self.tutorialData.StartingQuest) then
+	if C_QuestLog.IsQuestFlaggedCompleted(self.tutorialData:GetStartingQuest()) then
 		-- the starting quest is completed
 		showTargetFrame = true;
 		showStatusTrackingBar = true;
@@ -211,7 +211,7 @@ end
 function Class_UI_Watcher:QUEST_COMPLETE()
 	if (not self.IsActive) then return; end
 
-	if C_QuestLog.IsQuestFlaggedCompleted(self.tutorialData.StartingQuest) then
+	if C_QuestLog.IsQuestFlaggedCompleted(self.tutorialData:GetStartingQuest()) then
 		self:SetShown(TutorialData.UI_Elements.TARGET_FRAME, true);
 		self:SetShown(TutorialData.UI_Elements.STATUS_TRACKING_BAR, true);
 	end
@@ -440,10 +440,21 @@ function Class_TurnInQuestWatcher:QUEST_COMPLETE()
 		end
 	end
 
-	if (GetNumQuestChoices() > 1) then
+	if self:ShouldShowPromptRewardChoice() then
 		--  Wait one frame to make sure the reward buttons have been positioned
 		C_Timer.After(0.1, function() self:PromptRewardChoice(areAllItemsUsable); end);
 	end
+end
+
+function Class_TurnInQuestWatcher:ShouldShowPromptRewardChoice()
+	if GetNumQuestChoices() <= 1 then
+		return false;
+	end
+	local playerLevel = UnitLevel("player");
+	if TutorialData.PICK_REWARD_LEVEL > 0 and playerLevel > TutorialData.PICK_REWARD_LEVEL then
+		return false;
+	end
+	return true;
 end
 
 function Class_TurnInQuestWatcher:PromptRewardChoice(areAllItemsUsable)
@@ -472,7 +483,7 @@ end
 Class_XPBarWatcher = class("XPBarWatcher", Class_TutorialBase);
 function Class_XPBarWatcher:OnInitialize()
 	self:SetMaxLevel(TutorialData.MAX_XP_BAR_LEVEL);
-	self.questID = TutorialData:GetFactionData().StartingQuest;
+	self.questID = TutorialData:GetFactionData():GetStartingQuest();
 end
 
 function Class_XPBarWatcher:OnBegin()

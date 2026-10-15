@@ -256,6 +256,7 @@ local CombatAudioAlert =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

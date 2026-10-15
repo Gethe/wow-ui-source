@@ -37,7 +37,7 @@ function PVPHeaderMixin:OnClick()
 	if sortType then
         SortBattlefieldScoreData(sortType);
 	end
-	
+
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
@@ -135,7 +135,7 @@ function PVPHeaderStringMixin:Init(textID, textAlignment, sortType, tooltipTitle
 	local text = self.text;
 	text:SetJustifyH(textAlignment);
 	text:SetText(self.textID);
-	
+
 	-- Clamp the width to force wrapping, if applicable.
 	local width = text:GetStringWidth();
 	local maxColumnWidth = 85;
@@ -218,7 +218,7 @@ end
 function PVPCellNameMixin:OnEnter()
 	local tooltipOffset = 0 - self.text:GetWidth();
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", tooltipOffset, 0);
-	
+
 	local className = self.rowData.className or "";
 	local raceName = self.rowData.raceName or "";
 	GameTooltip_AddNormalLine(GameTooltip, self.rowData.name);
@@ -234,6 +234,7 @@ function PVPCellNameMixin:OnClick(button)
 	if button == "RightButton" then
 		local contextData =
 		{
+			ownerFrame = self,
 			unit = self.rowData.guid,
 			name = self.rowData.name,
 		};
@@ -339,7 +340,7 @@ end
 function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	local iconPadding = 2;
 	local textPadding = 15;
-	
+
 	tableBuilder:Reset();
 	tableBuilder:SetDataProvider(C_PvP.GetScoreInfo);
 	tableBuilder:SetTableMargins(5);
@@ -358,7 +359,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", NAME, "LEFT", "name");
 	local fillCoefficient = 1.0;
 	local namePadding = 4;
-	
+
 	local isSoloShuffle = C_PvP.IsSoloShuffle();
 	if isSoloShuffle then
 		column:ConstructCells("BUTTON", "PVPSoloShuffleCellNameTemplate", useAlternateColor);
@@ -395,14 +396,14 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "killingBlows", useAlternateColor);
 	end
-	
+
 	if C_PvP.CanDisplayHonorableKills() then
 		column = tableBuilder:AddColumn();
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HONORABLE_KILLS, "CENTER", "hk", HONORABLE_KILLS_TOOLTIP_TITLE, HONORABLE_KILLS_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "honorableKills", useAlternateColor);
 	end
-	 
+
 	if  C_PvP.CanDisplayDeaths() then
 		column = tableBuilder:AddColumn();
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", DEATHS, "CENTER", "deaths", DEATHS_TOOLTIP_TITLE, DEATHS_TOOLTIP);
@@ -431,7 +432,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 		local cellStatTemplate = "PVPCellStatTemplate";
 		AddPVPStatColumns(cellStatTemplate);
 	end
-	
+
 	local mmrPre = false;
 	local ratingPre = false;
 	local ratingPost = false;
@@ -460,7 +461,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "rating", useAlternateColor);
 	end
-	
+
 	if ratingPost then
 		column = tableBuilder:AddColumn();
 		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", BATTLEGROUND_NEW_RATING, "CENTER", "bgratingPost", BATTLEGROUND_NEW_RATING_TOOLTIP_TITLE, BATTLEGROUND_NEW_RATING_TOOLTIP);

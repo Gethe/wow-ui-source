@@ -336,6 +336,7 @@ local EquipmentManager =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

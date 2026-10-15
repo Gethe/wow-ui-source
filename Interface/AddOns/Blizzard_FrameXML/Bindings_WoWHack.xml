@@ -165,18 +165,18 @@
 			ActionButtonUp(4);
 		end
 	</Binding>
-	<Binding name="ACTIONBUTTON5" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+	<Binding name="MULTIACTIONBAR6BUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if ( keystate == "down" ) then
-			ActionButtonDown(5);
+			MultiActionButtonDown("MultiBar6", 1);
 		else
-			ActionButtonUp(5);
+			MultiActionButtonUp("MultiBar6", 1);
 		end
 	</Binding>
-	<Binding name="ACTIONBUTTON6" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+	<Binding name="MULTIACTIONBAR6BUTTON2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if ( keystate == "down" ) then
-			ActionButtonDown(6);
+			MultiActionButtonDown("MultiBar6", 2);
 		else
-			ActionButtonUp(6);
+			MultiActionButtonUp("MultiBar6", 2);
 		end
 	</Binding>
 
@@ -194,38 +194,45 @@
 	</Binding>
 
 	<!-- MultiAction bar bindings header="MULTIACTIONBAR" -->
-	<Binding name="MULTIACTIONBAR1BUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR2">
+	<Binding name="MULTIACTIONBAR1BUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if ( keystate == "down" ) then
 			MultiActionButtonDown("MultiBarBottomLeft", 1);
 		else
 			MultiActionButtonUp("MultiBarBottomLeft", 1);
 		end
 	</Binding>
-	<Binding name="MULTIACTIONBAR1BUTTON2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR2">
+	<Binding name="MULTIACTIONBAR1BUTTON2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if ( keystate == "down" ) then
 			MultiActionButtonDown("MultiBarBottomLeft", 2);
 		else
 			MultiActionButtonUp("MultiBarBottomLeft", 2);
 		end
 	</Binding>
-	<Binding name="MULTIACTIONBAR1BUTTON3" runOnUp="true" category="BINDING_HEADER_ACTIONBAR2">
+	<Binding name="MULTIACTIONBAR1BUTTON3" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
 		if ( keystate == "down" ) then
 			MultiActionButtonDown("MultiBarBottomLeft", 3);
 		else
 			MultiActionButtonUp("MultiBarBottomLeft", 3);
 		end
 	</Binding>
-	<Binding name="WOWHACKITEM1" category="BINDING_HEADER_ACTIONBAR2">
-		WoWHackItemBar:UseItemButton(1);
+	<Binding name="WOWHACKITEM1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		WoWHackItemBar:UseItemButton(1, keystate);
 	</Binding>
-	<Binding name="WOWHACKITEM2" category="BINDING_HEADER_ACTIONBAR2">
-		WoWHackItemBar:UseItemButton(2);
+	<Binding name="WOWHACKITEM2" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		WoWHackItemBar:UseItemButton(2, keystate);
 	</Binding>
-	<Binding name="WOWHACKITEM3" category="BINDING_HEADER_ACTIONBAR2">
-		WoWHackItemBar:UseItemButton(3);
+	<Binding name="WOWHACKITEM3" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		WoWHackItemBar:UseItemButton(3, keystate);
 	</Binding>
-	<Binding name="WOWHACKITEM4" category="BINDING_HEADER_ACTIONBAR2">
-		WoWHackItemBar:UseItemButton(4);
+	<Binding name="WOWHACKITEM4" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		WoWHackItemBar:UseItemButton(4, keystate);
+	</Binding>
+	<Binding name="MULTIACTIONBAR5BUTTON1" runOnUp="true" category="BINDING_HEADER_ACTIONBAR">
+		if ( keystate == "down" ) then
+			MultiActionButtonDown("MultiBar5", 1);
+		else
+			MultiActionButtonUp("MultiBar5", 1);
+		end
 	</Binding>
 
 	<!-- Target function key bindings header="TARGETING" -->
@@ -403,9 +410,20 @@
 		PlayerSpellsUtil.ToggleSpellBookFrame();
 	</Binding>
 
+	<Binding name="TOGGLESCRIBE" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
+		local displayOnly = not IsScribeFromMicroButtonEditable();
+		ToggleScribeUI(displayOnly);
+	</Binding>
+
 	<Binding name="TOGGLEACHIEVEMENT" category="BINDING_HEADER_INTERFACE">
 		if not DISALLOW_FRAME_TOGGLING and ( ( HasCompletedAnyAchievement() or IsInGuild() ) and CanShowAchievementUI() ) then
 			ToggleAchievementFrame();
+		end
+	</Binding>
+
+	<Binding name="TOGGLEENCOUNTERJOURNAL" ignoreInKioskMode="true" header="BLANK15" category="BINDING_HEADER_INTERFACE">
+		if not DISALLOW_FRAME_TOGGLING and CanShowEncounterJournal() then
+			ToggleEncounterJournal();
 		end
 	</Binding>
 
@@ -552,6 +570,9 @@
 	<Binding name="PREVVIEW" category="BINDING_HEADER_CAMERA">
 		PrevView();
 	</Binding>
+	<Binding name="TOGGLECAMERA" category="BINDING_HEADER_CAMERA">
+		TurnOrActionToggle();
+	</Binding>
 	<Binding name="CAMERAZOOMIN" runOnUp="true" category="BINDING_HEADER_CAMERA">
 		if ( keystate == "down" ) then
 			MoveViewInStart(1.0, 0, true);
@@ -675,6 +696,7 @@
 
 	<!-- Modified Click Actions -->
 	<ModifiedClick action="SELFCAST" default="ALT"/>
+	<ModifiedClick action="EXPANDTOOLTIP" default="SHIFT"/>
 	<ModifiedClick action="FOCUSCAST" default="NONE"/>
 	<ModifiedClick action="MOUSEOVERCAST" default="NONE"/>
 	<ModifiedClick action="AUTOLOOTTOGGLE" default="SHIFT"/>

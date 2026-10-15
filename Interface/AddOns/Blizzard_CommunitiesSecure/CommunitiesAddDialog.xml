@@ -3,11 +3,14 @@
 	<Script file="CommunitiesAddDialog.lua"/>
 
 	<ScopedModifier forbidden="true">
-		<Frame name="CommunitiesAddDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesAddDialogMixin" hidden="true">
+		<Frame name="CommunitiesAddDialog" inherits="GamepadSecureBaseDialogTemplate, FocusFramesInterfaceTemplate" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesAddDialogMixin" hidden="true">
 			<Size x="514" y="426"/>
 			<Anchors>
 				<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 			</Anchors>
+			<KeyValues>
+				<KeyValue key="layoutType" type="string" value="DialogFrameTemplate"/>
+			</KeyValues>
 			<Layers>
 				<Layer level="ARTWORK">
 					<FontString parentKey="DialogLabel" text="COMMUNITIES_ADD_DIALOG_LABEL" inherits="GameFontHighlight">
@@ -167,16 +170,19 @@
 				</Button>
 			</Frames>
 			<Scripts>
-				<OnShow method="OnShow"/>
+				<OnShow method="OnShow" inherit="prepend"/>
 				<OnAttributeChanged method="OnAttributeChanged"/>
-				<OnHide method="OnHide"/>
+				<OnHide method="OnHide" inherit="prepend"/>
 			</Scripts>
 		</Frame>
-		<Frame name="CommunitiesCreateDialog" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesCreateDialogMixin" hidden="true">
+		<Frame name="CommunitiesCreateDialog" inherits="GamepadSecureBaseDialogTemplate, FocusFramesInterfaceTemplate" parent="UIParent" enableMouse="true" frameStrata="DIALOG" mixin="CommunitiesCreateDialogMixin" hidden="true">
 			<Size x="412" y="395"/>
 			<Anchors>
 				<Anchor point="TOP" relativeTo="UIParent" x="0" y="-142"/>
 			</Anchors>
+			<KeyValues>
+				<KeyValue key="layoutType" type="string" value="DialogFrameTemplate"/>
+			</KeyValues>
 			<Layers>
 				<Layer level="OVERLAY">
 					<Texture parentKey="IconPreviewRing" atlas="communities-ring-gold">
@@ -360,9 +366,9 @@
 				</Button>
 			</Frames>
 			<Scripts>
-				<OnShow method="OnShow"/>
+				<OnShow method="OnShow" inherit="prepend"/>
 				<OnAttributeChanged method="OnAttributeChanged"/>
-				<OnHide method="OnHide"/>
+				<OnHide method="OnHide" inherit="prepend"/>
 			</Scripts>
 		</Frame>
 	</ScopedModifier>

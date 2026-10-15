@@ -148,7 +148,7 @@ function RaidFrameSocialGroupMixin:CreatePlayer(raidFrame, i, rank, role, name, 
 	playerFrame:Show();
 end
 
-RaidFrameSocialMixin = {};
+RaidFrameSocialMixin = CreateFromMixins(SocialUISystemMixin);
 
 local PLAYERS_PER_GROUP = 5;
 
@@ -169,6 +169,9 @@ local RAID_FRAME_EVENTS =
 function RaidFrameSocialMixin:OnLoad()
 	self.groupPool = CreateFramePool("Frame", self.GroupsFrame, "RaidFrameSocialGroupTemplate");
 	self.groups = {};
+
+	-- Keep listening even while hidden so we can tell the Social UI to refresh our tab's availability
+	self:RegisterEvent("SOCIAL_UI_RAID_LIST_SYSTEM_STATUS_UPDATED");
 
 	self.ConvertToRaidButton:SetScript("OnClick", function()
 		C_PartyInfo.ConvertToRaid();
@@ -204,6 +207,8 @@ function RaidFrameSocialMixin:OnEvent(event, ...)
 		self:UpdateReadyChecks();
 	elseif event == "READY_CHECK_FINISHED" then
 		self:FinishReadyChecks();
+	elseif event == "SOCIAL_UI_RAID_LIST_SYSTEM_STATUS_UPDATED" then
+		self:TriggerSocialUIEvent(SocialUIFrameMixin.Event.FeatureAvailabilityChanged);
 	end
 end
 

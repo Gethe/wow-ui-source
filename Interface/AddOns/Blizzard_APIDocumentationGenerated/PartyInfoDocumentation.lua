@@ -41,6 +41,15 @@ local PartyInfo =
 			},
 		},
 		{
+			Name = "CanPromoteToLeader",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "success", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "CanStartInstanceAbandonVote",
 			Type = "Function",
 			Documentation = { "Returns whether it's possible to start a vote at this time" },
@@ -910,6 +919,7 @@ local PartyInfo =
 			},
 		},
 	},
+
 	Predicates =
 	{
 		{

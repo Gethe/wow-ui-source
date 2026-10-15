@@ -110,6 +110,49 @@ function LinkUtil.IsLinkType(link, matchLinkType)
 	return linkType == matchLinkType;
 end
 
+-- Determines if a given link can be used in the dressing room, whether
+-- it's a creature, mount, battle pet, or item.
+-- Currently does not support housing items.
+-- TODO: Support housing items.
+function LinkUtil.IsDressUpLink(link)
+	local linkType, linkOptions = LinkUtil.ExtractLink(link);
+	if linkType == LinkTypes.Item then
+		if C_Item.IsDressableItemByID(link) then
+			return true;
+		end
+
+		local itemID = LinkUtil.SplitLinkOptions(linkOptions);
+		itemID = tonumber(itemID);
+		if itemID then
+			local _, _, _, creatureID, _, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoByItemID(itemID);
+			if creatureID and displayID then
+				return true;
+			end
+
+			local mountID = C_MountJournal.GetMountFromItem(itemID);
+			if mountID and mountID ~= 0 then
+				return true;
+			end
+		end
+	elseif linkType == LinkTypes.BattlePet then
+		local linkID, _, _, _, _, _, battlePetID = LinkUtil.SplitLinkOptions(linkOptions);
+		local speciesID, _, _, _, _, displayID, _, _, _, _, creatureID = C_PetJournal.GetPetInfoByPetID(battlePetID);
+		if speciesID == tonumber(linkID) then
+			return (creatureID ~= nil) and (displayID ~= nil);
+		end
+
+		speciesID = tonumber(linkID);
+		_, _, _, creatureID, _, _, _, _, _, _, displayID = C_PetJournal.GetPetInfoBySpeciesID(speciesID);
+		return (creatureID ~= nil) or (displayID ~= nil);
+	elseif linkType == LinkTypes.Mount or linkType == LinkTypes.Spell then
+		local spellID = LinkUtil.SplitLinkOptions(linkOptions);
+		local mountID = C_MountJournal.GetMountFromSpell(tonumber(spellID));
+		return (mountID ~= nil) and (mountID ~= 0);
+	end
+
+	return false;
+end
+
 
 function ExtractHyperlinkString(linkString)
 	local preString, hyperlinkString, postString = linkString:match("^(.*)|H(.+)|h(.*)$");

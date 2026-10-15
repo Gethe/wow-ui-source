@@ -8,7 +8,7 @@ local COMMUNITIES_LIST_EVENTS = {
 	"GUILD_ROSTER_UPDATE",
 	"CLUB_FINDER_APPLICANT_INVITE_RECIEVED",
 };
-	
+
 local NEW_COMMUNITY_FLASH_DURATION = 6.0;
 
 function CreateCommunitiesIconNotificationMarkup(text, xoffset, yoffset)
@@ -43,9 +43,9 @@ function CommunitiesListMixin:OnEvent(event, ...)
 		self:UpdateInvitations();
 		self:Update();
 	elseif event == "CLUB_FINDER_PLAYER_PENDING_LIST_RECIEVED" or event == "CLUB_FINDER_APPLICANT_INVITE_RECIEVED" then
-		self:UpdateFinderInvitations(); 
-		self:Update(); 
-	elseif event == "GUILD_ROSTER_UPDATE" then 
+		self:UpdateFinderInvitations();
+		self:Update();
+	elseif event == "GUILD_ROSTER_UPDATE" then
 		self:UpdateCommunitiesList();
 		self:Update();
 	end
@@ -53,7 +53,7 @@ end
 
 function CommunitiesListMixin:UpdateInvitations()
 	self.invitations = C_Club.GetInvitationsForSelf();
-	
+
 	-- Remove all invites that have been declined.
 	for i, declinedInvitationId in ipairs(self.declinedInvitationIds) do
 		for j, inviteInfo in ipairs(self.invitations) do
@@ -67,7 +67,7 @@ end
 
 function CommunitiesListMixin:UpdateFinderInvitations()
 	self.finderInvitations = C_ClubFinder.PlayerGetClubInvitationList();
-end 
+end
 
 function CommunitiesListMixin:GetClubFinderInvitations()
 	return self.finderInvitations;
@@ -194,7 +194,7 @@ function CommunitiesListMixin:Update()
 		clubInfo.isTicket = true;
 		dataProvider:Insert({clubInfo = clubInfo});
 	end
-	
+
 	local invitations = self:GetInvitations();
 	if invitations then
 		for index, clubInfo in ipairs(invitations) do
@@ -203,8 +203,8 @@ function CommunitiesListMixin:Update()
 			dataProvider:Insert({clubInfo = club});
 		end
 	end
-	
-	local clubFinderInvitations = self:GetClubFinderInvitations(); 
+
+	local clubFinderInvitations = self:GetClubFinderInvitations();
 	if clubFinderInvitations then
 		for index, clubInfo in ipairs(clubFinderInvitations) do
 			clubInfo.isClubFinderInvitation = true;
@@ -223,7 +223,7 @@ function CommunitiesListMixin:Update()
 	if clubFinderEnabled then
 		guildFinderFrame.isGuildType = true;
 		guildFinderFrame:UpdateType();
-		
+
 		if not playerIsInGuild then
 			dataProvider:Insert({setGuildFinder = true});
 		end
@@ -232,14 +232,14 @@ function CommunitiesListMixin:Update()
 			dataProvider:Insert({setFindCommunity = true});
 		end
 	end
-	
+
 	if C_Club.ShouldAllowClubType(Enum.ClubType.Character) or C_Club.ShouldAllowClubType(Enum.ClubType.BattleNet) then
 		dataProvider:Insert({setJoinCommunity = true});
 	end
 
 	if clubFinderEnabled and playerIsInGuild then
 		dataProvider:Insert({setGuildFinder = true});
-	end 
+	end
 
 	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 end
@@ -255,7 +255,7 @@ function CommunitiesListMixin:UpdateClub(clubInfo)
 			end
 		end
 	end
-	
+
 	-- Notifying the button is complicated because its data resides in a different data provider. We can't simply
 	-- replace that data without notifications to signal the ScrollBox to be reinitialized correctly.
 	self:Update();
@@ -263,7 +263,7 @@ end
 
 function CommunitiesListMixin:OnLoad()
 	C_ClubFinder.PlayerRequestPendingClubsList(Enum.ClubFinderRequestType.All);
-	
+
 	local view = CreateScrollBoxListLinearView();
 	view:SetElementInitializer("CommunitiesListEntryTemplate", function(button, elementData)
 		button:Init(elementData);
@@ -287,7 +287,7 @@ function CommunitiesListMixin:OnCommunitiesFrameDisplayModeChanged()
 end
 
 function CommunitiesListMixin:OnCommunityInviteDeclined(invitationId, clubId)
-	local communitiesFrame = self:GetCommunitiesFrame(); 
+	local communitiesFrame = self:GetCommunitiesFrame();
 	self.declinedInvitationIds[#self.declinedInvitationIds + 1] = invitationId;
 	self:GetCommunitiesFrame():UpdateClubSelection();
 	self:UpdateInvitations();
@@ -300,7 +300,7 @@ function CommunitiesListMixin:OnShow()
 	self:UpdateCommunitiesList();
 	self:UpdateInvitations();
 	self:Update();
-	
+
 	self:RegisterEventCallbacks();
 end
 
@@ -353,7 +353,7 @@ function CommunitiesListMixin:PredictFavorites(clubs)
 			end
 		end
 	end
-	
+
 	self.pendingFavorites = remainingPredictions;
 end
 
@@ -551,7 +551,7 @@ function CommunitiesListEntryMixin:CheckForDisabledReason(clubType)
 			self:SetDisabledTooltip(COMMUNITY_FEATURE_UNAVAILABLE_MUTED);
 		elseif disabledReason == Enum.ClubFinderDisableReason.Silenced then
 			self:SetDisabledTooltip(COMMUNITY_FEATURE_UNAVAILABLE_SILENCED);
-		elseif disabledReason == Enum.ClubFinderDisableReason.VeteranTrial then 
+		elseif disabledReason == Enum.ClubFinderDisableReason.VeteranTrial then
 			self:SetDisabledTooltip(CLUB_FINDER_DISABLE_REASON_VETERAN_TRIAL);
 		else
 			self:SetDisabledTooltip(COMMUNITY_TYPE_UNAVAILABLE);
@@ -573,10 +573,10 @@ function CommunitiesListEntryMixin:SetFindCommunity()
 		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.COMMUNITY_FINDER);
 
 		communitiesFrame.CommunityFinderFrame.isGuildType = false;
-		communitiesFrame.CommunityFinderFrame.selectedTab = 1; 
-		communitiesFrame.CommunityFinderFrame:UpdateType(); 
+		communitiesFrame.CommunityFinderFrame.selectedTab = 1;
+		communitiesFrame.CommunityFinderFrame:UpdateType();
 	end;
-	
+
 	self.clubId = nil;
 	self.Name:SetText(COMMUNITY_FINDER_FIND_COMMUNITY);
 
@@ -618,13 +618,13 @@ function CommunitiesListEntryMixin:SetAddCommunity()
 		end
 		AddCommunitiesFlow_Toggle();
 	end;
-	
+
 	self.clubId = nil;
 	self.Name:SetText(COMMUNITIES_JOIN_COMMUNITY);
 	self.Name:SetTextColor(GREEN_FONT_COLOR:GetRGB());
 	self.Name:SetPoint("LEFT", self.Icon, "RIGHT", 13, 0);
 	self.Selection:Hide();
-	
+
 	self.Background:SetTexture("Interface\\Common\\bluemenu-main");
 	self.Background:SetTexCoord(0.00390625, 0.87890625, 0.75195313, 0.83007813);
 	self.Selection:SetTexture("Interface\\Common\\bluemenu-main");
@@ -653,16 +653,16 @@ function CommunitiesListEntryMixin:SetGuildFinder()
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 
 		local communitiesFrame = self:GetCommunitiesFrame();
-		communitiesFrame:SelectClub(nil);	
+		communitiesFrame:SelectClub(nil);
 		communitiesFrame:SetDisplayMode(COMMUNITIES_FRAME_DISPLAY_MODES.GUILD_FINDER);
 
 		communitiesFrame.GuildFinderFrame.isGuildType = true;
 		communitiesFrame.GuildFinderFrame.selectedTab = 1;
-		communitiesFrame.GuildFinderFrame:UpdateType(); 
+		communitiesFrame.GuildFinderFrame:UpdateType();
 
 		communitiesFrame.Inset:Hide();
 	end;
-	
+
 	self.clubId = nil;
 	self.Name:SetText(COMMUNITIES_GUILD_FINDER);
 
@@ -773,7 +773,7 @@ function CommunitiesListEntryMixin:OnClick(button)
 		self.overrideOnClick(self, button);
 		return;
 	end
-	
+
 	if button == "LeftButton" then
 		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 		self:GetCommunitiesFrame():SelectClub(self.clubId);
@@ -792,14 +792,15 @@ function CommunitiesListEntryMixin:OnClick(button)
 		if memberInfo then
 			local contextData =
 			{
+				ownerFrame = self,
 				name = clubInfo.name,
 				clubMemberInfo = memberInfo,
 				clubInfo = clubInfo,
 			};
 
-			if clubInfo.clubType == Enum.ClubType.Guild then 
+			if clubInfo.clubType == Enum.ClubType.Guild then
 				UnitPopup_OpenMenu("GUILDS_GUILD", contextData);
-			else 
+			else
 				UnitPopup_OpenMenu("COMMUNITIES_COMMUNITY", contextData);
 			end
 		end
@@ -843,7 +844,7 @@ function CommunitiesListDropdownMixin:SetupMenu()
 		end
 
 		CommunitiesUtil.SortClubs(clubs);
-		
+
 		local function IsChecked(clubInfo)
 			return clubInfo.clubId == self:GetParent():GetSelectedClubId();
 		end

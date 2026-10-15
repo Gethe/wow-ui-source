@@ -1,6 +1,6 @@
 ## Title: Blizzard Restricted AddOn Environment
 ## AllowLoad: Game
-## AllowLoadGameType: classic, standard
+## AllowLoadGameType: classic, standard, camelot
 ## Dependencies: Blizzard_FrameXML
 
 RestrictedInfrastructure.lua

@@ -80,3 +80,21 @@ end
 function GetScalingQuestDifficultyColor(questLevel)
 	return DifficultyUtil.GetScalingQuestDifficultyColor(questLevel);
 end
+
+function SetQuestTitleLevelAndDifficultyColor(questID, title)
+	local info = {
+		questID = questID,
+		difficultyLevel = C_QuestLog.GetQuestDifficultyLevel(questID),
+	};
+	local titlePrefix = QuestUtilsOverrides.GetQuestTitlePrefix(info);
+	if titlePrefix then
+		title = titlePrefix .. title;
+	end
+
+	local difficultyColor = QuestUtilsOverrides.GetQuestTitleDifficultyColor(questID);
+	if difficultyColor then
+		title = difficultyColor:WrapTextInColorCode(title);
+	end
+
+	return title;
+end

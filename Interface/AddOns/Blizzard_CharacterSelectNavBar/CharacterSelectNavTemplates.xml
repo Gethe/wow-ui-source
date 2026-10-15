@@ -1,0 +1,32 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="CharacterSelectNavBarCustomTemplate" inherits="CharacterSelectNavBarTemplate" virtual="true"/>
+
+	<Frame name="CharacterSelectNavBarButtonBaseTemplate" virtual="true">
+		<Size y="51"/>
+		<Frames>
+			<Frame parentKey="Highlight" hidden="true" useParentLevel="true">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT"/>
+					<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Backdrop" atlas="glues-characterselect-tophud-selected-middle" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="-2"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent" relativePoint="BOTTOMRIGHT" y="4"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Line" atlas="glues-characterselect-tophud-selected-line-middle" setAllPoints="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Backdrop" relativePoint="BOTTOMLEFT" y="1"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Backdrop" relativePoint="BOTTOMRIGHT" y="-3"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

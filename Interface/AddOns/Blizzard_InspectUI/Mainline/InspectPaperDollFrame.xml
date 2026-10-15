@@ -78,7 +78,7 @@
 			</Layer>
 		</Layers>
 	</ItemButton>
-    <Frame name="InspectPaperDollFrame" setAllPoints="true" useParentLevel="true" parent="InspectFrame" id="1">
+	<Frame name="InspectPaperDollFrame" setAllPoints="true" useParentLevel="true" parent="InspectFrame" id="1" mixin="InspectPaperDollFrameMixin">
 		<Frames>
 			<Frame parentKey="LevelTextWrapper" inherits="ResizeLayoutFrame" mixin="LevelTextMixin">
 				<Anchors>
@@ -349,10 +349,10 @@
 				</Texture>
             </Layer>
         </Layers>
-        <Scripts>
-            <OnLoad function="InspectPaperDollFrame_OnLoad"/>
-            <OnEvent function="InspectPaperDollFrame_OnEvent"/>
-            <OnShow function="InspectPaperDollFrame_OnShow"/>
-        </Scripts>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+		</Scripts>
     </Frame>
 </Ui>

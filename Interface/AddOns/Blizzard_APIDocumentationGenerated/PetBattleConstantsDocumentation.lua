@@ -64,7 +64,16 @@ local PetBattleConstants =
 				{ Name = "Finished", Type = "PetbattleState", EnumValue = 6 },
 			},
 		},
+		{
+			Name = "PetBattleConsts",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "SUMMON_RANDOM_FAVORITE_BATTLEPET_SPELL_ID", Type = "number", Value = 243819 },
+			},
+		},
 	},
+
 	Predicates =
 	{
 	},

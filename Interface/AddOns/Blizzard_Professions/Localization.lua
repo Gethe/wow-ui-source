@@ -10,8 +10,10 @@ end
 local l10nTable = {
 	deDE = {
 		localize = function()
-			ProfessionsFrame.SpecPage.UnlockTabButton:SetWidth(190);
-			ProfessionsFrame.SpecPage.ViewTreeButton:SetWidth(200);
+			if ProfessionsFrame.SpecPage then
+				ProfessionsFrame.SpecPage.UnlockTabButton:SetWidth(190);
+				ProfessionsFrame.SpecPage.ViewTreeButton:SetWidth(200);
+			end
 		end,
 	},
 	enGB = {},

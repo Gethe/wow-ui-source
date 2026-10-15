@@ -380,7 +380,7 @@ function AuctionHouseSellFrameMixin:SetItem(itemLocation, fromItemDisplay)
 
 	local itemKey = itemLocation and C_AuctionHouse.GetItemKeyFromItem(itemLocation);
 	local itemKeyInfo = itemKey and C_AuctionHouse.GetItemKeyInfo(itemKey);
-	self.ItemDisplay:SetItemLevelShown(itemKeyInfo and itemKeyInfo.isEquipment);
+	self.ItemDisplay:SetItemLevelShown(itemKeyInfo and itemKeyInfo.isEquipment and not AuctionHouse_ShouldUseRequiredLevel());
 
 	self.itemLocation = itemLocation;
 

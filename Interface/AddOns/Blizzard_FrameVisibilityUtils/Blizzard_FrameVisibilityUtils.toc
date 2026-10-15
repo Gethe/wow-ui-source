@@ -1,0 +1,5 @@
+## Title: Blizzard_FrameVisibilityUtils
+## AllowLoad: Game
+
+Blizzard_HoverVisibilityController.lua
+Blizzard_HoverVisibilityController.xml

@@ -48,7 +48,7 @@
 		<HighlightFont style="UserScaledFontGameHighlight"/>
 	</Button>
 
-	<Frame name="StaticPopupBaseTemplate" mixin="GameDialogBaseMixin" toplevel="true" enableKeyboard="true" enableMouse="true" hyperlinksEnabled="true" virtual="true">
+	<Frame name="StaticPopupBaseTemplate" inherits="DefaultDialogPanelTemplate" mixin="GameDialogBaseMixin" toplevel="true" enableKeyboard="true" enableMouse="true" hyperlinksEnabled="true" virtual="true">
 		<Size x="320" y="72"/>
 		<Frames>
 			<Frame parentKey="BG" useParentLevel="true" setAllPoints="true">
@@ -100,13 +100,22 @@
 						<Anchor point="TOP" relativeKey="$parent.TopSpacer" relativePoint="BOTTOM" x="0" y="0"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="SubText" inherits="UserScaledFontGameNormalSmall, UserScaledFontStringTemplate">
+				<FontString parentKey="ConfirmText" inherits="UserScaledFontGameHighlight, UserScaledFontStringTemplate">
 					<KeyValues>
 						<KeyValue key="useScaleWeight" value="true" type="boolean"/>
 					</KeyValues>
 					<Size x="1" y="0"/>
 					<Anchors>
 						<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-6"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="SubText" inherits="UserScaledFontGameNormalSmall, UserScaledFontStringTemplate">
+					<KeyValues>
+						<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+					</KeyValues>
+					<Size x="1" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" relativeKey="$parent.ConfirmText" relativePoint="BOTTOM" x="0" y="-6"/>
 					</Anchors>
 				</FontString>
 				<Texture parentKey="AlertIcon">
@@ -232,6 +241,11 @@
 				<FontString inherits="UserScaledChatFontNormal"/>
 				<TextInsets left="6" right="6" top="2" bottom="2" />
 			</EditBox>
+			<Frame parentKey="GamepadSequence" inherits="GamepadInputSequenceTemplate">
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="45"/>
+				</Anchors>
+			</Frame>
 			<DropdownButton parentKey="Dropdown" hidden="true" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="45"/>
@@ -239,7 +253,7 @@
 			</DropdownButton>
 			<Frame name="$parentMoneyFrame" parentKey="MoneyFrame" inherits="SmallMoneyFrameTemplate" hidden="true">
 				<Anchors>
-					<Anchor point="TOP" relativeTo="$parentText" relativePoint="BOTTOM" x="0" y="-5"/>
+					<Anchor point="TOP" relativeKey="$parent.ConfirmText" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 				<Scripts>
 					<OnLoad function="GameDialog_MoneyFrameOnLoad"/>
@@ -247,7 +261,7 @@
 			</Frame>
 			<Frame name="$parentMoneyInputFrame" parentKey="MoneyInputFrame" inherits="MoneyInputFrameTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Text" relativePoint="BOTTOM" x="0" y="-5"/>
+					<Anchor point="TOP" relativeKey="$parent.ConfirmText" relativePoint="BOTTOM" x="0" y="-5"/>
 				</Anchors>
 			</Frame>
 			<Frame parentKey="ItemFrame" inherits="ResizeLayoutFrame" mixin="StaticPopupItemFrameMixin" hidden="true">
@@ -272,8 +286,8 @@
 							</KeyValues>
 							<Size x="140" y="62"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Text" x="17" y="-12"/>
-								<Anchor point="TOPLEFT" relativeKey="$parent.Text" x="-17" y="12"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ConfirmText" x="17" y="-12"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.ConfirmText" x="-17" y="12"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -282,7 +296,7 @@
 					<ItemButton parentKey="Item" propagateMouseInput="Both">
 						<Size x="37" y="37"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-10" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.ConfirmText" relativePoint="LEFT" x="-10" y="0"/>
 						</Anchors>
 					</ItemButton>
 				</Frames>

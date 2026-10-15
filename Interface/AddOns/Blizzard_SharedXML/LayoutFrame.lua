@@ -226,7 +226,9 @@ function LayoutMixin:GetChildPadding(child)
 end
 
 local function GetSize(desired, fixed, minimum, maximum)
-	return fixed or Clamp(desired, minimum or desired, maximum or desired);
+	minimum = minimum or desired;
+	maximum = math.max(maximum or desired, minimum);
+	return fixed or Clamp(desired, minimum, maximum);
 end
 
 local function GetSizeHelper(expand, fixedSize, childSize)
@@ -287,12 +289,11 @@ function VerticalLayoutMixin:LayoutChildren(children, expandToWidth)
 		local childScale = child:GetScale();
 
 		local childWidth, childHeight = self:GetChildSize(child);
+		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetChildPadding(child);
 		if self.respectChildScale then
 			childWidth = childWidth * childScale;
 			childHeight = childHeight * childScale;
 		end
-
-		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetChildPadding(child);
 
 		-- Expand child width if it is set to expand and we also have an expandToWidth value.
 		if child.expand then
@@ -381,6 +382,7 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 			child:Layout();
 		end
 
+		local childScale = child:GetScale();
 		local childWidth, childHeight = self:GetChildSize(child);
 		local leftPadding, rightPadding, topPadding, bottomPadding = self:GetChildPadding(child);
 
@@ -398,7 +400,6 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 		end
 
 		if self.respectChildScale then
-			local childScale = child:GetScale();
 			childWidth = childWidth * childScale;
 			childHeight = childHeight * childScale;
 		end
@@ -414,28 +415,36 @@ function HorizontalLayoutMixin:LayoutChildren(children, ignored, expandToHeight)
 
 		if self.childLayoutDirection == "rightToLeft" then
 			rightOffset = rightOffset + rightPadding;
+			local scaledRightOffset = self.respectChildScale and rightOffset / childScale or rightOffset;
 			if (child.align == "bottom") then
 				local bottomOffset = frameBottomPadding + bottomPadding;
-				child:SetPoint("BOTTOMRIGHT", -rightOffset, bottomOffset);
+				bottomOffset = self.respectChildScale and bottomOffset / childScale or bottomOffset;
+				child:SetPoint("BOTTOMRIGHT", -scaledRightOffset, bottomOffset);
 			elseif (child.align == "center") then
 				local topOffset = (frameTopPadding - frameBottomPadding + topPadding - bottomPadding) / 2;
-				child:SetPoint("RIGHT", -rightOffset, -topOffset);
+				topOffset = self.respectChildScale and topOffset / childScale or topOffset;
+				child:SetPoint("RIGHT", -scaledRightOffset, -topOffset);
 			else
 				local topOffset = frameTopPadding + topPadding;
-				child:SetPoint("TOPRIGHT", -rightOffset, -topOffset);
+				topOffset = self.respectChildScale and topOffset / childScale or topOffset;
+				child:SetPoint("TOPRIGHT", -scaledRightOffset, -topOffset);
 			end
 			rightOffset = rightOffset + childWidth + leftPadding + spacing;
 		else
 			leftOffset = leftOffset + leftPadding;
+			local scaledLeftOffset = self.respectChildScale and leftOffset / childScale or leftOffset;
 			if (child.align == "bottom") then
 				local bottomOffset = frameBottomPadding + bottomPadding;
-				child:SetPoint("BOTTOMLEFT", leftOffset, bottomOffset);
+				bottomOffset = self.respectChildScale and bottomOffset / childScale or bottomOffset;
+				child:SetPoint("BOTTOMLEFT", scaledLeftOffset, bottomOffset);
 			elseif (child.align == "center") then
 				local topOffset = (frameTopPadding - frameBottomPadding + topPadding - bottomPadding) / 2;
-				child:SetPoint("LEFT", leftOffset, -topOffset);
+				topOffset = self.respectChildScale and topOffset / childScale or topOffset;
+				child:SetPoint("LEFT", scaledLeftOffset, -topOffset);
 			else
 				local topOffset = frameTopPadding + topPadding;
-				child:SetPoint("TOPLEFT", leftOffset, -topOffset);
+				topOffset = self.respectChildScale and topOffset / childScale or topOffset;
+				child:SetPoint("TOPLEFT", scaledLeftOffset, -topOffset);
 			end
 			leftOffset = leftOffset + childWidth + rightPadding + spacing;
 		end

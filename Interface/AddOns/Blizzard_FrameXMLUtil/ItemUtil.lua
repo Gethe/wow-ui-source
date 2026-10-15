@@ -1,3 +1,32 @@
+local FEED_PET_SPELL_ID = 6991;
+local ITEM_SELECTION_SOURCE_BAG = 1;
+local ITEM_SELECTION_SOURCE_ACTION_BAR_ITEM = 2;
+
+local pendingItemSelectionSource = nil;
+
+local function SetPendingItemSelectionSource(itemSelectionSource)
+	pendingItemSelectionSource = itemSelectionSource;
+end
+
+local function ClearPendingItemSelectionSource()
+	pendingItemSelectionSource = nil;
+end
+
+local function GetPendingItemSelectionSource()
+	return pendingItemSelectionSource;
+end
+
+local function ConsumePendingItemSelectionSource()
+	local itemSelectionSource = pendingItemSelectionSource;
+	pendingItemSelectionSource = nil;
+	return itemSelectionSource;
+end
+
+local SetPendingItemSelectionSourceSecure = CreateSecureDelegate(SetPendingItemSelectionSource);
+local ClearPendingItemSelectionSourceSecure = CreateSecureDelegate(ClearPendingItemSelectionSource);
+local GetPendingItemSelectionSourceSecure = CreateSecureDelegate(GetPendingItemSelectionSource);
+local ConsumePendingItemSelectionSourceSecure = CreateSecureDelegate(ConsumePendingItemSelectionSource);
+
 ItemButtonUtil = {};
 
 ItemButtonUtil.ItemContextEnum = {
@@ -17,6 +46,8 @@ ItemButtonUtil.ItemContextEnum = {
 	BankDepositing = 14,
 	Enchanting = 15,
 	CheckItemCondition = 16,
+	FeedPet = 17,
+	GuildBankDepositing = 18,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -71,10 +102,14 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.JumpUpgradeTrack;
 	elseif BankPanel and BankPanel:IsVisible() then
 		return ItemButtonUtil.ItemContextEnum.BankDepositing;
+	elseif GuildBankFrame and GuildBankFrame:IsShown() and C_Bank then
+		return ItemButtonUtil.ItemContextEnum.GuildBankDepositing;
 	elseif C_Spell.TargetSpellIsEnchanting() then
 		return ItemButtonUtil.ItemContextEnum.Enchanting;
 	elseif C_Spell.TargetSpellChecksItemCondition() then
 		return ItemButtonUtil.ItemContextEnum.CheckItemCondition;
+	elseif C_Spell.GetTargetSpellID() == FEED_PET_SPELL_ID then
+		return ItemButtonUtil.ItemContextEnum.FeedPet;
 	end
 	return nil;
 end
@@ -90,6 +125,43 @@ function ItemButtonUtil.OpenAndFilterCharacterFrame()
 	ItemButtonUtil.TriggerEvent(ItemButtonUtil.Event.ItemContextChanged);
 
 	ShowCharacterFrameIfMatchesContext();
+end
+
+function ItemButtonUtil.IsItemSelectionSourceTrackingEnabled()
+	return false;
+end
+
+function ItemButtonUtil.ShouldOpenBagsForEnchantSelection()
+	return true;
+end
+
+function ItemButtonUtil.MarkItemSelectionFromBag()
+	SetPendingItemSelectionSourceSecure(ITEM_SELECTION_SOURCE_BAG);
+end
+
+function ItemButtonUtil.MarkItemSelectionFromActionBarItem()
+	SetPendingItemSelectionSourceSecure(ITEM_SELECTION_SOURCE_ACTION_BAR_ITEM);
+end
+
+function ItemButtonUtil.ClearPendingItemSelectionSource()
+	ClearPendingItemSelectionSourceSecure();
+end
+
+function ItemButtonUtil.ConsumePendingItemSelectionSource()
+	return ConsumePendingItemSelectionSourceSecure();
+end
+
+function ItemButtonUtil.GetPendingItemSelectionSource()
+	return GetPendingItemSelectionSourceSecure();
+end
+
+function ItemButtonUtil.ShouldOpenCharacterFrameForEnchantSelection()
+	if not ItemButtonUtil.IsItemSelectionSourceTrackingEnabled() then
+		return true;
+	end
+
+	local itemSelectionSource = ItemButtonUtil.GetPendingItemSelectionSource();
+	return itemSelectionSource == ITEM_SELECTION_SOURCE_BAG;
 end
 
 function ItemButtonUtil.CloseFilteredBags(frame)
@@ -113,41 +185,36 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 	end
 
 	if C_Item.DoesItemExist(itemLocation) then
+		local function CheckMatch(expr)
+			return expr and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+		end
+
 		-- Ideally we'd only have 1 context active at a time, perhaps with a priority system.
 		if itemContext == ItemButtonUtil.ItemContextEnum.Scrapping then
-			return C_Item.CanScrapItem(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_Item.CanScrapItem(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.CleanseCorruption then
-			return C_Item.IsItemCorrupted(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_Item.IsItemCorrupted(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.RunecarverScrapping then
-			return C_LegendaryCrafting.IsRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_LegendaryCrafting.IsRuneforgeLegendary(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.ItemConversion then
-			return C_Item.IsItemConvertibleAndValidForPlayer(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_Item.IsItemConvertibleAndValidForPlayer(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.PickRuneforgeBaseItem then
-			return C_LegendaryCrafting.IsValidRuneforgeBaseItem(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_LegendaryCrafting.IsValidRuneforgeBaseItem(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.ReplaceBonusTree then
-			return C_Item.DoesItemMatchBonusTreeReplacement(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_Item.DoesItemMatchBonusTreeReplacement(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.CheckItemCondition then
-			return C_Item.DoesItemMatchSpellItemCondition(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_Item.DoesItemMatchSpellItemCondition(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeItem then
-			return RuneforgeUtil.IsUpgradeableRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(RuneforgeUtil.IsUpgradeableRuneforgeLegendary(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.SelectRuneforgeUpgradeItem then
-			return RuneforgeFrame:IsUpgradeItemValidForRuneforgeLegendary(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(RuneforgeFrame:IsUpgradeItemValidForRuneforgeLegendary(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.Soulbinds then
 			local CONDUIT_UPGRADE_ITEMS = { 184359, 187148, 187216, 190184, 190640, 190644, 190956 };
-			if C_Item.IsItemConduit(itemLocation) or tContains(CONDUIT_UPGRADE_ITEMS, C_Item.GetItemID(itemLocation)) then
-				return ItemButtonUtil.ItemContextMatchResult.Match;
-			end
-			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_Item.IsItemConduit(itemLocation) or tContains(CONDUIT_UPGRADE_ITEMS, C_Item.GetItemID(itemLocation)));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.MythicKeystone then
-			if C_Item.IsItemKeystoneByID(C_Item.GetItemID(itemLocation)) and C_ChallengeMode.CanUseKeystoneInCurrentMap(itemLocation) then
-				return ItemButtonUtil.ItemContextMatchResult.Match;
-			end
-			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_Item.IsItemKeystoneByID(C_Item.GetItemID(itemLocation)) and C_ChallengeMode.CanUseKeystoneInCurrentMap(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.UpgradableItem then
-			if C_ItemUpgrade.CanUpgradeItem(itemLocation) then
-				return ItemButtonUtil.ItemContextMatchResult.Match;
-			end
-			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_ItemUpgrade.CanUpgradeItem(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.ItemRecrafting then
 			local itemGUID = C_Item.GetItemGUID(itemLocation);
 			if itemGUID and C_TradeSkillUI.IsOriginalCraftRecipeLearned(itemGUID) then
@@ -158,11 +225,15 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			end
 			return ItemButtonUtil.ItemContextMatchResult.Mismatch;
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.JumpUpgradeTrack then
-			return C_Item.DoesItemMatchTrackJump(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_Item.DoesItemMatchTrackJump(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.BankDepositing then
-			return C_Bank.IsItemAllowedInBankType(BankFrame:GetActiveBankType(), itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_Bank.IsItemAllowedInBankType(BankFrame:GetActiveBankType(), itemLocation));
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.GuildBankDepositing then
+			return CheckMatch(C_Bank.IsItemAllowedInBankType(Enum.BankType.Guild, itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.Enchanting then
-			return C_Item.DoesItemMatchTargetEnchantingSpell(itemLocation) and ItemButtonUtil.ItemContextMatchResult.Match or ItemButtonUtil.ItemContextMatchResult.Mismatch;
+			return CheckMatch(C_Item.DoesItemMatchTargetEnchantingSpell(itemLocation));
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.FeedPet then
+			return CheckMatch(C_PetInfo.CanPetEatItem(C_Item.GetItemID(itemLocation)));
 		else
 			return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 		end
@@ -172,7 +243,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 end
 
 function ItemButtonUtil.GetItemContextMatchResultForContainer(bagID)
-	if ItemButtonUtil.GetItemContext() == nil then
+	local itemContext = ItemButtonUtil.GetItemContext();
+	if itemContext == nil or itemContext == ItemButtonUtil.ItemContextEnum.BankDepositing then
 		return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 	end
 
@@ -240,10 +312,11 @@ function ItemUtil.PickupBagItem(itemLocation)
 end
 
 function ItemUtil.GetCraftingReagentCount(itemID, characterInventoryOnly)
-	local includeBank = true;
+	local reagentsFromBankAllowed = ReagentsFromBankAllowed();
+	local includeBank = reagentsFromBankAllowed;
 	local includeUses = false;
-	local includeReagentBank = true;
-	local includeAccountBank = not characterInventoryOnly;
+	local includeReagentBank = reagentsFromBankAllowed;
+	local includeAccountBank = reagentsFromBankAllowed and not characterInventoryOnly;
 	return C_Item.GetItemCount(itemID, includeBank, includeUses, includeReagentBank, includeAccountBank);
 end
 
@@ -275,6 +348,12 @@ function ItemUtil.IteratePlayerInventory(callback)
 	-- Only includes the backpack and held bag slots.
 	for bag = Enum.BagIndex.Backpack, NUM_TOTAL_BAG_FRAMES do
 		if ItemUtil.IterateBagSlots(bag, callback) then
+			return true;
+		end
+	end
+
+	if(C_ActionBar.ShouldShowKeyring()) then
+		if ItemUtil.IterateBagSlots(KEYRING_CONTAINER, callback) then
 			return true;
 		end
 	end
@@ -391,11 +470,11 @@ function ItemUtil.DisplayEquipSlotTooltip(frame, tooltip, equipSlot, suppressCom
 	local hasItem, hasCooldown, repairCost = tooltip:SetInventoryItem("player", equipSlot);
 	if not hasItem then
 		-- This SetOwner is needed because calling SetInventoryItem now hides tooltip if there is no item
-		frame:SetTooltipAnchor(tooltip);
+		tooltip:SetOwner(frame, "ANCHOR_RIGHT");
 
 		local asRelic = checkRelic and UnitHasRelicSlot("player");
 		if asRelic then
-			tooltip:SetText(_G[RELICSLOT]);
+			tooltip:SetText(RELICSLOT);
 		else
 			local text = ItemUtil.GetEmptyEquipSlotTooltip(equipSlot);
 			tooltip:SetText(text);

@@ -1,3 +1,5 @@
+AuraButtonTimedSignalMap = TimerUtil.CreateTimedSignalCallbackMap();
+
 AuraContainerUtil = {};
 
 function AuraContainerUtil.ShouldIncludeAuraForFilterString(unitToken, auraData, filterString)
@@ -6,6 +8,45 @@ function AuraContainerUtil.ShouldIncludeAuraForFilterString(unitToken, auraData,
 	end
 
 	return not C_UnitAuras.IsAuraFilteredOutByInstanceID(unitToken, auraData.auraInstanceID, filterString);
+end
+
+function AuraContainerUtil.GetPandemicWindow(unitToken, auraData)
+	if not auraData or auraData.auraType ~= AuraContainerAuraDataType.Aura or auraData.isPrivate then
+		return nil;
+	end
+
+	local carriedOverDuration = C_UnitAuras.GetRefreshCarryOverDuration(unitToken, auraData.auraInstanceID);
+
+	if not carriedOverDuration or carriedOverDuration <= 0 then
+		return nil;
+	end
+
+	local pandemicEndTime = auraData.expirationTime;
+	local pandemicStartTime = pandemicEndTime - carriedOverDuration;
+
+	return pandemicStartTime, pandemicEndTime;
+end
+
+function AuraContainerUtil.AddUnitEventRegistration(unitEvents, event, unit)
+	local units = GetOrCreateTableEntry(unitEvents, event);
+	units[unit] = true;
+end
+
+function AuraContainerUtil.AppendCandidateFilterUnitEvents(unitEvents, candidateFilters, unitToken)
+	if candidateFilters == nil then
+		return;
+	end
+
+	if candidateFilters.includeSpellIDs ~= nil or candidateFilters.excludeSpellIDs ~= nil then
+		-- UNIT_FLAGS and UNIT_FACTION invalidate UnitCanAssist checks.
+		AuraContainerUtil.AddUnitEventRegistration(unitEvents, "UNIT_FLAGS", "player");
+		AuraContainerUtil.AddUnitEventRegistration(unitEvents, "UNIT_FACTION", "player");
+
+		if unitToken ~= "player" then
+			AuraContainerUtil.AddUnitEventRegistration(unitEvents, "UNIT_FLAGS", unitToken);
+			AuraContainerUtil.AddUnitEventRegistration(unitEvents, "UNIT_FACTION", unitToken);
+		end
+	end
 end
 
 function AuraContainerUtil.CanApplyIdentityCandidateFilters(unitToken, auraData)
@@ -62,6 +103,11 @@ function AuraContainerUtil.DoesAuraPassCandidateFilters(unitToken, auraData, can
 				return false;
 			end
 		end
+	elseif candidateFilters.includeSpellIDs ~= nil then
+		-- Testing exact spell IDs isn't permitted on this unit. If, however,
+		-- the filters are set up to only show explicitly included auras then
+		-- apply a by-default rejection of all unfilterable spells.
+		return false;
 	end
 
 	if candidateFilters.processedAuraType ~= nil and auraData.processedAuraType ~= candidateFilters.processedAuraType then
@@ -262,21 +308,29 @@ function AuraContainerUtil.SetSpellNameForAura(auraButton, fontString, auraData)
 	fontString:SetText(secretwrap(name));
 end
 
-function AuraContainerUtil.ValidateInboundScriptObject(object, owner, ...)
+local function ValidateInboundScriptObjectInternal(object, owner, allowOwner, ...)
+	assert(object == GetForbiddenObjectTable(object), "bad object in function call (expected forbidden object reference)");
+	assert(owner == GetForbiddenObjectTable(owner), "bad owner in function call (expected forbidden object reference)");
+
 	if object:IsForbidden() then
 		error(string.format("bad object '%s' in function call (must not be an explicitly forbidden object)", object:GetDebugName()));
 	end
 
-	local _isProtected, isProtectedExplicitly = object:IsProtected();
-	if isProtectedExplicitly then
-		error(string.format("bad object '%s' in function call (must not be an explicitly protected object)", object:GetDebugName()));
+	-- Protection checks are optional to accommodate non-region objects such
+	-- as animations.
+	if object.IsProtected then
+		local _isProtected, isProtectedExplicitly = object:IsProtected();
+		if isProtectedExplicitly then
+			error(string.format("bad object '%s' in function call (must not be an explicitly protected object)", object:GetDebugName()));
+		end
 	end
 
-	if not RegionUtil.IsDescendantOf(object, owner) then
+	local isOwnerValid = allowOwner and (object == owner);
+	if not isOwnerValid and not RegionUtil.IsDescendantOf(object, owner) then
 		-- This additionally ensures that the inbound object inherits all
 		-- required forbidden aspects that propagate through parent/child
 		-- hierarchies.
-		error(string.format("bad object '%s' in function call (must be a direct child or indirect descendent of owner)", object:GetDebugName()));
+		error(string.format("bad object '%s' in function call (must be the owner or a direct or indirect descendant of owner)", object:GetDebugName()));
 	end
 
 	local function ApplyToForbiddenObject(validationFunc)
@@ -286,10 +340,64 @@ function AuraContainerUtil.ValidateInboundScriptObject(object, owner, ...)
 	mapvalues(ApplyToForbiddenObject, ...);
 end
 
+function AuraContainerUtil.ValidateInboundScriptObject(object, owner, ...)
+	local allowOwner = false;
+	ValidateInboundScriptObjectInternal(object, owner, allowOwner, ...);
+end
+
+function AuraContainerUtil.ValidateInboundScriptObjectOrOwner(object, owner, ...)
+	local allowOwner = true;
+	ValidateInboundScriptObjectInternal(object, owner, allowOwner, ...);
+end
+
+function AuraContainerUtil.RequireObjectType(requiredType)
+	return function(object)
+		if not object:IsObjectType(requiredType) then
+			error(string.format("bad object '%s' in function call (expected object type '%s', got '%s')", object:GetDebugName(), requiredType, object:GetObjectType()));
+		end
+	end
+end
+
 function AuraContainerUtil.InitializeInboundScriptObject(object)
 	object:AddForbiddenAspects(Enum.ForbiddenAspect.RemoveSecretAspects);
 	object:AddForbiddenAspects(Enum.ForbiddenAspect.ChangeParent);
 	return object;
+end
+
+function AuraContainerUtil.InitializeInboundAnimationGroup(animationGroup, owner)
+	AuraContainerUtil.ValidateInboundScriptObject(animationGroup, owner, AuraContainerUtil.RequireObjectType("AnimationGroup"));
+
+	local animations = { animationGroup:GetAnimations() };
+	local targets = {};
+
+	-- Validate the entire animation group before adopting any of its objects.
+	for _index, animation in ipairs(animations) do
+		animation = GetForbiddenObjectTable(animation);
+		AuraContainerUtil.ValidateInboundScriptObject(animation, owner, AuraContainerUtil.RequireObjectType("Animation"));
+
+		local target = GetForbiddenObjectTable(animation:GetTarget());
+		AuraContainerUtil.ValidateInboundScriptObjectOrOwner(target, owner, AuraContainerUtil.RequireObjectType("Region"));
+		table.insert(targets, target);
+	end
+
+	animationGroup = AuraContainerUtil.InitializeInboundScriptObject(animationGroup);
+	animationGroup:AddForbiddenAspects(Enum.ForbiddenAspect.AddAnimations);
+	animationGroup:AddForbiddenAspects(Enum.ForbiddenAspect.QueryAnimationProgress);
+
+	for _index, animation in ipairs(animations) do
+		animation = AuraContainerUtil.InitializeInboundScriptObject(animation);
+		animation:AddForbiddenAspects(Enum.ForbiddenAspect.ChangeAnimationTarget);
+		animation:AddForbiddenAspects(Enum.ForbiddenAspect.QueryAnimationProgress);
+	end
+
+	for _index, target in ipairs(targets) do
+		target = AuraContainerUtil.InitializeInboundScriptObject(target);
+		target:AddSecretAspect(Enum.SecretAspect.Alpha);
+		target:AddSecretAspect(Enum.SecretAspect.VertexColor);
+		target:AddSecretAspect(Enum.SecretAspect.TexCoords);
+	end
+
+	return animationGroup;
 end
 
 function AuraContainerUtil.ApplyAccessRestrictions(object, restrictions)
@@ -301,7 +409,7 @@ function AuraContainerUtil.ApplyAccessRestrictions(object, restrictions)
 	-- and give them ample time to apply configuration through execution of
 	-- PLAYER_LOGIN. We use PLAYER_ENTERING_WORLD for deferred restrictions
 	-- to avoid racing our event handlers against theirs.
-	
+
 	if IsLoggedIn() then
 		object:AddAccessRestrictions(restrictions);
 		return;

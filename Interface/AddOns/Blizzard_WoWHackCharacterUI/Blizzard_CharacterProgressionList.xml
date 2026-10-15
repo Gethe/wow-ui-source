@@ -1,0 +1,102 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<!-- A row whose right region is a status bar showing trait rank progress.
+		The Name label is on the left (same as CharacterSheetLineTemplate) and
+		the bar spans the right side. The alternating Background stripe is shared. -->
+	<Button name="CharacterProgressionLineTemplate" inherits="CharacterSheetLineTemplate" mixin="CharacterProgressionLineMixin" virtual="true">
+		<Size x="500" y="30"/>
+		<Frames>
+			<StatusBar parentKey="Bar" drawLayer="BACKGROUND" minValue="0" maxValue="100" defaultValue="0">
+				<Size x="215" y="15"/>
+				<Anchors>
+					<Anchor point="RIGHT" x="-75"/>
+				</Anchors>
+				<BarTexture parentKey="BarTexture" atlas="widgetstatusbar-fill-white"/>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="-2">
+						<Texture parentKey="BGLeft" useAtlasSize="true" atlas="widgetstatusbar-bgleft">
+							<Anchors>
+								<Anchor point="LEFT" x="-2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BGRight" useAtlasSize="true" atlas="widgetstatusbar-bgright">
+							<Anchors>
+								<Anchor point="RIGHT" x="2"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BGCenter" atlas="widgetstatusbar-bgcenter">
+							<Size y="18"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BGLeft" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BGRight" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture parentKey="BorderLeft" useAtlasSize="true" atlas="widgetstatusbar-borderleft">
+							<Anchors>
+								<Anchor point="LEFT" x="-8"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderRight" useAtlasSize="true" atlas="widgetstatusbar-borderright">
+							<Anchors>
+								<Anchor point="RIGHT" x="8"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BorderCenter" atlas="widgetstatusbar-bordercenter">
+							<Size y="31"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.BorderLeft" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.BorderRight" relativePoint="LEFT"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="Spark" alphaMode="ADD" useAtlasSize="true" atlas="widgetstatusbar-spark">
+							<Anchors>
+								<Anchor point="CENTER" relativeKey="$parent.BarTexture" relativePoint="RIGHT"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Label" inherits="GameFontHighlightMedium" justifyH="CENTER">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</StatusBar>
+		</Frames>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="CharacterProgressionListTemplate" mixin="CharacterProgressionListMixin" inherits="CharacterSheetListTemplate" virtual="true">
+		<Scripts>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="CharacterProgressionSummaryTemplate" mixin="CharacterProgressionSummaryMixin" virtual="true">
+		<Size x="650" y="1"/>
+		<Frames>
+			<Frame parentKey="Header" inherits="CharacterListHeaderTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+					<Anchor point="TOPRIGHT"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ProgressionList" inherits="CharacterProgressionListTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Header" relativePoint="BOTTOMLEFT" y="-12"/>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

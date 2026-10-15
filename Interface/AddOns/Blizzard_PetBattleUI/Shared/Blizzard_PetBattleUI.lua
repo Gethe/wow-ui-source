@@ -979,6 +979,10 @@ function PetBattleUnitFrame_OnClick(self, button)
 			end
 
 			rootDescription:CreateButton(PET_SHOW_IN_JOURNAL, function()
+				if C_GameRules.IsGameRuleActive(Enum.GameRule.CollectionsPanelDisabled) then
+					return;
+				end
+
 				if not CollectionsJournal then
 					CollectionsJournal_LoadUI();
 				end

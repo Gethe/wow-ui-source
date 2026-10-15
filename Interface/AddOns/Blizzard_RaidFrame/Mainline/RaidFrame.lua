@@ -41,6 +41,8 @@ function RaidFrame_OnShow(self)
 	ButtonFrameTemplate_ShowAttic(self:GetParent());
 	self:GetParent():GetTitleText():SetText(RAID);
 
+	self.RoleCount:SetShown(ShouldDisplayRaidRolesInSocialFrame());
+
 	RaidFrame_Update();
 
 	RaidFrameRaidInfoButton:SetEnabled(GetNumSavedInstances() + GetNumSavedWorldBosses() > 0);
@@ -243,7 +245,9 @@ function RaidInfoInstance_OnEnter(self)
 end
 
 function RaidInfoFrame_UpdateButtons()
-	if RaidInfoFrame.selectedIndex then
+	if not C_RaidLocks.IsRaidLockExtendFeatureSupported() then
+		RaidInfoExtendButton:Hide();
+	elseif RaidInfoFrame.selectedIndex then
 		if RaidInfoFrame.selectedIsInstance then
 			local _, _, _, _, locked, extended, _, _, _, _, _, _, extendDisabled, _ = GetSavedInstanceInfo(RaidInfoFrame.selectedIndex);
 			RaidInfoExtendButton:SetEnabled(not extendDisabled);

@@ -18,9 +18,23 @@ function SocialUIControl.Toggle()
 	end
 end
 
+local function ShouldCloseSocialUIInsteadOfRequesting(tabType, alreadyShowingWhatWasRequested)
+	if not SocialUIFrame:IsShown() then
+		return false;
+	end
+
+	if alreadyShowingWhatWasRequested then
+		return true;
+	end
+
+	-- You should always be able to toggle the window closed, even when we couldn't get you to the tab you asked for
+	local requestedTabIsAvailable = SocialUIFrame:GetDataForAvailableTab(tabType) ~= nil;
+	return not requestedTabIsAvailable;
+end
+
 function SocialUIControl.ToggleToTab(tabType)
-	local isAlreadyShowingRequestedTab = SocialUIFrame:IsShown() and SocialUIFrame:GetSelectedTab() == tabType;
-	if isAlreadyShowingRequestedTab then
+	local tabAlreadySelected = SocialUIFrame:GetSelectedTab() == tabType;
+	if ShouldCloseSocialUIInsteadOfRequesting(tabType, tabAlreadySelected) then
 		SocialUIControl.Toggle();
 	else
 		SocialUIFrame:TriggerEvent(SocialUIFrameMixin.Event.OpenToTabRequested, tabType);
@@ -32,12 +46,11 @@ function SocialUIControl.OpenToTab(tabType)
 end
 
 function SocialUIControl.ToggleToTabAndSideWindow(tabType, sideWindowType)
-	local socialUIShown = SocialUIFrame:IsShown();
 	local tabAlreadySelected = SocialUIFrame:GetSelectedTab() == tabType;
 	local sideWindowTypeAlreadyActive = SocialUIFrame:GetActiveSideWindowType() == sideWindowType;
 
-	local isAlreadyShowingRequestedTabAndWindow = socialUIShown and tabAlreadySelected and sideWindowTypeAlreadyActive;
-	if isAlreadyShowingRequestedTabAndWindow then
+	local requestedTabAndWindowAlreadyActive = tabAlreadySelected and sideWindowTypeAlreadyActive;
+	if ShouldCloseSocialUIInsteadOfRequesting(tabType, requestedTabAndWindowAlreadyActive) then
 		SocialUIControl.Toggle();
 	else
 		SocialUIFrame:TriggerEvent(SocialUIFrameMixin.Event.OpenToTabAndSideWindowRequested, tabType, sideWindowType);

@@ -1,0 +1,185 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="PlayerChoiceTaleboundOptionButtonTemplate" inherits="SharedButtonTemplate" mixin="PlayerChoiceTaleboundOptionButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<Size x="130" y="40"/>
+		<KeyValues>
+			<KeyValue key="layoutIndex" value="2" type="number"/>
+			<KeyValue key="defaultWidth" value="130" type="number"/>
+		</KeyValues>
+		<NormalFont style="GameFontNormalLarge"/>
+		<HighlightFont style="GameFontHighlightLarge"/>
+		<ButtonText parentKey="Text">
+			<Anchors>
+				<Anchor point="CENTER"/>
+			</Anchors>
+		</ButtonText>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="PlayerChoiceTaleboundOptionButtonFrameTemplate" inherits="PlayerChoiceBaseOptionButtonFrameTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonTemplate" value="PlayerChoiceTaleboundOptionButtonTemplate" type="string"/>
+		</KeyValues>
+	</Frame>
+
+	<Frame name="PlayerChoiceTaleboundOptionTemplate" inherits="PlayerChoicePowerChoiceTemplate" mixin="PlayerChoiceTaleboundOptionTemplateMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="minOptionHeight" value="345" type="number"/>
+			<KeyValue key="choiceSelectedSound" value="SOUNDKIT.UI_PLAYER_CHOICE_GENERIC_POWER" type="global"/>
+		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="TypeIcon" inherits="PlayerChoiceBaseCenteredFrame">
+					<Size x="40" y="42"/>
+					<KeyValues>
+						<KeyValue key="layoutIndex" value="1" type="number"/>
+						<KeyValue key="topPadding" value="3" type="number"/>
+					</KeyValues>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="GlowBG" atlas="ui-frame-taleboundchoice-fx-iconglow" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.CircleBorder"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<MaskTexture parentKey="TypeIconCircleMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.TypeIcon" x="5" y="-6"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.TypeIcon" x="-5" y="6"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="TypeIcon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="BackgroundContainer" useParentLevel="true" setAllPoints="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="BACKGROUND" textureSubLevel="0">
+						<Texture parentKey="Background" atlas="UI-Frame-TaleboundChoice-CardParchment" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="1">
+						<Texture parentKey="IconParticles" alphaMode="ADD" atlas="UI-Frame-TaleboundChoice-FX-SparkleFlipbook" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.BackgroundContainer" relativePoint="TOPLEFT" x="0" y="-350"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BackgroundContainer" relativePoint="BOTTOMRIGHT" x="0" y="-80"/>
+							</Anchors>
+						</Texture>
+						<Texture parentKey="BackgroundGlow" atlas="UI-Frame-TaleboundChoice-CardFrame-Glow" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="BACKGROUND" textureSubLevel="2">
+						<Texture parentKey="BackgroundBorder" atlas="UI-Frame-TaleboundChoice-CardFrame" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="0"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Runes1">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="RuneGlow" alphaMode="ADD" atlas="UI-Frame-TaleboundChoice-FX-RuneGlow" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-400"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="Runes01" atlas="UI-Frame-TaleboundChoice-FX-RuneMask01" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="CENTER" x="0" y="-180"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="RuneGlow"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Runes2">
+				<Size x="128" y="128"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="RuneGlow" atlas="UI-Frame-TaleboundChoice-FX-RuneGlow" useAtlasSize="true" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+						<MaskTexture parentKey="Runes02" atlas="UI-Frame-TaleboundChoice-FX-RuneMask02" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+							<Anchors>
+								<Anchor point="CENTER" x="20" y="-195"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="RuneGlow"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="Header" inherits="PlayerChoiceBaseCenteredFrame, ResizeLayoutFrame">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontHighlightLarge" justifyV="MIDDLE" maxLines="3">
+							<Size x="165" y="50"/>
+							<Anchors>
+								<Anchor point="TOP"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Animations>
+			<AnimationGroup parentKey="SwirlAndGlowAnimations" looping="REPEAT" parentArray="PassiveAnimations">
+				<FlipBook childKey="BackgroundContainer.IconParticles" smoothing="NONE" flipBookRows="15" flipBookColumns="5" flipBookFrames="75" flipBookFrameWidth="0" flipBookFrameHeight="0" duration="2" order="1"/>
+			</AnimationGroup>
+			<AnimationGroup looping="REPEAT" setToFinalAlpha="true" parentArray="PassiveAnimations">
+				<Alpha childKey="BackgroundContainer.BackgroundGlow" duration="2" order="1" smoothing="IN_OUT" fromAlpha="0.5" toAlpha="1"/>
+				<Alpha childKey="BackgroundContainer.BackgroundGlow" duration="1" order="1" startDelay="2" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.8"/>
+				<Alpha childKey="BackgroundContainer.BackgroundGlow" duration="2" order="1" startDelay="3" smoothing="IN_OUT" fromAlpha="0.8" toAlpha="0.5"/>
+				<Alpha childKey="BackgroundContainer.BackgroundGlow" duration="2" order="1" startDelay="5" fromAlpha="0.5" toAlpha="1"/>
+				<Alpha childKey="BackgroundContainer.BackgroundGlow" duration="1" order="1" startDelay="7" smoothing="IN_OUT" fromAlpha="1" toAlpha="0.5"/>
+			</AnimationGroup>
+			<AnimationGroup looping="REPEAT" setToFinalAlpha="true" parentArray="PassiveAnimations">
+				<Translation childKey="Runes1.RuneGlow" duration="8" order="1" offsetX="0" offsetY="400"/>
+				<Alpha childKey="Runes1.RuneGlow" duration="4" order="1" fromAlpha="0.25" toAlpha="1"/>
+				<Alpha childKey="Runes1.RuneGlow" duration="4" order="1" startDelay="4" fromAlpha="1" toAlpha="0.25"/>
+			</AnimationGroup>
+			<AnimationGroup looping="REPEAT" setToFinalAlpha="true" parentArray="PassiveAnimations">
+				<Translation childKey="Runes2.RuneGlow" duration="8" order="1" offsetX="0" offsetY="-400"/>
+				<Alpha childKey="Runes2.RuneGlow" duration="4" order="1" fromAlpha="1" toAlpha="0.25"/>
+				<Alpha childKey="Runes2.RuneGlow" duration="4" order="1" startDelay="4" fromAlpha="0.25" toAlpha="1"/>
+			</AnimationGroup>
+		</Animations>
+	</Frame>
+</Ui>

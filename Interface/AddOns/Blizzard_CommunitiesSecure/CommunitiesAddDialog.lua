@@ -6,7 +6,7 @@ function CommunitiesAddDialogMixin:OnShow()
 	local factionTag, localizedFactionName = UnitFactionGroup("player");
 	self.CreateWoWCommunityLabel:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_LABEL:format(localizedFactionName));
 	self.CreateWoWCommunityDescription:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_DESCRIPTION:format(localizedFactionName));
-	
+
 	self.CreateWoWCommunityButton:SetEnabled(C_Club.ShouldAllowClubType(Enum.ClubType.Character) and not IsVeteranTrialAccount() and not C_ClassTrial.IsClassTrialCharacter());
 	self.CreateWoWCommunityButton.FactionIcon:Show();
 	if factionTag == "Horde" then
@@ -19,7 +19,7 @@ function CommunitiesAddDialogMixin:OnShow()
 		self.CreateWoWCommunityLabel:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_LABEL_NO_FACTION);
 		self.CreateWoWCommunityDescription:SetText(COMMUNITIES_ADD_DIALOG_CREATE_WOW_DESCRIPTION_NO_FACTION);
 	end
-	
+
 	self.CreateBattleNetGroupButton:SetEnabled(C_Club.ShouldAllowClubType(Enum.ClubType.BattleNet));
 
 	self.InviteLinkBox:SetFocus();
@@ -100,6 +100,11 @@ function CommunitiesCreateDialogMixin:OnHide()
 	CommunitiesOutbound.HideAvatarPicker();
 end
 
+function CommunitiesCreateDialogMixin:SmartNavigationCloseHandler()
+	CommunitiesCreateDialogCancelButton_OnClick(self.CancelButton);
+	return true;
+end
+
 function CommunitiesCreateDialogMixin:CreateCommunity()
 	local name = self.NameBox:GetText();
 	local shortName = self.ShortNameBox:GetText();
@@ -122,7 +127,7 @@ function CommunitiesAddDialogWoWButton_OnEnter(self)
 	if not self:IsEnabled() then
 		if not C_Club.ShouldAllowClubType(Enum.ClubType.Character) then
 			CommunitiesOutbound.ShowGameTooltip(COMMUNITY_TYPE_UNAVAILABLE, self:GetRight(), self:GetTop());
-		elseif IsVeteranTrialAccount() then 
+		elseif IsVeteranTrialAccount() then
 			CommunitiesOutbound.ShowGameTooltip(CLUB_FINDER_DISABLE_REASON_VETERAN_TRIAL, self:GetRight(), self:GetTop());
 		else
 			CommunitiesOutbound.ShowGameTooltip(FEATURE_NOT_AVAILBLE_PANDAREN, self:GetRight(), self:GetTop());

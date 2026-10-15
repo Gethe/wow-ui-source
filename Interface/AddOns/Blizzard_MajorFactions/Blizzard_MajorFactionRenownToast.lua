@@ -16,7 +16,7 @@ function MajorFactionsRenownToastMixin:OnEvent(event, ...)
 	if event == "MAJOR_FACTION_RENOWN_LEVEL_CHANGED" then
 		local majorFactionID, newRenownLevel, oldRenownLevel = ...;
 		local majorFactionData = C_MajorFactions.GetMajorFactionData(majorFactionID);
-		if not majorFactionData or not majorFactionData.isUnlocked then
+		if not majorFactionData or not majorFactionData.isUnlocked or majorFactionData.hideRenownLevelUpToast then
 			return;
 		end
 

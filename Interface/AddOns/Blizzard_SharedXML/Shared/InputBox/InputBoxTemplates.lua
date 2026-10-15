@@ -292,6 +292,14 @@ function NumericInputSpinnerMixin:GetValue()
 	return self.currentValue or self.min or 0;
 end
 
+function NumericInputSpinnerMixin:GetMinValue()
+	return self.min;
+end
+
+function NumericInputSpinnerMixin:GetMaxValue()
+	return self.max;
+end
+
 function NumericInputSpinnerMixin:SetOnValueChangedCallback(onValueChangedCallback)
 	self.onValueChangedCallback = onValueChangedCallback;
 end

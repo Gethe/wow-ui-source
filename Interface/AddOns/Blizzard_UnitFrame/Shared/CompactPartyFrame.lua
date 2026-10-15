@@ -36,6 +36,18 @@ function CompactPartyFrameMixin:OnEvent()
 	self:RefreshMembers();
 end
 
+function CompactPartyFrameMixin:OnShow()
+	if RaidTargetingFreeSelection then
+		RaidTargetingFreeSelection:UpdateVisibility();
+	end
+end
+
+function CompactPartyFrameMixin:OnHide()
+	if RaidTargetingFreeSelection then
+		RaidTargetingFreeSelection:UpdateVisibility();
+	end
+end
+
 function CompactPartyFrameMixin:ApplyFunctionToAllFrames(updateSpecifier, func, ...)
 	CompactRaidGroup_ApplyFunctionToAllFrames(self, updateSpecifier, func, ...);
 

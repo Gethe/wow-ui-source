@@ -1,0 +1,70 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="ScenarioTrackerStatLineTemplate" mixin="ScenarioTrackerStatLineMixin" virtual="true">
+		<Size x="210" y="5"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="LEFT" x="20"/>
+					</Anchors>
+				</FontString>
+				<FontString parentKey="Value" inherits="GameFontHighlight" justifyH="RIGHT">
+					<Anchors>
+						<Anchor point="RIGHT" x="-20"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+
+	<Frame name="ScenarioTrackerCharacterStatsBlockTemplate" mixin="ScenarioTrackerCharacterStatsBlockMixin" virtual="true" hidden="true">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="themed-scenario-challenge-flyout" useAtlasSize="false">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="-25"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="-8"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Header" inherits="GameFontHighlightLarge" justifyH="CENTER">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-42"/>
+						<Anchor point="TOPRIGHT" x="-10" y="-42"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList"/>
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
+				</Anchors>
+			</EventFrame>
+			<Frame parentKey="ScrollShadows" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="TopRule" atlas="themed-scenario-line-top" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" relativeKey="$parent.$parent.ScrollBox" relativePoint="TOPLEFT" x="25"/>
+								<Anchor point="TOPRIGHT" relativeKey="$parent.$parent.ScrollBox" relativePoint="TOPRIGHT" x="-25"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

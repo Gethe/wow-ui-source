@@ -24,6 +24,7 @@ local MoneyConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

@@ -56,7 +56,7 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 	local choiceInfo = C_PlayerChoice.GetCurrentPlayerChoiceInfo();
 	local textureKit = choiceInfo.uiTextureKit;
 
-	local normalAtlas = GetFinalNameFromTextureKit(buttonInfo.normalAtlas, textureKit);
+	local normalAtlas = self.skipTextureKitFormatting and buttonInfo.normalAtlas or GetFinalNameFromTextureKit(buttonInfo.normalAtlas, textureKit);
 	local normalAtlasInfo = C_Texture.GetAtlasInfo(normalAtlas);
 	if normalAtlasInfo then
 		self:SetNormalAtlas(normalAtlas);
@@ -64,10 +64,14 @@ function PlayerChoiceToggleButtonMixin:UpdateButtonState()
 	end
 
 	if buttonInfo.highlightAtlas then
-		local highlightAtlas = GetFinalNameFromTextureKit(buttonInfo.highlightAtlas, textureKit);
+		local highlightAtlas = self.skipTextureKitFormatting and buttonInfo.highlightAtlas or GetFinalNameFromTextureKit(buttonInfo.highlightAtlas, textureKit);
 		if C_Texture.GetAtlasInfo(highlightAtlas) then
 			self:SetHighlightAtlas(highlightAtlas);
 		end
+	end
+
+	if buttonInfo.overrideFont then
+		self.Text:SetFontObject(buttonInfo.overrideFont);
 	end
 
 	self.Text:SetText(choiceFrameShown and HIDE or choiceInfo.pendingChoiceText);
@@ -128,6 +132,35 @@ function TorghastPlayerChoiceToggleButtonMixin:OnLoad()
 		xOffset = 8,
 		yOffset = -3,
 	};
+end
+
+TaleboundPlayerChoiceToggleButtonMixin = {};
+
+function TaleboundPlayerChoiceToggleButtonMixin:OnClick(...)
+	PlayerChoiceToggleButtonMixin.OnClick(self, ...);
+end
+
+function TaleboundPlayerChoiceToggleButtonMixin:OnShow()
+	ThreeSliceButtonMixin.UpdateButton(self);
+	self:UpdateButtonState();
+end
+
+function TaleboundPlayerChoiceToggleButtonMixin:UpdateButtonState()
+	if not self:ShouldShow() then
+		self:Hide();
+		return;
+	end
+
+	local choiceFrameShown = PlayerChoiceFrame:IsShown();
+	local choiceInfo = C_PlayerChoice.GetCurrentPlayerChoiceInfo();
+	self.Text:SetFontObject("GameFontNormalLarge");
+	self.Text:SetText(choiceFrameShown and HIDE or choiceInfo.pendingChoiceText);
+
+	if choiceInfo.uiTextureKit then
+		local textureKit = choiceInfo.uiTextureKit;
+		local effectID = (not choiceFrameShown) and textureKitEffectIDs[textureKit] or nil;
+		self:UpdateEffect(effectID);
+	end
 end
 
 
@@ -246,6 +279,7 @@ local function FillToggleButtonsIfNeeded()
 			TorghastPlayerChoiceToggleButton,
 			CypherPlayerChoiceToggleButton,
 			GenericPlayerChoiceToggleButton,
+			TaleboundPlayerChoiceToggleButton,
 		};
 	end
 end

@@ -6,6 +6,7 @@ UIModeUtil.RegisterMode("Spectating", {
 		"objectives",
 		"statusBars",
 		"cooldownViewers",
+		"swingTimers",
 		"encounterUI",
 		"pvp",
 		"extraAbilities",

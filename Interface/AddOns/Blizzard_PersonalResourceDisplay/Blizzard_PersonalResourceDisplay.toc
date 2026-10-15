@@ -4,11 +4,12 @@
 ## Dependencies: Blizzard_EditMode
 
 # Alternate Power Bars (must be loaded before Base)
-AlternatePowerBars/DemonHunterAlternatePower.lua
-AlternatePowerBars/EvokerAlternatePower.lua
-AlternatePowerBars/MonkAlternatePower.lua
+AlternatePowerBars/DemonHunterAlternatePower.lua [ExcludeLoadGameType camelot]
+AlternatePowerBars/EvokerAlternatePower.lua [ExcludeLoadGameType camelot]
+AlternatePowerBars/MonkAlternatePower.lua [ExcludeLoadGameType camelot]
 AlternatePowerBars/ManaAlternatePower.lua
 
 # Base
 Blizzard_PersonalResourceDisplay.lua
+[Game]\Blizzard_PersonalResourceDisplay.lua [AllowLoadGameType camelot]
 Blizzard_PersonalResourceDisplay.xml

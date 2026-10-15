@@ -65,6 +65,7 @@ local AssistedCombat =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

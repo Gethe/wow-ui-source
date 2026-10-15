@@ -171,6 +171,12 @@ function GameTooltip_AddColoredLine(tooltip, text, color, wrap, leftOffset)
 	tooltip:AddLine(text, r, g, b, wrap, leftOffset);
 end
 
+function GameTooltip_AddLineWithInputIcon(tooltip, text, color, inputKey, wrap, leftOffset)
+	local iconAtlas = InputIconTextureSetUtility.GetNormalActiveInputIconButtonTexture(inputKey);
+	local icon = CreateAtlasMarkup(iconAtlas, 30, 30);
+	tooltip:AddLine(icon .. text, color:GetRGB());
+end
+
 function GameTooltip_AddColoredDoubleLine(tooltip, leftText, rightText, leftColor, rightColor, wrap, leftOffset)
 	local leftR, leftG, leftB = leftColor:GetRGB();
 	local rightR, rightG, rightB = rightColor:GetRGB();

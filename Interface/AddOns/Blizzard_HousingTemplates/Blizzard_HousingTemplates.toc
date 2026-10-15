@@ -1,7 +1,7 @@
 ## Title: Blizzard Housing Templates
 ## Author: Blizzard Entertainment
 ## LoadOnDemand: 0
-## Dependencies: Blizzard_PagedContent
+## Dependencies: Blizzard_PagedContent, Blizzard_CatalogShopSharedUtil
 ## AllowLoadGameType: standard
 
 Blizzard_HousingCatalogUtil.lua

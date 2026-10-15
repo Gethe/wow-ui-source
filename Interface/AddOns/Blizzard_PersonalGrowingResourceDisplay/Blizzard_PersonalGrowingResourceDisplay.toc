@@ -1,0 +1,11 @@
+## Title: Blizzard_PersonalGrowingResourceDisplay
+## Dependencies: Blizzard_UnitFrame
+## AllowLoadGameType: wowhack
+## LoadSavedVariablesFirst: 1
+## SavedVariablesPerCharacter: WoWHackPartyFrameSettings
+
+Blizzard_PersonalGrowingResourceDisplay.lua [AllowLoadGameType wowhack]
+Blizzard_PersonalGrowingResourceDisplay.xml [AllowLoadGameType wowhack]
+
+Blizzard_PersonalGrowingResourceDisplayParty.lua [AllowLoadGameType wowhack]
+Blizzard_PersonalGrowingResourceDisplayParty.xml [AllowLoadGameType wowhack]

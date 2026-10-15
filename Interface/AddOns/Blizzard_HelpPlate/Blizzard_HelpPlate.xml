@@ -237,6 +237,7 @@
 		<Size x="64" y="64"/>
 		<KeyValues>
 			<KeyValue key="mainHelpPlateButtonTooltipText" value="MAIN_HELP_BUTTON_TOOLTIP" type="global"/>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 		</KeyValues>
 		<HitRectInsets>
 			<AbsInset left="20" right="20" top="20" bottom="20"/>
@@ -279,6 +280,7 @@
 			<OnMouseDown method="OnMouseDown"/>
 			<OnMouseUp method="OnMouseUp"/>
 			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 		<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight">
 			<Size x="46" y="46"/>

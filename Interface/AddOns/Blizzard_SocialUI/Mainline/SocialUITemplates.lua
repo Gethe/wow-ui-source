@@ -1,5 +1,18 @@
 SocialUITabMixin = CreateFromMixins(SidePanelTabButtonMixin);
 
+function SocialUITabMixin:OnLoad()
+	SidePanelTabButtonMixin.OnLoad(self);
+	self:InitializeCounterAnchoring();
+end
+
+function SocialUITabMixin:InitializeCounterAnchoring()
+	-- The counter sits directly under the icon so we copy the icon's x offset to stay lined up
+	local offsetX, _offsetY = self:GetIconAnchorOffsetsForTabArt();
+
+	self.Count:ClearAllPoints();
+	self.Count:SetPoint("BOTTOM", offsetX, 6);
+end
+
 function SocialUITabMixin:Initialize(tabData)
 	if not tabData then
 		return;
@@ -76,8 +89,8 @@ function SocialUITabMixin:OnMouseDown(button)
 	end
 
 	if button == "LeftButton" then
-		local yOffset = self.iconBaseYOffset or 0;
-		self.Icon:SetPoint("CENTER", -1, yOffset - 1);
+		local offsetX, offsetY = self:GetPressedIconAnchorOffsets();
+		self.Icon:SetPoint("CENTER", offsetX, offsetY);
 	end
 end
 
@@ -87,13 +100,20 @@ function SocialUITabMixin:OnMouseUp(button, upInside)
 	end
 
 	if button == "LeftButton" then
-		self.Icon:SetPoint("CENTER", -2, self.iconBaseYOffset or 0);
+		local offsetX, offsetY = self:GetFinalIconAnchorOffsets();
+		self.Icon:SetPoint("CENTER", offsetX, offsetY);
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB);
 	end
 
 	if self.customMouseUpHandler then
 		self.customMouseUpHandler(self, button, upInside);
 	end
+end
+
+function SocialUITabMixin:GetFinalIconAnchorOffsets()
+	local offsetX, offsetY = self:GetIconAnchorOffsetsForTabArt();
+	local liftAboveCounter = self.Count:IsShown() and 5 or 0;
+	return offsetX, (offsetY + liftAboveCounter);
 end
 
 function SocialUITabMixin:RefreshCounter()
@@ -116,9 +136,8 @@ function SocialUITabMixin:SetCount(count)
 end
 
 function SocialUITabMixin:RefreshIconAnchoring()
-	local isCountVisible = self.Count:IsShown();
-	self.iconBaseYOffset = isCountVisible and 5 or 0;
-	self.Icon:SetPoint("CENTER", -2, self.iconBaseYOffset);
+	local offsetX, offsetY = self:GetFinalIconAnchorOffsets();
+	self.Icon:SetPoint("CENTER", offsetX, offsetY);
 end
 
 SocialUIOnlineStatusDropdownMixin = {};
@@ -783,13 +802,8 @@ function SocialUIIgnoreListMixin:BlockPlayer()
 		return;
 	end
 
-	local name, server = UnitName("target");
-	local finalName = name;
-	local isDifferentRealm = server and UnitRealmRelationship("target") ~= LE_REALM_RELATION_SAME;
-	if isDifferentRealm then
-		finalName = name .. "-" .. server;
-	end
-	C_FriendList.AddIgnore(finalName);
+	local fullName = NameUtil.GetUnmodifiedUnitFullName("target");
+	C_FriendList.AddIgnore(fullName);
 
 	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
 end
@@ -804,7 +818,7 @@ function SocialUIIgnoreListMixin:UnblockSelected()
 		C_FriendList.DelIgnoreByIndex(C_FriendList.GetSelectedIgnore());
 	elseif selectedElementData.blockType == Enum.SocialUIBlockType.BattleNetInviteBlock then
 		local blockID, _blockedName = BNGetBlockedInfo(BNGetSelectedBlock());
-		BNSetBlocked(blockID, false);
+		C_BattleNet.SetBlocked(blockID, false);
 	end
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);

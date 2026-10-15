@@ -18,7 +18,7 @@ local function RegisterMinimumCharacterNameSize(category)
 
 	local function GetValue()
 		if CanModifySetting() then
-			GetCVarNumberOrDefault(cvarName);
+			return GetCVarNumberOrDefault(cvarName);
 		end
 
 		return 0;
@@ -45,7 +45,11 @@ local function Register()
 	Settings.LoadAddOnCVarWatcher("enableMovePad", MovePad_LoadUI);
 
 	-- Alternate Full Screen Effects
-	AccessibilityOverrides.CreatePhotosensitivitySetting(category);
+	do
+		local setting, initializer = Settings.SetupCVarCheckbox(category, "overrideScreenFlash", ALTERNATE_SCREEN_EFFECTS, OPTION_TOOLTIP_ALTERNATE_SCREEN_EFFECTS);
+		initializer:AddSearchTags(ALTERNATE_SCREEN_EFFECTS_SEARCH_TAG);
+		initializer:AddSearchTags(MOTION_SICKNESS_CHECKBOX);
+	end
 
 	-- Minimum Name Size
 	RegisterMinimumCharacterNameSize(category);

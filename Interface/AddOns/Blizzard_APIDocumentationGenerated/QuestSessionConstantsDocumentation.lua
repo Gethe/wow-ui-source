@@ -62,6 +62,7 @@ local QuestSessionConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

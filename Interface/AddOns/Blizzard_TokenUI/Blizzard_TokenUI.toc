@@ -1,6 +1,11 @@
 ## Title: Blizzard_TokenUI
+## AllowLoadGameType: standard, camelot, wowhack
+
 Blizzard_CurrencyTransfer.lua
 Blizzard_CurrencyTransfer.xml
-Blizzard_TokenUI.lua
-Blizzard_TokenUI.xml
+Mainline/Blizzard_TokenUI.lua [ExcludeLoadGameType camelot]
+Mainline/Blizzard_TokenUI.xml [ExcludeLoadGameType camelot, wowhack]
+WoWHack/Blizzard_TokenUI.xml [AllowLoadGameType wowhack]
+Camelot/Blizzard_TokenUI.lua [AllowLoadGameType camelot]
+Camelot/Blizzard_TokenUI.xml [AllowLoadGameType camelot]
 Localization.lua

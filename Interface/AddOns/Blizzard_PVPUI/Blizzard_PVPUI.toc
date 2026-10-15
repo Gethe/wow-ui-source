@@ -1,0 +1,14 @@
+## Title: Blizzard_PVPUI
+## LoadOnDemand: 1
+## OptionalDep: Blizzard_Plunderstorm
+## Dep: Blizzard_HelpPlate
+## Dep: Blizzard_GroupFinder
+## Dep: Blizzard_MatchmakingQueueDisplay [AllowLoadGameType mainline]
+## Dep: Blizzard_FrameXMLUtil [AllowLoadGameType mainline]
+## AllowLoadGameType: mainline, mists
+## ExcludeLoadGameType: camelot
+
+[Family]\Blizzard_PVPUI_Bootstrap.lua [Bootstrap]
+[Family]\Blizzard_PVPUI.lua
+[Family]\Blizzard_PVPUI.xml
+Localization.lua

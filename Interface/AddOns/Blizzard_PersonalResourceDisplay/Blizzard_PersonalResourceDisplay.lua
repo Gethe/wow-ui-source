@@ -97,19 +97,25 @@ local MANA_BAR_COLOR = {
 	["MANA"] = { r = 0.1, g = 0.25, b = 1.00, predictionColor = POWERBAR_PREDICTION_COLOR_MANA }
 };
 
-local function ClassFrameInfoForClassID(classID)
-	return CLASS_FRAME_INFO_MAP[classID];
-end
-
 local function ClassAltPowerBarInfoForClassID(classID)
-	return CLASS_ALT_POWER_BAR_INFO_MAP[classID];
+	local classAltPowerBarInfo = CLASS_ALT_POWER_BAR_INFO_MAP[classID];
+	if not classAltPowerBarInfo or not classAltPowerBarInfo.mixin then
+		return nil;
+	end
+
+	return classAltPowerBarInfo;
 end
 
 PersonalResourceDisplayMixin = {};
 
+function PersonalResourceDisplayMixin:GetClassFrameInfo()
+	return CLASS_FRAME_INFO_MAP[self.classID];
+end
+
 function PersonalResourceDisplayMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, PERSONAL_RESOURCE_DISPLAY_ON_LOAD_EVENTS);
 	CVarCallbackRegistry:RegisterCallback(PRD_ENABLED_CVAR, self.UpdateShownState, self);
+	EventRegistry:RegisterCallback("EditMode.RefreshPersonalResourceDisplay", self.OnEditModeRefreshPersonalResourceDisplay, self);
 
 	self.defaultBarWidth = self:GetWidth();
 	EditModeSystemMixin.OnSystemLoad(self);
@@ -126,10 +132,11 @@ function PersonalResourceDisplayMixin:OnShow()
 	-- Ex. You take damage while out of combat, then enter combat, or your max health/power changes because you switched specs.
 	self:UpdateMaxHealth();
 	self:UpdateHealthPrediction();
-	-- If the spec changed while hidden, fully refresh the power bar and alternate power bar.
+	-- If the spec or the displayed power changed while hidden, fully refresh the power bar and alternate power bar.
 	-- Otherwise a simple max power update is sufficient.
 	local currentSpec = C_SpecializationInfo.GetSpecialization();
-	if currentSpec ~= self.lastKnownSpec then
+	local currentPowerType, currentPowerToken = UnitPowerType("player");
+	if currentSpec ~= self.lastKnownSpec or currentPowerType ~= self.powerType or currentPowerToken ~= self.powerToken then
 		self:UpdatePowerBar();
 		self:UpdateAlternatePowerBar();
 		self.lastKnownSpec = currentSpec;
@@ -154,6 +161,15 @@ function PersonalResourceDisplayMixin:Setup()
 		self:SetupClassBar();
 		self:UpdateFrameHeight();
 		self.lastKnownSpec = C_SpecializationInfo.GetSpecialization();
+	end
+end
+
+function PersonalResourceDisplayMixin:OnEditModeRefreshPersonalResourceDisplay(showPersonalResourceDisplay)
+	self:SetIsInEditMode(showPersonalResourceDisplay);
+	if showPersonalResourceDisplay then
+		self:HighlightSystem();
+	else
+		self:ClearHighlight();
 	end
 end
 
@@ -617,7 +633,7 @@ end
 function PersonalResourceDisplayMixin:SetHideClassInfo(hideClassInfo)
 	self.hideClassInfo = hideClassInfo;
 
-	local classFrameInfo = ClassFrameInfoForClassID(self.classID);
+	local classFrameInfo = self:GetClassFrameInfo();
 	self.ClassFrameContainer:SetShown(not self.hideClassInfo and classFrameInfo);
 end
 
@@ -632,6 +648,15 @@ function PersonalResourceDisplayMixin:SetShowBarText(showBarText)
 	self.healthbar:SetForceShow(showBarText);
 	self.PowerBar:SetForceShow(showBarText);
 	self.AlternatePowerBar:SetForceShow(showBarText);
+end
+
+function PersonalResourceDisplayMixin:SetAllowMouseoverThrough(allowMouseoverThrough)
+	-- Only the status bars enable mouse motion, so they are the only frames which can block mouseover.
+	local mouseMotionEnabled = not allowMouseoverThrough;
+
+	self.healthbar:SetMouseMotionEnabled(mouseMotionEnabled);
+	self.PowerBar:SetMouseMotionEnabled(mouseMotionEnabled);
+	self.AlternatePowerBar:SetMouseMotionEnabled(mouseMotionEnabled);
 end
 
 function PersonalResourceDisplayMixin:SetHideClassInfoOnPlayerFrame(hideClassInfoOnPlayerFrame)
@@ -735,7 +760,7 @@ function PersonalResourceDisplayMixin:SetupClassBar()
 	self.ClassFrameContainer:SetScript("OnShow", function() self:UpdateAdditionalBarAnchors() end);
 	self.ClassFrameContainer:SetScript("OnHide", function() self:UpdateAdditionalBarAnchors() end);
 
-	local classFrameInfo = ClassFrameInfoForClassID(self.classID);
+	local classFrameInfo = self:GetClassFrameInfo();
 
 	if classFrameInfo then
 		if not self.classFrame then

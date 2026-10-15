@@ -36,19 +36,27 @@ function MovieFrame_OnShow(self)
 
 	HideCursor();
 	MovieFrame_PlayMovie(self, 1);
-	
+
 	-- formula empirically determined to provide acceptable subtitles positioning for all resolutions
 	-- at 4/3 resolutions this will put the point at -630, the previous default
 	-- at wider resolutions the point will be lower
 	local y = 497 + 100 * self:GetWidth() / self:GetHeight();
 	MovieFrameSubtitleArea:SetPoint("TOP", 0, -y);
 	MovieFrameSubtitleArea:SetHeight(768 - y);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
 end
 
 function MovieFrame_OnHide(self)
 	EventRegistry:TriggerEvent("Subtitles.OnMovieCinematicStop");
 	self:StopMovie();
 	ShowCursor();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
 end
 
 function MovieFrame_OnUpdate(self, elapsed)

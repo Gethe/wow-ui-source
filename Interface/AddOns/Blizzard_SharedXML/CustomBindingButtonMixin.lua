@@ -21,6 +21,7 @@ CustomBindingButtonMixin = {};
 --[[private]] function CustomBindingButtonMixin:OnLoad()
 	local preventBindingManagerUpdate = true;
 	self:SetBindingModeActive(false, preventBindingManagerUpdate);
+	self:EnableGamePadButton(false);
 	self:EnableKeyboard(false);
 end
 
@@ -31,6 +32,7 @@ end
 	if isButtonRelease and isBindingModeButton and self.cancelBindingModeOnRelease then
 		self.cancelBindingModeOnRelease = false;
 		self:NotifyBindingCompleted(false);
+		self:EnableGamePadButton(false);
 		self:EnableKeyboard(false);
 	else
 		if self:IsBindingModeActive() then
@@ -68,6 +70,7 @@ end
 	if not self:IsBindingModeActive() then
 		-- Receiving an up event after bindings are disabled should disable bind-handling
 		if isButtonRelease then
+			self:EnableGamePadButton(false);
 			self:EnableKeyboard(false);
 		end
 
@@ -82,7 +85,7 @@ end
 			self:CancelBinding();
 			return;
 		end
-		
+
 		if not IsMetaKey(key) then
 			self.receivedNonMetaKeyInput = true;
 		end
@@ -96,6 +99,7 @@ end
 		self:NotifyBindingCompleted(true, self.keys);
 
 		if isButtonRelease then
+			self:EnableGamePadButton(false);
 			self:EnableKeyboard(false);
 		end
 	end
@@ -114,6 +118,7 @@ end
 
 	if isActive then
 		self:RegisterForClicks("AnyDown", "AnyUp");
+		self:EnableGamePadButton(true);
 		self:EnableKeyboard(true); -- Only enable here, disable later so that this button continues to see keyboard events through the entire key press/release cycle.
 	else
 		self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -159,5 +164,24 @@ end
 
 --[[public]] function CustomBindingButtonMixin:CancelBinding()
 	self:NotifyBindingCompleted(false);
+	self:EnableGamePadButton(false);
 	self:EnableKeyboard(false);
+end
+
+-- Owners use this instead of SetEnabled so a locked binding stays disabled.
+--[[public]] function CustomBindingButtonMixin:SetBindingEnabled(enabled)
+	self.isBindingEnabled = enabled;
+	self:UpdateEnabledState();
+end
+
+--[[public]] function CustomBindingButtonMixin:UpdateEnabledState()
+	local customBindingType = self:GetCustomBindingType();
+	local enabled = self.isBindingEnabled ~= false and not CustomBindingManager:IsLocked(customBindingType);
+	if not enabled and self:IsBindingModeActive() then
+		-- Canceling applies any pending bind, so drop it first.
+		CustomBindingManager:OnDismissed(customBindingType, false);
+		self:CancelBinding();
+	end
+
+	self:SetEnabled(enabled);
 end

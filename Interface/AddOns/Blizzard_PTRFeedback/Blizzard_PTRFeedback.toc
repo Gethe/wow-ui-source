@@ -1,5 +1,6 @@
 ## Title: PTR Issue Reporter
 ## OnlyBetaAndPTR: 1
+## DisableInCNBuild: 1
 ## Notes: Tool for gathering issues from PTR
 ## SavedVariables: Blizzard_PTRIssueReporter_Saved
 ## Dependencies: Blizzard_HelpPlate
@@ -9,4 +10,5 @@ Blizzard_PTRFeedback.lua
 Blizzard_PTRFeedback_Tooltips.lua
 Blizzard_PTRFeedback_Frames.lua
 Blizzard_PTRFeedback_Events.lua
+Blizzard_PTRFeedback_Gamepad.lua
 Blizzard_Reports.lua

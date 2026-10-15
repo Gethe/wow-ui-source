@@ -1,0 +1,5 @@
+## Title: Blizzard_FramerateFrame
+## Dep: Blizzard_ActionBar
+FramerateFrame.lua
+[Family]\FramerateFrameOverrides.lua [ExcludeLoadGameType camelot]
+FramerateFrame.xml

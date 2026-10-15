@@ -100,6 +100,7 @@ local TooltipComparison =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

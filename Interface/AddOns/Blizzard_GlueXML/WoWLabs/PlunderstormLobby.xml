@@ -1,6 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Script file="PlunderstormLobby.lua"/>
 
 <Frame name="PlunderstormLobbyFrame" hidden="true" setAllPoints="true" parent="GlueParent" inherits="CallbackRegistrantTemplate" mixin="PlunderstormLobbyMixin">
 	<Layers>
@@ -13,7 +12,7 @@
 			</Texture>
 		</Layer>
 	</Layers>
-	
+
 	<Frames>
 		<Frame parentKey="NavBar" inherits="CharacterSelectNavBarTemplate">
 			<Anchors>
@@ -21,7 +20,7 @@
 				<Anchor point="TOPRIGHT"/>
 			</Anchors>
 		</Frame>
-		
+
 		<Frame parentKey="GameModeDescriptionFrame">
 			<Size x="420" y="150"/>
 			<Layers>
@@ -46,7 +45,7 @@
 				<Anchor point="LEFT" x="82" y="20"/>
 			</Anchors>
 		</Frame>
-		
+
 		<Button parentKey="PlunderstormLobbyFriendsButton" mixin="PlunderstormLobbyFriendButtonMixin" >
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeKey="$parent.GameModeDescriptionFrame" relativePoint="BOTTOMLEFT" x="-2" y="-49"/>
@@ -76,7 +75,7 @@
 							</AnimationGroup>
 						</Animations>
 					</Texture>
-				</Layer>				
+				</Layer>
 			</Layers>
 			<Scripts>
 				<OnLoad method="OnLoad"/>
@@ -96,7 +95,7 @@
 					<Anchor point="CENTER" x="0" y="0"/>
 				</Anchors>
 			</HighlightTexture>
-		</Button>		
+		</Button>
 
 		<Button parentKey="PlunderstormLobbyBackButton" mixin="PlunderstormLobbyBackButtonButtonMixin" inherits="GlueButtonTemplate" text="BACK">
 			<Size x="190" y="34"/>
@@ -107,7 +106,7 @@
 				<OnClick method="OnClick"/>
 			</Scripts>
 		</Button>
-		
+
 		<Frame parentKey="GameModeSettingsFrame" inherits="QueueTypeSettingsFrameTemplate">
 			<Anchors>
 				<Anchor point="BOTTOM" x="0" y="40"/>
@@ -174,7 +173,7 @@
 					<Scripts>
 						<OnClick method="OnClick"/>
 					</Scripts>
-				</Button>				
+				</Button>
 			</Frames>
 		</Frame>
 

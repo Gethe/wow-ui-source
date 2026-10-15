@@ -15,7 +15,7 @@
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-41"/>
 		</Anchors>
-		
+
 		<Frames>
 			<Frame parentKey="BackgroundContainer" mixin="BackgroundContainerMixin" frameLevel="1">
 				<Anchors>
@@ -23,7 +23,7 @@
 					<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
 				</Anchors>
 				<Layers>
-					<Layer level="BACKGROUND" textureSubLevel="1" >						
+					<Layer level="BACKGROUND" textureSubLevel="1" >
 						<Texture parentKey="Background_1" atlas="shop-bg-map-blue" setAllPoints="true" />
 						<Texture parentKey="Background_2" atlas="shop-bg-map-blue" setAllPoints="true" />
 					</Layer>
@@ -49,7 +49,7 @@
 					<OnLoad method="OnLoad"/>
 				</Scripts>
 			</Frame>
-			
+
 			<Frame parentKey="ProductContainerFrame" inherits="CatalogShopProductContainerFrameTemplate" mixin="ProductContainerFrameMixin" frameLevel="500" >
 				<Anchors>
 					<Anchor point="TOPLEFT" x="26" y="-64"/>
@@ -81,6 +81,13 @@
 			</Frame>
 
 			<Frame parentKey="ProductDetailsContainerFrame" inherits="CatalogShopProductDetailsContainerFrameTemplate" frameLevel="500" hidden="true" >
+				<Anchors>
+					<Anchor point="TOPLEFT" x="26" y="-64"/>
+					<Anchor point="BOTTOMLEFT" x="26" y="0"/>
+				</Anchors>
+			</Frame>
+
+			<Frame parentKey="ProductBYOBContainerFrame" inherits="CatalogShopProductBYOBContainerFrameTemplate" frameLevel="500" hidden="true" >
 				<Anchors>
 					<Anchor point="TOPLEFT" x="26" y="-64"/>
 					<Anchor point="BOTTOMLEFT" x="26" y="0"/>
@@ -131,6 +138,7 @@
 					<ModelScene parentKey="MainModelScene" inherits="NoZoomModelSceneMixinTemplate" drawLayer="BORDER" frameLevel="500" >
 						<KeyValues>
 							<KeyValue key="allowOverlappedModels" value="true" type="boolean"/>
+							<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -154,7 +162,7 @@
 					<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
 				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY" >						
+					<Layer level="OVERLAY" >
 						<Texture parentKey="Foreground" setAllPoints="true" />
 					</Layer>
 				</Layers>
@@ -203,7 +211,7 @@
 					<OnLoad method="OnLoad" />
 					<OnShow method="OnShow" />
 					<OnHide method="OnHide" />
-				</Scripts>				
+				</Scripts>
 			</Frame>
 
 			<Frame parentKey="ToyContainerFrame"  mixin="ToyContainerFrameMixin" frameLevel="500" hidden="true" >
@@ -406,7 +414,7 @@
 								<!-- HorizontalLayoutFrame -->
 								<KeyValue key="layoutIndex" value="20" type="number"/>
 								<KeyValue key="align" value="center" type="string"/>
-								<KeyValue key="leftPadding" value="0" type="number"/>
+								<KeyValue key="leftPadding" value="4" type="number"/>
 							</KeyValues>
 						</Texture>
 					</Layer>
@@ -445,10 +453,11 @@
 					<OnHide method="OnHide" />
 				</Scripts>
 				</Frame>
-			
+
 			<Frame parentKey="CatalogShopDetailsFrame" hidden="true" inherits="VerticalLayoutFrame" mixin="CatalogShopProductDetailsFrameMixin" frameLevel="1000" hyperlinksEnabled="true" enableMouse="true">
 				<KeyValues>
-					<KeyValue key="fixedWidth" value="320" type="string"/>
+					<KeyValue key="fixedWidth" value="320" type="number"/>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-45" y="45"/>
@@ -519,10 +528,30 @@
 								<KeyValue key="leftPadding" value="15" type="number"/>
 							</KeyValues>
 						</FontString>
+						<FontString parentKey="MissingAchievementWarningText" inherits="SystemFont_Small2" wordwrap="true" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
+							<Size x="290"/>
+							<Color color="RED_FONT_COLOR"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="36" type="number"/>
+								<KeyValue key="topPadding" value="0" type="number"/>
+								<KeyValue key="bottomPadding" value="10" type="number"/>
+								<KeyValue key="leftPadding" value="15" type="number"/>
+							</KeyValues>
+						</FontString>
+						<FontString parentKey="UsesTemporaryCharactersWarningText" inherits="SystemFont_Small2" wordwrap="true" justifyH="CENTER" justifyV="MIDDLE" hidden="true">
+							<Size x="290"/>
+							<Color color="RED_FONT_COLOR"/>
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="37" type="number"/>
+								<KeyValue key="topPadding" value="0" type="number"/>
+								<KeyValue key="bottomPadding" value="10" type="number"/>
+								<KeyValue key="leftPadding" value="15" type="number"/>
+							</KeyValues>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="CarouselContainer" inherits="CarouselControlTemplate" hidden="true" >
+					<Frame name="CarouselContainer" parentKey="CarouselContainer" inherits="CarouselControlTemplate" hidden="true" >
 						<Size x="320" y="41"/>
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="40" type="number"/>
@@ -561,10 +590,33 @@
 									</Frame>
 								</Frames>
 							</Button>
-							<Button parentKey="DetailsButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopDetailsButtonMixin" frameLevel="2000" text="CATALOG_SHOP_DETAILS" >
+							<Button parentKey="GamepadPurchaseButton" inherits="CatalogShopRedGoldButtonTemplate" mixin="CatalogShopPurchaseButtonMixin" frameLevel="2000" hidden="true">
+								<Size x="200" y="50"/>
+								<Anchors>
+									<Anchor point="CENTER"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="catalogShopOnClickMethod" value="PurchaseProduct" type="string"/>
+								</KeyValues>
+								<Frames>
+									<Frame parentKey="Spinner" inherits="SpinnerTemplate" alpha="0.5" hidden="true">
+										<Size x="18" y="18"/>
+									</Frame>
+								</Frames>
+							</Button>
+							<Button parentKey="DetailsButton" inherits="CatalogShopButtonTemplate" frameLevel="2000" text="CATALOG_SHOP_DETAILS" >
 								<Size x="141" y="50"/>
 								<Anchors>
 									<Anchor point="TOPRIGHT" x="-15" y="0"/>
+								</Anchors>
+								<KeyValues>
+									<KeyValue key="catalogShopOnClickMethod" value="ShowProductDetails" type="string"/>
+								</KeyValues>
+							</Button>
+							<Button parentKey="BYOBButton" inherits="CatalogShopButtonTemplate" mixin="CatalogShopBYOBButtonMixin" frameLevel="2000" hidden="false" >
+								<Size x="282" y="50"/>
+								<Anchors>
+									<Anchor point="BOTTOM" x="0" y="0"/>
 								</Anchors>
 								<KeyValues>
 									<KeyValue key="catalogShopOnClickMethod" value="ShowProductDetails" type="string"/>
@@ -611,7 +663,7 @@
 								<Texture parentKey="Border" atlas="generic-frame-chamfered-12d-2o" setAllPoints="true" />
 							</Layer>
 						</Layers>
-					</Frame>					
+					</Frame>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad" />
@@ -655,5 +707,5 @@
 			<OnAttributeChanged method="OnAttributeChanged" />
 		</Scripts>
 	</Frame>
-	
+
 </Ui>

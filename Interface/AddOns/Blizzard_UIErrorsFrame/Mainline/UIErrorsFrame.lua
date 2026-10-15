@@ -7,6 +7,14 @@ function UIErrorsMixin:OnLoad()
 
 	FrameUtil.RegisterForTopLevelParentChanged(self);
 
+	-- WoWHack mode, show energy resource error messages for ability feedback
+	-- and adjust it to be below the talking head. 
+	if C_GameRules.IsWoWHack() then
+		self:SetMessageTypeEnabled(LE_GAME_ERR_OUT_OF_ENERGY, true);
+		self:ClearAllPoints();
+		self:SetPoint("TOP", UIParent, "TOP", 0, -250);
+	end
+
 	self.flashingFontStrings = {};
 end
 
@@ -19,6 +27,11 @@ function UIErrorsMixin:OnEvent(event, ...)
 		self:TryDisplayMessage(messageType, message, YELLOW_FONT_COLOR:GetRGB());
 	elseif event == "UI_ERROR_MESSAGE" then
 		local messageType, message = ...;
+		-- This hack is in place since we are using mana in data, but we don't want mana to be part of the display.
+		-- We can remove this after WoWHack is done. 
+		if C_GameRules.IsWoWHack() and messageType == LE_GAME_ERR_OUT_OF_MANA then
+			message = ERR_OUT_OF_FOCUS or message;
+		end
 		self:TryDisplayMessage(messageType, message, RED_FONT_COLOR:GetRGB());
 	end
 end
@@ -74,7 +87,7 @@ local THROTTLED_MESSAGE_TYPES = {
 	[LE_GAME_ERR_SPELL_FAILED_ANOTHER_IN_PROGRESS] = true,
 };
 
-local BLACK_LISTED_MESSAGE_TYPES = {
+BLACK_LISTED_MESSAGE_TYPES = {
 	[LE_GAME_ERR_ABILITY_COOLDOWN] = true,
 	[LE_GAME_ERR_SPELL_COOLDOWN] = true,
 	[LE_GAME_ERR_SPELL_FAILED_ANOTHER_IN_PROGRESS] = true,
@@ -149,6 +162,12 @@ function UIErrorsMixin:TryDisplayMessage(messageType, message, r, g, b)
 
 		local errorStringId, soundKitID, voiceID = GetGameMessageInfo(messageType);
 		if voiceID then
+			-- This hack is in place since we are using mana in data, but we don't want mana to be part of the display.
+			-- We can remove this after WoWHack is done. 
+			if C_GameRules.IsWoWHack() and messageType == LE_GAME_ERR_OUT_OF_MANA then
+				return;
+			end;
+			
 			C_Sound.PlayVocalErrorSound(voiceID);
 		elseif soundKitID then
 			PlaySound(soundKitID);

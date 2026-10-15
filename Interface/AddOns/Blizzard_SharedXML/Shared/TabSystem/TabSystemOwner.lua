@@ -87,6 +87,13 @@ function TabSystemOwnerMixin:AddNamedTab(tabName, ...)
 	return tabID;
 end
 
+function TabSystemOwnerMixin:AddIconTab(tabIcon, ...)
+	local tabID = self.tabSystem:AddTab(nil, tabIcon);
+	self.internalTabTracker:AddTab(tabID, ...);
+
+	return tabID;
+end
+
 function TabSystemOwnerMixin:SetTabCallback(tabID, callback)
 	self.internalTabTracker:SetTabCallback(tabID, callback);
 end
@@ -98,6 +105,10 @@ end
 function TabSystemOwnerMixin:SetTab(tabID, isUserAction)
 	self.internalTabTracker:SetTab(tabID, isUserAction);
 	self.tabSystem:SetTabVisuallySelected(tabID);
+end
+
+function TabSystemOwnerMixin:RemoveAllTabs()
+	self.tabSystem:RemoveAllTabs();
 end
 
 function TabSystemOwnerMixin:GetTab()

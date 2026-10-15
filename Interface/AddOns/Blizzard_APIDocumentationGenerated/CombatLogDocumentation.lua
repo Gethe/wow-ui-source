@@ -149,6 +149,7 @@ local CombatLog =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

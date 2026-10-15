@@ -1,5 +1,9 @@
 KeybindingsOverrides = {}
 
+function KeybindingsOverrides.HasHousingCategory()
+	return true;
+end
+
 function KeybindingsOverrides.AddBindingCategories(AddBindingCategory)
 	if C_GameRules.IsPlunderstorm() then
 		local requiredSettingName = nil;
@@ -14,8 +18,16 @@ function KeybindingsOverrides.AddBindingCategories(AddBindingCategory)
 	AddBindingCategory(BINDING_HEADER_ACTIONBAR3, "PROXY_SHOW_ACTIONBAR_3");
 	AddBindingCategory(BINDING_HEADER_ACTIONBAR4, "PROXY_SHOW_ACTIONBAR_4");
 	AddBindingCategory(BINDING_HEADER_ACTIONBAR5, "PROXY_SHOW_ACTIONBAR_5");
-	AddBindingCategory(BINDING_HEADER_ACTIONBAR6, "PROXY_SHOW_ACTIONBAR_6");
-	AddBindingCategory(BINDING_HEADER_ACTIONBAR7, "PROXY_SHOW_ACTIONBAR_7");
+	local actionBar6RequiredSetting;
+	if not C_GameRules.IsWoWHack() then
+		actionBar6RequiredSetting = "PROXY_SHOW_ACTIONBAR_6";
+	end
+	AddBindingCategory(BINDING_HEADER_ACTIONBAR6, actionBar6RequiredSetting);
+	local actionBar7RequiredSetting;
+	if not C_GameRules.IsWoWHack() then
+		actionBar7RequiredSetting = "PROXY_SHOW_ACTIONBAR_7";
+	end
+	AddBindingCategory(BINDING_HEADER_ACTIONBAR7, actionBar7RequiredSetting);
 	AddBindingCategory(BINDING_HEADER_ACTIONBAR8, "PROXY_SHOW_ACTIONBAR_8");
 	AddBindingCategory(BINDING_HEADER_MULTIACTIONBAR);
 	AddBindingCategory(BINDING_HEADER_CHAT);
@@ -24,7 +36,9 @@ function KeybindingsOverrides.AddBindingCategories(AddBindingCategory)
 	AddBindingCategory(BINDING_HEADER_VEHICLE);
 	AddBindingCategory(BINDING_HEADER_CAMERA);
 	AddBindingCategory(BINDING_HEADER_PING_SYSTEM);
-	AddBindingCategory(BINDING_HEADER_HOUSING_SYSTEM);
+	if KeybindingsOverrides.HasHousingCategory() then
+		AddBindingCategory(BINDING_HEADER_HOUSING_SYSTEM);
+	end
 	AddBindingCategory(BINDING_HEADER_MISC);
 	AddBindingCategory(BINDING_HEADER_OTHER);
 end

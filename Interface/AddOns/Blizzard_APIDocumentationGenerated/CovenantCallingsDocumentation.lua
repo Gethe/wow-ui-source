@@ -39,6 +39,7 @@ local CovenantCallings =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

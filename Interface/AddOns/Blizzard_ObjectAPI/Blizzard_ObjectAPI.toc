@@ -1,0 +1,15 @@
+## Title: Blizzard_ObjectAPI
+## Dep: Blizzard_Colors [AllowLoadGameType mainline]
+
+[Family]\ContinuableContainer.lua
+[Family]\ItemLocation.lua
+[Family]\AsyncCallbackSystem.lua		[AllowLoadGameType mainline]
+[Family]\ObjectCache.lua				[AllowLoadGameType mainline]
+[Family]\Item.lua
+[Family]\Spell.lua
+[Family]\PlayerLocation.lua
+[Family]\CampaignChapter.lua			[AllowLoadGameType mainline]
+[Family]\Campaign.lua					[AllowLoadGameType mainline]
+[Family]\Quest.lua						[AllowLoadGameType mainline]
+[Family]\UiMapPoint.lua					[AllowLoadGameType mainline]
+[Family]\CovenantCalling.lua			[AllowLoadGameType mainline]

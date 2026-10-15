@@ -81,6 +81,8 @@
 			<OnLoad method="OnLoad" inherit="append"/>
 			<OnEvent method="OnEvent"/>
 			<OnSizeChanged method="OnSizeChanged"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

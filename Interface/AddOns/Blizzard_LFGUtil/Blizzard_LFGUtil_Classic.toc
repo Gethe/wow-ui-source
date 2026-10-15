@@ -1,9 +1,0 @@
-## Title: Blizzard_LFGUtil
-## Author: Blizzard Entertainment
-## DefaultState: enabled
-## Dependencies: Blizzard_SharedXMLGame
-## AllowLoad: game
-## AllowLoadGameType: classic
-Shared\LFGUtilShared.lua
-Classic\LFGUtil.lua
-TBC\LFGUtil.lua [AllowLoadGameType tbc]

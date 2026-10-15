@@ -20,6 +20,7 @@ function GameTutorials:OnTutorialsEnabled()
 	AddFrameTutorials(); --Misc tutorials
 	AddDragonridingTutorials();
 	AddPerksProgramTutorials();
+	
 
 	if CanShowProfessionEquipmentTutorial() then
 		TutorialManager:AddTutorial(Class_EquipProfessionGear:new());

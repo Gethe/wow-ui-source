@@ -1,0 +1,114 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="ForceRenameFullNameTemplate" inherits="VerticalLayoutFrame" virtual="true">
+		<KeyValues>
+			<KeyValue key="expand" value="true" type="boolean"/>
+			<KeyValue key="topPadding" value="20" type="number"/>
+			<KeyValue key="bottomPadding" value="20" type="number"/>
+			<KeyValue key="leftPadding" value="20" type="number"/>
+			<KeyValue key="rightPadding" value="20" type="number"/>
+			<KeyValue key="spacing" value="16" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
+			<Frame parentKey="Instructions" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="1" type="number"/>
+					<KeyValue key="align" value="left" type="string"/>
+					<KeyValue key="spacing" value="16" type="number"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="AlertIcon" file="Interface\DialogFrame\UI-Dialog-Icon-AlertNew">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="1" type="number"/>
+								<KeyValue key="align" value="left" type="string"/>
+							</KeyValues>
+							<Size x="48" y="48"/>
+						</Texture>
+						<FontString parentKey="Text" inherits="UserScaledFontGlueNormalLarge, UserScaledFontStringTemplate">
+							<KeyValues>
+								<KeyValue key="layoutIndex" value="2" type="number"/>
+								<KeyValue key="align" value="center" type="string"/>
+								<KeyValue key="baseWidth" value="450" type="number"/>
+								<KeyValue key="scaleWeight" value="0.8" type="number"/>
+								<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+							</KeyValues>
+							<Size x="450" y="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+			<Frame parentKey="EditBoxes" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="2" type="number"/>
+					<KeyValue key="align" value="left" type="string"/>
+					<KeyValue key="spacing" value="16" type="number"/>
+				</KeyValues>
+				<Frames>
+					<EditBox parentKey="EditBoxCharacterName" inherits="SharedEditBoxTemplate" mixin="ForceRenameEditBoxCharacterNameMixin" letters="12" alphabeticOnly="true">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="justifyH" value="CENTER" type="string"/>
+							<KeyValue key="instructionsText" value="CHARACTER_CREATE_CHARACTERNAME_INSTRUCTIONS" type="global"/>
+						</KeyValues>
+						<Scripts>
+							<OnTabPressed method="OnTabPressed"/>
+						</Scripts>
+					</EditBox>
+					<EditBox parentKey="EditBoxSurname" inherits="SharedEditBoxTemplate" mixin="ForceRenameEditBoxSurnameMixin" letters="12" alphabeticOnly="true">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="justifyH" value="CENTER" type="string"/>
+							<KeyValue key="instructionsText" value="CHARACTER_CREATE_SURNAME_INSTRUCTIONS" type="global"/>
+						</KeyValues>
+						<Scripts>
+							<OnTabPressed method="OnTabPressed"/>
+						</Scripts>
+					</EditBox>
+				</Frames>
+			</Frame>
+			<Frame parentKey="Buttons" inherits="HorizontalLayoutFrame">
+				<KeyValues>
+					<KeyValue key="layoutIndex" value="3" type="number"/>
+					<KeyValue key="align" value="center" type="string"/>
+					<KeyValue key="spacing" value="16" type="number"/>
+				</KeyValues>
+				<Frames>
+					<Button parentKey="ConfirmButton" inherits="GlueDialogButtonTemplate" text="OKAY">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="1" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
+					</Button>
+					<Button parentKey="CancelButton" inherits="GlueDialogButtonTemplate" text="CANCEL">
+						<KeyValues>
+							<KeyValue key="layoutIndex" value="2" type="number"/>
+							<KeyValue key="align" value="center" type="string"/>
+						</KeyValues>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Frame name="ForceRenameFullNameDialog" mixin="ForceRenameFullNameDialogMixin" inherits="CharacterSelectBlockingFrameTemplate" hidden="true">
+		<KeyValues>
+			<KeyValue key="transparentBackgroundTexture" type="boolean" value="true"/>
+		</KeyValues>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Frame parentKey="RenameFrame" inherits="ForceRenameFullNameTemplate">
+				<Anchors>
+					<Anchor point="CENTER" relativePoint="CENTER"/>
+				</Anchors>
+			</Frame>		
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

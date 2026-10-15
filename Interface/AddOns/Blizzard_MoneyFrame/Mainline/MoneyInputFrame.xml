@@ -11,6 +11,7 @@
 		-->
 		<KeyValues>
 			<KeyValue key="baseHeight" value="20" type="number"/>
+			<KeyValue key="customSmartNavOffsetX" value="0" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">

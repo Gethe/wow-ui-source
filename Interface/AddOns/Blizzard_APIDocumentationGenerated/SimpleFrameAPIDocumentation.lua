@@ -434,6 +434,7 @@ local SimpleFrameAPI =
 		{
 			Name = "GetFrameStrata",
 			Type = "Function",
+			SecretReturnsForAspect = { Enum.SecretAspect.FrameStrata },
 
 			Arguments =
 			{
@@ -1292,7 +1293,8 @@ local SimpleFrameAPI =
 			Name = "SetFrameStrata",
 			Type = "Function",
 			IsProtectedFunction = true,
-			SecretArguments = "NotAllowed",
+			SecretArgumentsAddAspect = { Enum.SecretAspect.FrameStrata },
+			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
 			{
@@ -1618,10 +1620,22 @@ local SimpleFrameAPI =
 	Tables =
 	{
 		{
+			Name = "CreateRegionParams",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "cstring", Nilable = true },
+				{ Name = "drawLayer", Type = "DrawLayer", Nilable = true },
+				{ Name = "templateName", Type = "cstring", Nilable = true },
+				{ Name = "subLevel", Type = "number", Nilable = true },
+			},
+		},
+		{
 			Name = "FrameEventCallbackType",
 			Type = "CallbackType",
 		},
 	},
+
 	Predicates =
 	{
 	},

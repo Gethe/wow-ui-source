@@ -16,8 +16,14 @@ function ClassNameplateBarDracthyr:Setup()
 end
 
 function ClassNameplateBarDracthyr:SetupDracthyr()
-	self:ShowNameplateBar();
-	return EssencePowerBar.SetupEvoker(self);
+	local shouldShowBar = ClassPowerBar.ShouldShowBar(self);
+	if shouldShowBar then
+		self:ShowNameplateBar();
+	else
+		self:HideNameplateBar();
+	end
+
+	return shouldShowBar;
 end
 
 function ClassNameplateBarDracthyr:UpdateMaxPower()

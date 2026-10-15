@@ -290,6 +290,33 @@
 					<OnShow method="OnShow"/>
 				</Scripts>
 			</Frame>
+
+			<!-- Start New Run (Tale only, shown in place of the affix picker when a run is already active) -->
+			<Button parentKey="StartNewRunButton" inherits="UIPanelButtonTemplate" mixin="DelvesDifficultyPickerStartNewRunButtonMixin" text="DELVES_DIFFICULTY_PICKER_START_NEW" hidden="true">
+				<Size x="150" y="25"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.ChallengesContainerFrame" y="24"/>
+				</Anchors>
+				<Frames>
+					<Frame parentKey="BlockingFrame" setAllPoints="true" enableMouse="true" propagateMouseInput="Motion" frameLevel="9000" hidden="true">
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontHighlight" text="TIERED_ENTRANCE_PARTY_LEADER_ONLY" justifyH="CENTER" justifyV="MIDDLE" maxLines="2">
+									<Size x="280" y="28"/>
+									<Anchors>
+										<Anchor point="BOTTOM" y="-60"/>
+									</Anchors>
+									<Color color="ERROR_COLOR"/>
+								</FontString>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+				<Scripts>
+					<OnShow method="OnShow"/>
+					<OnClick method="OnClick"/>
+				</Scripts>
+			</Button>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -306,7 +333,6 @@
 			<OnHide method="OnHide"/>
 			<OnShow method="OnShow"/>
 			<OnEvent method="OnEvent"/>
-			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

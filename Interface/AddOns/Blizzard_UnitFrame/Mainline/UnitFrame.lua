@@ -150,7 +150,14 @@ function UnitFrame_Update (self, isParty)
 			name = self.unit;
 		end
 
-		local nameText = GetUnitName(name, isParty);
+		local nameText = "";
+		local isMyPlayer = UnitIsUnit(self.unit, "player");
+		if (RegionalUniqueNamesEnabled() and isMyPlayer and (not C_PlayerInfo.ShouldDisplaySurname())) then
+			nameText = NameUtil.GetUnitFirstName(name);
+		else
+			nameText = GetUnitName(name, isParty);
+		end
+
 		if ( nameText ) then
 			if ( UnitInPartyIsAI(self.unit) and (C_LFGInfo.IsInLFGFollowerDungeon() or C_PartyInfo.IsPartyWalkIn()) ) then
 				nameText = LFG_FOLLOWER_NAME_PREFIX:format(nameText);
@@ -195,7 +202,7 @@ function UnitFrame_OnEvent(self, event, ...)
 	local unit = self.unit;
 	if ( eventUnit == unit ) then
 		if ( event == "UNIT_NAME_UPDATE" ) then
-			self.name:SetText(GetUnitName(unit));
+			UnitFrame_Update(self);
 		elseif ( event == "UNIT_PORTRAIT_UPDATE" ) then
 			UnitFramePortrait_Update(self);
 		elseif ( event == "UNIT_DISPLAYPOWER" ) then
@@ -1082,22 +1089,8 @@ function UnitFrame_UpdateReplacePortraitSettingRegistration(self)
 	end
 end
 
-function GetUnitName(unit, showServerName)
-	local name, server = UnitName(unit);
-	local relationship = UnitRealmRelationship(unit);
-	if ( server and server ~= "" ) then
-		if ( showServerName ) then
-			return name.."-"..server;
-		else
-			if (relationship == LE_REALM_RELATION_VIRTUAL) then
-				return name;
-			else
-				return name..FOREIGN_SERVER_LABEL;
-			end
-		end
-	else
-		return name;
-	end
+function GetUnitName(unit, showSurname)
+	return NameUtil.FormatUnitNameForDisplay(unit, showSurname);
 end
 
 function ShowNumericThreat()

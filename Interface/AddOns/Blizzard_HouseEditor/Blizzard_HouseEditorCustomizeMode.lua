@@ -285,12 +285,6 @@ function HouseEditorCustomizeModeMixin:ShowHouseTooltip()
 end
 
 function HouseEditorCustomizeModeMixin:ShowRoomComponentTooltip(componentInfo)
-	-- TODO: Add a global string for rooms that can't be customized
-	-- For now, just don't show the tooltip at all
-	if not componentInfo.canBeCustomized then
-		return;
-	end
-
 	local supportedComponentName = self.RoomComponentCustomizationsPane:TryGetRoomComponentTooltipLabel(componentInfo);
 	if not supportedComponentName then
 		return;
@@ -307,9 +301,8 @@ function HouseEditorCustomizeModeMixin:ShowRoomComponentTooltip(componentInfo)
 		GameTooltip_AddNormalLine(GameTooltip,  HOUSING_CUSTOMIZE_DECOR_SELECTED_TOOLTIP);
 	elseif componentInfo.canBeCustomized then
 		GameTooltip_AddNormalLine(GameTooltip, HOUSING_CUSTOMIZE_DECOR_HOVER_TOOLTIP);
-	-- else
-	-- 	TODO: Replace with a non-decor-specific version of this string, because it makes no sense in this context
-	-- 	GameTooltip_AddErrorLine(GameTooltip, HOUSING_CUSTOMIZE_DECOR_UNAVAILABLE_HOVER_TOOLTIP);
+	else
+		GameTooltip_AddErrorLine(GameTooltip, HOUSING_CUSTOMIZE_UNAVAILABLE_HOVER_TOOLTIP);
 	end
 	GameTooltip:Show();
 	return GameTooltip;

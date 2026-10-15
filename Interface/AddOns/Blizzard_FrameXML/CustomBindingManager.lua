@@ -28,6 +28,7 @@ end
 	end
 
 	self.handlers[customBindingType][handler] = button;
+	button:UpdateEnabledState();
 end
 
 --[[private]] function CustomBindingManager:UnregisterHandler(customBindingType, handler)
@@ -91,6 +92,29 @@ end
 
 --[[private]] function CustomBindingManager:MutateValue(customBindingType, value)
 	return self.systems[customBindingType].mutator(value);
+end
+
+-- Lets the system that owns a binding prevent players from changing it, for example while its value is imported from elsewhere.
+--[[public]] function CustomBindingManager:SetLockedPredicate(customBindingType, isLocked)
+	self.systems[customBindingType].isLocked = isLocked;
+	self:RefreshButtons(customBindingType);
+end
+
+--[[public]] function CustomBindingManager:IsLocked(customBindingType)
+	local system = self.systems[customBindingType];
+	return system ~= nil and system.isLocked ~= nil and system.isLocked();
+end
+
+-- Call when the lock state or the bound keys change outside of the binding buttons.
+--[[public]] function CustomBindingManager:RefreshButtons(customBindingType)
+	if not self.handlers or not self.handlers[customBindingType] then
+		return;
+	end
+
+	for handler, button in self:EnumerateHandlers(customBindingType) do
+		button:UpdateEnabledState();
+		BindingButtonTemplate_SetupBindingButton(nil, button);
+	end
 end
 
 local function GetConvertedBindingText(text)

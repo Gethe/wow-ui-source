@@ -35,3 +35,7 @@ BNGetFriendInviteInfo = function(inviteIndex)
 	local isBattleTag = inviteInfo.friendLevel == Enum.BattleNetFriendLevel.BattleTag;
 	return inviteInfo.inviteID, inviteInfo.accountName, isBattleTag, nil, inviteInfo.creationTimestamp;
 end
+
+BNSetBlocked = function(bnetAccountID, block)
+	C_BattleNet.SetBlocked(bnetAccountID, block);
+end

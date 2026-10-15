@@ -1,0 +1,377 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="ReputationHeaderTemplate" mixin="ReputationHeaderMixin" virtual="true">
+		<Size y="28"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture atlas="common-button-list-collapseExpand" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="HIGHLIGHT">
+				<Texture atlas="common-button-list-collapseExpand" alphaMode="ADD" alpha="0.3" useAtlasSize="true"/>
+			</Layer>
+			<Layer level="BORDER">
+				<Texture parentKey="StateIcon" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="RIGHT" x="-8" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Name" inherits="GameFontNormalLeft">
+					<Size y="15"/>
+					<Anchors>
+						<Anchor point="LEFT" x="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_SkillsHeader" type="string"/>
+		</KeyValues>
+	</Button>
+
+	<Button name="ReputationSubHeaderTemplate" inherits="ReputationEntryTemplate" mixin="ReputationSubHeaderMixin" virtual="true">
+		<Size y="22"/>
+		<Frames>
+			<Button parentKey="ToggleCollapseButton" mixin="ReputationSubHeaderToggleCollapseButtonMixin">
+				<Size x="20" y="20"/>
+				<Anchors>
+					<Anchor point="LEFT" relativeKey="$parent.Content.AccountWideIcon" relativePoint="RIGHT" x="3"/>
+				</Anchors>
+				<Scripts>
+					<OnClick method="OnClick"/>
+				</Scripts>
+				<NormalTexture atlas="campaign_headericon_closed" useAtlasSize="true"/>
+				<PushedTexture atlas="campaign_headericon_closedpressed" useAtlasSize="true"/>
+				<HighlightTexture file="Interface\Buttons\UI-PlusButton-Hilight" alphaMode="ADD"/>
+			</Button>
+		</Frames>
+	</Button>
+
+	<Frame name="ReputationBarTemplate" inherits="ColoredProgressBarTemplate" mixin="ReputationBarMixin" virtual="true">
+		<Size x="160" y="29"/>
+		<Frames>
+			<Frame parentKey="BonusIcon" hidden="true" mixin="ReputationBarBonusIconMixin">
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent" relativePoint="LEFT" x="4" y="0"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="Texture" file="Interface\Common\ReputationStar" setAllPoints="true">
+							<TexCoords left="0.5" right="1" top="0.5" bottom="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+	</Frame>
+
+	<Button name="ReputationEntryTemplate" mixin="ReputationEntryMixin" inherits="CallbackRegistrantTemplate" virtual="true">
+		<Size y="30"/>
+		<Frames>
+			<Frame parentKey="Content" setAllPoints="true">
+				<Frames>
+					<Frame parentKey="ReputationBar" inherits="ReputationBarTemplate">
+						<Anchors>
+							<Anchor point="RIGHT" x="-3"/>
+						</Anchors>
+					</Frame>
+					<Button parentKey="ParagonIcon" frameStrata="HIGH" frameLevel="10" enableMouse="true" propagateMouseInput="Both" mixin="ReputationBarParagonIconMixin">
+						<Size x="20" y="20"/>
+						<Anchors>
+							<Anchor point="RIGHT" x="5"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Glow" atlas="ParagonReputation_Glow" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" x="-1" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<Texture parentKey="Icon" atlas="ParagonReputation_Bag" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="Check" atlas="ParagonReputation_Checkmark" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER" x="5" y="-2"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="HIGHLIGHT">
+								<Texture parentKey="Highlight" atlas="ParagonReputation_Bag" useAtlasSize="true" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnUpdate method="OnUpdate"/>
+						</Scripts>
+					</Button>
+					<Frame parentKey="BackgroundHighlight" alpha="0" setAllPoints="true">
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="Left" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
+									<Size x="6"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Right" atlas="charactercreate-customize-dropdown-linemouseover-side" parentArray="TextureRegions">
+									<Size x="6"/>
+									<TexCoords left="1" right="0" top="0" bottom="1"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Middle" atlas="charactercreate-customize-dropdown-linemouseover-middle" parentArray="TextureRegions">
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame parentKey="AccountWideIcon" mixin="ReputationEntryAccountWideIconMixin" enableMouse="true" propagateMouseInput="Clicks" hidden="true">
+						<Size x="23" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" x="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BORDER">
+								<Texture parentKey="Icon" atlas="warbands-icon" useAtlasSize="true" scale="0.9">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnEnter method="OnEnter"/>
+						</Scripts>
+					</Frame>
+				</Frames>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
+							<Size y="15"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.AccountWideIcon" relativePoint="RIGHT"/>
+								<Anchor point="RIGHT" relativeKey="$parent.ReputationBar" relativePoint="LEFT" x="-10"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+		</Scripts>
+	</Button>
+
+	<Frame name="ReputationFrame" setAllPoints="true" enableMouse="true" parent="CharacterFrame" useParentLevel="true" mixin="ReputationFrameMixin" hidden="true" id="2">
+		<Frames>
+			<DropdownButton parentKey="filterDropdown" inherits="WowStyle1DropdownTemplate">
+				<Anchors>
+					<Anchor point="TOPRIGHT" relativeTo="CharacterFrameLeftPaneHost" x="-42" y="-10"/>
+				</Anchors>
+			</DropdownButton>
+
+			<Frame parentKey="ScrollBox" inherits="WowScrollBoxList" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="CharacterFrameLeftPaneHost" x="10" y="-40"/>
+					<Anchor point="BOTTOMRIGHT" relativeTo="CharacterFrameLeftPaneHost" x="-25" y="15"/>
+				</Anchors>
+				<Frames>
+					<Frame frameLevel="6">
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="TOP"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture atlas="UI-Character-Info-ScrollLine-Long" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame frameLevel="6">
+						<Size x="1" y="1"/>
+						<Anchors>
+							<Anchor point="BOTTOM"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture atlas="UI-Character-Info-ScrollLine-Long" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+				</Frames>
+			</Frame>
+
+			<EventFrame parentKey="ScrollBar" inherits="MinimalScrollBar" frameStrata="HIGH">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScrollBox" relativePoint="TOPRIGHT" x="5" y="-2"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
+				</Anchors>
+			</EventFrame>
+
+			<Frame parentKey="ReputationDetailFrame" inherits="CharacterFrameSidePaneTemplate, CallbackRegistrantTemplate" enableMouse="true" mixin="ReputationDetailFrameMixin">
+				<Frames>
+					<Frame parentKey="StandingBar" inherits="ReputationBarTemplate">
+						<Size x="180" y="29"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.Divider" relativePoint="BOTTOM" y="-6"/>
+						</Anchors>
+					</Frame>
+					<CheckButton parentKey="AtWarCheckbox" mixin="ReputationDetailAtWarCheckboxMixin">
+						<Size x="26" y="26"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.Footer" relativePoint="TOPLEFT" x="-4" y="0"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormal" text="AT_WAR" justifyH="LEFT">
+									<Size x="158" y="0"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="0"/>
+									</Anchors>
+									<Color color="RED_FONT_COLOR"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick method="OnClick"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+						<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+						<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+						<CheckedTexture file="Interface\Buttons\UI-CheckBox-SwordCheck">
+							<Size x="32" y="32"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="3" y="-5"/>
+							</Anchors>
+						</CheckedTexture>
+						<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+					</CheckButton>
+					<CheckButton parentKey="MakeInactiveCheckbox" mixin="ReputationDetailInactiveCheckboxMixin">
+						<Size x="26" y="26"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.AtWarCheckbox" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="0" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormal" text="MOVE_TO_INACTIVE" justifyH="LEFT">
+									<Size x="158" y="0"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick method="OnClick"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+						<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+						<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+						<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+						<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+					</CheckButton>
+					<CheckButton parentKey="WatchFactionCheckbox" mixin="ReputationDetailWatchFactionCheckboxMixin">
+						<Size x="26" y="26"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.MakeInactiveCheckbox" relativePoint="BOTTOMLEFT" x="0" y="-2"/>
+						</Anchors>
+						<HitRectInsets>
+							<AbsInset left="0" right="0" top="0" bottom="0"/>
+						</HitRectInsets>
+						<Layers>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Label" inherits="GameFontNormal" text="SHOW_FACTION_ON_MAINSCREEN" justifyH="LEFT">
+									<Size x="158" y="0"/>
+									<Anchors>
+										<Anchor point="LEFT" relativePoint="RIGHT" x="2" y="0"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnClick method="OnClick"/>
+							<OnEnter method="OnEnter"/>
+							<OnLeave method="OnLeave"/>
+						</Scripts>
+						<NormalTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+						<PushedTexture atlas="checkbox-minimal" useAtlasSize="true"/>
+						<CheckedTexture atlas="checkmark-minimal" useAtlasSize="true"/>
+						<DisabledCheckedTexture atlas="checkmark-minimal-disabled" useAtlasSize="true"/>
+					</CheckButton>
+					<Button parentKey="ViewRenownButton" mixin="ReputationDetailViewRenownButtonMixin" inherits="SharedGoldRedButtonSmallTemplate, DisabledTooltipButtonTemplate" text="VIEW_RENOWN_BUTTON_LABEL">
+						<KeyValues>
+							<!-- Tooltip Text Set Dynamically -->
+							<KeyValue key="disabledTooltipAnchor" value="ANCHOR_RIGHT" type="string"/>
+						</KeyValues>
+						<Size x="140" y="18"/>
+						<Anchors>
+							<Anchor point="TOP" relativeKey="$parent.WatchFactionCheckbox" relativePoint="BOTTOM" x="60" y="-8"/>
+						</Anchors>
+						<Scripts>
+							<OnClick method="OnClick"/>
+						</Scripts>
+						<NormalFont style="GameFontNormalSmall"/>
+						<HighlightFont style="GameFontWhiteSmall"/>
+						<DisabledFont style="GameFontDisableSmall"/>
+					</Button>
+				</Frames>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+				</Scripts>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

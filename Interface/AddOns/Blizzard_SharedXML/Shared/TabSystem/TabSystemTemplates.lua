@@ -1,5 +1,7 @@
 
-local TabSideExtraSpacing = 20;
+local TabSideExtraSpacingStandard = 20;
+local TabSideExtraSpacingSquare = 8;
+local TabSideExtraSpacing = TabSideExtraSpacingStandard;
 
 TabSystemButtonArtMixin = {};
 
@@ -38,15 +40,25 @@ function TabSystemButtonArtMixin:GetTextYOffset(isSelected)
 	return offset;
 end
 
+function TabSystemButtonArtMixin:GetIconYOffset(isSelected)
+	return 0;
+end
+
 function TabSystemButtonArtMixin:SetTabSelected(isSelected)
 	self.isSelected = isSelected;
 
-	self.Left:SetShown(not isSelected);
-	self.Middle:SetShown(not isSelected);
-	self.Right:SetShown(not isSelected);
-	self.LeftActive:SetShown(isSelected);
-	self.MiddleActive:SetShown(isSelected);
-	self.RightActive:SetShown(isSelected);
+	if self.squareMode then
+		self.SquareBackground:SetShown(not isSelected);
+		self.SquareBackgroundActive:SetShown(isSelected);
+		self.SquareBackgroundActiveGlow:SetShown(isSelected);
+	else
+		self.Left:SetShown(not isSelected);
+		self.Middle:SetShown(not isSelected);
+		self.Right:SetShown(not isSelected);
+		self.LeftActive:SetShown(isSelected);
+		self.MiddleActive:SetShown(isSelected);
+		self.RightActive:SetShown(isSelected);
+	end
 
 	local selectedFontObject = self.selectedFontObject or GameFontHighlightSmall;
 	local unselectedFontObject = self.unselectedFontObject or GameFontNormalSmall;
@@ -55,6 +67,7 @@ function TabSystemButtonArtMixin:SetTabSelected(isSelected)
 	self:SetEnabled(not isSelected and not self:IsForceDisabled());
 
 	self.Text:SetPoint("CENTER", self, "CENTER", 0, self:GetTextYOffset(isSelected));
+	self.Icon:SetPoint("CENTER", self, "CENTER", 0, self:GetIconYOffset(isSelected));
 
 	local tooltip = GetAppropriateTooltip();
 	if tooltip:IsOwned(self) then
@@ -66,9 +79,46 @@ function TabSystemButtonArtMixin:SetTabWidth(width)
 	self:SetWidth(width);
 end
 
+function TabSystemButtonArtMixin:SetTabHeight(height)
+	for _, texture in ipairs(self.RotatedTextures) do
+		texture:SetHeight(height);
+	end
+end
+
 function TabSystemButtonArtMixin:IsForceDisabled()
 	-- Override in your derived Mixin.
 	return false, nil;
+end
+
+function TabSystemButtonArtMixin:SetSquareMode(enabled)
+	self.squareMode = enabled;
+
+	if (enabled) then
+		self.Left:Hide();
+		self.Middle:Hide();
+		self.Right:Hide();
+		self.LeftActive:Hide();
+		self.MiddleActive:Hide();
+		self.RightActive:Hide();
+		self.LeftHighlight:Hide();
+		self.MiddleHighlight:Hide();
+		self.RightHighlight:Hide();
+
+		TabSideExtraSpacing = TabSideExtraSpacingSquare;
+
+		self.SquareBackground:SetAtlas("spellbook-Tab-Frame-C60", true);
+		self.SquareBackgroundActive:SetAtlas("spellbook-Tab-Frame-Glow-C60", true);
+		self.SquareBackgroundActiveGlow:SetAtlas("spellbook-Tab-Frame-glow-gradient-C60", true);
+	else
+		self.SquareBackground:Hide();
+		self.SquareBackgroundActive:Hide();
+		self.SquareBackgroundActiveGlow:Hide();
+
+		TabSideExtraSpacing = TabSideExtraSpacingStandard;
+	end
+
+	-- This will show the proper frames.
+	self:SetTabSelected(self.isSelected);
 end
 
 TabSystemButtonMixin = {};
@@ -114,13 +164,35 @@ function TabSystemButtonMixin:OnClick()
 	end
 end
 
-function TabSystemButtonMixin:Init(tabID, tabText)
+function TabSystemButtonMixin:Init(tabID, tabText, tabIcon)
 	self.tabID = tabID;
 	self:HandleRotation();
 	self.tabText = tabText;
-	self:SetText(tabText);
+	self.tabIcon = tabIcon;
+
+	if tabIcon then
+		self.Icon:SetTexture(tabIcon);
+		self.Icon:Show();
+		self.IconMask:Show();
+		self:SetSquareMode(true);
+	end
+
+	if tabText then
+		self:SetText(tabText);
+	end
+
 	self:UpdateTabWidth();
 	self:SetTabSelected(false);
+end
+
+function TabSystemButtonMixin:GetTabText()
+	return self.tabText;
+end
+
+function TabSystemButtonMixin:UpdateTabText()
+	local tabText = self:GetTabText();
+	local text = not self:IsForceDisabled() and tabText or DISABLED_FONT_COLOR:WrapTextInColorCode(tabText);
+	self.Text:SetText(text);
 end
 
 function TabSystemButtonMixin:SetTooltipText(tooltipText)
@@ -130,8 +202,7 @@ end
 function TabSystemButtonMixin:SetTabEnabled(enabled, errorReason)
 	self.forceDisabled = not enabled;
 	self:SetEnabled(not self:IsForceDisabled() and not self.isSelected);
-	local text = not self:IsForceDisabled() and self.tabText or DISABLED_FONT_COLOR:WrapTextInColorCode(self.tabText);
-	self.Text:SetText(text);
+	self:UpdateTabText();
 	self.errorReason = errorReason;
 end
 
@@ -156,11 +227,15 @@ function TabSystemButtonMixin:UpdateTabWidth()
 	local width = sidesWidth + TabSideExtraSpacing;
 	local minTabWidth, maxTabWidth = self:GetTabSystem():GetTabWidthConstraints();
 	local textWidth = self.Text:GetWidth() + (self.textPadding or 0);
+	local height = self:GetHeight(); 
 
 	if width < textWidth then
 		width = textWidth + 10;
 	end
 
+	if self.tabIcon then
+		width = self.Icon:GetWidth() + TabSideExtraSpacing;
+	end
 	if maxTabWidth and width > maxTabWidth then
 		width = maxTabWidth;
 		textWidth = width - 10;
@@ -174,6 +249,7 @@ function TabSystemButtonMixin:UpdateTabWidth()
 	self.Text:SetWidth(textWidth or 0);
 
 	self:SetTabWidth(width);
+	self:SetTabHeight(height);
 end
 
 function TabSystemButtonMixin:IsSelected()
@@ -209,15 +285,21 @@ function TabSystemMixin:OnLoad()
 	self.tabPool = CreateFramePool("BUTTON", self, self.tabTemplate);
 end
 
-function TabSystemMixin:AddTab(tabText)
+function TabSystemMixin:AddTab(tabText, tabIcon)
 	local tabID = #self.tabs + 1;
 	local newTab = self.tabPool:Acquire();
 	table.insert(self.tabs, newTab);
 	newTab.layoutIndex = tabID;
-	newTab:Init(tabID, tabText);
+	newTab:Init(tabID, tabText, tabIcon);
 	newTab:Show();
 	self:MarkDirty();
 	return tabID;
+end
+
+function TabSystemMixin:RemoveAllTabs()
+	table.wipe(self.tabs);
+	self.tabPool:ReleaseAll();
+	self:MarkDirty();
 end
 
 -- tabSelectedCallback: function (tabID, isUserAction) -> suppressVisualSelection

@@ -24,6 +24,17 @@ local Tutorial =
 			Name = "ReturnToTutorialArea",
 			Type = "Function",
 		},
+		{
+			Name = "SendTutorialStartButtonTelem",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "skipTutorial", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -82,9 +93,9 @@ local Tutorial =
 		{
 			Name = "FrameTutorialAccount",
 			Type = "Enumeration",
-			NumValues = 50,
+			NumValues = 51,
 			MinValue = 1,
-			MaxValue = 50,
+			MaxValue = 51,
 			Fields =
 			{
 				{ Name = "HudRevampBagChanges", Type = "FrameTutorialAccount", EnumValue = 1 },
@@ -137,9 +148,11 @@ local Tutorial =
 				{ Name = "HousingEndeavorsTabSeen", Type = "FrameTutorialAccount", EnumValue = 48 },
 				{ Name = "RunesOfPower", Type = "FrameTutorialAccount", EnumValue = 49 },
 				{ Name = "HousingPetBeds", Type = "FrameTutorialAccount", EnumValue = 50 },
+				{ Name = "Reserved1", Type = "FrameTutorialAccount", EnumValue = 51 },
 			},
 		},
 	},
+
 	Predicates =
 	{
 		{

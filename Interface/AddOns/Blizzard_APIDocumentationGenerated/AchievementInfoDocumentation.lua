@@ -200,6 +200,7 @@ local AchievementInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

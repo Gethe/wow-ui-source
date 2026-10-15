@@ -216,6 +216,16 @@ local FriendList =
 			},
 		},
 		{
+			Name = "GetWhoRaceFilters",
+			Type = "Function",
+			RequiresFriendList = true,
+
+			Returns =
+			{
+				{ Name = "filters", Type = "table", InnerType = "WhoFilter", Nilable = false },
+			},
+		},
+		{
 			Name = "IsFriend",
 			Type = "Function",
 			RequiresFriendList = true,
@@ -327,6 +337,7 @@ local FriendList =
 			{
 				{ Name = "filter", Type = "cstring", Nilable = false },
 				{ Name = "origin", Type = "number", Nilable = true },
+				{ Name = "filters", Type = "SendWhoFilters", Nilable = true },
 			},
 		},
 		{
@@ -405,6 +416,7 @@ local FriendList =
 			Arguments =
 			{
 				{ Name = "sorting", Type = "cstring", Nilable = false },
+				{ Name = "ascending", Type = "bool", Nilable = true },
 			},
 		},
 	},
@@ -651,6 +663,25 @@ local FriendList =
 			},
 		},
 		{
+			Name = "SendWhoFilters",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "classIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "raceIDs", Type = "table", InnerType = "number", Nilable = false },
+				{ Name = "uiMapIDs", Type = "table", InnerType = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "WhoFilter",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "ID", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "WhoInfo",
 			Type = "Structure",
 			Fields =
@@ -667,6 +698,7 @@ local FriendList =
 			},
 		},
 	},
+
 	Predicates =
 	{
 		{

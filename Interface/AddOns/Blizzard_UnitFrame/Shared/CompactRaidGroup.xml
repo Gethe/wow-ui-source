@@ -49,7 +49,7 @@
 				</Anchors>
 			</Button>
 
-			<Button name="$parentTitle" parentKey="title">
+			<Button name="$parentTitle" parentKey="title" inherits="SmartNavigationIgnoredTemplate">
 				<Size x="50" y="14"/>
 				<Anchors>
 					<Anchor point="BOTTOM" relativeTo="$parentMember1" relativePoint="TOP"/>

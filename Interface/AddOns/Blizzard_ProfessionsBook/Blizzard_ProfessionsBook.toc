@@ -1,7 +1,11 @@
 ## Title: Blizzard Professions Book
 ## LoadOnDemand: 1
-## Dependencies: Blizzard_HelpPlate
+## Dependencies: Blizzard_HelpPlate, Blizzard_ProfessionsTemplates
 
 Blizzard_ProfessionsBook_Bootstrap.lua [Bootstrap]
 Blizzard_ProfessionsBook.lua
-Blizzard_ProfessionsBook.xml
+[Game]\Blizzard_ProfessionsBook.lua		[AllowLoadGameType camelot]
+Blizzard_ProfessionsBookTemplates.xml
+[Family]\Blizzard_ProfessionsBookTemplates.xml	[ExcludeLoadGameType camelot]
+[Game]\Blizzard_ProfessionsBookTemplates.xml	[AllowLoadGameType camelot]
+Blizzard_ProfessionsBook.xml	[ExcludeLoadGameType camelot]

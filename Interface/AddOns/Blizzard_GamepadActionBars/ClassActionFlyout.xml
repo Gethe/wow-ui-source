@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+	..\Blizzard_SharedXML\UI.xsd">
+
+	<CheckButton name="GamepadClassActionButtonTemplate" inherits="GamepadActionBarButtonTemplate" virtual="true">
+		<Mixins>
+			<Mixin key="GamepadClassActionButtonMixin"/>
+		</Mixins>
+		<Scripts>
+			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</CheckButton>
+
+</Ui>

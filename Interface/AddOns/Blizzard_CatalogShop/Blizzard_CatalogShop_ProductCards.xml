@@ -25,7 +25,7 @@
 			<OnLoad method="OnLoad" />
 		</Scripts>
 	</Frame>
-	
+
 	<!-- Section Header Template with Opt-out Link -->
 	<Frame name="CatalogShopSectionHeaderOptOutLinkTemplate" mixin="CatalogShopSectionHeaderOptOutLinkMixin" virtual="true" enableMouse="true">
 		<Size x="557" y="42"/>
@@ -68,7 +68,7 @@
 			<OnLoad method="OnLoad" />
 		</Scripts>
 	</Frame>
-	
+
 	<!-- Services Small Card Template -->
 	<Button name="SmallCatalogShopServicesCardTemplate" mixin="SmallCatalogShopServicesCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
 
@@ -95,6 +95,26 @@
 
 	<!-- Access Small Card Template -->
 	<Button name="SmallCatalogShopAccessCardTemplate" mixin="SmallCatalogShopAccessCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" />
+
+	<!-- BYOB Small Card Template -->
+	<Button name="SmallCatalogShopBYOBCardTemplate" mixin="SmallCatalogShopBYOBCardMixin" inherits="SmallCatalogShopProductCardTemplate" virtual="true" >
+		<Frames>
+			<CheckButton parentKey="selectedForBYOB" mixin="BYOBCheckboxMixin" inherits="MinimalCheckboxArtTemplate" motionScriptsWhileDisabled="true">
+				<Size x="36" y="36"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="16" y="-16"/>
+				</Anchors>
+				<HitRectInsets>
+					<AbsInset left="0" right="0" top="0" bottom="8"/>
+				</HitRectInsets>
+				<Scripts>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</CheckButton>
+		</Frames>
+	</Button>
 
 	<!--
 		Details Card Templates are structually similar to Small Product Card Templates, however

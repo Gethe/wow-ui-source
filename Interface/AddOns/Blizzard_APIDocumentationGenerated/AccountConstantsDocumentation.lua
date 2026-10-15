@@ -35,15 +35,17 @@ local AccountConstants =
 		{
 			Name = "AccountDataUpdateStatus",
 			Type = "Enumeration",
-			NumValues = 4,
+			NumValues = 6,
 			MinValue = 0,
-			MaxValue = 3,
+			MaxValue = 5,
 			Fields =
 			{
 				{ Name = "Success", Type = "AccountDataUpdateStatus", EnumValue = 0 },
 				{ Name = "Failed", Type = "AccountDataUpdateStatus", EnumValue = 1 },
 				{ Name = "Corrupt", Type = "AccountDataUpdateStatus", EnumValue = 2 },
 				{ Name = "Toobig", Type = "AccountDataUpdateStatus", EnumValue = 3 },
+				{ Name = "UnexpectedContentSet", Type = "AccountDataUpdateStatus", EnumValue = 4 },
+				{ Name = "ContentSetTooLarge", Type = "AccountDataUpdateStatus", EnumValue = 5 },
 			},
 		},
 		{
@@ -175,9 +177,9 @@ local AccountConstants =
 		{
 			Name = "BnetAccountFlag",
 			Type = "Enumeration",
-			NumValues = 22,
+			NumValues = 23,
 			MinValue = 0,
-			MaxValue = 1048576,
+			MaxValue = 2097152,
 			Fields =
 			{
 				{ Name = "None", Type = "BnetAccountFlag", EnumValue = 0 },
@@ -202,6 +204,7 @@ local AccountConstants =
 				{ Name = "CataLegendaryMountChecked", Type = "BnetAccountFlag", EnumValue = 262144 },
 				{ Name = "CataLegendaryMountObtained", Type = "BnetAccountFlag", EnumValue = 524288 },
 				{ Name = "MopQuestLogFlagsFixUp", Type = "BnetAccountFlag", EnumValue = 1048576 },
+				{ Name = "Unused", Type = "BnetAccountFlag", EnumValue = 2097152 },
 			},
 		},
 		{
@@ -281,7 +284,22 @@ local AccountConstants =
 				{ Name = "HouseType", Type = "ItemCollectionType", EnumValue = 13 },
 			},
 		},
+		{
+			Name = "SdToggleUsageLocation",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "BeforeLogin", Type = "SdToggleUsageLocation", EnumValue = 0 },
+				{ Name = "CharacterCreation", Type = "SdToggleUsageLocation", EnumValue = 1 },
+				{ Name = "BarberShop", Type = "SdToggleUsageLocation", EnumValue = 2 },
+				{ Name = "OptionsMenu", Type = "SdToggleUsageLocation", EnumValue = 3 },
+			},
+		},
 	},
+
 	Predicates =
 	{
 	},

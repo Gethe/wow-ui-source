@@ -8,6 +8,7 @@
 		<Layers>
 			<Layer level="OVERLAY">
 				<FontString parentKey="FactionName" inherits="QuestFont_30" justifyH="CENTER" justifyV="MIDDLE">
+					<Size x="220"/>
 					<Anchors>
 						<Anchor point="TOP" relativePoint="CENTER" y="60"/>
 					</Anchors>

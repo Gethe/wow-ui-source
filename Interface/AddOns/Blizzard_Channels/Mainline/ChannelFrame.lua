@@ -1,0 +1,1078 @@
+UIPanelWindows["ChannelFrame"] = { area = "left", pushable = 1, whileDead = 1 };
+
+ChannelFrameMixin = CreateFromMixins();
+
+do
+	local dirtyFlags = {
+		UpdateChannelList = 1,
+		UpdateRoster = 2,
+	};
+
+	local dynamicEvents = {
+		"PARTY_LEADER_CHANGED",
+		"GROUP_ROSTER_UPDATE",
+		"CHANNEL_UI_UPDATE",
+		"CHANNEL_LEFT",
+		"CHAT_MSG_CHANNEL_NOTICE_USER",
+	};
+
+	function ChannelFrameMixin:OnLoad()
+		self.DirtyFlags = CreateFromMixins(DirtyFlagsMixin);
+		self.DirtyFlags:OnLoad();
+		self.DirtyFlags:AddNamedFlagsFromTable(dirtyFlags);
+		self.DirtyFlags:AddNamedMask("UpdateAll", Flags_CreateMaskFromTable(dirtyFlags));
+		self.DirtyFlags:AddNamedMask("CheckShowTutorial", 4);
+		self.DirtyFlags:AddNamedMask("RefreshFooter", 8);
+
+		self:SetTitle(CHAT_CHANNELS);
+		self:MarkDirty("UpdateAll");
+
+		self:RegisterEvent("MUTELIST_UPDATE");
+		self:RegisterEvent("IGNORELIST_UPDATE");
+		self:RegisterEvent("CHANNEL_COUNT_UPDATE");
+		self:RegisterEvent("CHANNEL_ROSTER_UPDATE");
+		self:RegisterEvent("VOICE_CHAT_LOGIN");
+		self:RegisterEvent("VOICE_CHAT_LOGOUT");
+		self:RegisterEvent("VOICE_CHAT_PENDING_CHANNEL_JOIN_STATE");
+		self:RegisterEvent("VOICE_CHAT_VOICE_PROVIDER_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_ACTIVE_VOICE_PROVIDER_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_JOINED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_ACTIVATED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_DEACTIVATED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_REMOVED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_DISPLAY_NAME_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_CONNECTION_SUCCESS");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_ERROR");
+		self:RegisterEvent("GROUP_FORMED");
+		self:RegisterEvent("GROUP_LEFT");
+		self:RegisterEvent("CLUB_ADDED");
+		self:RegisterEvent("CLUB_REMOVED");
+		self:RegisterEvent("CLUB_STREAMS_LOADED");
+		self:RegisterEvent("CLUB_STREAM_ADDED");
+		self:RegisterEvent("CLUB_STREAM_REMOVED");
+		self:RegisterEvent("CLUB_MEMBER_UPDATED");
+		self:RegisterEvent("CLUB_MEMBERS_UPDATED");
+		self:RegisterEvent("CLUB_MEMBER_PRESENCE_UPDATED");
+		self:RegisterEvent("CLUB_MEMBER_ROLE_UPDATED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_ADDED");
+		self:RegisterEvent("VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED");
+		self:RegisterEvent("CHAT_MSG_CHANNEL_LEAVE_PREVENTED");
+		self:RegisterEvent("CHAT_MSG_CHANNEL_NOTICE");
+		CVarCallbackRegistry:RegisterCallback("ENABLE_TEXT_TO_SPEECH", self.OnTextToSpeechChanged, self);
+		CVarCallbackRegistry:RegisterCallback("speechToText", self.OnTextToSpeechChanged, self);
+
+		local promptSubSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(VoiceChatPromptActivateChannel);
+		ChatAlertFrame:SetSubSystemAnchorPriority(promptSubSystem, 10);
+
+		local notificationSubSystem = ChatAlertFrame:AddAutoAnchoredSubSystem(VoiceChatChannelActivatedNotification);
+		ChatAlertFrame:SetSubSystemAnchorPriority(notificationSubSystem, 11);
+
+		self:RegisterForTransitions();
+	end
+
+	function ChannelFrameMixin:RegisterForTransitions()
+		InputUtil.RegisterForInterfaceTransitions(self, nil);
+		InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+		InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	end
+
+	function ChannelFrameMixin:GetFocusedListButton()
+		return SmartNavigation:GetCurrentButton();
+	end
+
+	-- Helper accessor for getting the focused channel list button IF it is a voice channel button.
+	function ChannelFrameMixin:GetChannelVoiceButton()
+		local focusedButton = self:GetFocusedListButton();
+		local isVoiceButton = focusedButton and focusedButton.ChannelSupportsVoice and focusedButton:ChannelSupportsVoice();
+		return isVoiceButton and focusedButton;
+	end
+
+	-- Helper accessor for getting the clickable join/leave voice button IF it is a voice channel button.
+	function ChannelFrameMixin:GetChannelSpeakerButton()
+		local voiceButton = self:GetChannelVoiceButton();
+		local speakerButton = voiceButton and voiceButton.Speaker and voiceButton.Speaker.Button;
+		if speakerButton and speakerButton:IsShown() then
+			return speakerButton;
+		end
+		return nil;
+	end
+
+	-- Helper accessor for getting the clickable activate/deactivate transcription button IF it is a voice channel button.
+	function ChannelFrameMixin:GetChannelTranscriptionButton()
+		local voiceButton = self:GetChannelVoiceButton();
+		local transcriptionButton = voiceButton and voiceButton.Speaker and voiceButton.Speaker.Transcription and voiceButton.Speaker.Transcription.Button;
+		if transcriptionButton and transcriptionButton:IsShown() then
+			return transcriptionButton;
+		end
+		return nil;
+	end
+
+	-- Performs the context menu open action on the currently selected channel list button.
+	function ChannelFrameMixin:MoreActionsPressed()
+		local focusedButton = self:GetFocusedListButton()
+		if focusedButton then
+			local isVoiceButton = focusedButton.ChannelSupportsVoice and focusedButton:ChannelSupportsVoice();
+			local speakerButton = isVoiceButton and focusedButton.Speaker and focusedButton.Speaker.Button;
+			if speakerButton and speakerButton:IsShown() then
+				speakerButton:OnClick();
+			elseif focusedButton.HandleRightClick then
+				self:SetIgnoreNextUnfocusForChatFlow(true);
+				focusedButton:HandleRightClick();
+			end
+		end
+	end
+
+	function ChannelFrameMixin:GetMoreActionsLabel()
+		local voiceButton = self:GetChannelVoiceButton();
+		if voiceButton then
+			if voiceButton:IsVoiceActive() then
+				return VOICE_CHAT_LEAVE;
+			else
+				return VOICE_CHAT_JOIN;
+			end
+		end
+		return CONTEXT_ACTION_LABEL_MORE_ACTIONS;
+	end
+
+	function ChannelFrameMixin:GetTranscriptionLabel()
+		local transcriptionButton = self:GetChannelTranscriptionButton();
+		if transcriptionButton and transcriptionButton:IsTranscriptionActive() then
+			return VOICE_CHAT_TRANSCRIPTION_DISABLE;
+		end
+
+		return VOICE_CHAT_TRANSCRIPTION_ENABLE;
+	end
+
+	-- Toggles the transcription button on the currently focused channel button.
+	function ChannelFrameMixin:ToggleTranscription()
+		local transcriptionButton = self:GetChannelTranscriptionButton();
+		if transcriptionButton then
+			transcriptionButton:OnClick();
+		end
+	end
+
+	function ChannelFrameMixin:SetupGamepad()
+		self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ChannelFrameFooter");
+		local function SelectCondition()
+			local focusedButton = self:GetFocusedListButton();
+			local isChannelButtonBaseMixin = focusedButton and focusedButton.GetChannelNumber;
+			return isChannelButtonBaseMixin;
+		end
+		local selectBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, nil, ACTION_LABEL_SELECT);
+		selectBinding:AddCondition(SelectCondition);
+		selectBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+		self.footer:AddPromptedBinding(selectBinding);
+		local addChannelBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.ToggleCreateChannel, self), ADD_CHAT_CHANNEL);
+		self.footer:AddPromptedBinding(addChannelBinding);
+		local function TranscriptionCondition()
+			return self:GetChannelTranscriptionButton();
+		end
+		local transcriptionBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_SHOULDER_RIGHT, GenerateClosure(self.ToggleTranscription, self), VOICE_CHAT_TRANSCRIPTION_ENABLE);
+		transcriptionBinding:AddCondition(TranscriptionCondition);
+		transcriptionBinding:SetLabelFunction(GenerateClosure(self.GetTranscriptionLabel, self));
+		transcriptionBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+		self.footer:AddPromptedBinding(transcriptionBinding);
+		local function MoreActionsCondition()
+			local focusedButton = self:GetFocusedListButton();
+			local isContextMenuButton = focusedButton and focusedButton.HandleRightClick;
+			local speakerButton = self:GetChannelSpeakerButton();
+			return isContextMenuButton or speakerButton;
+		end
+		local moreActionsBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.MoreActionsPressed, self), CONTEXT_ACTION_LABEL_MORE_ACTIONS);
+		moreActionsBinding:AddCondition(MoreActionsCondition);
+		moreActionsBinding:SetLabelFunction(GenerateClosure(self.GetMoreActionsLabel, self));
+		self.footer:AddPromptedBinding(moreActionsBinding);
+		self.footer:AddStandardFrameControlManagerBindings(self);
+		local function CloseCondition()
+			return not self.shouldReturnToChat;
+		end
+		local closeBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, nil, FRAME_ACTION_CLOSE);
+		closeBinding:AddCondition(CloseCondition);
+		closeBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+		self.footer:AddPromptedBinding(closeBinding);
+		local function BackCondition()
+			return self.shouldReturnToChat;
+		end
+		local backBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, nil, FRAME_ACTION_BACK);
+		backBinding:AddCondition(BackCondition);
+		backBinding:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+		self.footer:AddPromptedBinding(backBinding);
+		self.footer:SetAnchorOffsets(0, -12);
+		self.footer:Finalize();
+	end
+
+	function ChannelFrameMixin:InitializeGamepad()
+		self.CloseButton:Hide();
+		self.SettingsButton:Hide();
+		self.NewButton:Hide();
+	end
+
+	function ChannelFrameMixin:FocusGamepad()
+		self.footer:ShowAndActivateBindings();
+	end
+
+	function ChannelFrameMixin:UnfocusGamepad()
+		self:SetShouldReturnToChat(self.shouldReturnToChat and self.shouldIgnoreNextUnfocusForChatFlow);
+		self:SetIgnoreNextUnfocusForChatFlow(false);
+		self.footer:HideAndDeactivateBindings();
+	end
+
+	--[[
+		Focus management doesn't support multi-step stack management and the chat frame, itself,
+		does not maintain any state inside FrameControlsManager. We must know if "back" should
+		return to the  chat panel or not. Do so by detecting where focus has gone when we lose it.
+		If focus remains within the ChannelFrame flow (i.e. either creating a new channel, or
+		a context action upon a channel user), then we know we must still return to chat.
+	]]
+	function ChannelFrameMixin:SetShouldReturnToChat(shouldReturnToChat)
+		self.shouldReturnToChat = shouldReturnToChat
+	end
+
+	-- Flag the frame to skip unsetting self.shouldReturnToChat on the next unfocus event.
+	function ChannelFrameMixin:SetIgnoreNextUnfocusForChatFlow(shouldIgnoreNextUnfocusForChatFlow)
+		self.shouldIgnoreNextUnfocusForChatFlow = shouldIgnoreNextUnfocusForChatFlow;
+	end
+
+	--[[ 
+		This panel is accessed opened via two different mechanisms:
+			- Standard UIPanel flow (navigating to / from channel list)
+			- From Chat Frame
+
+		This means that different actions must be taken on "Back" press
+		depending on its context. If the last menu opened was the chat
+		frame, then we must return to the chat frame. Otherwise, proceed
+		as normal.
+	]]
+	function ChannelFrameMixin:SmartNavigationCloseHandler()
+		local returnToChat = self.shouldReturnToChat;
+		HideUIPanel(self);
+		if returnToChat then
+			local activeChatFrame = FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK);
+			if activeChatFrame and activeChatFrame:IsShown() then
+				activeChatFrame:SetGamepadFocus();
+			end
+		end
+		return true;
+	end
+
+	--[[
+		Boolean flag that identifies this frame as having updated jump hints, no longer
+		using legacy FrameControlsManager jump hints only displayed on targets.
+		See FrameControlsManager:RefreshJumpHints
+	]]
+	ChannelFrameMixin.useFooterJumpHints = true;
+
+	function ChannelFrameMixin:GetJumpHintLabel()
+		return CHAT_CHANNELS;
+	end
+
+	function ChannelFrameMixin:OnShow()
+		-- Don't allow ChannelFrame and CommunitiesFrame to show at the same time, because they share one presence subscription
+		if CommunitiesFrame and CommunitiesFrame:IsShown() then
+			HideUIPanel(CommunitiesFrame);
+		end
+
+		ChatFrameChannelButton:HideTutorial();
+
+		local channel = self:GetList():GetSelectedChannelButton();
+		if channel and channel:ChannelIsCommunity() then
+			self:SetFocusedClub(channel.clubId);
+		end
+
+		FrameUtil.RegisterFrameForEvents(self, dynamicEvents);
+		self:MarkDirty("UpdateAll");
+		self:MarkDirty("CheckShowTutorial");
+	end
+
+	function ChannelFrameMixin:OnHide()
+		self:SetFocusedClub(nil);
+		FrameUtil.UnregisterFrameForEvents(self, dynamicEvents);
+		StaticPopupSpecial_Hide(CreateChannelPopup);
+		self:SetShouldReturnToChat(false);
+		self:SetIgnoreNextUnfocusForChatFlow(false);
+	end
+end
+
+function ChannelFrameMixin:SetFocusedClub(clubId)
+	if self.focusedClubId == clubId then
+		return;
+	end
+
+	if self.focusedClubId then
+		C_Club.UnfocusMembers(self.focusedClubId);
+		C_Club.ClearClubPresenceSubscription();
+	end
+	if clubId then
+		C_Club.FocusMembers(clubId);
+		C_Club.SetClubPresenceSubscription(clubId);
+	end
+	self.focusedClubId = clubId;
+end
+
+function ChannelFrameMixin:OnEvent(event, ...)
+	if event == "CHANNEL_UI_UPDATE" then
+		self:MarkDirty("UpdateAll");
+	elseif event == "CHANNEL_LEFT" then
+		self:OnChannelLeft(...);
+	elseif event == "PARTY_LEADER_CHANGED" then
+		self:UpdatePartyChannelIfSelected();
+	elseif event == "GROUP_ROSTER_UPDATE" then
+		self:UpdatePartyChannelIfSelected()
+	elseif event == "MUTELIST_UPDATE" then
+		self:MarkDirty("UpdateRoster");
+	elseif event == "IGNORELIST_UPDATE" then
+		self:MarkDirty("UpdateRoster");
+	elseif event == "CHAT_MSG_CHANNEL_NOTICE_USER" then
+		local channelName = select(9, ...);
+		self:UpdateChannelByNameIfSelected(channelName);
+	elseif event == "CHANNEL_COUNT_UPDATE" then
+		self:OnCountUpdate(...);
+	elseif event == "CHANNEL_ROSTER_UPDATE" then
+		self:UpdateChannelIfSelected(...);
+	elseif event == "VOICE_CHAT_LOGIN" then
+		self:OnVoiceChatLogin(...);
+	elseif event == "VOICE_CHAT_LOGOUT" then
+		self:OnVoiceChatLogout();
+	elseif event == "VOICE_CHAT_PENDING_CHANNEL_JOIN_STATE" then
+		local channelType, clubId, streamId, isPending = ...;
+		self.voiceChannelJoinPending = isPending;
+		self:CheckVoiceChannelRequestCompleted();
+	elseif event == "VOICE_CHAT_VOICE_PROVIDER_CHANGED" then
+		-- Queued commands target the previous provider's login.
+		self.queuedVoiceChannelCommands = nil;
+		self:CheckVoiceChannelRequestCompleted();
+		self:MarkDirty("UpdateAll");
+	elseif event == "VOICE_CHAT_ACTIVE_VOICE_PROVIDER_CHANGED" then
+		self:OnActiveVoiceProviderChanged(...);
+	elseif event == "VOICE_CHAT_CHANNEL_JOINED" then
+		self:OnVoiceChannelJoined(...);
+	elseif event == "VOICE_CHAT_CHANNEL_ACTIVATED" then
+		self:OnVoiceChannelActivated(...);
+	elseif event == "VOICE_CHAT_CHANNEL_DEACTIVATED" then
+		self:OnVoiceChannelDeactivated(...);
+	elseif event == "VOICE_CHAT_CHANNEL_REMOVED" then
+		self:OnVoiceChannelRemoved(...);
+	elseif event == "VOICE_CHAT_CHANNEL_DISPLAY_NAME_CHANGED" then
+		self:OnVoiceChannelDisplayNameChanged(...);
+	elseif event == "VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED" then
+		self:OnVoiceChannelTranscribingChanged(...);
+	elseif event == "VOICE_CHAT_CONNECTION_SUCCESS" then
+		self:OnVoiceChatConnectionSuccess();
+	elseif event == "VOICE_CHAT_ERROR" then
+		self:OnVoiceChatError(...);
+	elseif event == "GROUP_FORMED" then
+		self:OnGroupFormed(...);
+	elseif event == "GROUP_LEFT" then
+		self:OnGroupLeft(...);
+	elseif event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" then
+		self:OnLFGListActiveEntryUpdate();
+	elseif event == "CLUB_ADDED" then
+		self:OnClubAdded(...);
+	elseif event == "CLUB_REMOVED" then
+		self:OnClubRemoved(...);
+	elseif event == "CLUB_STREAMS_LOADED" then
+		self:OnClubStreamsLoaded(...);
+	elseif event == "CLUB_STREAM_ADDED" then
+		self:OnClubStreamAdded(...);
+	elseif event == "CLUB_STREAM_REMOVED" then
+		self:OnClubStreamRemoved(...);
+	elseif event == "CLUB_MEMBER_UPDATED" then
+		self:UpdateCommunityChannelIfSelected(...);
+	elseif event == "CLUB_MEMBERS_UPDATED" then
+		self:UpdateCommunityChannelIfSelected(...);
+	elseif event == "CLUB_MEMBER_PRESENCE_UPDATED" then
+		self:UpdateCommunityChannelIfSelected(...);
+	elseif event == "CLUB_MEMBER_ROLE_UPDATED" then
+		self:UpdateCommunityChannelIfSelected(...);
+	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ACTIVE_STATE_CHANGED" then
+		self:OnMemberActiveStateChanged(...);
+	elseif event == "VOICE_CHAT_CHANNEL_TRANSMIT_CHANGED" then
+		self:OnChatChannelTransmitChanged(...);
+	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_MUTE_FOR_ME_CHANGED" then
+		self:OnMemberMuted(...);
+	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_ADDED" then
+		self:UpdateVoiceChannelIfSelected(select(2,...));
+	elseif event == "VOICE_CHAT_CHANNEL_MEMBER_GUID_UPDATED" then
+		self:UpdateVoiceChannelIfSelected(select(2,...));
+	elseif event == "CHAT_MSG_CHANNEL_LEAVE_PREVENTED" then
+		self:OnChannelLeavePrevented(...)
+	elseif event == "CHAT_REGIONAL_STATUS_CHANGED" then
+		self:MarkDirty("UpdateChannelList");
+	elseif event == "CHAT_MSG_CHANNEL_NOTICE" then
+		self:OnChannelNotice(...);
+	elseif event == "MENTORSHIP_STATUS_CHANGED" then
+		self:OnMentorshipStatusChanged();
+	end
+end
+
+function ChannelFrameMixin:GetNavRightTarget()
+	return self:GetRoster():ResetScrollAndGetTopEntry();
+end
+
+function ChannelFrameMixin:GetNavLeftTarget()
+	local button = self:GetList():GetSelectedChannelButton();
+	if button then
+		SmartNavigation:HandleScroll(button, self:GetList());
+		button:GetRect(); -- SmartNavigation requires valid geometry, but we invalidated with scroll.
+	end
+	return button;
+end
+
+function ChannelFrameMixin:OnUpdate()
+	self:Update();
+end
+
+function ChannelFrameMixin:GetList()
+	return self.ChannelList;
+end
+
+function ChannelFrameMixin:GetRoster()
+	return self.ChannelRoster;
+end
+
+function ChannelFrameMixin:OnVoiceChannelJoined(statusCode, voiceChannelID, channelType, clubId, streamId)
+	if statusCode == Enum.VoiceChatStatusCode.Success then
+		if channelType == Enum.ChatChannelType.Communities then
+			-- For community channels, just set the voice channel on the channel button
+			local channelButton = self:GetList():GetButtonForCommunityStream(clubId, streamId);
+			if channelButton then
+				channelButton:SetVoiceChannel(C_VoiceChat.GetChannel(voiceChannelID));
+			end
+		else
+			-- For other channels, set the voice channel on the channel button and then check if we want to show the activate prompts, etc.
+			local channelButton = self:GetList():GetButtonForChannelType(channelType)
+			if channelButton then
+				channelButton:SetVoiceChannel(C_VoiceChat.GetChannel(voiceChannelID));
+			end
+			self:CheckActivateChannel(voiceChannelID);
+			self:CheckChannelAnnounceState(voiceChannelID, "joined");
+		end
+	end
+
+	self:MarkDirty("RefreshFooter");
+end
+
+function ChannelFrameMixin:CheckActivateChannel(channelID)
+	local channel = C_VoiceChat.GetChannel(channelID);
+	if channel then
+		if not channel.isActive then
+			if C_VoiceChat.GetActiveChannelType() == channel.channelType then
+				C_VoiceChat.ActivateChannel(channel.channelID);
+			else
+				VoiceChatPromptActivateChannel:CheckActivateChannel(channel);
+			end
+		end
+	end
+end
+
+function ChannelFrameMixin:CheckShowTutorial()
+	if self:ShouldShowTutorial() then
+		local channels = self:GetList();
+		local channelButton = channels:GetButtonForAnyVoiceChannel();
+		if channelButton then
+			local helpTipInfo = {
+				text = TUTORIAL_VOICE,
+				buttonStyle = HelpTip.ButtonStyle.Close,
+				cvarBitfield = "closedInfoFrames",
+				bitfieldFlag = LE_FRAME_TUTORIAL_CHAT_CHANNELS,
+				targetPoint = HelpTip.Point.RightEdgeCenter,
+				offsetX = -4,
+			};
+			HelpTip:Show(self, helpTipInfo, channelButton);
+		end
+	end
+end
+
+function ChannelFrameMixin:HideTutorial()
+	HelpTip:Hide(self, TUTORIAL_VOICE);
+end
+
+function ChannelFrameMixin:ShouldShowTutorial()
+	return UnitLevel("player") >= 10 and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_CHAT_CHANNELS);
+end
+
+function ChannelFrameMixin:TryCreateVoiceChannel(channelName)
+	return self:TryExecuteCommand(function()
+		self:CreateVoiceChannel(channelName);
+	end);
+end
+
+function ChannelFrameMixin:IsVoiceChannelRequestInProgress()
+	return self.voiceChannelJoinPending or self.queuedVoiceChannelCommands ~= nil;
+end
+
+-- Lets buttons whose clicks were ignored during an in-flight request clear their pending state once it finishes.
+function ChannelFrameMixin:CheckVoiceChannelRequestCompleted()
+	if not self:IsVoiceChannelRequestInProgress() then
+		EventRegistry:TriggerEvent("ChannelFrame.VoiceChannelRequestCompleted");
+	end
+end
+
+function ChannelFrameMixin:TryJoinVoiceChannelByType(channelType, autoActivate)
+	if self:IsVoiceChannelRequestInProgress() then
+		return false;
+	end
+
+	if channelType == Enum.ChatChannelType.PublicParty then
+		C_VoiceChat.SetActiveVoiceProvider(Enum.VoiceProviderID.Legacy);
+		C_VoiceChat.RequestJoinChannelByChannelType(channelType, autoActivate);
+		return true;
+	end
+
+	local isPartyChannel = channelType == Enum.ChatChannelType.PrivateParty or channelType == Enum.ChatChannelType.DiscordParty;
+	if isPartyChannel then
+		C_VoiceChat.RestoreActiveVoiceProvider();
+		local isDiscord = C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord;
+		channelType = isDiscord and Enum.ChatChannelType.DiscordParty or Enum.ChatChannelType.PrivateParty;
+	end
+
+	return self:TryExecuteCommand(function()
+		C_VoiceChat.RequestJoinChannelByChannelType(channelType, autoActivate);
+	end, channelType);
+end
+
+function ChannelFrameMixin:TryJoinCommunityStreamChannel(clubId, streamId)
+	if self:IsVoiceChannelRequestInProgress() then
+		return false;
+	end
+
+	-- Community voice needs Legacy; the native request logs in if needed, so the join survives party changes during login.
+	C_VoiceChat.SetActiveVoiceProvider(Enum.VoiceProviderID.Legacy);
+	C_VoiceChat.RequestJoinAndActivateCommunityStreamChannel(clubId, streamId);
+	return true;
+end
+
+function ChannelFrameMixin:CreateVoiceChannel(channelName)
+	local customChannelVoiceEnabled = false;
+	if customChannelVoiceEnabled then
+		C_VoiceChat.CreateChannel(channelName);
+	end
+end
+
+function ChannelFrameMixin:OnVoiceChatLogin(loginStatusCode)
+	local queuedCommands = self.queuedVoiceChannelCommands;
+	self.queuedVoiceChannelCommands = nil;
+
+	if loginStatusCode == Enum.VoiceChatStatusCode.Success and queuedCommands then
+		for index, cmd in ipairs(queuedCommands) do
+			cmd();
+		end
+	end
+
+	self:CheckVoiceChannelRequestCompleted();
+end
+
+function ChannelFrameMixin:OnVoiceChatLogout()
+	self.queuedVoiceChannelCommands = nil;
+	self:CheckVoiceChannelRequestCompleted();
+end
+
+function ChannelFrameMixin:OnActiveVoiceProviderChanged(voiceProviderID)
+	if not C_VoiceChat.IsSpeakForMeActive() and not GetCVarBool("speechToText") then
+		return;
+	end
+
+	-- Discord does not support Speak for Me or transcription.
+	local isDiscord = voiceProviderID == Enum.VoiceProviderID.Discord;
+	ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_SERVICE_SWITCHING:format(isDiscord and VOICE_CHAT_SERVICE_DISCORD or VOICE_CHAT_SERVICE_LEGACY));
+	ChatFrameUtil.DisplaySystemMessageInPrimary(isDiscord and VOICE_CHAT_TTS_STT_DISABLED or VOICE_CHAT_TTS_STT_ENABLED);
+end
+
+function ChannelFrameMixin:QueueVoiceChannelCommand(cmd, channelType)
+	local statusCode = C_VoiceChat.Login(channelType);
+
+	if statusCode == Enum.VoiceChatStatusCode.OperationPending then
+		if not self.queuedVoiceChannelCommands then
+			self.queuedVoiceChannelCommands = {};
+		end
+
+		table.insert(self.queuedVoiceChannelCommands, cmd);
+	end
+end
+
+function ChannelFrameMixin:TryExecuteCommand(cmd, channelType)
+	if self:IsVoiceChannelRequestInProgress() then
+		return false;
+	end
+
+	if C_VoiceChat.IsLoggedIn() then
+		cmd();
+		return true;
+	end
+
+	self:QueueVoiceChannelCommand(cmd, channelType);
+	return false;
+end
+
+function ChannelFrameMixin:Toggle()
+	ToggleFrame(self);
+end
+
+-- Frame may load without a focusable element in the frame. If so, focus something after first update.
+function ChannelFrameMixin:FocusInitialElement()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	local hasNoFocusTarget = SmartNavigation:GetCurrentButton() == nil and self == GamepadMode.FrameControlsManager:GetActiveFrame();
+	if hasNoFocusTarget then
+		local selectedChannel = self:GetList():GetSelectedChannelButton();
+		if selectedChannel then
+			SmartNavigation:SelectButton(selectedChannel);
+		else
+			SmartNavigation:SelectFirstButton();
+		end
+	end
+end
+
+function ChannelFrameMixin:Update()
+	if self.DirtyFlags:IsDirty() then
+		if self.DirtyFlags:IsDirty(self.DirtyFlags.UpdateChannelList) then
+			self:GetList():Update();
+			self:FocusInitialElement();
+		end
+
+		if self.DirtyFlags:IsDirty(self.DirtyFlags.UpdateRoster) then
+			self:GetRoster():Update();
+			self:FocusInitialElement();
+		end
+
+		if self.DirtyFlags:IsDirty(self.DirtyFlags.CheckShowTutorial) then
+			self:CheckShowTutorial();
+		end
+
+		if self.DirtyFlags:IsDirty(self.DirtyFlags.RefreshFooter) then
+			if self.footer then
+				self.footer:Refresh();
+			end
+		end
+
+		self.DirtyFlags:MarkClean();
+	end
+end
+
+function ChannelFrameMixin:MarkDirty(maskName)
+	self.DirtyFlags:MarkDirty(self.DirtyFlags[maskName]);
+end
+
+function ChannelFrameMixin:UpdateChannelIfSelected(channelID)
+	local channel = self:GetList():GetSelectedChannelButton();
+	if channel and channel:ChannelSupportsText() and channel:GetChannelID() == channelID then
+		self:MarkDirty("UpdateRoster");
+	end
+end
+
+function ChannelFrameMixin:UpdateChannelByNameIfSelected(channelName)
+	local channel = self:GetList():GetSelectedChannelButton();
+	if channel and channel:ChannelSupportsText() and channel:GetChannelName() == channelName then
+		self:MarkDirty("UpdateRoster");
+	end
+end
+
+function ChannelFrameMixin:UpdateVoiceChannelIfSelected(voiceChannelID)
+	local channel = self:GetList():GetSelectedChannelButton();
+	if channel and channel:ChannelSupportsVoice() and channel:GetVoiceChannelID() == voiceChannelID then
+		self:MarkDirty("UpdateRoster");
+	end
+end
+
+function ChannelFrameMixin:UpdatePartyChannelIfSelected()
+	local channel = self:GetList():GetSelectedChannelButton();
+	if channel and C_ChatInfo.IsPartyChannelType(channel:GetChannelType()) then
+		self:MarkDirty("UpdateRoster");
+	end
+end
+
+function ChannelFrameMixin:UpdateCommunityChannelIfSelected(clubId)
+	local channel = self:GetList():GetSelectedChannelButton();
+	if channel and channel:ChannelIsCommunity() and channel.clubId == clubId then
+		self:MarkDirty("UpdateRoster");
+	end
+end
+
+function ChannelFrameMixin:OnChannelLeft(channelID, channelName)
+	self:GetList():OnChannelLeft(channelID, channelName);
+end
+
+function ChannelFrameMixin:TryCreateChannelFromPopup(name, password)
+	local zoneChannel, channelName = JoinPermanentChannel(name, password, DEFAULT_CHAT_FRAME:GetID(), 1);
+	if not zoneChannel then
+		local info = ChatTypeInfo["CHANNEL"];
+		DEFAULT_CHAT_FRAME:AddMessage(CHAT_INVALID_NAME_NOTICE, info.r, info.g, info.b, info.id);
+	else
+		if channelName then
+			name = channelName;
+		end
+
+		-- TODO: Add API for this?
+		local i = 1;
+		while ( DEFAULT_CHAT_FRAME.channelList[i] ) do
+			i = i + 1;
+		end
+		DEFAULT_CHAT_FRAME.channelList[i] = name;
+		DEFAULT_CHAT_FRAME.zoneChannelList[i] = zoneChannel;
+	end
+end
+
+function ChannelFrameMixin:ToggleCreateChannel()
+	if not CreateChannelPopup:IsShown() then
+		self:SetIgnoreNextUnfocusForChatFlow(true);
+	end
+	CreateChannelPopup:SetCallback(self, self.TryCreateChannelFromPopup)
+	StaticPopupSpecial_Toggle(CreateChannelPopup);
+	PlaySound(SOUNDKIT.U_CHAT_SCROLL_BUTTON);
+end
+
+function ChannelFrameMixin:ToggleVoiceSettings()
+	Settings.OpenToCategory(Settings.AUDIO_CATEGORY_ID);
+end
+
+-- Channel remains, but appears disabled
+function ChannelFrameMixin:OnVoiceChannelRemoved(channelID)
+	local button = self:GetList():GetButtonForVoiceChannelID(channelID);
+	if button then
+		if button:ChannelIsCommunity() then
+			-- This is a community stream, so just remove the attached voice channel...we will try to re-join when they activate next
+			button:ClearVoiceChannel();
+		elseif not button:ChannelSupportsText() then
+			-- For other chat channels channels, they only need to update if they're voice-only.
+			button:SetActive(false);
+			button:SetRemoved(true);
+			button:Update();
+		end
+	end
+
+	self:MarkDirty("RefreshFooter");
+end
+
+function ChannelFrameMixin:OnVoiceChannelDisplayNameChanged(channelID, channelName)
+	local button = self:GetList():GetButtonForVoiceChannelID(channelID);
+	if button then
+		-- TODO: Need to check if this is selected in the roster or dropdown menus and update those as well.
+		button:SetChannelName(channelName);
+		button:Update();
+	end
+end
+
+function ChannelFrameMixin:OnVoiceChannelTranscribingChanged(voiceChannelID, isTranscribing)
+	self:MarkDirty("RefreshFooter");
+end
+
+function ChannelFrameMixin:OnTextToSpeechChanged()
+	self:MarkDirty("RefreshFooter");
+end
+
+function ChannelFrameMixin:OnVoiceChatError(platformCode, statusCode)
+	local errorString = Voice_GetGameAlertStringFromStatusCode(statusCode);
+	if errorString then
+		ChatFrameUtil.DisplayUsageError(errorString);
+		self.lastError = statusCode;
+	end
+
+	local errorCode = Voice_GetGameErrorFromStatusCode(statusCode);
+	if errorCode and errorString then
+		UIErrorsFrame:TryDisplayMessage(errorCode, tostring(errorString), RED_FONT_COLOR:GetRGB());
+	end
+end
+
+function ChannelFrameMixin:OnVoiceChatConnectionSuccess()
+	if self.lastError then
+		ChatFrameUtil.DisplayUsageError(VOICE_CHAT_SERVICE_CONNECTION_RESTORED);
+		self.lastError = nil;
+	end
+end
+
+function ChannelFrameMixin:CheckDiscoverChannels()
+	if C_VoiceChat.ShouldDiscoverChannels() then
+		local partyCategories = C_PartyInfo.GetActiveCategories();
+		if partyCategories then
+			for _, partyCategory in ipairs(partyCategories) do
+				self:TryJoinVoiceChannelByType(GetChannelTypeFromPartyCategory(partyCategory));
+			end
+		end
+
+		C_VoiceChat.MarkChannelsDiscovered();
+	end
+end
+
+function ChannelFrameMixin:CheckChannelAnnounceState(channelID, state)
+	if not self.channelStates then
+		self.channelStates = {};
+	end
+
+	local previousState = self.channelStates[channelID];
+	if state == "joined" then
+		self:ShowChannelManagementTip(channelID);
+	elseif state == "active" then
+		self:ShowChannelAnnounce(channelID);
+	end
+
+	self.channelStates[channelID] = state;
+end
+
+local function CountActiveChannelMembers(channel)
+	local count = 0;
+	for index, member in pairs(channel.members) do
+		if member.isActive then
+			count = count + 1;
+		end
+	end
+
+	return count;
+end
+
+function ChannelFrameMixin:ShowChannelAnnounce(channelID)
+	local channel = C_VoiceChat.GetChannel(channelID);
+	if channel then
+		local notification = Voice_GetChannelActivatedNotification(channel);
+		if notification then
+			local atlas = CreateAtlasMarkup("voicechat-icon-headphone-on");
+			local announce = Voice_FormatChannelNotification(channel, notification)
+			local communicationMode = Voice_GetCommunicationModeNotification(channel);
+			local memberCountMessage = VOICE_CHAT_CHANNEL_MEMBER_COUNT_ACTIVE:format(CountActiveChannelMembers(channel));
+			ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE:format(atlas..announce, communicationMode, memberCountMessage));
+		end
+	end
+end
+
+function ChannelFrameMixin:ShowChannelManagementTip(channelID)
+	local channel = C_VoiceChat.GetChannel(channelID);
+	if channel and GetPartyCategoryFromChannelType(channel.channelType) ~= nil then
+		local atlas = CreateAtlasMarkup("voicechat-channellist-icon-headphone-off");
+		local useNotBound = false;
+		local useParentheses = true;
+		local bindingText = GetBindingKeyForAction("TOGGLECHATTAB", useNotBound, useParentheses);
+		if bindingText and bindingText ~= "" then
+			local announceText = VOICE_CHAT_CHANNEL_MANAGEMENT_TIP:format(atlas, bindingText);
+			ChatFrameUtil.DisplaySystemMessageInPrimary(announceText);
+		end
+	end
+end
+
+function ChannelFrameMixin:OnVoiceChannelActivated(voiceChannelID)
+	self:SetVoiceChannelActiveState(voiceChannelID, true);
+	self:CheckChannelAnnounceState(voiceChannelID, "active");
+	PlaySound(SOUNDKIT.UI_VOICECHAT_JOINCHANNEL);
+	self:MarkDirty("RefreshFooter");
+end
+
+function ChannelFrameMixin:OnVoiceChannelDeactivated(voiceChannelID)
+	ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_PLAYER_LEFT);
+	self:SetVoiceChannelActiveState(voiceChannelID, false);
+	self:CheckChannelAnnounceState(voiceChannelID, "inactive");
+	PlaySound(SOUNDKIT.UI_VOICECHAT_LEAVECHANNEL);
+end
+
+function ChannelFrameMixin:SetVoiceChannelActiveState(voiceChannelID, isActive)
+	local channelButton = self:GetList():GetButtonForVoiceChannelID(voiceChannelID);
+
+	if channelButton then
+		channelButton:SetVoiceActive(isActive);
+		channelButton:Update();
+	end
+
+	self:UpdateVoiceChannelIfSelected(voiceChannelID);
+end
+
+function ChannelFrameMixin:OnCountUpdate(id, _count)
+	local name, header, collapsed, channelNumber, count, active, category, channelType = GetChannelDisplayInfo(id);
+	if ChannelFrame_IsCategoryGroup(category) and count then
+		local channelButton = self:GetList():GetButtonForTextChannelID(id);
+		if channelButton then
+			channelButton:SetMemberCount(count);
+			channelButton:Update();
+		end
+	end
+
+	self:UpdateChannelIfSelected(id);
+end
+
+function ChannelFrameMixin:OnGroupFormed(partyCategory, partyGUID)
+	if partyCategory ~= LE_PARTY_CATEGORY_HOME then
+		return;
+	end
+
+	if not C_LFGList.HasActiveEntryInfo() then
+		-- The active listing status can arrive after GROUP_FORMED.
+		self:RegisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+		return;
+	end
+
+	self:TryPromptGroupVoiceChat();
+end
+
+function ChannelFrameMixin:OnLFGListActiveEntryUpdate()
+	if C_LFGList.HasActiveEntryInfo() then
+		self:UnregisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+		self:TryPromptGroupVoiceChat();
+	end
+end
+
+function ChannelFrameMixin:TryPromptGroupVoiceChat()
+	if not C_VoiceChat.IsEnabled() or C_VoiceChat.IsParentalDisabled() then
+		return;
+	end
+
+	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
+	local voiceMode = activeEntryInfo and activeEntryInfo.voiceMode;
+	if voiceMode ~= Enum.LFGEntryVoiceMode.Discord and voiceMode ~= Enum.LFGEntryVoiceMode.Legacy then
+		return;
+	end
+
+	if UnitIsGroupLeader("player") then
+		local isDiscord = C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord;
+		self:TryJoinVoiceChannelByType(isDiscord and Enum.ChatChannelType.DiscordParty or Enum.ChatChannelType.PrivateParty, true);
+	elseif not StaticPopup_Visible("VOICE_CHAT_JOIN_GROUP") then
+		StaticPopup_Show("VOICE_CHAT_JOIN_GROUP");
+	end
+end
+
+function ChannelFrameMixin:OnGroupLeft(partyCategory, partyGUID)
+	if partyCategory == LE_PARTY_CATEGORY_HOME then
+		self:UnregisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
+	end
+
+	-- TODO: This isn't fully correct, needs to check and see if you're still in a party and prompt to switch
+	-- back to that party's voice chat (e.g. you just left pug and now you're seeing your private/home party again)
+	-- ...need to verify some things related to zoning out of the instance/bg/etc...
+	VoiceChatPromptActivateChannel:Hide();
+	VoiceChatChannelActivatedNotification:Hide();
+end
+
+function ChannelFrameMixin:OnClubAdded(clubId)
+	self:MarkDirty("UpdateChannelList");
+end
+
+function ChannelFrameMixin:OnClubRemoved(clubId)
+	self:MarkDirty("UpdateChannelList");
+end
+
+function ChannelFrameMixin:OnClubStreamsLoaded(clubId)
+	self:MarkDirty("UpdateChannelList");
+end
+
+function ChannelFrameMixin:OnClubStreamAdded(clubId, streamId)
+	self:MarkDirty("UpdateChannelList");
+end
+
+function ChannelFrameMixin:OnClubStreamRemoved(clubId, streamId)
+	self:MarkDirty("UpdateChannelList");
+end
+
+function ChannelFrameMixin:OnCommunityFavoriteChanged(clubId)
+	self:MarkDirty("UpdateChannelList");
+end
+
+function ChannelFrameMixin:OnMemberActiveStateChanged(memberID, channelID, isActive)
+	if not C_VoiceChat.IsMemberLocalPlayer(memberID, channelID) then
+		local channel = C_VoiceChat.GetChannel(channelID);
+		if channel and channel.isActive then
+			local memberName = C_VoiceChat.GetMemberName(memberID, channelID) or "";
+			if isActive then
+				ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_ACTIVE:format(memberName));
+				PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERJOINCHANNEL);
+			else
+				ChatFrameUtil.DisplaySystemMessageInPrimary(VOICE_CHAT_CHANNEL_ANNOUNCE_MEMBER_LEFT:format(memberName));
+				PlaySound(SOUNDKIT.UI_VOICECHAT_MEMBERLEAVECHANNEL);
+			end
+		end
+	end
+end
+
+function ChannelFrameMixin:OnMemberMuted(memberID, channelID, isMuted)
+	if isMuted then
+		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEOTHERON);
+	else
+		PlaySound(SOUNDKIT.UI_VOICECHAT_MUTEOTHEROFF);
+	end
+end
+
+function ChannelFrameMixin:OnChatChannelTransmitChanged(channelID, isTransmitting)
+	if isTransmitting then
+		PlaySound(SOUNDKIT.UI_VOICECHAT_TALKSTART);
+	else
+		PlaySound(SOUNDKIT.UI_VOICECHAT_STOPTALK);
+	end
+end
+
+function ChannelFrameMixin:OnUserSelectedChannel()
+	self:GetRoster():ResetScrollPosition();
+	self:MarkDirty("UpdateRoster");
+end
+
+function ChannelFrameMixin:OnChannelLeavePrevented(channelName)
+	ChatFrameUtil.DisplaySystemMessageInPrimary(CHAT_LEAVE_CHANNEL_PREVENTED:format(channelName));
+end
+
+function ChannelFrameMixin:OnChannelNotice(...)
+	local eventType = select(1, ...);
+	local channelIndex = select(8, ...);
+
+	if eventType == "YOU_CHANGED" and C_ChatInfo.GetChannelRuleset(channelIndex) == Enum.ChatChannelRuleset.Mentor then
+		self:CheckNewcomerChannelJoin(channelIndex);
+	end
+end
+
+function ChannelFrameMixin:OnMentorshipStatusChanged()
+	if self.pendingNewcomerChannelIndex then
+		local channelIndex = self.pendingNewcomerChannelIndex;
+		self.pendingNewcomerChannelIndex = nil;
+		self:UnregisterEvent("MENTORSHIP_STATUS_CHANGED");
+		self:CheckNewcomerChannelJoin(channelIndex);
+	end
+end
+
+function ChannelFrameMixin:CheckNewcomerChannelJoin(channelIndex)
+	local channelSlashCommand = ChatFrameUtil.GetSlashCommandForChannelOpenChat(channelIndex);
+
+	if IsActivePlayerNewcomer() then
+		ChatFrameUtil.DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER:format(channelSlashCommand));
+		ChatFrameUtil.DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER1:format(channelSlashCommand));
+		ChatFrameUtil.DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_NEWCOMER2:format(channelSlashCommand));
+	elseif IsActivePlayerGuide() then
+		-- NOTE: Guide flags won't be set at this point if the user is joining from the NPC, assume that if the channel join is happening,
+		-- then if you're not a newcomer, you must be a guide.
+		ChatFrameUtil.DisplaySystemMessageInPrimary(NPEV2_CHAT_WELCOME_TO_CHANNEL_GUIDE:format(channelSlashCommand));
+	else
+		self.pendingNewcomerChannelIndex = channelIndex;
+		self:RegisterEvent("MENTORSHIP_STATUS_CHANGED");
+	end
+end
+
+--[ Utility Functions ]--
+function ChannelFrame_Desaturate(texture, desaturate, a)
+	texture:SetDesaturated(desaturate);
+	if ( a ) then
+		texture:SetAlpha(a);
+	end
+end
+
+local channelTypeToNameLookup =
+{
+	[Enum.ChatChannelType.PrivateParty] = VOICE_CHANNEL_NAME_PARTY,
+	[Enum.ChatChannelType.PublicParty] = VOICE_CHANNEL_NAME_INSTANCE,
+};
+
+function ChannelFrame_GetIdealChannelName(channel)
+	if channel.name == "" then
+		return channelTypeToNameLookup[channel.channelType] or "";
+	end
+
+	return channel.name or "";
+end
+
+function ChannelFrame_IsCategoryGlobal(category)
+	return category == "CHANNEL_CATEGORY_WORLD";
+end
+
+function ChannelFrame_IsCategoryGroup(category)
+	return category == "CHANNEL_CATEGORY_GROUP";
+end
+
+function ChannelFrame_IsCategoryCustom(category)
+	return category == "CHANNEL_CATEGORY_CUSTOM";
+end

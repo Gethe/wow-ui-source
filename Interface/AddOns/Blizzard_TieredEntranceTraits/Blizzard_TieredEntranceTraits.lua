@@ -1,32 +1,89 @@
 local LIST_ROW_SPACING = 40;
 local LIST_SAFE_WIDTH = 300;
+local MAW_BUFF_MAX_DISPLAY = 44;
 
 TieredEntranceTraitsContainerMixin = {};
+
+function TieredEntranceTraitsContainerMixin:OnEvent(event, ...)
+	if event == "UNIT_AURA" then
+		self:SetMawAuras();
+		self:UpdateAlignment();
+	end
+end
+
+function TieredEntranceTraitsContainerMixin:OnLoad()
+	if C_GameRules.IsWoWHack() then 
+		EventRegistry:RegisterCallback("PlayerChoiceTaleboundOptionTemplate.OnShow", self.ShowList, self);
+		EventRegistry:RegisterCallback("PlayerChoiceTaleboundOptionTemplate.OnHide", self.HideList, self);
+		EventRegistry:RegisterFrameEventAndCallback("PLAYER_ENTERING_WORLD", self.HideList, self);
+
+		-- Show when the outfitter frame is opened
+		EventRegistry:RegisterCallback("OutfitterFrame.Opened", self.ShowList, self);
+		EventRegistry:RegisterCallback("OutfitterFrame.Closed", self.HideList, self);
+	end
+end
+
+
+function TieredEntranceTraitsContainerMixin:OnShow()
+	if C_GameRules.IsWoWHack() then 
+		self:RegisterUnitEvent("UNIT_AURA", "player");
+		self:SetMawAuras();
+		self:UpdateAlignment();
+	end
+end
 
 function TieredEntranceTraitsContainerMixin:OnHide()
 	self.List:Hide();
 	self.Arrow:Hide();
+	EventRegistry:TriggerEvent("TieredEntranceTraits.TraitsListHidden");
+	if C_GameRules.IsWoWHack() then
+		self:UnregisterEvent("UNIT_AURA");
+	end
+end
+
+function TieredEntranceTraitsContainerMixin:ShowList()
+	if self.List:IsShown() then
+		return;
+	end
+
+	if self.needSet then
+		self.needSet = nil;
+		if self.traitTreeID then
+			self.List:SetTraitTree(self.traitTreeID, self.numTraits);
+		else
+			self.List:SetSpells(self.spells);
+		end
+	end
+	self:UpdateAlignment();
+	self.List:Show();
+	self.Arrow:Show();
+	EventRegistry:TriggerEvent("TieredEntranceTraits.TraitsListShown");
+end
+
+function TieredEntranceTraitsContainerMixin:HideList()
+	if not self.List:IsShown() then
+		return;
+	end
+
+	self.List:Hide();
+	self.Arrow:Hide();
+	EventRegistry:TriggerEvent("TieredEntranceTraits.TraitsListHidden");
 end
 
 function TieredEntranceTraitsContainerMixin:OnClick()
-	local doShow = not self.List:IsShown();
-	if doShow then
-		if self.needSet then
-			self.needSet = nil;
-			if self.traitTreeID then
-				self.List:SetTraitTree(self.traitTreeID, self.numTraits);
-			else
-				self.List:SetSpells(self.spells);
-			end
-		end
-		self:UpdateAlignment();
+	if self.List:IsShown() then
+		self:HideList();
+	else
+		self:ShowList();
 	end
-	self.List:SetShown(doShow);
-	self.Arrow:SetShown(doShow);
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
 
 function TieredEntranceTraitsContainerMixin:SetTraitTree(traitTreeID)
+	if C_GameRules.IsWoWHack() then
+		return;	
+	end
+
 	local numTraits = 0;
 	local configID = C_Traits.GetConfigIDByTreeID(traitTreeID);
 	if configID then
@@ -48,11 +105,52 @@ function TieredEntranceTraitsContainerMixin:SetSpells(spells)
 	self:Update(numTraits, traitTreeID, spells);
 end
 
+function TieredEntranceTraitsContainerMixin:SetMawAuras()
+	local spells = {};
+	for i = 1, MAW_BUFF_MAX_DISPLAY do
+		local auraData = C_UnitAuras.GetAuraDataByIndex("player", i, "MAW");
+		if auraData and auraData.spellId then
+			table.insert(spells, auraData.spellId);
+		end
+	end
+	self:SetSpells(spells);
+	return #spells;
+end
+
+function TieredEntranceTraitsContainerMixin:SetTextureKit(textureKit)
+	self.textureKit = textureKit;
+	-- convert these to use string.format()
+	local buttonUpAtlas = string.format("%s-challenge-button-up", textureKit);
+	local buttonPressedAtlas = string.format("%s-challenge-button-pressed", textureKit);
+	self.NormalTexture:SetAtlas(buttonUpAtlas, TextureKitConstants.UseAtlasSize);
+	self.PushedTexture:SetAtlas(buttonPressedAtlas, TextureKitConstants.UseAtlasSize);
+	self.HighlightTexture:SetAtlas(buttonUpAtlas, TextureKitConstants.UseAtlasSize);
+	self.ThemeOverlay:SetAtlas(string.format("%s-challenge-button-up-add", textureKit), TextureKitConstants.UseAtlasSize);
+	self.DisabledTexture:SetAtlas(buttonUpAtlas, TextureKitConstants.UseAtlasSize);
+	self.List.Background:SetAtlas(string.format("%s-challenge-flyout", textureKit), TextureKitConstants.UseAtlasSize);
+	self.List.textureKit = textureKit;
+
+	-- Reset so UpdateAlignment re-runs and updates the arrow atlases with the new texture kit
+	self.isOnLeftSide = nil;
+	if self:IsShown() then
+		self:UpdateAlignment();
+	end
+end
+
 function TieredEntranceTraitsContainerMixin:Update(numTraits, traitTreeID, spells)
 	self.traitTreeID = traitTreeID;
 	self.numTraits = numTraits;
 	self.spells = spells;
 	self.needSet = true;
+
+	if self.List and self.List:IsShown() then
+		self.needSet = nil;
+		if traitTreeID then
+			self.List:SetTraitTree(traitTreeID, numTraits);
+		else
+			self.List:SetSpells(spells);
+		end
+	end
 
 	self:SetFormattedText(SCENARIO_CHALLENGES_BUTTON, numTraits);
 	-- if no traits just disable the button
@@ -62,7 +160,7 @@ function TieredEntranceTraitsContainerMixin:Update(numTraits, traitTreeID, spell
 	else
 		self:SetEnabled(true);
 		local displayInfo = C_ScenarioInfo.GetDisplayInfo();
-		if displayInfo then
+		if displayInfo and displayInfo.themeColor then
 			self.ThemeOverlay:Show();
 			self.ThemeOverlay:SetVertexColor(displayInfo.themeColor:GetRGB());
 		else
@@ -73,15 +171,21 @@ end
 
 function TieredEntranceTraitsContainerMixin:SetPressed(pressed)
 	AlphaHighlightButtonMixin.SetPressed(self, pressed);
+	local textureKit = self.textureKit or "themed-scenario";
 	if self.pressed then
-		self.ThemeOverlay:SetAtlas("themed-scenario-challenge-button-pressed-add", TextureKitConstants.UseAtlasSize);
+		self.ThemeOverlay:SetAtlas(string.format("%s-challenge-button-pressed-add", textureKit), TextureKitConstants.UseAtlasSize);
 	else
-		self.ThemeOverlay:SetAtlas("themed-scenario-challenge-button-up-add", TextureKitConstants.UseAtlasSize);
+		self.ThemeOverlay:SetAtlas(string.format("%s-challenge-button-up-add", textureKit), TextureKitConstants.UseAtlasSize);
 	end
 end
 
 function TieredEntranceTraitsContainerMixin:UpdateAlignment()
-	local isOnLeftSide = self:GetLeft() < LIST_SAFE_WIDTH;
+	local left = self:GetLeft();
+	if not left then
+		return;
+	end
+
+	local isOnLeftSide = left < LIST_SAFE_WIDTH;
 	-- initially self.isOnLeftSide is nil so this will always run the first time
 	if isOnLeftSide == self.isOnLeftSide then
 		return;
@@ -92,13 +196,14 @@ function TieredEntranceTraitsContainerMixin:UpdateAlignment()
 	self.List:ClearAllPoints();
 	self.Arrow:ClearAllPoints();
 
+	local textureKit = self.textureKit or "themed-scenario";
 	if isOnLeftSide then
 		self.List:SetPoint("TOPLEFT", self, "TOPRIGHT", 17, 1);
-		self.Arrow:SetAtlas("themed-scenario-challenge-flyout-forwardarrow", TextureKitConstants.UseAtlasSize);
+		self.Arrow:SetAtlas(string.format("%s-challenge-flyout-forwardarrow", textureKit), TextureKitConstants.UseAtlasSize);
 		self.Arrow:SetPoint("LEFT", self, "RIGHT", -5, 0);
 	else
 		self.List:SetPoint("TOPRIGHT", self, "TOPLEFT", -17, 0);
-		self.Arrow:SetAtlas("themed-scenario-challenge-flyout-backarrow", TextureKitConstants.UseAtlasSize);
+		self.Arrow:SetAtlas(string.format("%s-challenge-flyout-backarrow", textureKit), TextureKitConstants.UseAtlasSize);
 		self.Arrow:SetPoint("RIGHT", self, "LEFT", 5, 0);
 	end
 end
@@ -165,6 +270,8 @@ function TieredEntranceTraitsListMixin:SetSpells(spells)
 			local frame = self.framePool:Acquire();
 			frame.Icon:SetTexture(iconTexture);
 			frame.spellID = spellID;
+			local circleAtlas = string.format("%s-challenge-gold-circle", self.textureKit or "themed-scenario");
+			frame.GoldCircle:SetAtlas(circleAtlas, TextureKitConstants.UseAtlasSize);
 			frame:Show();
 			table.insert(frames, frame);
 		end

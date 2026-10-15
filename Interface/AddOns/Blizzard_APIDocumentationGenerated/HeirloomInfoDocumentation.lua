@@ -26,6 +26,15 @@ local HeirloomInfo =
 			},
 		},
 		{
+			Name = "HeirloomsAvailable",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areHeirloomsAvailable", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsHeirloomSourceValid",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -105,6 +114,7 @@ local HeirloomInfo =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

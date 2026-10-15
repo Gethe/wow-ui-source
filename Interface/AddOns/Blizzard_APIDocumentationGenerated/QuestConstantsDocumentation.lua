@@ -142,6 +142,14 @@ local QuestConstants =
 			},
 		},
 		{
+			Name = "QuestLogConstsMainlineRetail",
+			Type = "Constants",
+			Values =
+			{
+				{ Name = "MAXIMUM_NUM_QUESTS_LOG_CAN_ACCEPT", Type = "number", Value = 35 },
+			},
+		},
+		{
 			Name = "QuestWatchConsts",
 			Type = "Constants",
 			Values =
@@ -152,6 +160,7 @@ local QuestConstants =
 			},
 		},
 	},
+
 	Predicates =
 	{
 	},

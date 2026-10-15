@@ -1,0 +1,21 @@
+## Title: Blizzard_GlueXMLBase
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_ScriptErrorsFrame [AllowLoadGameType mainline]
+## LoadFirst: 1
+## AllowLoad: Glue
+
+[Game]\Constants.lua				[AllowLoadGameType classic]
+[Family]\Constants.lua				[AllowLoadGameType mainline]
+
+[Family]\Localization.lua
+[Game]\Localization.lua				[AllowLoadGameType vanilla, tbc]
+Wrath\Localization.lua				[AllowLoadGameType wrath, cata, mists]
+
+[Family]\GlueTemplates.lua
+[Family]\GlueTemplates.xml
+
+[Family]\GlueButtons.xml			[AllowLoadGameType vanilla, tbc, cata, mists, mainline]
+[Game]\GlueButtons.xml				[AllowLoadGameType wrath]
+
+Shared\GlueContextMenu.lua
+Shared\GlueContextMenu.xml

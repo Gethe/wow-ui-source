@@ -28,6 +28,19 @@ function FriendsListUtil.IsTitleFriend(accountInfo)
 	return accountInfo ~= nil and accountInfo.friendLevel == Enum.BattleNetFriendLevel.Title;
 end
 
+function FriendsListUtil.CanAddFriendRequestSenderToBattleNetBlockList(inviteIndex)
+	if not inviteIndex then
+		return false;
+	end
+
+	local inviteInfo = C_BattleNet.GetFriendInviteInfo(inviteIndex);
+	if not inviteInfo or not inviteInfo.friendLevel then
+		return false;
+	end
+
+	return inviteInfo.friendLevel ~= Enum.BattleNetFriendLevel.Title;
+end
+
 function FriendsListUtil.GameStateUsesFactions()
 	return not C_Glue.IsOnGlueScreen() and not C_GameRules.IsCharacterlessLoginActive();
 end
@@ -53,10 +66,6 @@ local function CanInviteByGameMode(gameAccountInfo)
 end
 
 local function GetHighestPriorityRestriction(restrictionA, restrictionB)
-	if not restrictionA then
-		return restrictionB;
-	end
-
 	local priorityA = BattleNetFriendPartyInviteRestrictionPriority[restrictionA] or 0;
 	local priorityB = BattleNetFriendPartyInviteRestrictionPriority[restrictionB] or 0;
 	if priorityA > priorityB then
@@ -86,7 +95,6 @@ function FriendsListUtil.GetGameAccountPartyInviteRestriction(gameAccountInfo)
 	if partyInfoAvailable then
 		local isCrossFactionFriend = gameAccountInfo.factionName and (gameAccountInfo.factionName ~= UnitFactionGroup("player"));
 		if isCrossFactionFriend then
-
 			if C_QuestSession.Exists() then
 				return BattleNetFriendPartyInviteRestrictionType.QuestSession;
 			end
@@ -132,7 +140,7 @@ function FriendsListUtil.GetBattleNetFriendPartyInviteRestriction(friendIndex)
 		return BattleNetFriendPartyInviteRestrictionType.NoGameAccounts;
 	end
 
-	local highestPriorityRestriction = BattleNetFriendPartyInviteRestrictionType.None;
+	local highestPriorityRestriction = BattleNetFriendPartyInviteRestrictionType.NoGameAccounts;
 	for accountIndex = 1, numGameAccounts do
 		local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, accountIndex);
 		local accountRestriction = FriendsListUtil.GetGameAccountPartyInviteRestriction(gameAccountInfo);

@@ -120,6 +120,9 @@
 				<Anchor point="RIGHT" x="4" y="0"/>
 			</Anchors>
 		</HighlightTexture>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_RealmSortButton" type="string"/>
+		</KeyValues>
 	</Button>
 
 
@@ -170,9 +173,42 @@
 		<NormalFont style="GlueFontNormalLeft"/>
 		<HighlightFont style="GlueFontHighlightLeft"/>
 		<DisabledFont style="GlueFontDisableLeft"/>
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_RealmListRealmButton" type="string"/>
+		</KeyValues>
 	</Button>
 	<ModelFFX name="RealmListUI" toplevel="true" parent="GlueParent" setAllPoints="true" enableMouse="true" enableKeyboard="true" hidden="true" fogNear="0" fogFar="1200" glow="0.08">
 		<Frames>
+			<Frame parentKey="BlackBars" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="Left">
+							<Size x="1024" y="0"/>
+							<Anchors>
+								<Anchor point="TOPRIGHT" relativePoint="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMLEFT"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+						<Texture parentKey="Right">
+							<Size x="1024" y="0"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOPRIGHT"/>
+								<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+						<Texture parentKey="Top">
+							<Size x="0" y="768"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPLEFT" relativeKey="$parent.Left"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" relativeKey="$parent.Right"/>
+							</Anchors>
+							<Color r="0" g="0" b="0" a="1"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
 			<Frame name="RealmList" toplevel="true" setAllPoints="true" frameStrata="DIALOG">
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -204,10 +240,16 @@
 										<Anchor point="TOPLEFT" x="256" y="0"/>
 									</Anchors>
 								</Texture>
-								<Texture file="Interface\HelpFrame\HelpFrame-TopRight">
+								<Texture parentKey="KBMTopRight" file="Interface\HelpFrame\HelpFrame-TopRight" hidden="true">
 									<Size x="128" y="256"/>
 									<Anchors>
 										<Anchor point="TOPRIGHT"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="GamepadTopRight" atlas="gamepad-glues-realmselect-uprightcorner">
+									<Size x="96" y="256"/>
+									<Anchors>
+										<Anchor point="TOPRIGHT" x="-39"/>
 									</Anchors>
 								</Texture>
 								<Texture file="Interface\HelpFrame\HelpFrame-BotLeft">
@@ -339,8 +381,18 @@
 									</OnClick>
 								</Scripts>
 							</Button>
+							<Frame parentKey="JumpHint" inherits="InputIconTextureFrameTemplate" hidden="true">
+								<KeyValues>
+									<KeyValue key="mappedButtonKey" value="GAMEPAD_DPAD_LEFT" type="global"/>
+									<KeyValue key="useDropShadow" value="true" type="boolean"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="RIGHT" relativeTo="RealmNameSort" relativePoint="LEFT" x="5" y="0"/>
+								</Anchors>
+							</Frame>
 						</Frames>
 					</Frame>
+					<Frame name="RealmListGamepadTabIndicators" parentKey="GamepadTabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true" />
 				</Frames>
 				<Scripts>
 					<OnLoad function="RealmList_OnLoad"/>

@@ -1,9 +1,15 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	<Script file="GuildRoster.lua"/>
 
-	<Frame name="CommunitiesGuildMemberDetailFrameTemplate" mixin="CommunitiesGuildMemberDetailMixin" toplevel="true" enableMouse="true" virtual="true">
+	<Frame name="CommunitiesGuildMemberDetailFrameTemplate" toplevel="true" enableMouse="true" virtual="true">
 		<Size x="212" y="270"/>
+		<Mixins>
+			<Mixin key="CommunitiesGuildMemberDetailMixin"/>
+			<Mixin key="FocusFramesInterfaceMixin"/>
+		</Mixins>
+		<KeyValues>
+			<KeyValue key="FocusFrameParent" value="Border" type="string"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Name" justifyH="LEFT" inherits="GameFontNormal">
@@ -66,6 +72,12 @@
 					<Anchor point="TOPLEFT" x="4" y="0"/>
 					<Anchor point="BOTTOMRIGHT" x="6" y="1"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameLevel="505"/>
+					<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameLevel="515"/>
+					<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameLevel="515"/>
+					<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameLevel="515"/>
+				</Frames>
 			</Frame>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>

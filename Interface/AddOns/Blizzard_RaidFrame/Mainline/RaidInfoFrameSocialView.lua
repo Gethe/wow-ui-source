@@ -40,6 +40,11 @@ function SocialUIRaidInfoFrameMixin:OnHide()
 end
 
 function SocialUIRaidInfoFrameMixin:UpdateButtons()
+	if not C_RaidLocks.IsRaidLockExtendFeatureSupported() then
+		self.ExtendButton:Hide();
+		return;
+	end
+
 	local function Lock()
 		self.ExtendButton:SetTextToFit(EXTEND_RAID_LOCK);
 		self.ExtendButton:Disable();
@@ -131,13 +136,13 @@ end
 SocialUIRaidInfoContentFrameMixin = {};
 
 function SocialUIRaidInfoContentFrameMixin:OnMouseUp()
-	self.name:SetPoint("TOPLEFT", 5, -10);
-	self.reset:SetPoint("TOPRIGHT", -5, -10);
+	self.name:SetPoint("BOTTOMLEFT", self, "LEFT", 5, 0);
+	self.reset:SetPoint("BOTTOMRIGHT", self, "RIGHT", -5, 0);
 end
 
 function SocialUIRaidInfoContentFrameMixin:OnMouseDown()
-	self.name:SetPoint("TOPLEFT", 7, -12);
-	self.reset:SetPoint("TOPRIGHT", -3, -12);
+	self.name:SetPoint("BOTTOMLEFT", self, "LEFT", 7, -2);
+	self.reset:SetPoint("BOTTOMRIGHT", self, "RIGHT", -3, -2);
 end
 
 function SocialUIRaidInfoContentFrameMixin:OnClick()

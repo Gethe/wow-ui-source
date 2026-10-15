@@ -1,0 +1,65 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Frame name="MarchingAntsTemplate" mixin="MarchingAntsMixin" virtual="true">
+		<!--
+		<KeyValues>
+			<KeyValue key="verticalAsset" value="atlasName" type="string"/>
+			<KeyValue key="horizontalAsset" value="atlasName" type="string"/>
+
+			 NOTE: The corners asset should be ninesliced and is optional, it's intended to cover the corners to make rounding the bend less apparent.
+			<KeyValue key="cornersAsset" value="atlasName" type="string"/>
+
+			Optional offsets that can be provided to anchor the sides to help adjust for art, these will use pixel perfect anchoring
+			<KeyValue key="leftOffsetP1X" value="0" type="number"/>
+			<KeyValue key="leftOffsetP1Y" value="0" type="number"/>
+			<KeyValue key="leftOffsetP2X" value="0" type="number"/>
+			<KeyValue key="leftOffsetP2Y" value="0" type="number"/>
+
+			<KeyValue key="rightOffsetP1X" value="0" type="number"/>
+			<KeyValue key="rightOffsetP1Y" value="0" type="number"/>
+			<KeyValue key="rightOffsetP2X" value="0" type="number"/>
+			<KeyValue key="rightOffsetP2Y" value="0" type="number"/>
+
+			<KeyValue key="topOffsetP1X" value="0" type="number"/>
+			<KeyValue key="topOffsetP1Y" value="0" type="number"/>
+			<KeyValue key="topOffsetP2X" value="0" type="number"/>
+			<KeyValue key="topOffsetP2Y" value="0" type="number"/>
+
+			<KeyValue key="bottomOffsetP1X" value="0" type="number"/>
+			<KeyValue key="bottomOffsetP1Y" value="0" type="number"/>
+			<KeyValue key="bottomOffsetP2X" value="0" type="number"/>
+			<KeyValue key="bottomOffsetP2Y" value="0" type="number"/>
+
+			<KeyValue key="cornerOffsetP1X" value="0" type="number"/>
+			<KeyValue key="cornerOffsetP1Y" value="0" type="number"/>
+			<KeyValue key="cornerOffsetP2X" value="0" type="number"/>
+			<KeyValue key="cornerOffsetP2Y" value="0" type="number"/>
+		</KeyValues>
+		-->
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture parentKey="Corners" roundLayoutToNearestPixel="true" setAllPoints="true" hidden="true"/>
+			</Layer>
+			<Layer level="ARTWORK" textureSubLevel="0">
+				<Texture parentKey="Top" roundLayoutToNearestPixel="true"/>
+				<Texture parentKey="Bottom" roundLayoutToNearestPixel="true"/>
+				<Texture parentKey="Left" roundLayoutToNearestPixel="true"/>
+				<Texture parentKey="Right" roundLayoutToNearestPixel="true"/>
+			</Layer>
+		</Layers>
+		<Animations>
+			<AnimationGroup parentKey="MarchingAnim" looping="REPEAT">
+				<TextureCoordTranslation childKey="Top" duration="1" offsetU="-1" offsetV="0" />
+				<TextureCoordTranslation childKey="Bottom" duration="1" offsetU="1" offsetV="0" />
+				<TextureCoordTranslation childKey="Left" duration="1" offsetU="0" offsetV="1" />
+				<TextureCoordTranslation childKey="Right" duration="1" offsetU="0" offsetV="-1" />
+			</AnimationGroup>
+		</Animations>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+</Ui>

@@ -26,6 +26,8 @@ function NamePlateDriverMixin:OnLoad()
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.DEBUFF_PADDING_CVAR, self.OnDebuffPaddingCVarChanged, self);
 	CVarCallbackRegistry:RegisterCallback(NamePlateConstants.AURA_SCALE_CVAR, self.OnAuraScaleCVarChanged, self);
 
+	EventRegistry:RegisterCallback("Gamepad.PreferredGamepadInteractTargetChanged", self.OnSoftTargetUpdate, self);
+
 	self.pools = CreateFramePoolCollection();
 
 	local forbidden = true;
@@ -197,7 +199,7 @@ function NamePlateDriverMixin:UpdateSoftTargetIconInternal(frame, iconSize, doEn
 		end
 
 		if checkCursorTexture then
-			hasCursorTexture = SetUnitCursorTexture(icon, frame:GetUnit());
+			hasCursorTexture = SetUnitCursorTexture(icon, frame:GetUnit(), nil, nil, true);
 		end
 	end
 
@@ -388,11 +390,21 @@ local function GetCastBarFontHeight(namePlateScale)
 end
 
 local function GetCastBarIconHeight(namePlateStyle, namePlateScale)
-	if namePlateStyle == Enum.NamePlateStyle.Classic then
-		return NamePlateConstants.CLASSIC_CAST_BAR_ICON_HEIGHT * namePlateScale.vertical;
+	return NamePlateConstants.CAST_BAR_ICON_HEIGHT * namePlateScale.vertical;
+end
+
+local function GetLevelIndicatorHeight(namePlateStyle, namePlateScale)
+	if namePlateStyle == Enum.NamePlateStyle.Modern or namePlateStyle == Enum.NamePlateStyle.Block then
+		local largeLevelIndicatorHeight = NamePlateConstants.LARGE_LEVEL_INDICATOR_HEIGHT;
+		return largeLevelIndicatorHeight * namePlateScale.classification;
 	end
 
-	return NamePlateConstants.CAST_BAR_ICON_HEIGHT * namePlateScale.vertical;
+	local smallLevelIndicatorHeight = NamePlateConstants.SMALL_LEVEL_INDICATOR_HEIGHT;
+	return smallLevelIndicatorHeight * namePlateScale.classification;
+end
+
+local function GetLevelIndicatorWidth(namePlateScale)
+	return NamePlateConstants.LEVEL_INDICATOR_WIDTH * namePlateScale.classification;
 end
 
 local function ShouldUseClassicHealthBar(namePlateStyle)
@@ -529,9 +541,9 @@ function NamePlateDriverMixin:GetNamePlateWidth(namePlateStyle, namePlateScale)
 	end
 
 	if namePlateStyle == Enum.NamePlateStyle.Classic then
-		return NamePlateConstants.CLASSIC_NAMEPLATE_WIDTH * namePlateScale.horizontal;
+		return NamePlateConstants.CLASSIC_NAME_PLATE_WIDTH * namePlateScale.horizontal;
 	else
-		return NamePlateConstants.NAMEPLATE_WIDTH * namePlateScale.horizontal;
+		return NamePlateConstants.NAME_PLATE_WIDTH * namePlateScale.horizontal;
 	end
 end
 
@@ -560,6 +572,9 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	NamePlateSetupOptions.castIconHeight = GetCastBarIconHeight(namePlateStyle, namePlateScale);
 	NamePlateSetupOptions.hideIconWhenNotInterruptible = ShouldHideIconWhenNotInterruptible(namePlateStyle);
 
+	NamePlateSetupOptions.playerLevelDiffHeight = GetLevelIndicatorHeight(namePlateStyle, namePlateScale);
+	NamePlateSetupOptions.playerLevelDiffWidth = GetLevelIndicatorWidth(namePlateScale);
+
 	NamePlateSetupOptions.unitNameAnchorStyle = GetUnitNameAnchorStyle(namePlateStyle);
 	NamePlateSetupOptions.spellNameInsideCastBar = IsSpellNameInsideCastBar(namePlateStyle);
 
@@ -582,7 +597,7 @@ function NamePlateDriverMixin:UpdateNamePlateOptions()
 	NamePlateEnemyFrameOptions.colorHealthWithExtendedColors = ShouldColorHealthWithExtendedColors(namePlateStyle);
 	NamePlateEnemyFrameOptions.displaySelectionHighlight = ShouldDisplaySelectionHighlight(namePlateStyle);
 	NamePlateEnemyFrameOptions.displaySelectionHighlightOnMouseover = ShouldDisplaySelectionHighlight(namePlateStyle);
-	
+
 
 	-- Options specific to Friendly nameplates.
 	NamePlateFriendlyFrameOptions.useClassColors = GetCVarBool("nameplateShowFriendlyClassColor");
@@ -657,22 +672,22 @@ function NamePlateBorderTemplateMixin:UpdateSizes()
 	local upwardExtendHeightPixels = self.upwardExtendHeightPixels or borderSize;
 	local upwardExtendHeightMinPixels = self.upwardExtendHeightMinPixels or minPixels;
 
-	PixelUtil.SetWidth(self.Left, borderSize, minPixels);
-	PixelUtil.SetPoint(self.Left, "TOPRIGHT", self, "TOPLEFT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
-	PixelUtil.SetPoint(self.Left, "BOTTOMRIGHT", self, "BOTTOMLEFT", 0, -borderSize, 0, minPixels);
+	self.Left:SetWidth(borderSize, minPixels);
+	self.Left:SetPoint("TOPRIGHT", self, "TOPLEFT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
+	self.Left:SetPoint("BOTTOMRIGHT", self, "BOTTOMLEFT", 0, -borderSize, 0, minPixels);
 
-	PixelUtil.SetWidth(self.Right, borderSize, minPixels);
-	PixelUtil.SetPoint(self.Right, "TOPLEFT", self, "TOPRIGHT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
-	PixelUtil.SetPoint(self.Right, "BOTTOMLEFT", self, "BOTTOMRIGHT", 0, -borderSize, 0, minPixels);
+	self.Right:SetWidth(borderSize, minPixels);
+	self.Right:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, upwardExtendHeightPixels, 0, upwardExtendHeightMinPixels);
+	self.Right:SetPoint("BOTTOMLEFT", self, "BOTTOMRIGHT", 0, -borderSize, 0, minPixels);
 
-	PixelUtil.SetHeight(self.Bottom, borderSize, minPixels);
-	PixelUtil.SetPoint(self.Bottom, "TOPLEFT", self, "BOTTOMLEFT", 0, 0);
-	PixelUtil.SetPoint(self.Bottom, "TOPRIGHT", self, "BOTTOMRIGHT", 0, 0);
+	self.Bottom:SetHeight(borderSize, minPixels);
+	self.Bottom:SetPoint("TOPLEFT", self, "BOTTOMLEFT", 0, 0);
+	self.Bottom:SetPoint("TOPRIGHT", self, "BOTTOMRIGHT", 0, 0);
 
 	if self.Top then
-		PixelUtil.SetHeight(self.Top, borderSize, minPixels);
-		PixelUtil.SetPoint(self.Top, "BOTTOMLEFT", self, "TOPLEFT", 0, 0);
-		PixelUtil.SetPoint(self.Top, "BOTTOMRIGHT", self, "TOPRIGHT", 0, 0);
+		self.Top:SetHeight(borderSize, minPixels);
+		self.Top:SetPoint("BOTTOMLEFT", self, "TOPLEFT", 0, 0);
+		self.Top:SetPoint("BOTTOMRIGHT", self, "TOPRIGHT", 0, 0);
 	end
 end
 

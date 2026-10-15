@@ -32,15 +32,15 @@
 				</MaskTexture>
 			</Layer>
 			<Layer level="ARTWORK" textureSubLevel="6">
-				<FontString parentKey="HotKey" inherits="NumberFontNormalSmallGray" justifyH="RIGHT">
+				<FontString parentKey="HotKey" inherits="NumberFont_OutlineThick_Mono_Small" justifyH="RIGHT">
 					<Size x="32" y="10"/>
 					<Anchors>
-						<Anchor point="TOPRIGHT" x="-4" y="-5"/>
+						<Anchor point="TOPRIGHT" x="-4" y="-6"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="Count" inherits="NumberFontNormalSmallGray" justifyH="CENTER">
+				<FontString parentKey="Count" inherits="NumberFont_Outline_Large2" justifyH="RIGHT">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-5"/>
+						<Anchor point="TOPRIGHT" x="-2" y="-21"/>
 					</Anchors>
 				</FontString>
 			</Layer>

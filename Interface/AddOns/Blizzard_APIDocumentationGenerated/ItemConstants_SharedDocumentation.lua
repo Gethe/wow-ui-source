@@ -3,6 +3,7 @@ local ItemConstants_Shared =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},

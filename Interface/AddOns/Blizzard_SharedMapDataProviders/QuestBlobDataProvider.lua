@@ -197,7 +197,8 @@ function QuestBlobPinMixin:UpdateTooltip()
 		return;
 	end
 
-	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT", 5, 2);
+	local anchor = InputUtil.IsMKBUIEnabled() and "ANCHOR_CURSOR_RIGHT" or "ANCHOR_RIGHT";
+	GameTooltip:SetOwner(self, anchor, 5, 2);
 
 	local title = C_QuestLog.GetTitleForQuestID(questID);
 	local numObjectives = GetNumQuestLeaderBoards(questLogIndex);

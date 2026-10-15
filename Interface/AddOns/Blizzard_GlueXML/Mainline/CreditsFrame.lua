@@ -1,9 +1,22 @@
 CreditsFrameMixin = {};
 
+function CreditsFrameMixin:OnLoad()
+	self.creditsInfos = GetCreditsDisplayInfo();
+	if creditsInfos then
+		for i, info in ipairs(self.creditsInfos) do
+			if info.isDefault then
+				self.selection = i;
+			end
+		end
+	end
+	-- If no entires were marked with isDefault, just select the last entry
+	if not self.selection then
+		self.selection = self.creditsInfos and #self.creditsInfos or 0;
+	end
+end
+
 function CreditsFrameMixin:OnShow()
 	StopGlueAmbience();
-	self.expansion = GetClientDisplayExpansionLevel();
-	self.maxExpansion = LE_EXPANSION_LEVEL_CURRENT;
 	self:Update();
 end
 
@@ -80,11 +93,11 @@ end
 
 
 function CreditsFrameMixin:Update()
-	local expansionInfo = GetExpansionDisplayInfo(self.expansion);
-	if expansionInfo then
-		self.Logo:SetTexture(expansionInfo.logo);
+	local creditsInfo = self.creditsInfos and self.creditsInfos[self.selection];
+	if creditsInfo then
+		self.Logo:SetTexture(creditsInfo.logo);
 	end
-	local musicSoundKit = expansionInfo and expansionInfo.glueCreditsSoundKit;
+	local musicSoundKit = creditsInfo and creditsInfo.soundKit;
 	if musicSoundKit then
 		PlayCreditsMusic(musicSoundKit);
 	end
@@ -96,7 +109,7 @@ function CreditsFrameMixin:Update()
 	self.creditsTextWidth = self.ScrollFrame:GetWidth();
 
 	-- Set Credits Text
-	self.ScrollFrame.Text:SetText(GetCreditsText(self.expansion));
+	self.ScrollFrame.Text:SetText(GetCreditsTextByFileDataID(creditsInfo and creditsInfo.creditsFileID) or 0);
 	self.data = self.ScrollFrame.Text:GetTextData();
 	self.Slider:SetMinMaxValues(1, #self.data);
 	self.ScrollFrame.Text:SetText("");
@@ -104,27 +117,28 @@ function CreditsFrameMixin:Update()
 	self:JumpToCreditsIndex(1);
 end
 
-function CreditsFrameMixin:Switch(expansion)
-	self.expansion = expansion;
+function CreditsFrameMixin:Switch(selection)
+	self.selection = selection;
 	self:Update();
 end
 
 function CreditsFrameMixin:UpdateArt()
 
+	local creditsInfo = self.creditsInfos and self.creditsInfos[self.selection];
 	self.KeyArt:ClearAllPoints();
-	local keyArt = ("CreditsScreen-Keyart-%d"):format(self.expansion);
-	local info = C_Texture.GetAtlasInfo(keyArt);
-	if (info) then
+	local info = creditsInfo and C_Texture.GetAtlasInfo(creditsInfo.keyArt);
+	if info then
 		local x = -(self:GetRight() - self.ScrollFrame:GetLeft() + 100) / 2;
 		self.KeyArt:SetPoint("TOP", self, "TOP", x, -50);
-		self.KeyArt:SetAtlas(keyArt, true);
+		self.KeyArt:SetAtlas(creditsInfo.keyArt, true);
 		self.KeyArt:SetScale((self:GetHeight() - 120) / info.height);
 	end
 
 	-- The following anchors the background textures to the entire screen regardless of GlueParent
 	local topParent = GlueParent:GetParent();
-	local backgroundTile = ("CreditsScreen-Background-%d"):format(self.expansion);
-	self.Background:SetAtlas(backgroundTile, true);
+	if creditsInfo then
+		self.Background:SetAtlas(creditsInfo.background, true);
+	end
 	self.Background:ClearAllPoints();
 	self.Background:SetAllPoints(topParent);
 
@@ -269,8 +283,8 @@ function CreditsFrameMixin:OnKeyDown(key)
 end
 
 function CreditsFrameMixin:ToggleExpansionList()
-	if not self.ExpansionList:IsShown() then
-		self.ExpansionList:OpenExpansionList(self.expansion, self.maxExpansion);
+	if not self.ExpansionList:IsShown() and self.creditsInfos then
+		self.ExpansionList:OpenExpansionList(self.creditsInfos, self.selection);
 	else
 		self.ExpansionList:Hide();
 	end
@@ -280,7 +294,7 @@ CreditsExpansionListMixin = {}
 
 function CreditsExpansionListMixin:OnOKClicked()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-	CreditsFrame:Switch(self.expansion);
+	CreditsFrame:Switch(self.selection);
 	self:Hide();
 end
 
@@ -289,15 +303,15 @@ function CreditsExpansionListMixin:OnCancelClicked()
 	self:Hide();
 end
 
-function CreditsExpansionListMixin:SetSelectedExpansion(expansion)
+function CreditsExpansionListMixin:SetSelectedExpansion(selection)
 	for button in self.buttonPool:EnumerateActive() do
-		button.Selection:SetShown(expansion == button:GetID());
+		button.Selection:SetShown(selection == button:GetID());
 	end
-	self.expansion = expansion;
+	self.selection = selection;
 end
 
-function CreditsExpansionListMixin:OpenExpansionList(selectedExpansion, maxExpansion)
-	self.expansion = selectedExpansion;
+function CreditsExpansionListMixin:OpenExpansionList(creditsInfos, selection)
+	self.selection = selection;
 	if not self.buttonPool then
 		self.buttonPool = CreateFramePool("BUTTON", self, "CreditsFrameExpansionsButtonTemplate");
 	end
@@ -308,16 +322,16 @@ function CreditsExpansionListMixin:OpenExpansionList(selectedExpansion, maxExpan
 	local minWidth = 200;
 	local maxWidth = minWidth;
 	local buttonSpacing = 5;
-	for i=0,maxExpansion do
+
+	for i, creditsInfo in ipairs(creditsInfos) do
 		local button = self.buttonPool:Acquire();
 		button:SetID(i);
-		if i == 0 then
+		if i == 1 then
 			button:SetPoint("TOP", self, "TOP", 0, -35);
-			button:SetText(WORLD_OF_WARCRAFT);
 		else
 			button:SetPoint("TOP", prevButton, "BOTTOM", 0, -buttonSpacing);
-			button:SetText(_G["EXPANSION_NAME" .. i]);
 		end
+		button:SetText(creditsInfo.name or "");
 		local width = button:GetTextWidth();
 		maxWidth = math.max(width, maxWidth);
 		button:SetWidth(width);
@@ -337,8 +351,8 @@ function CreditsExpansionListMixin:OpenExpansionList(selectedExpansion, maxExpan
 	local frameWidth = math.max(maxWidth, 2 * buttonTextWidth) + 60;
 
 	self:SetWidth(frameWidth);
-	self:SetHeight((maxExpansion + 1) * (prevButton:GetHeight() + buttonSpacing) + 100);
+	self:SetHeight(#creditsInfos * (prevButton:GetHeight() + buttonSpacing) + 100);
 
-	self:SetSelectedExpansion(self.expansion);
+	self:SetSelectedExpansion(self.selection);
 	self:Show();
 end

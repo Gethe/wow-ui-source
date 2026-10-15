@@ -72,12 +72,26 @@ function TalentButtonBaseMixin:SetAttachedCard(card)
 	self.attachedCard = card;
 
 	if card then
+		card:Show();
 		card:Attach(self);
 	end
 end
 
 function TalentButtonBaseMixin:GetAttachedCard()
 	return self.attachedCard;
+end
+
+function TalentButtonBaseMixin:SetButtonOverlay(overlay)
+	self.buttonOverlay = overlay;
+
+	if overlay then
+		overlay:Show();
+		overlay:Attach(self);
+	end
+end
+
+function TalentButtonBaseMixin:GetButtonOverlay()
+	return self.buttonOverlay;
 end
 
 function TalentButtonBaseMixin:MarkEdgesDirty()
@@ -162,7 +176,12 @@ function TalentButtonBaseMixin:FullUpdate()
 
 	if self.attachedCard then
 		self.attachedCard:Update();
+		-- Cards are separate frames, so they don't follow the button's Invisible alpha.
+		local nodeInfo = self.nodeInfo;
+		self.attachedCard:SetShown(not nodeInfo or self:GetTalentFrame():ShouldNodeBeVisible(nodeInfo));
 	end
+
+	self:GetTalentFrame():UpdateButtonOverlay(self);
 end
 
 function TalentButtonBaseMixin:ResetDynamic()
@@ -251,7 +270,7 @@ function TalentButtonBaseMixin:AddTooltipErrors(tooltip)
 	local talentFrame = self:GetTalentFrame()
 
 	local shouldAddSpacer = true;
-	talentFrame:AddConditionsToTooltip(tooltip, self.nodeInfo.conditionIDs, shouldAddSpacer);
+	talentFrame:AddConditionsToTooltip(tooltip, self.nodeInfo.conditionIDs, shouldAddSpacer, self.nodeInfo.groupIDs);
 	talentFrame:AddEdgeRequirementsToTooltip(tooltip, self:GetNodeID(), shouldAddSpacer);
 
 	local isLocked, errorMessage = talentFrame:IsLocked();
@@ -267,7 +286,12 @@ function TalentButtonBaseMixin:IsInDeactivatedSubTree()
 end
 
 function TalentButtonBaseMixin:ShouldBeVisible()
-	return (self.nodeInfo ~= nil) and self.nodeInfo.isVisible and not self:IsInDeactivatedSubTree();
+	if (self.nodeInfo == nil) or not self.nodeInfo.isVisible or self:IsInDeactivatedSubTree() then
+		return false;
+	end
+
+	local talentFrame = self:GetTalentFrame();
+	return (talentFrame == nil) or talentFrame:ShouldNodeBeVisible(self.nodeInfo);
 end
 
 function TalentButtonBaseMixin:IsVisibleAndSelectable()

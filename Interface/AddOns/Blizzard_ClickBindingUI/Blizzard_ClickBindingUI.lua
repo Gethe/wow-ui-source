@@ -840,7 +840,7 @@ function ClickableBindingsEnableMouseoverCastCheckboxMixin:OnClick()
 	local isNowEnabled = not GetCVarBool("enableMouseoverCast");
 
 	local newValue = isNowEnabled and "1" or "0";
-	SetCVar("enableMouseoverCast", newValue, "ENABLE_MOUSEOVER_CAST");
+	SetCVar("enableMouseoverCast", newValue);
 
 	local soundFile = isNowEnabled and SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON or SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF;
 	PlaySound(soundFile);

@@ -42,6 +42,7 @@ SLASH_COMMAND = {
 	MAINASSISTON = "MAINASSISTON",
 	MAINASSISTOFF = "MAINASSISTOFF",
 	DUEL = "DUEL",
+	MAKGORA = "MAKGORA",
 	DUEL_CANCEL = "DUEL_CANCEL",
 	PET_ATTACK = "PET_ATTACK",
 	PET_FOLLOW = "PET_FOLLOW",
@@ -1145,26 +1146,76 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.REMOVEFRIEND, SLASH_COMMAND_
 	end
 end);
 
+local function ShouldPreferCharacterIgnoreForName(name)
+	if C_Glue.IsOnGlueScreen() then
+		return false;
+	end
+
+	-- Prefer character ignore if the name matches the current target's full name exactly
+	if UnitIsHumanPlayer("target") then
+		local targetName = NameUtil.GetUnmodifiedUnitFullName("target");
+		local matchesTargetName = targetName and strcmputf8i(name, targetName) == 0;
+		if matchesTargetName then
+			return true;
+		end
+	end
+
+	-- If the name contains a surname separator (a space) and regional unique names are not enabled, it's probably not a character name
+	local hasSurnameSeparator = string.find(name, Constants.CharacterNameSeparatorConsts.CHARACTERNAME_SURNAME_SEPARATOR, 1, true) ~= nil;
+	if hasSurnameSeparator and not RegionalUniqueNamesEnabled() then
+		return false;
+	end
+
+	-- If the name looks like Name-Realm, prefer character ignore
+	local characterName, realmName, extraNamePart = string.split(Constants.CharacterNameSeparatorConsts.CHARACTERNAME_REALMNAME_SEPARATOR, name);
+	local hasCharacterName = characterName ~= "";
+	local hasRealmName = (realmName ~= nil) and (realmName ~= "");
+	local hasExactlyOneSeparator = extraNamePart == nil;
+	-- Double check other misc invalid characters like whitespace, # and |
+	local hasOnlyNameRealmCharacters = string.find(name, "[%s#|]") == nil;
+
+	local hasRealmQualifiedNameFormat = hasCharacterName and hasRealmName and hasExactlyOneSeparator and hasOnlyNameRealmCharacters;
+	if hasRealmQualifiedNameFormat then
+		return true;
+	end
+
+	-- Finally, prefer character ignore if autocomplete recognizes the name as a character
+	local characterOnlyAutoCompleteFilter = AUTOCOMPLETE_LIST_TEMPLATES.ALL_CHARS;
+	return C_AutoComplete.IsRecognizedName(name, characterOnlyAutoCompleteFilter.include, characterOnlyAutoCompleteFilter.exclude);
+end
+
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.IGNORE, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
-	if ( msg ~= "" or UnitIsHumanPlayer("target") ) then
+	if ( msg ~= "" ) then
+		local shouldPreferCharacterIgnore = ShouldPreferCharacterIgnoreForName(msg);
+		if shouldPreferCharacterIgnore then
+			C_FriendList.AddOrDelIgnore(msg);
+			return;
+		end
+
 		local bNetIDAccount = BNet_GetBNetIDAccount(msg);
 		if ( bNetIDAccount ) then
 			if ( BNIsFriend(bNetIDAccount) ) then
 				SendSystemMessage(ERR_CANNOT_IGNORE_BN_FRIEND);
 			else
-				BNSetBlocked(bNetIDAccount, not BNIsBlocked(bNetIDAccount));
+				C_BattleNet.SetBlocked(bNetIDAccount, not BNIsBlocked(bNetIDAccount));
 			end
 		else
 			C_FriendList.AddOrDelIgnore(msg);
 		end
+	elseif ( UnitIsHumanPlayer("target") ) then
+		local targetName = NameUtil.GetUnmodifiedUnitFullName("target");
+		C_FriendList.AddOrDelIgnore(targetName);
 	else
 		ToggleIgnorePanel();
 	end
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.UNIGNORE, SLASH_COMMAND_CATEGORY.SOCIAL, function(msg)
-	if ( msg ~= "" or UnitIsHumanPlayer("target") ) then
+	if ( msg ~= "" ) then
 		C_FriendList.DelIgnore(msg);
+	elseif ( UnitIsHumanPlayer("target") ) then
+		local targetName = NameUtil.GetUnmodifiedUnitFullName("target");
+		C_FriendList.DelIgnore(targetName);
 	else
 		ToggleIgnorePanel();
 	end
@@ -1432,7 +1483,7 @@ end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAIDFINDER, SLASH_COMMAND_CATEGORY.RAID_FINDER, function(msg)
 	if C_LFGInfo.IsLFREnabled() then
-		PVEFrame_ToggleFrame("GroupFinderFrame", RaidFinderFrame);
+		ToggleGroupFinderFrame("GroupFinderFrame", RaidFinderFrame);
 	end
 end);
 
@@ -1539,6 +1590,9 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.VOICECHAT, SLASH_COMMAND_CAT
 	local streamID;
 	if lowerName == string.lower(PARTY) then
 		channelType = Enum.ChatChannelType.PrivateParty;
+		if C_VoiceChat.GetActiveVoiceProviderID() == Enum.VoiceProviderID.Discord then
+			channelType = Enum.ChatChannelType.DiscordParty;
+		end
 	elseif lowerName == string.lower(INSTANCE) then
 		channelType = Enum.ChatChannelType.PublicParty;
 	elseif lowerName == string.lower(GUILD) then
@@ -1673,6 +1727,12 @@ end);
 local isRaidInfoNotificationPending = false;
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.RAID_INFO, SLASH_COMMAND_CATEGORY.RAID, function(msg)
 	if SocialUIControl and SocialUIControl.IsEnabled() then
+		-- The raid list can be shut off by its kill switch, and in that case there is no raid list UI for us to open
+		if not C_PartyInfo.IsRaidListEnabled() then
+			UIErrorsFrame:AddExternalErrorMessage(ERR_SYSTEM_DISABLED);
+			return;
+		end
+
 		local hasRaidLockoutData = GetNumSavedInstances() + GetNumSavedWorldBosses() > 0;
 		if hasRaidLockoutData then
 			SocialUIControl.ToggleToTabAndSideWindow(SocialUITabType.RaidList, SocialUISideWindowType.RaidInfoFrame);
@@ -1726,4 +1786,17 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.TRANSMOG_OUTFIT, SLASH_COMMA
 			C_TransmogOutfitInfo.ChangeToOutfit(playerFacingOutfitIndex, allowRemoveOutfit);
 		end
 	end
+end);
+
+SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.MAKGORA, SLASH_COMMAND_CATEGORY.PVP, function(msg)
+	if(not msg or msg == "") then
+		msg = GetUnitName("target", true);
+	end
+	if (msg == "" or not msg or not C_GameRules.IsHardcoreActive()) then
+		return;
+	end
+
+	local text2 = nil;
+	local data = {unit = "target"};
+	StaticPopup_Show("DUEL_TO_THE_DEATH_CHALLENGE_CONFIRM", msg, text2, data);
 end);

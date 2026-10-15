@@ -64,6 +64,11 @@ local function GetAuctionHouseTooltipType(rowData)
 			return AuctionHouseTooltipType.BucketPetLink, itemKeyInfo.battlePetLink;
 		end
 
+		local sampleItemLink = C_AuctionHouse.GetItemKeySampleLink(rowData.itemKey);
+		if sampleItemLink then
+			return AuctionHouseTooltipType.ItemLink, sampleItemLink;
+		end
+
 		return AuctionHouseTooltipType.ItemKey, rowData.itemKey;
 	end
 
@@ -89,7 +94,7 @@ function AuctionHouseUtil.SetAuctionHouseTooltip(owner, rowData)
 		tooltip = GameTooltip;
 		if tooltipType == AuctionHouseTooltipType.ItemLink then
 			local hideVendorPrice = true;
-			GameTooltip:SetHyperlink(rowData.itemLink, nil, nil, hideVendorPrice);
+			GameTooltip:SetHyperlink(data, nil, nil, hideVendorPrice);
 		elseif tooltipType == AuctionHouseTooltipType.ItemKey then
 			GameTooltip:SetItemKey(data.itemID, data.itemLevel, data.itemSuffix, C_AuctionHouse.GetItemKeyRequiredLevel(data));
 		end

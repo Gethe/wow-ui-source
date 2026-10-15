@@ -9,6 +9,7 @@ function BattleNetInviteFrameMixin:OnLoad()
 	self:RegisterEvent("CONFIRM_BATTLE_NET_FRIEND_INVITE_SHOW");
 
 	EventRegistry:RegisterCallback("BattleNetInviteFrame.TitleFriendInviteByNameRequested", self.OnTitleFriendInviteByNameRequested, self);
+	EventRegistry:RegisterCallback("BattleNetInviteFrame.BattleTagFriendInviteByIDRequested", self.OnBattleTagFriendInviteByIDRequested, self);
 
 	self.SendButton:SetScript("OnClick", function()
 		if self.sendInviteCallback then
@@ -44,6 +45,11 @@ end
 function BattleNetInviteFrameMixin:OnTitleFriendInviteByNameRequested(targetCharacterName)
 	local sendInviteCallback = GenerateClosure(C_BattleNet.SendTitleFriendInviteByName, targetCharacterName);
 	self:ShowInviteConfirmation(targetCharacterName, Enum.BattleNetFriendLevel.Title, sendInviteCallback);
+end
+
+function BattleNetInviteFrameMixin:OnBattleTagFriendInviteByIDRequested(bnetIDAccount, accountName)
+	local sendInviteCallback = GenerateClosure(BNSendFriendInviteByID, bnetIDAccount);
+	self:ShowInviteConfirmation(accountName, Enum.BattleNetFriendLevel.BattleTag, sendInviteCallback);
 end
 
 function BattleNetInviteFrameMixin:ShowInviteConfirmation(name, friendLevel, sendInviteCallback)

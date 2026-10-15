@@ -11,6 +11,45 @@ function CraftingSearchLGMixin:Init(recipeInfo)
 	self.Icon:SetTexture(recipeInfo.icon);
 end
 
+ProfessionsLinkButtonMixin = CreateFromMixins(ButtonStateBehaviorMixin);
+
+function ProfessionsLinkButtonMixin:OnEnter()
+	ButtonStateBehaviorMixin.OnEnter(self);
+
+	GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT");
+	GameTooltip:SetText(LINK_TRADESKILL_TOOLTIP, nil, nil, nil, nil, true);
+	GameTooltip:Show();
+end
+
+
+function ProfessionsLinkButtonMixin:OnLeave()
+	ButtonStateBehaviorMixin.OnLeave(self);
+
+	GameTooltip_Hide();
+end
+
+function ProfessionsLinkButtonMixin:OnButtonStateChanged()
+	local icon;
+	local background;
+	if self:IsEnabled() then
+		icon = "common-icon-chatlink";
+
+		if self:IsDownOver() then
+			background = "common-button-tertiary-square-pressed";
+		elseif self:IsOver() then
+			background = "common-button-tertiary-square-hover";
+		else
+			background ="common-button-tertiary-square-normal";
+		end
+	else
+		icon = "common-icon-chatlink-disable";
+		background = "common-button-tertiary-square-disabled";
+	end
+
+	self.Icon:SetAtlas(icon, TextureKitConstants.UseAtlasSize);
+	self.Background:SetAtlas(background, TextureKitConstants.UseAtlasSize);
+end
+
 ProfessionsCraftingPageMixin = CreateFromMixins(ProfessionsRecipeListPanelMixin);
 
 local ProfessionsCraftingPageEvents =
@@ -26,6 +65,9 @@ local ProfessionsCraftingPageEvents =
 };
 
 function ProfessionsCraftingPageMixin:OnLoad()
+	self:CreateControls();
+	self:SetRankBarAnchors();
+
 	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.Prof0ToolSlot, self.Prof0Gear0Slot, self.Prof0Gear1Slot);
 	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.Prof1ToolSlot, self.Prof1Gear0Slot, self.Prof1Gear1Slot);
 	PaperDollItemSlotButton_SetAutoEquipSlotIDs(self.CookingToolSlot, self.CookingGear0Slot);
@@ -200,6 +242,39 @@ function ProfessionsCraftingPageMixin:OnLoad()
 	end
 
 	self.MinimizedSearchBox:SetSearchResultsFrame(self.MinimizedSearchResults);
+
+	self:OverrideArt();
+end
+
+function ProfessionsCraftingPageMixin:CreateControls()
+	local buttonTemplate = self:GetButtonTemplate();
+
+	self.CreateButton = CreateFrame("Button", nil, self, buttonTemplate);
+	self.CreateButton:SetWidth(80);
+
+	self.CreateMultipleInputBox:SetPoint("RIGHT", self.CreateButton, "LEFT", -30, 0);
+
+	self.CreateAllButton = CreateFrame("Button", nil, self, buttonTemplate);
+	self.CreateAllButton:SetPoint("RIGHT", self.CreateMultipleInputBox, "LEFT", -30, 0);
+	self.CreateAllButton:SetWidth(80);
+
+	self:SetControlAnchors();
+end
+
+function ProfessionsCraftingPageMixin:SetControlAnchors()
+	-- derived
+end
+
+function ProfessionsCraftingPageMixin:SetRankBarAnchors()
+	-- derived
+end
+
+function ProfessionsCraftingPageMixin:OverrideArt()
+	-- derived
+end
+
+function ProfessionsCraftingPageMixin:GetButtonTemplate()
+	return "UIPanelButtonTemplate";
 end
 
 function ProfessionsCraftingPageMixin:SetMaximized()
@@ -329,7 +404,6 @@ function ProfessionsCraftingPageMixin:OnHide()
 	FrameUtil.UnregisterUpdateFunction(self);
 
 	self:StoreCollapses(self.RecipeList.ScrollBox);
-
 end
 
 function ProfessionsCraftingPageMixin:Update()
@@ -387,7 +461,9 @@ function ProfessionsCraftingPageMixin:SelectRecipe(recipeInfo, skipSelectInList)
 
 	if not skipSelectInList then
 		local scrollToRecipe = false;
-		self.RecipeList:SelectRecipe(recipeInfo, scrollToRecipe);
+		local elementData = self.RecipeList:SelectRecipe(recipeInfo, scrollToRecipe);
+
+		EventRegistry:TriggerEvent("Professions.RecipeSelected", self, elementData);
 	end
 end
 
@@ -396,10 +472,12 @@ function ProfessionsCraftingPageMixin:SetupMultipleInputBox(count, countMax)
 		self.CreateMultipleInputBox:Enable();
 		self.CreateMultipleInputBox:SetValue(count);
 		self.CreateMultipleInputBox:SetMinMaxValues(1, countMax);
+		self.GamepadCreateMultiple:EnablePrompt();
 	else
 		self.CreateMultipleInputBox:Disable();
 		self.CreateMultipleInputBox:SetValue(0);
 		self.CreateMultipleInputBox:ClearHighlightText();
+		self.GamepadCreateMultiple:DisablePrompt();
 	end
 end
 
@@ -649,12 +727,14 @@ function ProfessionsCraftingPageMixin:ValidateControls(skipConstrainCount)
 		local castBarXOfs, castBarYOfs;
 		if canCreateMultiple then
 			self.CreateAllButton:Show();
-			self.CreateMultipleInputBox:Show();
+			self.CreateMultipleInputBox:SetShown(InputUtil.IsMKBUIEnabled());
+			self.GamepadCreateMultiple:SetShown(InputUtil.IsGamepadUIEnabled());
 			castBarXOfs = 2;
 			castBarYOfs = 17;
 		else
 			self.CreateAllButton:Hide();
 			self.CreateMultipleInputBox:Hide();
+			self.GamepadCreateMultiple:Hide();
 			castBarXOfs = 120;
 			castBarYOfs = 17;
 		end
@@ -676,17 +756,23 @@ function ProfessionsCraftingPageMixin:ValidateControls(skipConstrainCount)
 			local quantity = math.max(1, countMax);
 			self.CreateAllButton:SetTextToFit(PROFESSIONS_CREATE_ALL_FORMAT:format(PROFESSIONS_ENCHANT_ALL, quantity));
 		else
+			local createFormat;
 			if currentRecipeInfo.abilityVerb then
 				-- abilityVerb is recipe-level override
-				self.CreateButton:SetTextToFit(currentRecipeInfo.abilityVerb);
+				createFormat = currentRecipeInfo.abilityVerb;
 			elseif currentRecipeInfo.alternateVerb then
 				-- alternateVerb is profession-level override
-				self.CreateButton:SetTextToFit(currentRecipeInfo.alternateVerb);
+				createFormat = currentRecipeInfo.alternateVerb;
 			elseif self.SchematicForm.recraftSlot and self.SchematicForm.recraftSlot.InputSlot:IsVisible() then
-				self.CreateButton:SetTextToFit(PROFESSIONS_CRAFTING_RECRAFT);
+				createFormat = PROFESSIONS_CRAFTING_RECRAFT;
 			else
-				self.CreateButton:SetTextToFit(CREATE_PROFESSION);
+				createFormat = CREATE_PROFESSION;
 			end
+
+			if InputUtil.IsGamepadUIEnabled() and self.CreateMultipleInputBox:GetValue() > 1 then
+				createFormat = PROFESSIONS_CREATE_ALL_FORMAT:format(createFormat, self.CreateMultipleInputBox:GetValue());
+			end
+			self.CreateButton:SetTextToFit(createFormat);
 
 			local createAllFormat;
 			if currentRecipeInfo.abilityAllVerb then
@@ -720,10 +806,12 @@ function ProfessionsCraftingPageMixin:ValidateControls(skipConstrainCount)
 		self.CreateButton:SetEnabled(enabled);
 		self.CreateAllButton:SetEnabled(enabled and canCreateMultiple);
 		self.CreateMultipleInputBox:SetEnabled(enabled and canCreateMultiple);
+		self.GamepadCreateMultiple:EnableOrDisablePrompt(enabled and canCreateMultiple);
 	else
 		self.CreateButton:Hide();
 		self.CreateAllButton:Hide();
 		self.CreateMultipleInputBox:Hide();
+		self.GamepadCreateMultiple:Hide();
 		
 		if C_TradeSkillUI.IsTradeSkillGuild() then
 			self.ViewGuildCraftersButton:Show();
@@ -897,6 +985,10 @@ function ProfessionsCraftingPageMixin:Init(professionInfo)
 	self:ValidateControls();
 end
 
+function ProfessionsCraftingPageMixin:GetSchematicWidth(useCondensedPanel)
+	return useCondensedPanel and 500 or 655;
+end
+
 function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	if self:IsVisible() then
 		self:SetTitle();
@@ -917,17 +1009,19 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 		self.MinimizedSearchBox:Hide();
 		self.MinimizedSearchResults:Hide();
 
-	local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting() or isRuneforging;
-		schematicWidth = useCondensedPanel and 500 or 655;
+		local useCondensedPanel = C_TradeSkillUI.IsNPCCrafting() or isRuneforging;
+		schematicWidth = self:GetSchematicWidth(useCondensedPanel);
 	end
 	self.SchematicForm:SetWidth(schematicWidth);
+
+	local createButtonXOffset = InputUtil.IsMKBUIEnabled() and -9 or -96;
 	
 	if minimized then
 		self.SchematicForm.MinimalBackground:SetAtlas("Professions-MinimizedView-Background", TextureKitConstants.UseAtlasSize);
 		self.SchematicForm.MinimalBackground:Show();
 		self.SchematicForm.Background:Hide();
 
-		self.CreateButton:SetPoint("BOTTOMRIGHT", -9, 13);
+		self.CreateButton:SetPoint("BOTTOMRIGHT", createButtonXOffset, 13);
 
 		self.RecipeList:Hide();
 		self.LinkButton:Hide();
@@ -938,15 +1032,16 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 		self.SchematicForm.Background:Show();
 		self.SchematicForm.MinimalBackground:Hide();
 
-		self.CreateButton:SetPoint("BOTTOMRIGHT", -9, 7);
+		self.CreateButton:SetPoint("BOTTOMRIGHT", createButtonXOffset, 7);
 
-	if Professions.UpdateRankBarVisibility(self.RankBar, professionInfo) then
-		self.RankBar:Update(professionInfo);
-	end
+		if Professions.UpdateRankBarVisibility(self.RankBar, professionInfo) then
+			self.RankBar:Update(professionInfo);
+		end
 
-	self:ConfigureInventorySlots(professionInfo);
+		self:ConfigureInventorySlots(professionInfo);
 
-	self.LinkButton:SetShown(C_TradeSkillUI.CanTradeSkillListLink() and Professions.InLocalCraftingMode());
+		local shouldShow = C_TradeSkillUI.CanTradeSkillListLink() and Professions.InLocalCraftingMode() and InputUtil.IsMKBUIEnabled();
+		self.LinkButton:SetShown(shouldShow);
 	end
 
 	if minimized then
@@ -962,6 +1057,8 @@ function ProfessionsCraftingPageMixin:Refresh(professionInfo)
 	end
 
 	self:ValidateControls();
+
+	EventRegistry:TriggerEvent("Professions.CraftingDisplayRefresh");
 end
 
 function ProfessionsCraftingPageMixin:CreateInternal(recipeID, count, recipeLevel)
@@ -1055,7 +1152,7 @@ function ProfessionsCraftingPageMixin:ConfigureInventorySlots(info)
 		local professionSlots = C_TradeSkillUI.GetProfessionSlots(info.profession);
 		local numShownSlots = 0;
 		for index, inventorySlot in ipairs(self.InventorySlots) do
-			local show = tContains(professionSlots, inventorySlot.slotID);
+			local show = tContains(professionSlots, inventorySlot.slotID) and C_PaperDollInfo.IsInventorySlotEnabled(inventorySlot.slotName);
 			inventorySlot:SetShown(show);
 			if show then
 				numShownSlots = numShownSlots + 1;
@@ -1207,7 +1304,21 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 		table.insert(ProfessionsCraftingPage_HelpPlate, statsSection);
 	end
 
-	if detailsShown and finishingReagents:IsShown() then
+	if ProfessionsUtil.IsCraftingMinimized() then
+		if self.SchematicForm.FinishingReagents:IsShown() then
+			local finishingReagentsTopPoint = self.SchematicForm.FinishingReagents:GetTop() - self:GetTop();
+			local finishingReagentsLeftPoint = self.SchematicForm.FinishingReagents:GetLeft() - self:GetLeft();
+			local width = 120;
+			local finishingReagentsSection =
+			{
+				ButtonPos = { x = finishingReagentsLeftPoint + width - 42, y = finishingReagentsTopPoint + 10 },
+				HighLightBox = { x = finishingReagentsLeftPoint - 17, y = finishingReagentsTopPoint + 29, width = width, height = 85 },
+				ToolTipDir = "UP",
+				ToolTipText = PROFESSIONS_CRAFTING_HELP_FINISHING_REAGENTS,
+			};
+			table.insert(ProfessionsCraftingPage_HelpPlate, finishingReagentsSection);
+		end
+	elseif detailsShown and finishingReagents:IsShown() then
 		local finishingReagentsTopPoint = finishingReagents:GetTop() - self:GetTop();
 		local finishingReagentsLeftPoint = finishingReagents:GetLeft() - self:GetLeft() - 5;
 		local width = 130;
@@ -1216,25 +1327,6 @@ function ProfessionsCraftingPageMixin:UpdateTutorial()
 			ButtonPos = { x = finishingReagentsLeftPoint + width - 25, y = finishingReagentsTopPoint - 30 },
 			HighLightBox = { x = finishingReagentsLeftPoint, y = finishingReagentsTopPoint, width = width, height = 80 },
 			ToolTipDir = "DOWN",
-			ToolTipText = PROFESSIONS_CRAFTING_HELP_FINISHING_REAGENTS,
-		};
-		table.insert(ProfessionsCraftingPage_HelpPlate, finishingReagentsSection);
-	end
-
-	if ProfessionsUtil.IsCraftingMinimized() and self.SchematicForm.FinishingReagents:IsShown() then
-		local finishingReagentsTopPoint = self.SchematicForm.FinishingReagents:GetTop() - self:GetTop();
-		local finishingReagentsLeftPoint = self.SchematicForm.FinishingReagents:GetLeft() - self:GetLeft();
-		local slots = self.SchematicForm:GetSlotsByReagentType(Enum.CraftingReagentType.Finishing);
-		local slotCount = slots and #slots or 0;
-		local slotSpacing = (math.max(0, slotCount - 1) * -5);
-		local slotWidth = (50 * math.max(3, slotCount));
-		local width = 25 + slotWidth + slotSpacing;
-
-		local finishingReagentsSection =
-		{
-			ButtonPos = { x = finishingReagentsLeftPoint + width - 42, y = finishingReagentsTopPoint + 9},
-			HighLightBox = { x = finishingReagentsLeftPoint - 17, y = finishingReagentsTopPoint + 28, width = width, height = 85 },
-			ToolTipDir = "UP",
 			ToolTipText = PROFESSIONS_CRAFTING_HELP_FINISHING_REAGENTS,
 		};
 		table.insert(ProfessionsCraftingPage_HelpPlate, finishingReagentsSection);
@@ -1468,4 +1560,10 @@ function ProfessionsCraftingPageMixin:CheckShowHelptips()
 			return;
 		end
 	end
+end
+
+ProfessionsBookPageFrameMixin = CreateFromMixins(ProfessionsBookFrameMixin);
+
+function ProfessionsBookPageFrameMixin:Refresh(professionInfo)
+	-- Stub for Professions Book.  Each page in the "Pages" array of the ProfessionsFrame is expected to have this interface available.
 end

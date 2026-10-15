@@ -27,3 +27,7 @@ end
 function GameRulesUtil.GarrisonLandingPageAllowed()
 	return not PlayerIsTimerunning();
 end
+
+function GameRulesUtil.ShouldShowZoneTextAboveMiniMap()
+	return not (C_GameRules.IsGameRuleActive(Enum.GameRule.ZoneMinimapNameHiddenInInstances) and IsInInstance());
+end

@@ -450,6 +450,7 @@ function CommentatorUnitFrameMixin:UpdateCircleTracker(circleTracker, infoCallba
 
 			return true;
 		else
+			circleTracker:Hide();
 			return false;
 		end
 	end

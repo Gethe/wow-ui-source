@@ -42,7 +42,7 @@ function CommunitiesInvitationFrameMixin:DisplayInvitation(invitationInfo)
 	local inviterInfo = invitationInfo.inviter;
 	self.inviterInfo = inviterInfo;
 	self.clubId = clubInfo.clubId;
-	
+
 	local isCharacterClub = clubInfo.clubType == Enum.ClubType.Character;
 	local inviterName = inviterInfo.name or "";
 	local classInfo = inviterInfo.classID and C_CreatureInfo.GetClassInfo(inviterInfo.classID);

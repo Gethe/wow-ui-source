@@ -1,0 +1,8 @@
+## Title: Blizzard_QueueStatusFrame
+## Dep: Blizzard_LFGUtil
+
+[Family]\QueueStatusFrame.lua
+[Game]\QueueStatusFrameOverrides.lua [AllowLoadGameType camelot]
+[Family]\QueueStatusFrameOverrides.lua [AllowLoadGameType mainline] [ExcludeLoadGameType camelot, wowhack]
+WoWHack\QueueStatusFrameOverrides.lua [AllowLoadGameType wowhack]
+[Family]\QueueStatusFrame.xml

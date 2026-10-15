@@ -7,6 +7,7 @@ end
 function NewPlayerExperience:Begin()
 	EventRegistry:RegisterCallback("TutorialManager.TutorialsEnabled", self.OnTutorialsEnabled, self);
 	EventRegistry:RegisterCallback("TutorialManager.TutorialsDisabled", self.OnTutorialsDisabled, self);
+	EventRegistry:RegisterCallback("TutorialManager.SkipTutorial", self.OnSkipTutorial, self);
 
 	-- TutorialManager may have already broadcast TutorialsEnabled before this addon finished loading, so sync state now.
 	if TutorialManager:GetIsActive() then
@@ -38,6 +39,11 @@ function NewPlayerExperience:OnTutorialsEnabled()
 		end
 	end
 
+	if not TutorialLogic:IsNPEAllowed() then
+		self:Shutdown();
+		return;
+	end
+
 	Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
 	HelpTip:SetHelpTipsEnabled("NPEv2", false);
 	HelpTip:ForceHideAll();
@@ -54,11 +60,14 @@ function NewPlayerExperience:OnTutorialsDisabled()
 end
 
 function NewPlayerExperience:PLAYER_LEVEL_UP(newLevel)
-	local isRestricted = C_PlayerInfo.IsPlayerNPERestricted();
-	if not isRestricted then
+	if self:ShouldNPEShutdownOnLevelUp() then
 		-- the player has leveled up beyond the NPE
 		self:Shutdown();
 	end
+end
+
+function NewPlayerExperience:ShouldNPEShutdownOnLevelUp()
+	return not C_PlayerInfo.IsPlayerNPERestricted();
 end
 
 function NewPlayerExperience:Shutdown()
@@ -71,6 +80,10 @@ end
 
 function NewPlayerExperience:GetIsActive()
 	return self.IsActive;
+end
+
+function NewPlayerExperience:OnSkipTutorial()
+	self:Shutdown();
 end
 
 NewPlayerExperience:Initialize();

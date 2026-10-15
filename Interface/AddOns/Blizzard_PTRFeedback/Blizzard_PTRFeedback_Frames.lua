@@ -737,6 +737,8 @@ function PTR_IssueReporter.GetStandaloneSurveyFrame(followUpSurvey)
 		end)
 		
 		titleBox.submitButton = submitButton
+		PTR_IssueReporter.SetupStandaloneSurveyGamepad(titleBox)
+
 		titleBox:Hide()
 		PTR_IssueReporter.StandaloneSurvey = titleBox
 	end

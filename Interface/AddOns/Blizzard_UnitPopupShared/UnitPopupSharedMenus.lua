@@ -60,6 +60,7 @@ function UnitPopupMenuFriendlyPlayerInteract:GetEntries()
 		UnitPopupTradeButtonMixin, 
 		UnitPopupFollowButtonMixin,
 		UnitPopupDuelButtonMixin,
+		UnitPopupDuelToTheDeathButtonMixin,
 		UnitPopupPetBattleDuelButtonMixin,
 	}
 end 
@@ -324,6 +325,7 @@ UnitPopupMenuTarget = CreateFromMixins(UnitPopupTopLevelMenuMixin);
 UnitPopupManager:RegisterMenu("TARGET", UnitPopupMenuTarget);
 function UnitPopupMenuTarget:GetEntries()
 	return {
+		UnitPopupGamepadInteractButtonMixin,
 		UnitPopupRaidTargetButtonMixin, 
 		UnitPopupSetFocusButtonMixin, 
 		UnitPopupAddFriendButtonMixin, 

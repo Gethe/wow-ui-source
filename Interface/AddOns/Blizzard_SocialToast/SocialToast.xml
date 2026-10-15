@@ -68,4 +68,41 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</ContainedAlertFrame>
+
+	<ContainedAlertFrame name="ShardTransferImminentFrame" inherits="SocialToastTemplate" mixin="ShardTransferImminentMixin">
+		<Size x="250" y="50"/>
+		<Layers>
+			<Layer level="BORDER">
+				<FontString name="$parentText" parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT">
+					<Size x="230" y="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-10"/>
+						<Anchor point="RIGHT" x="-10" y="0"/>
+					</Anchors>
+					<Color r="0.510" g="0.773" b="1"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</ContainedAlertFrame>
+
+	<ContainedAlertFrame name="ShardTransferImminentMinimizeButton" inherits="SocialToastTemplate" mixin="ShardTransferImminentMinimizeMixin">
+		<Size x="24" y="24"/>
+		<NormalTexture atlas="RedButton-Expand"/>
+		<Layers>
+			<Layer level="BORDER">
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad inherit="prepend" method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</ContainedAlertFrame>
 </Ui>

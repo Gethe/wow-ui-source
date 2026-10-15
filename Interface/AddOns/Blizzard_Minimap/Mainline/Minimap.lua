@@ -27,39 +27,6 @@ local followerToPulseLock = {
 	[Enum.GarrisonFollowerType.FollowerType_9_0_GarrisonFollower] = MinimapPulseLock.GarrisonMission_9_0,
 };
 
-local REMOVED_FILTERS = {
-	[Enum.MinimapTrackingFilter.VenderFood] = true,
-	[Enum.MinimapTrackingFilter.VendorReagent] = true,
-	[Enum.MinimapTrackingFilter.POI] = true,
-	[Enum.MinimapTrackingFilter.Focus] = true,
-};
-
-local ALWAYS_ON_FILTERS = {
-	[Enum.MinimapTrackingFilter.QuestPOIs] = true,
-	[Enum.MinimapTrackingFilter.TaxiNode] = true,
-	[Enum.MinimapTrackingFilter.Innkeeper] = true,
-	[Enum.MinimapTrackingFilter.ItemUpgrade] = true,
-	[Enum.MinimapTrackingFilter.Battlemaster] = true,
-	[Enum.MinimapTrackingFilter.Stablemaster] = true,
-};
-
-local CONDITIONAL_FILTERS = {
-	[Enum.MinimapTrackingFilter.Target] = true,
-	[Enum.MinimapTrackingFilter.Digsites] = true,
-	[Enum.MinimapTrackingFilter.Repair] = true,
-};
-
-local OPTIONAL_FILTERS = {
-	[Enum.MinimapTrackingFilter.Banker] = true,
-	[Enum.MinimapTrackingFilter.Auctioneer] = true,
-	[Enum.MinimapTrackingFilter.Barber] = true,
-	[Enum.MinimapTrackingFilter.TrainerProfession] = true,
-	[Enum.MinimapTrackingFilter.AccountCompletedQuests] = true,
-	[Enum.MinimapTrackingFilter.TrivialQuests] = true,
-	[Enum.MinimapTrackingFilter.Transmogrifier] = true,
-	[Enum.MinimapTrackingFilter.Mailbox] = true,
-};
-
 local LOW_PRIORITY_TRACKING_SPELLS = {
 	[261764] = true; -- Track Warboards
 };
@@ -111,10 +78,13 @@ local function CreatePredictedTrackingState()
 end
 
 local trackingState = CreatePredictedTrackingState();
+local lastActiveTracking = {};
 
-MinimapZoneTextButtonMixin = { };
+MinimapZoneTextButtonMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
 function MinimapZoneTextButtonMixin:OnLoad()
+	ButtonStateBehaviorMixin.OnLoad(self);
+
 	self.tooltipText = MicroButtonTooltipText(WORLDMAP_BUTTON, "TOGGLEWORLDMAP");
 	self:RegisterEvent("UPDATE_BINDINGS");
 end
@@ -124,6 +94,8 @@ function MinimapZoneTextButtonMixin:OnEvent()
 end
 
 function MinimapZoneTextButtonMixin:OnEnter()
+	ButtonStateBehaviorMixin.OnEnter(self);
+
 	if C_GameRules.IsGameRuleActive(Enum.GameRule.WorldMapDisabled) then
 		return;
 	end
@@ -140,7 +112,12 @@ function MinimapZoneTextButtonMixin:OnClick()
 end
 
 function MinimapZoneTextButtonMixin:OnLeave()
+	ButtonStateBehaviorMixin.OnLeave(self);
+
 	GameTooltip_Hide();
+end
+
+function MinimapZoneTextButtonMixin:OnButtonStateChanged()
 end
 
 MinimapMixin = { };
@@ -361,17 +338,56 @@ function Minimap_ZoomOut()
 	Minimap.ZoomOut:Click();
 end
 
+ExternalEventURLMinimapButtonStyle = {
+	borderAtlas = "transmog-appearance-circframe",
+	borderWidth = 42,
+	borderHeight = 42,
+	spellEffectWidth = 251,
+	spellEffectHeight = 251,
+};
+
 MinimapClusterMixin = { };
 
+function MinimapClusterMixin:ApplyExternalEventURLButtonAnchor()
+	local externalEventURLButton = MinimapBackdrop.ExternalEventURLButton;
+	externalEventURLButton:ClearAllPoints();
+	externalEventURLButton:SetPoint("TOPLEFT", -7, -96);
+end
+
+function MinimapClusterMixin:CreateInstanceDifficultyFrame()
+	if not self.InstanceDifficulty then
+		local instanceDifficulty = CreateFrame("Frame", nil, self, "InstanceDifficultyTemplate");
+		instanceDifficulty:SetPoint("TOPRIGHT", self.ZoneTextButton, "BOTTOMRIGHT", 0, 0);
+		self.InstanceDifficulty = instanceDifficulty;
+	end
+end
+
+function MinimapClusterMixin:UpdateMinimapConfig()
+end
+
 function MinimapClusterMixin:OnLoad()
+	self:CreateInstanceDifficultyFrame();
+
 	Minimap.timer = 0;
 	Minimap_Update();
 	self:RegisterEvent("ZONE_CHANGED");
 	self:RegisterEvent("ZONE_CHANGED_INDOORS");
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 	self:RegisterEvent("SETTINGS_LOADED");
+	self:RegisterEvent("PLAYER_ENTERING_WORLD");
 	local raisedFrameLevel = self:GetFrameLevel() + 10;
-	self.InstanceDifficulty:SetFrameLevel(raisedFrameLevel);
+	if self.InstanceDifficulty then
+		self.InstanceDifficulty:SetFrameLevel(raisedFrameLevel);
+	end
+
+	-- This game rule changes some of the sizing of the BorderTop and as a result we need to do custom anchoring
+	-- This currently works for our cases, but if we need to support this game rule while the minimap is visible,
+	-- we need to revisit this anchoring setup
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.ZoneMinimapNameHiddenInInstances) then
+		self.ZoneTextButton:ClearAllPoints();
+		self.ZoneTextButton:SetPoint("TOPRIGHT", -18, -4);
+
+	end
 
 	-- Cache minimap piece points so we can reset them if needed
 	local function CacheFramePoints(frame)
@@ -382,19 +398,29 @@ function MinimapClusterMixin:OnLoad()
 		end
 	end
 	CacheFramePoints(self.MinimapContainer);
-	CacheFramePoints(self.BorderTop);
-	CacheFramePoints(self.InstanceDifficulty);
+	CacheFramePoints(self.ZoneTextButton);
+	if self.InstanceDifficulty then
+		CacheFramePoints(self.InstanceDifficulty);
+	end
 	CacheFramePoints(self.IndicatorFrame);
 
 	local showMinimap = not C_GameRules.IsGameRuleActive(Enum.GameRule.MinimapDisabled);
 	self.Tracking:SetShown(showMinimap);
 	self.MinimapContainer.Minimap:SetShown(showMinimap);
+	self:ApplyExternalEventURLButtonAnchor();
+
+	self:UpdateMinimapConfig();
 end
 
 function MinimapClusterMixin:OnEvent(event, ...)
 	if event == "SETTINGS_LOADED" then
 		self:CheckTutorials();
+	elseif event == "PLAYER_ENTERING_WORLD" then
+		local showZoneText = GameRulesUtil.ShouldShowZoneTextAboveMiniMap();
+		self.ZoneTextButton:SetShown(showZoneText);
+		self.ZoneTextButton:SetWidth(showZoneText and 175 or 42);
 	end
+
 	Minimap_Update();
 end
 
@@ -408,17 +434,20 @@ function MinimapClusterMixin:SetEditModeScale(scale)
 	self.MinimapContainer:SetScale(scale);
 	if (self.scaleMinimapHeader) then
 		local headerScale = math.max(scale, 1.0);
-
-		self.BorderTop:SetScale(headerScale);
 		self.ZoneTextButton:SetScale(headerScale);
 	end
+	EventRegistry:TriggerEvent("Minimap.OnScaleUpdated", scale);
+end
+
+function MinimapClusterMixin:GetEditModeScale(scale)
+	return self.MinimapContainer:GetScale();
 end
 
 function MinimapClusterMixin:SetIconScale(scale)
 	self.MinimapContainer.Minimap:SetIconScale(scale);
 end
 
-local function ResetFramePoints(frame, accountForFrameScale)
+function MinimapClusterMixin:ResetFramePoints(frame, accountForFrameScale)
 	local scale = accountForFrameScale and frame:GetScale() or 1;
 
 	frame:ClearAllPoints();
@@ -434,38 +463,52 @@ function MinimapClusterMixin:SetHeaderUnderneath(headerUnderneath)
 		self.MinimapContainer:ClearAllPoints();
 		self.MinimapContainer:SetPoint("BOTTOM", self, "BOTTOM", 10 / scale, 30 / scale);
 
-		self.BorderTop:ClearAllPoints();
-		self.BorderTop:SetPoint("BOTTOM", self, "BOTTOM", 15, 2);
+		self.ZoneTextButton:ClearAllPoints();
+		self.ZoneTextButton:SetPoint("BOTTOM", self, "BOTTOM", 0, 8);
 
-		self.InstanceDifficulty:ClearAllPoints();
-		self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self.BorderTop, "TOPRIGHT", -2, -2);
+		if self.InstanceDifficulty then
+			self.InstanceDifficulty:ClearAllPoints();
+			self.InstanceDifficulty:SetPoint("BOTTOMRIGHT", self.ZoneTextButton, "TOPRIGHT", 0, 0);
+		end
 
 		self.IndicatorFrame:ClearAllPoints();
 		self.IndicatorFrame:SetPoint("BOTTOMRIGHT", self.Tracking, "TOPRIGHT");
+
+		AddonCompartmentFrame:ClearAllPoints();
+		AddonCompartmentFrame:SetPoint("BOTTOM", GameTimeFrame, "TOP", -1, -1);
 	else
 		local accountForFrameScaleYes = true;
-		ResetFramePoints(self.MinimapContainer, accountForFrameScaleYes);
-		ResetFramePoints(self.BorderTop);
-		ResetFramePoints(self.InstanceDifficulty);
-		ResetFramePoints(self.IndicatorFrame);
+		self:ResetFramePoints(self.MinimapContainer, accountForFrameScaleYes);
+		self:ResetFramePoints(self.ZoneTextButton);
+		if self.InstanceDifficulty then
+			self:ResetFramePoints(self.InstanceDifficulty);
+		end
+		self:ResetFramePoints(self.IndicatorFrame);
+
+		AddonCompartmentFrame:ClearAllPoints();
+		AddonCompartmentFrame:SetPoint("TOP", GameTimeFrame, "BOTTOM", -1, 1);
 	end
 
-	self.InstanceDifficulty:SetFlipped(headerUnderneath);
+	if self.InstanceDifficulty then
+		self.InstanceDifficulty:SetFlipped(headerUnderneath);
+	end
 end
 
 function MinimapClusterMixin:SetRotateMinimap(rotateMinimap)
 	SetCVar("rotateMinimap", rotateMinimap);
 end
 
+function MinimapClusterMixin:SetShowPlayerCoords(show)
+	SetCVar("minimapShowPlayerCoords", show);
+end
 
 function MiniMapIndicatorFrame_UpdatePosition()
 	if MinimapCluster.Tracking:IsShown() then
 		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.Tracking, "BOTTOMRIGHT", 2, -1);
 	else
-		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.BorderTop, "TOPLEFT", -1, -1);
+		MinimapCluster.IndicatorFrame:SetPoint("TOPRIGHT", MinimapCluster.ZoneTextButton, "TOPLEFT", -5, -1);
 	end
 end
-
 
 MiniMapMailFrameMixin = { };
 
@@ -516,12 +559,21 @@ function MinimapMailFrameUpdate()
 end
 
 function MiniMapMailFrameMixin:ResetMailIcon()
-	self.NewMailAnim:SetPlaying(false);
-	self.MailReminderAnim:SetPlaying(false);
+	if self.NewMailAnim then
+		self.NewMailAnim:SetPlaying(false);
+	end
+	if self.MailReminderAnim then
+		self.MailReminderAnim:SetPlaying(false);
+	end
 	self.MailIcon:SetShown(false);
 end
 
 function MiniMapMailFrameMixin:TryPlayMailNotification()
+	if not self.NewMailAnim or not self.MailReminderAnim then
+		self.MailIcon:SetShown(true);
+		return;
+	end
+
 	if self.NewMailAnim:IsPlaying() or self.MailReminderAnim:IsPlaying() then
 		return;
 	end
@@ -585,7 +637,7 @@ local function CanDisplayTrackingInfo(index)
 		return false;
 	end
 
-	return OPTIONAL_FILTERS[filter.filterID] or filter.spellID;
+	return MinimapConstants.OPTIONAL_FILTERS[filter.filterID] or filter.spellID;
 end
 
 local function ToggleTrackingSelected(info)
@@ -608,14 +660,86 @@ local function IsAllTrackingDeselected()
 end
 
 
-MiniMapTrackingButtonMixin = { };
+MiniMapTrackingButtonMixin = CreateFromMixins(ButtonStateBehaviorMixin);
+
+function MiniMapTrackingButtonMixin:GetTrackingButtonStateAtlas()
+	if self:IsDownOver() or self:IsDown() then
+		return self.pressedAtlas;
+	elseif self:IsOver() then
+		return self.mouseoverAtlas;
+	elseif self:IsMenuOpen() then
+		return self.mouseoverAtlas;
+	end
+
+	return self.normalAtlas;
+end
+
+function MiniMapTrackingButtonMixin:OnButtonStateChanged()
+	self.StateTexture:SetAtlas(self:GetTrackingButtonStateAtlas(), TextureKitConstants.UseAtlasSize);
+end
+
+function MiniMapTrackingButtonMixin:GamepadHandleRStick(x, y)
+	if y == 0 or self.zoomMinimapCooldown ~= nil then
+		return;
+	end
+
+	if y > 0 then
+		Minimap_ZoomIn();
+	else
+		Minimap_ZoomOut();
+	end
+
+	self.zoomMinimapCooldown = true;
+
+	C_Timer.After(0.15, function()
+		self.zoomMinimapCooldown = nil;
+	end)
+end
+
+function MiniMapTrackingButtonMixin:SetupGamepad()
+	local zoomMinimap = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_VERTICAL, nil, FRAME_ACTION_ZOOM);
+	self.bindings = GamepadMode.CreateBindingGroup("MinimapZoomBindings");
+	self.bindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.GamepadHandleRStick, self));
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(GameTooltip, "MinimapFooter")
+	self.footer:AddStandardSelectPrompt();
+	self.footer:AddPromptedBinding(zoomMinimap);
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+end
+
+function MiniMapTrackingButtonMixin:OnMenuOpened(menu)
+	if self.footer == nil or self.bindings == nil then
+		self:OnButtonStateChanged();
+		return;
+	end
+	if menu and menu.footer then
+		menu.footer:HideAndDeactivateBindings();
+	end
+	self.footer:SetParentFrame(menu);
+	self.footer:ShowAndActivateBindings();
+	GamepadMode.ActivateBindingGroup(self.bindings);
+	self:OnButtonStateChanged();
+end
+
+function MiniMapTrackingButtonMixin:OnMenuClosed(menu, closeReason)
+	if self.footer == nil or self.bindings == nil then
+		self:OnButtonStateChanged();
+		return;
+	end
+	self.footer:HideAndDeactivateBindings();
+	GamepadMode.DeactivateBindingGroup(self.bindings);
+	self:OnButtonStateChanged();
+end
 
 function MiniMapTrackingButtonMixin:OnLoad()
+	ButtonStateBehaviorMixin.OnLoad(self);
+
 	local inGameTrackingDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.IngameTrackingDisabled);
 	if not inGameTrackingDisabled then
 		self:RegisterEvent("VARIABLES_LOADED");
 		self:RegisterEvent("CVAR_UPDATE");
 		self:RegisterEvent("SPELLS_CHANGED");
+		self:RegisterEvent("MINIMAP_UPDATE_TRACKING");
 
 		self:SetupMenu(function(dropdown, rootDescription)
 			rootDescription:SetTag("MENU_MINIMAP_TRACKING");
@@ -631,7 +755,7 @@ function MiniMapTrackingButtonMixin:OnLoad()
 
 					for index = 1, C_Minimap.GetNumTrackingTypes() do
 						local filter = C_Minimap.GetTrackingFilter(index);
-						if ALWAYS_ON_FILTERS[filter.filterID] or CONDITIONAL_FILTERS[filter.filterID] then
+						if MinimapConstants.ALWAYS_ON_FILTERS[filter.filterID] or MinimapConstants.CONDITIONAL_FILTERS[filter.filterID] then
 							trackingState:SetSelected(index, true);
 						end
 					end
@@ -741,10 +865,11 @@ function MiniMapTrackingButtonMixin:OnLoad()
 	end
 
 	MinimapCluster.Tracking:SetShown(not inGameTrackingDisabled);
-
+	if InputUtil.IsGamepadUIEnabled() then
+		self:SetupGamepad();
+	end
 	self:RegisterSettingEntryCallbacks();
 end
-
 -- Some filters (like trivial quest tracking) can be changed from the "Options" panel
 -- If a filter is changed from that system, then those changes need to be reflected here as well
 function MiniMapTrackingButtonMixin:RegisterSettingEntryCallbacks()
@@ -769,7 +894,7 @@ function MiniMapTrackingButtonMixin:RegisterSettingEntryCallbacks()
 end
 
 function MiniMapTrackingButtonMixin:OnEvent(event, ...)
-	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" or event == "SPELLS_CHANGED" then
+	if event == "CVAR_UPDATE" or event == "VARIABLES_LOADED" or event == "SPELLS_CHANGED" or event == "MINIMAP_UPDATE_TRACKING" then
 		if event == "CVAR_UPDATE" then
 			local cvarName, value = ...;
 			local isMinimapTrackingCVar = (cvarName == "minimapTrackedInfov4");
@@ -778,14 +903,27 @@ function MiniMapTrackingButtonMixin:OnEvent(event, ...)
 			end
 		end
 
-		if not self:IsMenuOpen() then
-			-- The initial tracking values are unavailable until these events have fired.
-			for index = 1, C_Minimap.GetNumTrackingTypes() do
-				local trackingInfo = C_Minimap.GetTrackingInfo(index);
-				if trackingInfo then
+		local isMenuOpen = self:IsMenuOpen();
+		local changedWhileOpen = false;
+
+		-- The initial tracking values are unavailable until these events have fired.
+		for index = 1, C_Minimap.GetNumTrackingTypes() do
+			local trackingInfo = C_Minimap.GetTrackingInfo(index);
+			if trackingInfo then
+				if not isMenuOpen then
 					trackingState:SetSelected(index, trackingInfo.active);
+				elseif trackingInfo.active ~= lastActiveTracking[index] then
+					-- Only real changes are applied while open so pending selections are kept.
+					trackingState:OverrideSelectedState(index, trackingInfo.active);
+					changedWhileOpen = true;
 				end
+
+				lastActiveTracking[index] = trackingInfo.active;
 			end
+		end
+
+		if changedWhileOpen then
+			self.menu:ReinitializeAll();
 		end
 	end
 end
@@ -798,6 +936,8 @@ function MiniMapTrackingButtonMixin:Show(shown)
 end
 
 function MiniMapTrackingButtonMixin:OnEnter()
+	ButtonStateBehaviorMixin.OnEnter(self);
+
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
 	GameTooltip:SetText(TRACKING, 1, 1, 1);
 	GameTooltip:AddLine(MINIMAP_TRACKING_TOOLTIP_NONE, nil, nil, nil, true);
@@ -805,6 +945,8 @@ function MiniMapTrackingButtonMixin:OnEnter()
 end
 
 function MiniMapTrackingButtonMixin:OnLeave()
+	ButtonStateBehaviorMixin.OnLeave(self);
+
 	GameTooltip:Hide();
 end
 
@@ -1288,4 +1430,43 @@ function GarrisonMinimap_HideHelpTip(self)
 		HelpTip:Acknowledge(self, FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS);
 		GarrisonMinimap_ClearQueuedHelpTip(self, FRAME_TUTORIAL_9_0_GRRISON_LANDING_PAGE_BUTTON_CALLINGS);
 	end
+end
+
+MinimapPlayerCoordsMixin = {};
+
+function MinimapPlayerCoordsMixin:OnLoad()
+	self.updateThrottle = 0;
+	CVarCallbackRegistry:RegisterCallback("minimapShowPlayerCoords", self.CVarsUpdated, self);
+	CVarCallbackRegistry:RegisterCallback("coordsByTenths", self.CVarsUpdated, self);
+	self:CVarsUpdated();
+end
+
+function MinimapPlayerCoordsMixin:CVarsUpdated()
+	self.showPlayerCoords = GetCVarBool("minimapShowPlayerCoords");
+	self.coordsByTenths = GetCVarBool("coordsByTenths");
+end
+
+function MinimapPlayerCoordsMixin:OnUpdate(elapsed)
+	self.updateThrottle = self.updateThrottle - elapsed;
+	if self.updateThrottle > 0 then
+		return;
+	end
+	self.updateThrottle = 0.1;
+
+	if self.showPlayerCoords then
+		local mapID = C_Map.GetBestMapForUnit("player");
+		if mapID then
+			local position = C_Map.GetPlayerMapPosition(mapID, "player");
+			if position then
+				local x, y = position:GetXY();
+				if self.coordsByTenths then
+					self.CoordText:SetFormattedText(MINIMAP_PLAYER_COORDS, x * 100, y * 100);
+				else
+					self.CoordText:SetFormattedText(MINIMAP_PLAYER_COORDS_INTEGER, math.floor(x * 100 + 0.5), math.floor(y * 100 + 0.5));
+				end
+				return;
+			end
+		end
+	end
+	self.CoordText:SetText("");
 end

@@ -28,6 +28,11 @@ function HouseFinderWatcherMixin:StopWatching()
 
 	self.isWatching = false;
 
+	if self.houseFinderMapTutorial then
+		self.houseFinderMapTutorial:Deactivate();
+		self.houseFinderMapTutorial = nil;
+	end
+
 	for _i, event in ipairs(HOUSE_FINDER_WATCHER_EVENTS) do
 		Dispatcher:UnregisterEvent(event, self);
 	end
@@ -49,13 +54,21 @@ function HouseFinderWatcherMixin:OnNeighborhoodListShown()
 end
 
 function HouseFinderWatcherMixin:InitHouseFinderMapTutorial()
-	if not C_CVar.GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingHouseFinderMap) then
-		if not self.houseFinderMapTutorial then
-			self.houseFinderMapTutorial = CreateAndInitFromMixin(HouseFinderMapTutorialMixin);
-		end
-
-		self.houseFinderMapTutorial:BeginInitialState();
+	if C_CVar.GetCVarBitfield(HOUSING_TUTORIAL_CVAR_BITFIELD, Enum.FrameTutorialAccount.HousingHouseFinderMap) then
+		return;
 	end
+
+	-- Do not init this tutorial if the frame it relies on doesn't actually exist (ie addon hasn't been loaded)
+	local primaryFrame = HousingTutorialUtil.GetFrameFromData(HousingTutorialData.HouseFinderTutorial.PrimaryFrame);
+	if not primaryFrame then
+		return;
+	end
+
+	if not self.houseFinderMapTutorial then
+		self.houseFinderMapTutorial = CreateAndInitFromMixin(HouseFinderMapTutorialMixin);
+	end
+
+	self.houseFinderMapTutorial:BeginInitialState();
 end
 
 function HouseFinderWatcherMixin:OnPlotInfoFrameVisibilityUpdated(plotInfoVisible)

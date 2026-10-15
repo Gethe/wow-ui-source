@@ -35,8 +35,11 @@
 		<NormalTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
 		<HighlightTexture file="Interface\PaperDollInfoFrame\UI-GearManager-FlyoutButton"/>
 	</Button>
-	<Frame name="EquipmentFlyoutFrame" hidden="true" enableMouse="false" frameStrata="HIGH">
+	<Frame name="EquipmentFlyoutFrame" mixin="EquipmentFlyoutMixin" hidden="true" enableMouse="false" frameStrata="HIGH">
 		<Size x="43" y="43"/>
+		<KeyValues>
+			<KeyValue key="disableFrameFocusPagingWhenFocused" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Highlight" name="$parentHighlight" file="Interface\PaperDollInfoFrame\UI-GearManager-ItemButton-Highlight">
@@ -86,12 +89,12 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<FontString inherits="GameFontHighlightSmall" text="PREVIOUS">
+						<FontString parentKey="PreviousPageText" inherits="GameFontHighlightSmall" text="PREVIOUS">
 							<Anchors>
 								<Anchor point="LEFT" x="36" y="1"/>
 							</Anchors>
 						</FontString>
-						<FontString inherits="GameFontHighlightSmall" text="NEXT">
+						<FontString parentKey="NextPageText" inherits="GameFontHighlightSmall" text="NEXT">
 							<Anchors>
 								<Anchor point="RIGHT" x="-33" y="1"/>
 							</Anchors>

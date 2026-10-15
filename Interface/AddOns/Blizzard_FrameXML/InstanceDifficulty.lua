@@ -95,6 +95,14 @@ function InstanceDifficultyMixin:DeferredUpdate()
 	end);
 end
 
+function InstanceDifficultyMixin:SetInstanceFrameText(instanceFrame, instanceGroupSize)
+	if ( instanceGroupSize == 0 or self:IsInDelve() ) then
+		instanceFrame.Text:SetText("");
+	else
+		instanceFrame.Text:SetText(instanceGroupSize);
+	end
+end
+
 function InstanceDifficultyMixin:Update()
 	local instanceDifficultyBannerDisabled = C_GameRules.IsGameRuleActive(Enum.GameRule.InstanceDifficultyBannerDisabled);
 	local _, instanceType, difficulty, _, maxPlayers, playerDifficulty, isDynamicInstance, _, instanceGroupSize, _, hasWorldTier = GetInstanceInfo();
@@ -135,20 +143,11 @@ function InstanceDifficultyMixin:Update()
 		instanceFrame = defaultFrame;
 	end
 
+	if instanceFrame then
+		self:SetInstanceFrameText(instanceFrame, instanceGroupSize, maxPlayers);
+	end
 	if ( contentFrame == guildFrame ) then
-		if ( instanceGroupSize == 0 or self:IsInDelve() ) then
-			instanceFrame.Text:SetText("");
-		else
-			instanceFrame.Text:SetText(instanceGroupSize);
-		end
-
 		SetSmallGuildTabardTextures("player", guildFrame.Emblem, guildFrame.Background, guildFrame.Border);
-	elseif ( contentFrame == defaultFrame ) then
-		if ( instanceGroupSize == 0 or self:IsInDelve() ) then
-			instanceFrame.Text:SetText("");
-		else
-			instanceFrame.Text:SetText(instanceGroupSize);
-		end
 	end
 
 	if (instanceFrame) then
@@ -167,6 +166,16 @@ function InstanceDifficultyMixin:Update()
 	end
 end
 
+function InstanceDifficultyMixin:GetDifficultyTooltip(maxPlayers, instanceGroupSize, difficultyName, isLFR, lfgID, difficulty)
+	GameTooltip_SetTitle(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP:format(difficultyName));
+	if (isLFR and lfgID) then
+		GameTooltip_SetTitle(GameTooltip, RAID_FINDER);
+	end
+	if maxPlayers > 0 then
+		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP_PLAYER_COUNT:format(instanceGroupSize, maxPlayers));
+	end
+end
+
 function InstanceDifficultyMixin:OnEnter()
 	if ( not self.Default:IsShown() ) then
 		return;
@@ -180,13 +189,7 @@ function InstanceDifficultyMixin:OnEnter()
 	end
 	
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
-	GameTooltip_SetTitle(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP:format(difficultyName));
-	if (isLFR and lfgID) then
-		GameTooltip_SetTitle(GameTooltip, RAID_FINDER);
-	end
-	if maxPlayers > 0 then
-		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP_PLAYER_COUNT:format(instanceGroupSize, maxPlayers));
-	end
+	self:GetDifficultyTooltip(maxPlayers, instanceGroupSize, difficultyName, isLFR, lfgID, difficulty);
 	GameTooltip:Show();
 end
 
@@ -228,17 +231,19 @@ function GuildInstanceDifficultyMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_BOTTOMLEFT", 8, 8);
 	GameTooltip_SetTitle(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP:format(DifficultyUtil.GetDifficultyName(difficulty)));
 	GameTooltip_AddNormalLine(GameTooltip, DUNGEON_DIFFICULTY_BANNER_TOOLTIP_PLAYER_COUNT:format(instanceGroupSize, maxPlayers));
-	GameTooltip_AddBlankLineToTooltip(GameTooltip);
-	GameTooltip_AddColoredLine(GameTooltip, GUILD_GROUP, GREEN_FONT_COLOR);
-	if ( xpMultiplier < 1 ) then
-		GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE_MINXP:format(numGuildRequired, instanceGroupSize, guildName, xpMultiplier * 100), true);
-	elseif ( xpMultiplier > 1 ) then
-		GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE_MAXXP:format(guildName, xpMultiplier * 100), true);
-	else
-		if ( instanceType == "party" and maxPlayers == 5 ) then
-			numGuildRequired = 4;
+	if C_AchievementInfo.AreGuildAchievementsEnabled() then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip);
+		GameTooltip_AddColoredLine(GameTooltip, GUILD_GROUP, GREEN_FONT_COLOR);
+		if ( xpMultiplier < 1 ) then
+			GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE_MINXP:format(numGuildRequired, instanceGroupSize, guildName, xpMultiplier * 100), true);
+		elseif ( xpMultiplier > 1 ) then
+			GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE_MAXXP:format(guildName, xpMultiplier * 100), true);
+		else
+			if ( instanceType == "party" and maxPlayers == 5 ) then
+				numGuildRequired = 4;
+			end
+			GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE:format(numGuildRequired, instanceGroupSize, guildName), true);
 		end
-		GameTooltip_AddNormalLine(GameTooltip, GUILD_ACHIEVEMENTS_ELIGIBLE:format(numGuildRequired, instanceGroupSize, guildName), true);
 	end
 	GameTooltip:Show();
 end

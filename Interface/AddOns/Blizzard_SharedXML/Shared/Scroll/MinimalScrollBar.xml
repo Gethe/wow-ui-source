@@ -18,6 +18,7 @@
 			<KeyValue key="thumbAnchor" value="TOP" type="string"/>
 			<!--Actual minimum is 16 but is inflated for usability.-->
 			<KeyValue key="minThumbExtent" value="23" type="number"/>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="Track" enableMouse="true">

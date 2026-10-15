@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\Blizzard_SharedXML\UI.xsd">
+
+	<Frame name="PartyGrowingResourceContainer" parent="UIParent" mixin="PartyGrowingResourceContainerMixin" hidden="true">
+		<Size x="180" y="300"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" relativeTo="GeneralDockManager" relativePoint="TOPLEFT" x="0" y="70"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

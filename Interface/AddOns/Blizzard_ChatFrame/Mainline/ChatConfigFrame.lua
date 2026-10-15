@@ -308,7 +308,21 @@ CHAT_CONFIG_OTHER_SYSTEM = {
 		func = function (self, checked) ToggleChatMessageGroup(checked, "PING"); end;
 		disabled = ShouldDisplayDisabled;
 	},
+	[10] = {
+		type = "COLLECTED_APPEARANCE",
+		checked = function () return IsListeningForMessageType("COLLECTED_APPEARANCE"); end;
+		func = function (self, checked) ToggleChatMessageGroup(checked, "COLLECTED_APPEARANCE"); end;
+	},
 }
+
+if not ChatConfigUtil.HasPetBattleChannels() then
+	for index = #CHAT_CONFIG_OTHER_SYSTEM, 1, -1 do
+		local chatType = CHAT_CONFIG_OTHER_SYSTEM[index].type;
+		if chatType == "PET_BATTLE_COMBAT_LOG" or chatType == "PET_BATTLE_INFO" then
+			table.remove(CHAT_CONFIG_OTHER_SYSTEM, index);
+		end
+	end
+end
 
 -- Colors for chat that are not for a specific channel
 CHAT_CONFIG_ADDITIONAL_COLORS = {

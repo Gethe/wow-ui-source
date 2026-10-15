@@ -44,6 +44,7 @@ local FrameAPIScenarioPOI =
 	Tables =
 	{
 	},
+
 	Predicates =
 	{
 	},
