@@ -283,6 +283,13 @@ function GroupLootFrame_StopNeedAnimation(self)
 	end
 end
 
+local function CancelBonusRollRefresh(frame)
+	if frame.refreshTicker then
+		frame.refreshTicker:Cancel();
+		frame.refreshTicker = nil;
+	end
+end
+
 function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, currencyCost, difficultyID, displayItemID, itemContext, treasureContextLevel)
 	local frame = BonusRollFrame;
 
@@ -356,10 +363,26 @@ function BonusRollFrame_StartBonusRoll(spellID, text, duration, currencyID, curr
 	end
 
 	GroupLootContainer_AddFrame(GroupLootContainer, frame);
+
+	-- Let's refresh the bonus roll prompt periodically to ensure it stays visible while it's still valid
+	CancelBonusRollRefresh(frame);
+	local refreshIntervalSeconds = 5;
+	local refreshIterations = floor(duration / refreshIntervalSeconds);
+	if refreshIterations > 0 then
+		frame.refreshTicker = C_Timer.NewTicker(refreshIntervalSeconds, function()
+			local isAwaitingPlayerChoice = frame.state == "prompt";
+			if isAwaitingPlayerChoice then
+				GroupLootContainer_Update(GroupLootContainer);
+				frame:Show();
+			end
+		end, refreshIterations);
+	end
 end
 
 function BonusRollFrame_CloseBonusRoll()
 	local frame = BonusRollFrame;
+	CancelBonusRollRefresh(frame);
+
 	if ( frame.state == "prompt" ) then
 		GroupLootContainer_RemoveFrame(GroupLootContainer, frame);
 	end
