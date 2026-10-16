@@ -21,49 +21,14 @@
 					<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOMRIGHT"/>
 				</Anchors>
 			</Frame>
-			<Frame parentKey="BorderTop" inherits="NineSliceCodeTemplate">
-				<KeyValues>
-					<KeyValue key="layoutType" value="UniqueCornersLayout" type="string"/>
-					<KeyValue key="layoutTextureKit" value="ui-hud-minimap-button" type="string"/>
-				</KeyValues>
-				<Size x="175" y="16"/>
-				<Anchors>
-					<Anchor point="TOP" x="15" y="-4"/>
-				</Anchors>
-			</Frame>
-			<Button parentKey="ZoneTextButton" mixin="MinimapZoneTextButtonMixin">
-				<KeyValues>
-					<KeyValue key="buttonContext" value="ButtonContext_MinimapHeader" type="string"/>
-				</KeyValues>
-				<Size x="135" y="12"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeKey="$parent.BorderTop" x="4" y="0"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString name="MinimapZoneText" inherits="GameFontNormal" nonspacewrap="true" justifyH="LEFT" justifyV="MIDDLE">
-							<Size x="130" y="12"/>
-							<Anchors>
-								<Anchor point="CENTER" x="0" y="1"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-				<Scripts>
-					<OnLoad method="OnLoad"/>
-					<OnEvent method="OnEvent"/>
-					<OnEnter method="OnEnter"/>
-					<OnClick method="OnClick"/>
-					<OnLeave method="OnLeave"/>
-				</Scripts>
-			</Button>
+			<Button parentKey="ZoneTextButton" inherits="MinimapZoneTextButtonTemplate"/>
 			<Frame parentKey="Tracking" hidden="true">
 				<KeyValues>
 					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 				</KeyValues>
 				<Size x="17" y="17"/>
 				<Anchors>
-					<Anchor point="RIGHT" relativeKey="$parent.BorderTop" relativePoint="LEFT" x="-2" y="0"/>
+					<Anchor point="RIGHT" relativeKey="$parent.ZoneTextButton" relativePoint="LEFT" x="0" y="0"/>
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
@@ -71,118 +36,14 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<DropdownButton parentKey="Button" mixin="MiniMapTrackingButtonMixin">
-						<KeyValues>
-							<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
-							<KeyValue key="menuRelativePoint" type="string" value="BOTTOMLEFT"/>
-							<KeyValue key="buttonContext" value="ButtonContext_MinimapHeader" type="string"/>
-						</KeyValues>
-						<Size x="13" y="14"/>
+					<DropdownButton parentKey="Button" inherits="MiniMapTrackingButtonTemplate">
 						<Anchors>
 							<Anchor point="CENTER" x="0" y="0"/>
 						</Anchors>
-						<Scripts>
-							<OnLoad method="OnLoad"/>
-							<OnEvent method="OnEvent"/>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
-						<NormalTexture atlas="ui-hud-minimap-tracking-up"/>
-						<PushedTexture atlas="ui-hud-minimap-tracking-down"/>
-						<HighlightTexture atlas="ui-hud-minimap-tracking-mouseover"/>
 					</DropdownButton>
 				</Frames>
 			</Frame>
-			<Frame parentKey="IndicatorFrame" inherits="HorizontalLayoutFrame">
-				<KeyValues>
-					<KeyValue key="fixedWidth" value="20" type="number"/>
-					<KeyValue key="fixedHeight" value="15" type="number"/>
-				</KeyValues>
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.Tracking" relativePoint="BOTTOMRIGHT" x="0" y="0"/>
-				</Anchors>
-				<Frames>
-					<Frame parentKey="MailFrame" mixin="MiniMapMailFrameMixin" enableMouse="true" hidden="true">
-						<Size x="20" y="15"/>
-						<KeyValues>
-							<KeyValue key="layoutIndex" value="1" type="number"/>
-							<KeyValue key="buttonContext" value="ButtonContext_MinimapHeader" type="string"/>
-						</KeyValues>
-						<Layers>
-							<Layer level="ARTWORK" textureSubLevel="0">
-								<Texture name="MiniMapMailIcon" parentKey="MailIcon" atlas="ui-hud-minimap-mail-up" useAtlasSize="true" hidden="true">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-							<Layer level="ARTWORK" textureSubLevel="1">
-								<Texture parentKey="NewMailFlipbook" atlas="UI-HUD-Minimap-Mail-New-Flipbook" alpha="0">
-									<Size x="52" y="52"/>
-									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.MailIcon"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="MailReminderFlipbook" atlas="UI-HUD-Minimap-Mail-Reminder-Flipbook" alpha="0">
-									<Size x="52" y="52"/>
-									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.MailIcon"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad method="OnLoad"/>
-							<OnHide method="OnHide"/>
-							<OnEvent method="OnEvent"/>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
-						<Animations>
-							<AnimationGroup parentKey="NewMailAnim" mixin="MinimapMailAnimMixin">
-								<Alpha childKey="NewMailFlipbook" duration="0" order="0" fromAlpha="1" toAlpha="1"/>
-								<FlipBook childKey="NewMailFlipbook" smoothing="NONE" duration="0.5" order="1" flipBookRows="5" flipBookColumns="4" flipBookFrames="20" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
-								<Scripts>
-									<OnPlay method="OnPlay"/>
-									<OnFinished method="OnFinished"/>
-								</Scripts>
-							</AnimationGroup>
-							<AnimationGroup parentKey="MailReminderAnim" mixin="MinimapMailAnimMixin">
-								<Alpha childKey="MailReminderFlipbook" duration="0" order="0" fromAlpha="1" toAlpha="1"/>
-								<FlipBook childKey="MailReminderFlipbook" smoothing="NONE" duration="0.4" order="1" flipBookRows="3" flipBookColumns="4" flipBookFrames="12" flipBookFrameWidth="0" flipBookFrameHeight="0"/>
-								<Scripts>
-									<OnPlay method="OnPlay"/>
-									<OnFinished method="OnFinished"/>
-								</Scripts>
-							</AnimationGroup>
-						</Animations>
-					</Frame>
-					<Frame parentKey="CraftingOrderFrame" mixin="MiniMapCraftingOrderFrameMixin" enableMouse="true" hidden="true">
-						<Size x="20" y="15"/>
-						<KeyValues>
-							<KeyValue key="layoutIndex" value="2" type="number"/>
-						</KeyValues>
-						<Layers>
-							<Layer level="ARTWORK">
-								<Texture name="MiniMapCraftingOrderIcon" atlas="UI-HUD-Minimap-CraftingOrder-Up" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnLoad method="OnLoad"/>
-							<OnEvent method="OnEvent"/>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
-					</Frame>
-				</Frames>
-				<Scripts>
-					<OnLoad function="MiniMapIndicatorFrame_UpdatePosition"/>
-				</Scripts>
-			</Frame>
+			<Frame parentKey="IndicatorFrame" inherits="MinimapIndicatorFrameTemplate"/>
 			<Frame parentKey="MinimapContainer">
 				<Size x="215" y="226"/>
 				<Anchors>
@@ -410,6 +271,7 @@
 										<PushedTexture atlas="GarrLanding-MinimapIcon-Alliance-Down" useAtlasSize="true"/>
 										<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 									</Button>
+									<Button parentKey="ExternalEventURLButton" inherits="ExternalEventURLMinimapButtonTemplate"/>
 								</Frames>
 							</Frame>
 						</Frames>
@@ -439,15 +301,10 @@
 					</Frame>
 				</Frames>
 			</Frame>
-			<Frame parentKey="InstanceDifficulty" inherits="InstanceDifficultyTemplate" mixin="InstanceDifficultyMixin">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTop" x="0" y="-15"/>
-				</Anchors>
-			</Frame>
 			<Frame parentKey="GamepadButtons">
 				<Size x="10" y="10" />
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.BorderTop" relativePoint="BOTTOM" />
+					<Anchor point="TOP" relativeKey="$parent.ZoneTextButton" relativePoint="BOTTOM" y="-2"/>
 				</Anchors>
 			</Frame>
 		</Frames>

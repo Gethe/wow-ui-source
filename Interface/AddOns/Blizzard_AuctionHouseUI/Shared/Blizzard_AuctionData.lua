@@ -11,6 +11,10 @@ MAXIMUM_BID_PRICE = 99999999999;
 AUCTION_CANCEL_COST =  5;	--5% of the current bid
 NUM_TOKEN_LOGS_TO_DISPLAY = 14;
 
+function AuctionHouse_ShouldUseRequiredLevel()
+	return false;
+end
+
 
 AuctionCategories = {};
 

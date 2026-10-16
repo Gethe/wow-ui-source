@@ -8,6 +8,15 @@ local ExternalEventURL =
 	Functions =
 	{
 		{
+			Name = "CanShow",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "canShow", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "HasURL",
 			Type = "Function",
 
@@ -35,9 +44,19 @@ local ExternalEventURL =
 	Events =
 	{
 		{
-			Name = "ExternalEventLaunchUrlFailed",
+			Name = "ExternalEventLaunchUrlResult",
 			Type = "Event",
-			LiteralName = "EXTERNAL_EVENT_LAUNCH_URL_FAILED",
+			LiteralName = "EXTERNAL_EVENT_LAUNCH_URL_RESULT",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "ExternalEventUrlChanged",
+			Type = "Event",
+			LiteralName = "EXTERNAL_EVENT_URL_CHANGED",
 			SynchronousEvent = true,
 		},
 	},

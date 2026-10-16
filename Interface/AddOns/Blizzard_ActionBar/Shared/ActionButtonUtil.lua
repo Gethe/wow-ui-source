@@ -61,6 +61,10 @@ function ActionButtonUtil.HideAllQuickKeybindButtonHighlights()
 	ActionButtonUtil.SetAllQuickKeybindButtonHighlights(false);
 end
 
+function ActionButtonUtil.IsExtraActionButtonDisabled()
+	return false;
+end
+
 -- Calculates page number for provided action bar slot index
 function ActionButtonUtil.GetPageForSlot(slot)
 	return math.floor((slot - 1) / NUM_ACTIONBAR_BUTTONS) + 1;

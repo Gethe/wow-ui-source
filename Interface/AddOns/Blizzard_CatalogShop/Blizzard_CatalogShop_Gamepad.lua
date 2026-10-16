@@ -58,11 +58,23 @@ function CatalogShopRefreshGamepadPurchaseButton(frame)
 
 	local purchaseButton = frame.CatalogShopDetailsFrame.ButtonContainer.PurchaseButton;
 	local gamepadPurchaseButton = frame.CatalogShopDetailsFrame.ButtonContainer.GamepadPurchaseButton;
+	local carousel = frame.CatalogShopDetailsFrame.CarouselContainer;
 
-	gamepadPurchaseButton:SetText(CONTEXT_ACTION_LABEL_BUY .. " " .. purchaseButton:GetText());
+	local purchaseText = purchaseButton:GetText();
+	local gamepadPurchaseText = CONTEXT_ACTION_LABEL_BUY;
+	if purchaseText and purchaseText ~= "" then
+		gamepadPurchaseText = gamepadPurchaseText .. " " .. purchaseText;
+	end
+	gamepadPurchaseButton:SetText(gamepadPurchaseText);
 	gamepadPurchaseButton:SetEnabled(purchaseButton:IsEnabled());
 	GamepadMode.UpdateGamepadIconAnchor(data.gamepadPurchaseIcon);
-	gamepadPurchaseButton:Show();
+
+	if carousel:HasGamepadFocus() then
+		gamepadPurchaseButton:Hide();
+	else
+		gamepadPurchaseButton:Show();
+	end
+
 	data.footer:Refresh();
 end
 
@@ -96,13 +108,14 @@ function CatalogShopSetupGamepad(frame)
 
 	local purchaseButton = frame.CatalogShopDetailsFrame.ButtonContainer.PurchaseButton;
 	local gamepadPurchaseButton = frame.CatalogShopDetailsFrame.ButtonContainer.GamepadPurchaseButton;
+	local carousel = frame.CatalogShopDetailsFrame.CarouselContainer;
 
 	local function PurchaseProduct()
 		purchaseButton:Click();
 	end
 
 	local function CanPurchaseProduct()
-		return gamepadPurchaseButton:IsVisible() and purchaseButton:IsEnabled();
+		return not carousel:HasGamepadFocus() and gamepadPurchaseButton:IsVisible() and purchaseButton:IsEnabled();
 	end
 
 	local detailsButton = frame.CatalogShopDetailsFrame.ButtonContainer.DetailsButton;
@@ -150,6 +163,18 @@ function CatalogShopSetupGamepad(frame)
 		CatalogShopFrameCloseButton:Click();
 	end
 
+	local function CanFocusCarousel()
+		return carousel:IsVisible();
+	end
+
+	local function ToggleCarousel()
+		carousel:ToggleGamepadFocus();
+	end
+
+	local function ExitCarousel()
+		carousel:ExitGamepadFocus();
+	end
+
 	data.modelSceneRotationBindings = GamepadMode.CreateBindingGroup("CatalogShopModelSceneRotation");
 	data.modelSceneRotationBindings:AddAxisBinding(GAMEPAD_STICK_LEFT, RotateProduct);
 
@@ -175,6 +200,10 @@ function CatalogShopSetupGamepad(frame)
 
 	local back = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, Back, FRAME_ACTION_CLOSE);
 
+	local focusCarousel = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, ToggleCarousel, nil);
+	focusCarousel:AddCondition(CanFocusCarousel);
+	focusCarousel:SetCustomPromptFrame(carousel.GamepadFocusIcon);
+
 	local function AddSharedBindings(footer)
 		footer:AddPromptedBinding(rotateProduct);
 		footer:AddPromptedBinding(previousCategory);
@@ -186,6 +215,7 @@ function CatalogShopSetupGamepad(frame)
 	data.footer = GamepadSharedUtility.CreatePromptedBindingFooter(frame);
 	data.footer:AddPromptedBinding(purchaseProduct);
 	data.footer:AddPromptedBinding(viewDetails);
+	data.footer:AddPromptedBinding(focusCarousel);
 	AddSharedBindings(data.footer);
 	data.footer:Finalize();
 
@@ -207,4 +237,46 @@ function CatalogShopSetupGamepad(frame)
 	data.detailsFooter:AddPromptedBinding(openBnet);
 	AddSharedBindings(data.detailsFooter);
 	data.detailsFooter:Finalize();
+
+	local cycleCarousel = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_HORIZONTAL, "CatalogShopCarouselSelectBinding");
+	cycleCarousel:AddFooterBinding({ label = ACTION_LABEL_SELECT });
+	local carouselData = GetGamepadData(carousel);
+	carouselData.bindings = GamepadMode.CreateBindingGroup("CatalogShopCarousel");
+	carouselData.bindings:AddFunctionBinding(GAMEPAD_DPAD_LEFT, GenerateClosure(carousel.SelectPrevious, carousel));
+	carouselData.bindings:AddFunctionBinding(GAMEPAD_DPAD_RIGHT, GenerateClosure(carousel.SelectNext, carousel));
+
+	local carouselBack = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, ExitCarousel, FRAME_ACTION_BACK);
+
+	local unfocusCarousel = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, ExitCarousel, nil);
+	unfocusCarousel:SetCustomPromptFrame(carousel.GamepadFocusIcon);
+
+	carouselData.footer = GamepadSharedUtility.CreatePromptedBindingFooter(carousel, "CatalogShopCarouselFooter");
+	carouselData.footer:AddPromptedBinding(cycleCarousel);
+	carouselData.footer:AddPromptedBinding(carouselBack);
+	carouselData.footer:AddPromptedBinding(unfocusCarousel);
+	carouselData.footer:SetAlignmentType(PromptedBindingFooterMixin.ALIGNMENT_TYPE.CENTER);
+	carouselData.footer:Finalize();
+	carouselData.footer.inputLegend:SetFrameStrata("FULLSCREEN_DIALOG");
+end
+
+function CatalogShopFocusCarouselGamepad(carousel)
+	local purchaseButtonContainer = carousel:GetParent() and carousel:GetParent().ButtonContainer;
+	if purchaseButtonContainer then
+		purchaseButtonContainer.GamepadPurchaseButton:Hide();
+	end
+
+	local data = GetGamepadData(carousel);
+	data.footer:ShowAndActivateBindings();
+	GamepadMode.ActivateBindingGroup(data.bindings);
+end
+
+function CatalogShopUnfocusCarouselGamepad(carousel)
+	local purchaseButtonContainer = carousel:GetParent() and carousel:GetParent().ButtonContainer;
+	if purchaseButtonContainer then
+		purchaseButtonContainer.GamepadPurchaseButton:Show();
+	end
+
+	local data = GetGamepadData(carousel);
+	data.footer:HideAndDeactivateBindings();
+	GamepadMode.DeactivateBindingGroup(data.bindings);
 end

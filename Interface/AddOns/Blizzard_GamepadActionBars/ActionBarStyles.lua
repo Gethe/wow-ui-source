@@ -123,6 +123,14 @@ function GamepadActionBarStyleUtil.ApplyExtraButtonStyles(
 	local anchorOffsetX = anchorInfo.x or 0;
 	local anchorOffsetY = anchorInfo.y or 0;
 
+	-- Buttons that have a flyout open should always remain expanded, and be anchored to its popup
+	if button:IsPopupOpen() then
+		focusState = FOCUS_STATES.EXPANDED;
+		anchorParent = button:GetPopup();
+		anchorOffsetX = 0;
+		anchorOffsetY = 0;
+	end
+
 	if actionState == ACTION_STATES.PUSHED then
 		anchorOffsetX = anchorOffsetX + GamepadActionBarStyleUtil.PUSHED_BUTTON_ANCHOR_OFFSET.x;
 		anchorOffsetY = anchorOffsetY + GamepadActionBarStyleUtil.PUSHED_BUTTON_ANCHOR_OFFSET.y;

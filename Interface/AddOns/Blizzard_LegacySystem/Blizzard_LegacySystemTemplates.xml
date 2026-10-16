@@ -26,6 +26,7 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<FontString parentKey="Points" inherits="GameFontNormalMed3" justifyH="CENTER" text="11">
+					<Color color="WHITE_FONT_COLOR"/>
 					<Size x="42" y="16"/>
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="-2" y="-31"/>
@@ -242,7 +243,8 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="Icon" atlas="Legacy-Tree-Frame-Points-Icon" useAtlasSize="true" scale="0.7">
+						<Texture parentKey="Icon" atlas="Legacy-Tree-Frame-Points-Icon">
+							<Size x="35" y="51"/>
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="-8" y="-24"/>
 							</Anchors>
@@ -251,7 +253,7 @@
 					<Layer level="OVERLAY">
 						<FontString parentKey="Points" inherits="GameFontNormalMed3" justifyH="CENTER">
 							<Anchors>
-								<Anchor point="CENTER" relativeKey="$parent.Icon" y="-4"/>
+								<Anchor point="CENTER" relativeKey="$parent.Icon" x="-1" y="-4"/>
 							</Anchors>
 						</FontString>
 						<Texture parentKey="CheckBackground" atlas="Legacy-Challenge-Cards-Date-BG" useAtlasSize="true">

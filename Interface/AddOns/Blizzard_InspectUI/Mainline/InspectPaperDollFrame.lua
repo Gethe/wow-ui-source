@@ -151,21 +151,25 @@ function InspectPaperDollFrameMixin:SetupGamepad()
 	local paperDollRotate = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_HORIZONTAL, nil, ACTION_LABEL_ROTATE);
 	local paperDollReset = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, GenerateClosure(self.ResetCharacter, self), RESET);
 
+	local footerAnchor = CreateAnchor("TOP", InspectModelFrame, "TOP", 0, 0);
 	self.frameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "InspectPaperDollFrameFooter");
+	self.frameFooter:SetCustomAnchor(footerAnchor);
 	self.frameFooter:AddPromptedBinding(paperDollZoom);
 	self.frameFooter:AddPromptedBinding(paperDollRotate);
 	self.frameFooter:AddPromptedBinding(paperDollReset);
 	self.frameFooter:Finalize();
-	self.frameFooter.inputLegend:ClearAllPoints();
-	self.frameFooter.inputLegend:SetPoint("TOP", InspectModelFrame, 0, 0);
 end
 
 function InspectPaperDollFrameMixin:InitializeGamepad()
-	self.InspectTalents:Hide();
+	if self.InspectTalents then
+		self.InspectTalents:Hide();
+	end
 end
 
 function InspectPaperDollFrameMixin:UninitializeGamepad()
-	self.InspectTalents:Show();
+	if self.InspectTalents then
+		self.InspectTalents:Show();
+	end
 	GamepadMode.DeactivateBindingGroup(self.paperDollBindings);
 end
 

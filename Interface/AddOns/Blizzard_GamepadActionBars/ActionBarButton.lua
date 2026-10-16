@@ -1034,6 +1034,17 @@ function GamepadActionBarButtonFlyoutMixin:UpdateFlyoutActionIcon()
 	self.icon:SetTexture(texture);
 end
 
+function GamepadActionBarButtonFlyoutMixin:ReapplyStyle()
+	local actionBar = self.parentActionBar;
+	if actionBar then
+		if actionBar.actionBarScaledUp then
+			actionBar:ExpandActionButtons();
+		else
+			actionBar:CollapseActionButtons();
+		end
+	end
+end
+
 -----------------------------------------
 -- GamepadActionBarStandardButtonMixin --
 -----------------------------------------

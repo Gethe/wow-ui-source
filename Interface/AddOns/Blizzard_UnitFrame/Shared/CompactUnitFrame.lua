@@ -127,6 +127,7 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateHealthColor(self);	--This may signify that we now have the unit's class (the name cache entry has been received).
 			elseif ( event == "UNIT_LEVEL" ) then
 				CompactUnitFrame_UpdateLevel(self);
+				CompactUnitFrame_UpdatePlayerLevelDiff(self);
 			elseif ( event == "UNIT_THREAT_SITUATION_UPDATE" ) then
 				CompactUnitFrame_UpdateAggroHighlight(self);
 				CompactUnitFrame_UpdateAggroFlash(self);
@@ -163,8 +164,6 @@ function CompactUnitFrame_OnEvent(self, event, ...)
 				CompactUnitFrame_UpdateStatusText(self);
 			elseif ( event == "UNIT_PHASE" or event == "UNIT_FLAGS" or event == "UNIT_CTR_OPTIONS" ) then
 				CompactUnitFrame_UpdateCenterStatusIcon(self);
-			elseif ( event == "UNIT_LEVEL" ) then
-				CompactUnitFrame_UpdatePlayerLevelDiff(self);
 			elseif ( event == "INCOMING_SUMMON_CHANGED" ) then
 				CompactUnitFrame_UpdateCenterStatusIcon(self);
 			elseif ( event == "UNIT_IN_RANGE_UPDATE" ) then

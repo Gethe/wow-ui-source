@@ -8,7 +8,7 @@ function GlueParent_AddModalFrame(frame)
 
 	table.insert(modalFrames, frame);
 
-	if InputUtil.IsGamepadUIEnabled() then
+	if InputUtil.IsGamepadUIEnabled() and GamepadMode and GamepadMode.FrameControlsManager then
 		GamepadMode.FrameControlsManager:FrameShown(frame);
 	end
 
@@ -23,7 +23,7 @@ function GlueParent_RemoveModalFrame(frame)
 		return;
 	end
 
-	if InputUtil.IsGamepadUIEnabled() then
+	if InputUtil.IsGamepadUIEnabled() and GamepadMode and GamepadMode.FrameControlsManager then
 		GamepadMode.FrameControlsManager:FrameHidden(frame);
 	end
 
@@ -95,7 +95,7 @@ function GetDisplayedExpansionLogo(expansionLevel, releaseType)
 	local isTrial = expansionLevel == nil;
 
 	if isTrial then
-		return [[Interface\Glues\Common\Glues-WoW-FreeTrial]];
+		return GetFreeTrialLogoPath();
 	elseif expansionLevel <= GetMinimumExpansionLevel() then
 		local expansionInfo = GetExpansionDisplayInfo(LE_EXPANSION_CLASSIC, releaseType);
 		if expansionInfo then

@@ -16,7 +16,7 @@ function ComboFrameMixin:OnLoad()
 	self:SetParent(TargetFrame);
 	self:SetFrameStrata("MEDIUM");
 	self:SetFrameLevel(500);
-	self:SetPoint("CENTER", TargetFrame:GetPortrait(), "CENTER", 0, 2);
+	self:SetPoint("CENTER", TargetFrame:GetPortrait(), "CENTER", 2, 2);
 
 	self.layout = CopyTable(POINT_LAYOUT_DATA);
 	self:InitializeComboPointPool();
@@ -88,7 +88,7 @@ function ComboFrameMixin:LayoutPointsCircle()
 end
 
 function ComboFrameMixin:GetEffectiveStartAngleDegrees()
-	if TargetFrame:IsPvPBackgroundShown() then
+	if TargetFrame:ArePvPElementsShown() then
 		return self.layout.alternateStartAngleDegrees;
 	end
 

@@ -55,6 +55,9 @@
 
 	<Frame name="UnitPopupVoiceSpeakerVolumeTemplate" inherits="UnitPopupVoiceLevelsTemplate" virtual="true">
 		<Size x="200" y="16"/>
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" type="boolean" value="true"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="Text" inherits="UnitPopupVoiceTextTemplate"/>
 			<Button parentKey="Toggle" inherits="UnitPopupVoiceToggleButtonTemplate" mixin="UnitPopupToggleDeafenMixin"/>
@@ -64,6 +67,9 @@
 
 	<Frame name="UnitPopupVoiceMicrophoneVolumeTemplate" inherits="UnitPopupVoiceLevelsTemplate" virtual="true">
 		<Size x="200" y="16"/>
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" type="boolean" value="true"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="Text" inherits="UnitPopupVoiceTextTemplate"/>
 			<Button parentKey="Toggle" inherits="UnitPopupVoiceToggleButtonTemplate" mixin="UnitPopupToggleMuteMixin"/>
@@ -73,6 +79,9 @@
 
 	<Frame name="UnitPopupVoiceUserVolumeTemplate" inherits="UnitPopupVoiceLevelsTemplate" virtual="true">
 		<Size x="200" y="16"/>
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" type="boolean" value="true"/>
+		</KeyValues>
 		<Frames>
 			<Frame parentKey="Text" inherits="UnitPopupVoiceTextTemplate"/>
 			<Button parentKey="Toggle" inherits="UnitPopupVoiceToggleButtonTemplate" mixin="UnitPopupToggleUserMuteMixin"/>

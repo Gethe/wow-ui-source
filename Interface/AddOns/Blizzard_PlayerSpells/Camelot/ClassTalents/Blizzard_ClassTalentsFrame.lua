@@ -55,13 +55,37 @@ end
 function ClassTalentsFrameMixin:OnShow()
 	-- overriden in other flavors
 	self:OnShowBase();
+	self:RegisterEvent("INSPECT_READY");
 	PlayerSpellsFrame:UpdateSize();
 end
 
 function ClassTalentsFrameMixin:OnHide()
 	self:OnHideBase();
+	self:UnregisterEvent("INSPECT_READY");
 	self:HideSpecChangeElements();
 	self.loadConfigIDOnCreate = nil;
+end
+
+local BaseUpdateInspecting = ClassTalentsFrameMixin.UpdateInspecting;
+function ClassTalentsFrameMixin:UpdateInspecting()
+	BaseUpdateInspecting(self);
+
+	-- Spec switching doesn't apply to another player's talents.
+	self.TabSystem:SetShown(not self:IsInspecting());
+	self:InitializeActiveSpec();
+end
+
+local BaseOnEvent = ClassTalentsFrameMixin.OnEvent;
+function ClassTalentsFrameMixin:OnEvent(event, ...)
+	BaseOnEvent(self, event, ...);
+	if event == "INSPECT_READY" then
+		-- The inspect config is replaced when data arrives, after the frame already loaded the previous inspectee's.
+		local inspecteeGUID = ...;
+		local inspectUnit = self:GetInspectUnit();
+		if inspectUnit and UnitGUID(inspectUnit) == inspecteeGUID then
+			self:RefreshConfigID();
+		end
+	end
 end
 
 local TREE_HEADER_OFFSET_X = 140;
@@ -102,6 +126,10 @@ function ClassTalentsFrameMixin:GetActiveTab()
 	else
 		return self.secondarySpecTabID;
 	end
+end
+
+function ClassTalentsFrameMixin:GetFallbackConfigID()
+	return C_SpecializationInfo.GetCombatConfigIDForSpecGroup(self:GetActiveTab());
 end
 
 local function IsDualSpecUnlocked()
@@ -157,6 +185,11 @@ function ClassTalentsFrameMixin:UpdateTabs()
 end
 
 function ClassTalentsFrameMixin:SetTab(tabID, forcedOpen)
+	-- Switching tabs loads the player's own config over the inspected one.
+	if self:IsInspecting() then
+		return;
+	end
+
 	TabSystemOwnerMixin.SetTab(self, tabID);
 
 	local configID = C_SpecializationInfo.GetCombatConfigIDForSpecGroup(tabID);
@@ -294,7 +327,7 @@ function ClassTalentsFrameMixin:OnPreviewSearchResultClicked(resultInfo)
 end
 
 function ClassTalentsFrameMixin:InitializeActiveSpec()
-	self.ActiveSpec:SetShown(IsDualSpecUnlocked());
+	self.ActiveSpec:SetShown(IsDualSpecUnlocked() and not self:IsInspecting());
 end
 
 function ClassTalentsFrameMixin:SetSpecSwitchCastBarActive(active)

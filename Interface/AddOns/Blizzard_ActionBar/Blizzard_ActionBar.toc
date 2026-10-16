@@ -20,6 +20,7 @@ Shared\ActionButtonSpellAlerts.xml
 [Family]\MainMenuBar.xml [AllowLoadGameType classic]
 [Family]\AssistedCombatManager.lua [AllowLoadGameType mainline]
 Shared\ActionButton.lua
+[Game]\ActionButtonOverrides.lua [AllowLoadGameType camelot]
 [Family]\ActionButtonOverrides.lua [AllowLoadGameType mainline]
 [Game]\ActionButtonOverrides.lua [AllowLoadGameType plunderstorm]
 Shared\ActionButtonComponentTemplate.xml
@@ -41,6 +42,7 @@ Shared\StanceBar.lua
 [Family]\StanceBar.xml
 Shared\ExtraActionBar.lua
 Shared\ExtraActionBar.xml
+[Game]\ExtraActionBarOverrides.lua [AllowLoadGameType camelot]
 Shared\PossessActionBar.lua
 [Family]\PossessActionBar.xml
 [Game]\CustomActionBarOverlays.lua [AllowLoadGameType plunderstorm]
@@ -48,6 +50,7 @@ Shared\PossessActionBar.lua
 Shared\PetActionBar.lua
 [Family]\PetActionBar.xml
 Shared\MultiCastActionBarFrame.lua [AllowLoadGameType camelot, wrath, cata]
+[Game]\MultiCastActionBarOverrides.lua [AllowLoadGameType camelot]
 Shared\MultiCastActionBarFrame.xml [AllowLoadGameType camelot, wrath, cata]
 Shared\SpellFlyout.lua
 Shared\SpellFlyout.xml

@@ -363,10 +363,28 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="layoutType" value="CatalogShopCarousel" type="string"/>
+						</KeyValues>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="GamepadFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="22" y="22"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.CarouselLabelContainer" relativePoint="LEFT" x="-7" y="0"/>
+				</Anchors>
 			</Frame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad" />
+			<OnLoad method="OnLoad"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 

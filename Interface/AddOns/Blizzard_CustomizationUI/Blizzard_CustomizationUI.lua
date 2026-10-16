@@ -515,7 +515,9 @@ function CustomizationFrameBaseMixin:UpdateOptionButtons(forceReset)
 		if (self.sliderPool:IsActive(currentSmartNavButton) or
 			self.dropdownPool:IsActive(currentSmartNavButton) or
 			IsActivePoolsOption()) then
-			previousSmartNavFocusedOptionID = currentSmartNavButton.optionData.id;
+			-- Category buttons share self.pools but have no optionData.
+			local optionData = currentSmartNavButton.optionData;
+			previousSmartNavFocusedOptionID = optionData and optionData.id;
 		end
 	end
 

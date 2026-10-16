@@ -932,6 +932,9 @@ function BuffFrameMixin:AddAuraForTooltip(addedAuraInstanceID, highPriority)
 	if self.auraTooltipQueue == nil or addedAuraInstanceID == nil then
 		return;
 	end
+	if not self:ShouldProcessTooltipQueue() then
+		return;
+	end
 	if table.contains(self.auraTooltipQueue, addedAuraInstanceID) or #self.auraTooltipQueue >= BUFF_TOOLTIP_QUEUE_SIZE then
 		return;
 	end
@@ -966,6 +969,37 @@ function BuffFrameMixin:ClearAuraTooltipQueue()
 		self.auraTooltipTimer:Cancel();
 		self.auraTooltipTimer = nil;
 	end
+end
+
+function BuffFrameMixin:ShouldProcessTooltipQueue()
+	local function IsAuraFrame(frame, recurse)
+		if not frame then
+			return false;
+		end
+
+		if frame == self
+			or (DebuffFrame and frame == DebuffFrame)
+			or (ExternalDefensivesFrame and frame == ExternalDefensivesFrame)
+		then
+			return true;
+		end
+
+		return recurse and IsAuraFrame(frame:GetParent(), true) or false;
+	end
+
+	local function IsAnyAuraButtonFrame(frames)
+		for _, frame in ipairs(frames) do
+			-- Only consider aura buttons within the frames we care about
+			if frame.auraType and IsAuraFrame(frame, true) then
+				return true;
+			end
+		end
+		return false;
+	end
+
+	return InputUtil.IsGamepadUIEnabled()
+		and not IsAuraFrame(SmartNavigation:GetActiveFrame())
+		and not IsAnyAuraButtonFrame(GetMouseFoci());
 end
 
 DebuffFrameMixin = { };
@@ -1162,6 +1196,10 @@ end
 function AuraButtonMixin:OnEnter()
 	if self.isExample then
 		return;
+	end
+
+	if InputUtil.IsGamepadUIEnabled() and BuffFrame then
+		BuffFrame:ClearAuraTooltipQueue();
 	end
 
 	if self.auraType == "TempEnchant" then

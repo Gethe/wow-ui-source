@@ -895,10 +895,12 @@ end
 function EditModeManagerFrameMixin:ReconcileLayouts()
 	local somethingChanged = false;
 	for _, layoutInfo in ipairs(self.layoutInfo.layouts) do
-		if (layoutInfo.interfaceStyle == Enum.InputDeviceInterfaceType.Gamepad) and self:ReconcileWithGamepad(layoutInfo) then
-			somethingChanged = true;
-		elseif self:ReconcileWithModern(layoutInfo) then
-			somethingChanged = true;
+		-- Note: Only reconcile with one system map. Otherwise systems that only exist in one
+		-- preset will be removed from layouts based on another preset.
+		if layoutInfo.interfaceStyle == Enum.InputDeviceInterfaceType.Gamepad then
+			somethingChanged = self:ReconcileWithGamepad(layoutInfo) or somethingChanged;
+		else
+			somethingChanged = self:ReconcileWithModern(layoutInfo) or somethingChanged;
 		end
 	end
 

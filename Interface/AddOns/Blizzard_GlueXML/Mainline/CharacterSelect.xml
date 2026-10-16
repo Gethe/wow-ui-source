@@ -622,7 +622,7 @@
 							</Button>
 							<Frame parentKey="CharacterList" name="CharacterSelectCharacterFrame" inherits="CharacterSelectListTemplate">
 								<Anchors>
-									<Anchor point="TOPRIGHT" relativeKey="$parent.VASTokenContainer" relativePoint="BOTTOMRIGHT" x="10" y="-2"/>
+									<Anchor point="TOPRIGHT" relativeKey="$parent.VASTokenContainer" relativePoint="BOTTOMRIGHT" x="10" y="-9"/>
 									<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ListToggle" relativePoint="TOPRIGHT" x="0" y="5"/>
 								</Anchors>
 							</Frame>

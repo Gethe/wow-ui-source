@@ -121,7 +121,7 @@ function BankFrameMixin:RefreshPageTabs(currentPage)
 			if lastTab then
 				pageTab:SetPoint("TOPLEFT", lastTab, "BOTTOMLEFT", 0, -2);
 			else
-				pageTab:SetPoint("TOPLEFT", self, "TOPRIGHT", 3, -60);
+				pageTab:SetPoint("TOPLEFT", self, "TOPRIGHT", 0, -60);
 			end
 			pageTab:SetPageInfo(bankType, pageNumber, bankType == activeBankType and currentPage or nil);
 			pageTab:Show();
@@ -156,8 +156,7 @@ function BankFrameMixin:RefreshBagButtons()
 			
 		local isFirstButton = bagNum == 2;
 		if isFirstButton then
-			local xOffset, yOffset = 10, 5;
-			button:SetPoint("TOPLEFT", self.BagText, "TOPRIGHT", bagNum * xOffset, yOffset);
+			button:SetPoint("LEFT", self, "BOTTOMLEFT", 200, 115);
 		else
 			local xOffset, yOffset = 50, 0;
 			button:SetPoint("TOPLEFT", lastCreatedButton, "TOPLEFT", xOffset, yOffset);

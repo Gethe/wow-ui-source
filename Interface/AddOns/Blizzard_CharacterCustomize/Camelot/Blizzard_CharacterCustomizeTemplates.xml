@@ -5,9 +5,5 @@
 		<KeyValues>
 			<KeyValue key="baseSpacing" value="48" type="number"/>
 		</KeyValues>
-		<Anchors>
-			<!-- Adjusted in Lua as well -->
-			<Anchor point="TOPRIGHT" x="-33" y="-297"/>
-		</Anchors>
 	</Frame>
 </Ui>

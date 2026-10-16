@@ -34,6 +34,7 @@ ShardTransferImminentMixin = {};
 
 function ShardTransferImminentMixin:OnLoad()
 	self:RegisterEvent("SHARD_TRANSFER_IMMINENT");
+	self:RegisterEvent("SHARD_TRANSFER_CANCELLED");
 	self:RegisterEvent("SHARD_TRANSFER");
 
 	self:ClearAllPoints();
@@ -49,6 +50,8 @@ end
 function ShardTransferImminentMixin:OnEvent(event, ...)
 	if (event == "SHARD_TRANSFER_IMMINENT") then
 		self:Start(...);
+	elseif (event == "SHARD_TRANSFER_CANCELLED") then
+		self:Hide();
 	elseif (event == "SHARD_TRANSFER") then
 		self:Hide();
 	end
@@ -65,6 +68,8 @@ function ShardTransferImminentMixin:OnUpdate(elapsed)
 	if self.timer then
 		self.timer = self.timer - elapsed;
 	end
+
+	local isInCombat = UnitAffectingCombat("player");
 
 	local secondsUntilMinimize = 15;
 	-- As long as this frame is shown, continue to update
@@ -98,6 +103,7 @@ ShardTransferImminentMinimizeMixin = {};
 
 function ShardTransferImminentMinimizeMixin:OnLoad()
 	self:RegisterEvent("SHARD_TRANSFER_IMMINENT");
+	self:RegisterEvent("SHARD_TRANSFER_CANCELLED");
 	self:RegisterEvent("SHARD_TRANSFER");
 
 	self:ClearAllPoints();
@@ -113,6 +119,8 @@ end
 function ShardTransferImminentMinimizeMixin:OnEvent(event, ...)
 	if (event == "SHARD_TRANSFER_IMMINENT") then
 		self:Start(...);
+	elseif (event == "SHARD_TRANSFER_CANCELLED") then
+		self:Hide();
 	elseif (event == "SHARD_TRANSFER") then
 		self:Hide();
 	end

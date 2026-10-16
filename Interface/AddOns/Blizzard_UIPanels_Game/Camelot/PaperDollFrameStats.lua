@@ -1,5 +1,8 @@
 
 local BLOCK_VALUE_PER_STRENGTH = 20;
+local IMP_CREATURE_FAMILY_ID = 23;
+local WARLOCK_PET_MANA_REGEN_PCT = 0.1;
+local IMP_MANA_REGEN_PCT = 0.3;
 local ARMOR_PER_AGILITY = 2;
 local BASE_ENEMY_MISS_CHANCE = 5.0;
 local BASE_ENEMY_CRIT_CHANCE = 5.0;
@@ -138,6 +141,27 @@ end
 
 function PaperDollFrame_SetParryTooltip2(statFrame, parryChance)
 	statFrame.tooltip2 = format(CR_PARRY_BASE_STAT_TOOLTIP, parryChance);
+end
+
+function PaperDollFrame_SetWarlockPetManaRegen(statFrame)
+	local _className, classFilename = UnitClass("player");
+	if classFilename ~= "WARLOCK" or UnitPowerMax("pet", Enum.PowerType.Mana) <= 0 then
+		statFrame:Hide();
+		return 0;
+	end
+
+	local _familyName, familyID = UnitCreatureFamily("pet");
+	local regenPct = (familyID == IMP_CREATURE_FAMILY_ID) and IMP_MANA_REGEN_PCT or WARLOCK_PET_MANA_REGEN_PCT;
+	local _stat, ownerIntellect = UnitStat("player", LE_UNIT_STAT_INTELLECT);
+	local mp5 = floor(ownerIntellect * regenPct);
+	local mp5Text = BreakUpLargeNumbers(mp5);
+
+	PaperDollFrame_SetLabelAndText(statFrame, MANA_REGEN, mp5Text, false, mp5);
+	statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, MANA_REGEN).." "..mp5Text..FONT_COLOR_CODE_CLOSE;
+	statFrame.tooltip2 = format(STAT_WARLOCK_PET_MANA_REGEN_TOOLTIP, regenPct * 100);
+	statFrame:Show();
+
+	return mp5;
 end
 
 function PaperDollFrame_ShowFlightSpeed()
@@ -427,8 +451,8 @@ function PaperDollFrame_SetBlock(statFrame, unit)
 	return chance;
 end
 
-function CharacterHitFrame_OnEnter(self, meleeHit, rangedHit, spellHit, hitLabel)
-	local maxHit = max(meleeHit, rangedHit, spellHit);
+function CharacterHitFrame_OnEnter(self, meleeHit, rangedHit, spellHit, hitLabel, offhandHit)
+	local maxHit = max(meleeHit, rangedHit, spellHit, offhandHit);
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:SetText(HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, hitLabel).." "..format("%.1F%%", maxHit)..FONT_COLOR_CODE_CLOSE);
@@ -441,6 +465,9 @@ function CharacterHitFrame_OnEnter(self, meleeHit, rangedHit, spellHit, hitLabel
 
 	if meleeHit > 0 then
 		GameTooltip:AddLine(format(CR_HIT_MELEE_TOOLTIP, meleeHit), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, false);
+	end
+	if offhandHit and offhandHit ~= meleeHit and IsDualWielding() then
+		GameTooltip:AddLine(format(CR_HIT_OFFHAND_TOOLTIP, offhandHit), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, false);
 	end
 	if rangedHit > 0 and usesRangedHit then
 		GameTooltip:AddLine(format(CR_HIT_RANGED_TOOLTIP, rangedHit), NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b, false);
@@ -491,26 +518,37 @@ end
 
 function PaperDollFrame_SetHitChance(statFrame, unit)
 
-	local meleeHit, rangedHit, spellHit;
+	local meleeHit, rangedHit, spellHit, offhandHit;
 
 	if unit == "player" then
 		meleeHit = GetCombatRatingBonus(CR_HIT_MELEE) + GetHitModifier();
+		offhandHit = GetCombatRatingBonus(CR_HIT_MELEE) + GetOffhandHitModifier();
 		rangedHit = GetCombatRatingBonus(CR_HIT_RANGED) + GetRangedHitModifier();
 		spellHit = GetCombatRatingBonus(CR_HIT_SPELL) + GetSpellHitModifier();
 	elseif unit == "pet" then
-		meleeHit = GetPetHitChanceModifier();
+		-- Pets inherit 100% of the owner's hit chance on top of their own modifiers.
+		local ownerMeleeHit = GetCombatRatingBonus(CR_HIT_MELEE) + GetHitModifier();
+		local ownerSpellHit = GetCombatRatingBonus(CR_HIT_SPELL) + GetSpellHitModifier();
+		meleeHit = ownerMeleeHit + GetPetHitChanceModifier();
 		rangedHit = meleeHit;
-		spellHit = GetPetSpellHitChanceModifier();
+		spellHit = ownerSpellHit + GetPetSpellHitChanceModifier();
+
+		local maxPetHit = max(meleeHit, spellHit);
+		PaperDollFrame_SetLabelAndText(statFrame, STAT_HIT_CHANCE, string.format("%.1F%%", maxPetHit), false, maxPetHit);
+		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_HIT_CHANCE).." "..string.format("%.1F%%", maxPetHit)..FONT_COLOR_CODE_CLOSE;
+		statFrame.tooltip2 = STAT_PET_HIT_TOOLTIP;
+		statFrame.onEnterFunc = nil;
+		return maxPetHit;
 	else
 		meleeHit = 0;
 		rangedHit = 0;
 		spellHit = 0;
 	end
 
-	local maxHit = max(meleeHit, rangedHit, spellHit);
+	local maxHit = max(meleeHit, rangedHit, spellHit, offhandHit);
 
 	PaperDollFrame_SetLabelAndText(statFrame, STAT_HIT_CHANCE, string.format("%.1F%%", maxHit), false, maxHit);
-	statFrame.onEnterFunc = function(self) CharacterHitFrame_OnEnter(self, meleeHit, rangedHit, spellHit, STAT_HIT_CHANCE) end;
+	statFrame.onEnterFunc = function(self) CharacterHitFrame_OnEnter(self, meleeHit, rangedHit, spellHit, STAT_HIT_CHANCE, offhandHit) end;
 
 	return maxHit;
 end
@@ -556,9 +594,15 @@ function CharacterCritChanceFrame_OnEnter(self, meleeCrit, rangedCrit, spellCrit
 end
 
 function PaperDollFrame_SetCritChance(statFrame, unit)
-	local spellCrit = GetSpellCritChance();
-	local rangedCrit = GetRangedCritChance();
-	local meleeCrit = GetCritChance();
+	local spellCrit, rangedCrit, meleeCrit;
+	if unit == "pet" then
+		meleeCrit, spellCrit = GetPetCritChance();
+		rangedCrit = meleeCrit;
+	else
+		spellCrit = GetSpellCritChance();
+		rangedCrit = GetRangedCritChance();
+		meleeCrit = GetCritChance();
+	end
 	local critChance = max(spellCrit, rangedCrit, meleeCrit);
 
 	critChance = format("%.1f%%", critChance);
@@ -600,7 +644,15 @@ function PaperDollFrame_ExpertiseOnEnter(statFrame)
 end
 
 function PaperDollFrame_SetExpertise(statFrame, unit, usePercent)
-	if ( unit ~= "player" ) then
+	if unit == "pet" then
+		local ownerExpertise = GetExpertise();
+		local ownerExpertiseText = format("%.1F%%", ownerExpertise);
+		PaperDollFrame_SetLabelAndText(statFrame, STAT_EXPERTISE, ownerExpertiseText, false, ownerExpertise);
+		statFrame.tooltip = HIGHLIGHT_FONT_COLOR_CODE..format(PAPERDOLLFRAME_TOOLTIP_FORMAT, STAT_EXPERTISE).." "..ownerExpertiseText..FONT_COLOR_CODE_CLOSE;
+		statFrame.tooltip2 = CR_PET_EXPERTISE_TOOLTIP;
+		statFrame.onEnterFunc = nil;
+		return ownerExpertise;
+	elseif ( unit ~= "player" ) then
 		return 0;
 	end
 	

@@ -535,10 +535,6 @@ function GamepadActionBarPageUnitMixin:SetActiveActionBar(barToActivate, leftMod
 		end
 	end
 
-	if self.activeFlyoutButton then
-		self.activeFlyoutButton:ClosePopup();
-	end
-
 	self:RefreshActionBarVisibilities();
 	self:TriggerEvent(ACTIVE_ACTION_BAR_UPDATED_EVENT);
 end

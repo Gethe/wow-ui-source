@@ -337,7 +337,6 @@ function TimeManager_ToggleLocalTime()
 	-- TimeManagerClockButton_OnUpdate will pick up the clock change
 end
 
--- TimeManagerClockButton
 function TimeManagerClockButton_OnLoad(self)
 	if ( CLOCK_TICKER_Y_OVERRIDE ) then
 		TimeManagerClockTicker:SetPoint("CENTER", select(4, TimeManagerClockTicker:GetPoint(1)), CLOCK_TICKER_Y_OVERRIDE);
@@ -479,6 +478,7 @@ end
 
 function TimeManager_TurnOffAlarm()
 	UIFrameFlashStop(TimeManagerAlarmFiredTexture);
+
 	if ( not TimeManagerClockButton.prevShown ) then
 		TimeManagerClockButton:Hide();
 	end

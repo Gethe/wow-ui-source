@@ -14,7 +14,6 @@ local FFAIconAtlas;
 local NeutralPrestigePortraitAtlas;
 local FactionPrestigePortraitAtlasPrefix;
 local SupportsPrestige;
-local UsesBackground;
 
 local function GetRawField(tbl, key)
 	return securecallfunction(rawget, tbl, key);
@@ -63,7 +62,6 @@ local function GetPvPIndicatorValues(unitToken, checkMercenary, textureMap)
 		showPrestigePortrait = false,
 		showPrestigeBadge = false,
 		showPvPIcon = false,
-		showPvPBackground = false,
 		isFreeForAll = false,
 	};
 
@@ -110,8 +108,6 @@ local function GetPvPIndicatorValues(unitToken, checkMercenary, textureMap)
 			end
 		end
 	end
-
-	info.showPvPBackground = UsesBackground and info.showPvPIcon;
 
 	return info;
 end
@@ -172,7 +168,7 @@ local function ResolveAtlasSize(useAtlasSize, elementKey, default)
 end
 
 -- Sets the textures in the elements table, using the info returned by GetUnitPvPIndicatorDisplayInfo.
--- The elements table can contain the following keys: prestigePortrait, prestigeBadge, pvpIcon, pvpBackground.
+-- The elements table can contain the following keys: prestigePortrait, prestigeBadge, pvpIcon.
 -- Prestige art only overrules the plain icon when this caller actually supplied a prestige element to show it on.
 -- useAtlasSize overrides the useAtlasSize passed to every :SetAtlas call below, or per-element if given as a table
 -- keyed by prestigePortrait/prestigeBadge/pvpIcon
@@ -180,7 +176,6 @@ local function UpdateUnitPvPIndicator(elements, unitToken, checkMercenary, textu
 	local prestigePortrait = GetRawField(elements, "prestigePortrait");
 	local prestigeBadge = GetRawField(elements, "prestigeBadge");
 	local pvpIcon = GetRawField(elements, "pvpIcon");
-	local pvpBackground = GetRawField(elements, "pvpBackground");
 
 	local info = GetPvPIndicatorValues(unitToken, checkMercenary, textureMap);
 	local isSecret = C_Secrets.ShouldUnitIdentityBeSecret(unitToken);
@@ -215,10 +210,6 @@ local function UpdateUnitPvPIndicator(elements, unitToken, checkMercenary, textu
 		end
 
 		TextureMetatable.SetShown(pvpIcon, WrapIfSecret(showPvPIcon, isSecret));
-	end
-
-	if (IsTextureObject(pvpBackground)) then
-		TextureMetatable.SetShown(pvpBackground, WrapIfSecret(info.showPvPBackground, isSecret));
 	end
 end
 
@@ -477,7 +468,6 @@ if (C_PvP and C_PvP.GetHonorRewardInfo) then
 	NeutralPrestigePortraitAtlas = style.neutralPrestigePortraitAtlas;
 	FactionPrestigePortraitAtlasPrefix = style.factionPrestigePortraitAtlasPrefix;
 	SupportsPrestige = style.supportsPrestige;
-	UsesBackground = style.usesBackground;
 
 	-- Used by UnitFrameUtil.UpdateUnitPvPIndicator, but can also be called separately (values returned will be secret if the unit's identity is secret).
 	-- textureMap may replace any of prestigePortraitNeutral/prestigePortraitHorde/prestigePortraitAlliance/prestigeBadge/pvpIconFreeForAll/pvpIconHorde/pvpIconAlliance,

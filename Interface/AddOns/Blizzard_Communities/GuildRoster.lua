@@ -6,11 +6,33 @@ CommunitiesGuildMemberDetailMixin = {};
 
 function CommunitiesGuildMemberDetailMixin:OnLoad()
 	self.RankDropdown:SetWidth(169 - self.RankLabel:GetWidth());
+
+	self:RegisterForTransitions();
+end
+
+function CommunitiesGuildMemberDetailMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
+function CommunitiesGuildMemberDetailMixin:InitializeGamepad()
+	self.CloseButton:Hide();
+end
+
+function CommunitiesGuildMemberDetailMixin:UninitializeGamepad()
+	self.CloseButton:Show();
 end
 
 function CommunitiesGuildMemberDetailMixin:OnShow()
 	self:RegisterEvent("GUILD_ROSTER_UPDATE");
 	CommunitiesFrame:RegisterDialogShown(self);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local isPopup = false;
+		local shouldFocusFrame = false;
+		GamepadMode.FrameControlsManager:FrameShown(self, isPopup, shouldFocusFrame);
+	end
 end
 
 function CommunitiesGuildMemberDetailMixin:SetupRankDropdown()
@@ -18,7 +40,7 @@ function CommunitiesGuildMemberDetailMixin:SetupRankDropdown()
 	if memberInfo == nil or memberInfo.guildRankOrder == nil or memberInfo.guid == nil then
 		return;
 	end
-	
+
 	local myMemberInfo = C_Club.GetMemberInfoForSelf(self:GetClubId());
 	if myMemberInfo == nil or myMemberInfo.guildRankOrder == nil then
 		return;
@@ -55,9 +77,13 @@ function CommunitiesGuildMemberDetailMixin:SetupRankDropdown()
 		end
 	end);
 end
-	
+
 function CommunitiesGuildMemberDetailMixin:OnHide()
 	self:UnregisterEvent("GUILD_ROSTER_UPDATE");
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
 end
 
 function CommunitiesGuildMemberDetailMixin:OnEvent(event, ...)
@@ -66,7 +92,7 @@ function CommunitiesGuildMemberDetailMixin:OnEvent(event, ...)
 		if ( canRequestRosterUpdate ) then
 			C_GuildInfo.GuildRoster();
 		end
-		
+
 		local clubId = self:GetClubId();
 		local memberInfo = self:GetMemberInfo();
 		if clubId ~= nil and memberInfo ~= nil then
@@ -88,30 +114,36 @@ function CommunitiesGuildMemberDetailMixin:GetMemberInfo()
 	return nil;
 end
 
-function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)	
+function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 	if memberInfo == nil or memberInfo.name == nil or memberInfo.guildRankOrder == nil then
 		self:Hide();
 		return;
 	end
-	
+
+	-- Allow toggling in gamepad mode
+	if InputUtil.IsGamepadUIEnabled() and self.clubId == clubId and self.memberId == memberInfo.memberId then
+		self:SetShown(not self:IsShown());
+		return;
+	end
+
 	self.clubId = clubId;
 	self.memberId = memberInfo.memberId;
-	
+
 	local myMemberInfo = C_Club.GetMemberInfoForSelf(clubId);
 	if myMemberInfo == nil or myMemberInfo.guildRankOrder == nil then
 		self:Hide();
 		return;
 	end
-	
+
 	self.Name:SetText(memberInfo.name);
-	
+
 	if memberInfo.classID then
 		local classInfo = C_CreatureInfo.GetClassInfo(memberInfo.classID);
 		if classInfo then
 			self.Level:SetText(FRIENDS_LEVEL_TEMPLATE:format(memberInfo.level, classInfo.className));
 		end
 	end
-	
+
 	self.ZoneText:SetText(memberInfo.zone or "");
 	self.RankText:SetText(memberInfo.guildRank or "");
 	if not memberInfo.lastOnlineHour then
@@ -134,7 +166,7 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 	self.NoteBackground:EnableMouse(canEditNote);
 	personalNoteText:SetText(note);
 
-	local maxRankOrder = GuildControlGetNumRanks();	
+	local maxRankOrder = GuildControlGetNumRanks();
 	local myRankOrder = myMemberInfo.guildRankOrder;
 	local rankOrder = memberInfo.guildRankOrder;
 	local canPromote = CanGuildPromote() and rankOrder > myRankOrder + 1;
@@ -148,7 +180,7 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 		self.RankDropdown:Hide();
 		self.RankText:Show();
 	end
-	
+
 	-- Update officer note
 	local officerNoteText = self.OfficerNoteBackground.OfficerNoteText;
 	if C_GuildInfo.CanViewOfficerNote() then
@@ -173,7 +205,7 @@ function CommunitiesGuildMemberDetailMixin:DisplayMember(clubId, memberInfo)
 		self.OfficerNoteBackground:Hide();
 		self:SetHeight(COMMUNITIES_GUILD_DETAIL_NORM_HEIGHT + self.Name:GetHeight() + self.RankLabel:GetHeight());
 	end
-	
+
 	self.RemoveButton:SetEnabled(CanGuildRemove() and rankOrder > myRankOrder);
 
 	-- These fields on memberInfo are secret and SetEnabled does not allow secrets.

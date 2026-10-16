@@ -2,15 +2,24 @@
 ..\..\UI.xsd">
 	<Frame name="ColoredProgressBarTemplate" mixin="ColoredProgressBarMixin" virtual="true">
 		<Size x="67" y="29"/>
+		<Frames>
+			<!-- The visible track of common-stat-bar-BG, which has padding inside the frame edges. -->
+			<Frame parentKey="FillArea">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="6"/>
+					<Anchor point="BOTTOMRIGHT" x="-6"/>
+				</Anchors>
+			</Frame>
+		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<Texture atlas="common-stat-bar-BG"/>
+				<Texture atlas="common-stat-bar-BG" setAllPoints="true"/>
 			</Layer>
 			<Layer level="BORDER">
 				<Texture parentKey="Fill" atlas="common-stat-bar-white" useAtlasSize="true">
 					<Size x="0" y="15"/>
 					<Anchors>
-						<Anchor point="LEFT"/>
+						<Anchor point="LEFT" relativeKey="$parent.FillArea"/>
 					</Anchors>
 				</Texture>
 				<MaskTexture parentKey="Mask" atlas="common-stat-bar-Mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">

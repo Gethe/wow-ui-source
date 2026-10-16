@@ -212,7 +212,7 @@ function GamepadBagBarMixin:GetBagButton(bagID)
 	if not InputUtil.IsGamepadUIEnabled() then
 		return nil;
 	end
-	if bagID == (KEYRING_CONTAINER) then
+	if bagID == KEYRING_CONTAINER and GetCVarBool("showKeyring") then
 		return self.KeyRingButton;
 	end
 	return self.BagButtonArray[bagID + 1];
@@ -222,6 +222,8 @@ function GamepadBagBarMixin:OnLoad()
 	for bagID = 0, NUM_TOTAL_BAG_FRAMES do
 		local gamepadBagButton = self:GetBagButton(bagID);
 		if gamepadBagButton then
+			gamepadBagButton.BagDropdownButton:ClearAllPoints();
+			gamepadBagButton.BagDropdownButton:SetPoint("TOPRIGHT", gamepadBagButton, "TOPRIGHT", 0, 0);
 			gamepadBagButton.BagDropdownButton:SetupMenu(function(dropdown, rootDescription)
 				ContainerFrame_AddButtons_BagFilters(rootDescription, bagID);
 				ContainerFrame_AddButtons_BagCleanup(rootDescription, bagID);
@@ -244,11 +246,6 @@ function GamepadBagBarMixin:OnLoad()
 	if gamepadkeyRingButton then
 		gamepadkeyRingButton.isCollapsed = true;
 	end
-
-
-	self:SetParent(ContainerFrameCombinedBags);
-	self:ClearAllPoints();
-	self:SetPoint("TOPRIGHT", ContainerFrameCombinedBags, "TOPRIGHT", -5, -19);
 end
 
 GamepadBagSlotButtonMixin = CreateFromMixins(BaseBagSlotButtonMixin);

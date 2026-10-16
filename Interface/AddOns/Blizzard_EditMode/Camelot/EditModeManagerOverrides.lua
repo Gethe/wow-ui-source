@@ -4,6 +4,7 @@ function EditModeAccountSettingsMixin:PrepareSettingCheckButtonVisibilityForCame
 	self.settingsCheckButtons.ArchaeologyBar.shouldHide = true;
 	self.settingsCheckButtons.ArenaFrames.shouldHide = true;
 	self.settingsCheckButtons.EncounterEvents.shouldHide = true;
+	self.settingsCheckButtons.ExtraAbilities.shouldHide = true;
 	self.settingsCheckButtons.TalkingHeadFrame.shouldHide = true;
 	self.settingsCheckButtons.VehicleSeatIndicator.shouldHide = true;
 end

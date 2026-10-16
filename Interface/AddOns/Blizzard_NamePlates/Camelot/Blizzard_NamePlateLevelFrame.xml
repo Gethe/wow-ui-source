@@ -3,7 +3,8 @@
 
 	<Frame name="NameplateLevelFrame" mixin="NameplateLevelFrameMixin" frameLevel="50" virtual="true">
 		<Anchors>
-			<Anchor point="LEFT" relativeKey="$parent.HealthBarsContainer" relativePoint="RIGHT" x="5"/>
+			<Anchor point="TOPLEFT" relativeKey="$parent.HealthBarsContainer.healthBar" relativePoint="TOPRIGHT" x="5" y="3"/>
+			<Anchor point="BOTTOMLEFT" relativeKey="$parent.HealthBarsContainer.healthBar" relativePoint="BOTTOMRIGHT" x="5" y="-2"/>
 		</Anchors>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -18,7 +19,7 @@
 				<FontString parentKey="playerLevelDiffText" inherits="SystemFont_NamePlateLevel"/>
 				<Texture parentKey="selectedBorder" atlas="ui-hud-nameplates-levelindicator-rectangle-selected" hidden="true">
 					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="4"/>
+						<Anchor point="TOPLEFT" x="-3" y="3"/>
 						<Anchor point="BOTTOMRIGHT" x="3" y="-4"/>
 					</Anchors>
 				</Texture>

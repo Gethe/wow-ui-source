@@ -6,6 +6,7 @@
 ## Dep: Blizzard_FrameXMLUtil
 ## Dep: Blizzard_SharedXML
 ## Dep: Blizzard_TimerunningUtil [AllowLoadGameType mainline]
+## Dep: Blizzard_GamepadSharedUtility
 ## OptionalDep: Blizzard_Plunderstorm
 ## SavedVariablesPerCharacter: g_clubIdToSeenApplicants
 

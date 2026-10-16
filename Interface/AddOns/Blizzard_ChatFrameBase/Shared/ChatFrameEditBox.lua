@@ -448,7 +448,11 @@ end
 
 function ChatFrameEditBoxMixin:OnEscapePressed()
 	if ( not AutoCompleteEditBox_OnEscapePressed(self) ) then
-		self:ClearChat();
+		if InputUtil.IsGamepadUIEnabled() and self:GetText() == "" then
+			self:ClearFocus();
+		else
+			self:ClearChat();
+		end
 	end
 end
 

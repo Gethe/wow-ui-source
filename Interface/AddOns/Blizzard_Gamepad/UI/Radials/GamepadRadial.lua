@@ -473,7 +473,11 @@ local emoteContextOptionHandler = BasicContextOptionHandler.Create({
 });
 
 function emoteContextOptionHandler:action()
+	if self.indicator.radial.currentPage == self.page then
+		return;
+	end
 	self.indicator.radial:ActivateRadial(self.page);
+	PlaySound(SOUNDKIT.GAMEPAD_RADIAL_MENU_EMOTES_OPEN);
 end
 
 ------------------------------------------------------------
@@ -526,6 +530,7 @@ function GamepadRadialMixin:OnShow()
 	GamepadMode.ActivateBindingGroup(self.inputBindings);
 	self:ActivateRadial(DEFAULT_PAGE_INDEX);
 	self.SegmentHighlight:Hide();
+	PlaySound(SOUNDKIT.GAMEPAD_RADIAL_MENU_OPEN);
 
 	-- Handle main menu frame state management.
 	GamepadHudMode:SetShown(false);
@@ -559,6 +564,7 @@ function GamepadRadialMixin:OnHide()
 	end
 
 	GamepadMode.DeactivateBindingGroup(self.inputBindings);
+	PlaySound(SOUNDKIT.GAMEPAD_RADIAL_MENU_CLOSE);
 
 	EventRegistry:TriggerEvent("Gamepad.HideMainMenu");
 
@@ -568,6 +574,14 @@ function GamepadRadialMixin:OnHide()
 	if (GamepadMode.FrameControlsManager:GetShownFrameCount() >= 1) and (not GamepadHudMode:IsShown()) then
 		GamepadMode.FrameControlsManager:SetUIFocusState(true);
 	end
+end
+
+function GamepadRadialMixin:OnKeyDown(key)
+	if GetBindingFromClick(key) == "TOGGLEGAMEMENU" then
+		self:Hide();
+		return false;
+	end
+	return true;
 end
 
 function GamepadRadialMixin:InitializeRadialData()
@@ -852,6 +866,7 @@ function GamepadRadialMixin:NextPage()
 	if current then
 		local next = (current == MAIN_MENU_PAGE_COUNT) and 1 or (current + 1);
 		self:ActivateRadial(next);
+		PlaySound(SOUNDKIT.GAMEPAD_RADIAL_MENU_TAB_OVER);
 	end
 end
 
@@ -861,6 +876,7 @@ function GamepadRadialMixin:PreviousPage()
 	if current then
 		local prev = (current == 1) and MAIN_MENU_PAGE_COUNT or (current - 1);
 		self:ActivateRadial(prev);
+		PlaySound(SOUNDKIT.GAMEPAD_RADIAL_MENU_TAB_OVER);
 	end
 end
 
@@ -948,6 +964,7 @@ function GamepadRadialMixin:BeginSelection(segmentIndex)
 		self.SegmentHighlight:SetRotation(highlightRadians);
 		self.SegmentHighlight:SetDesaturated(not segment:IsEnabled());
 		self.SegmentHighlight:Show();
+		PlaySound(SOUNDKIT.GAMEPAD_RADIAL_MENU_HIGHLIGHT);
 	end
 
 	-- Always activate the segment, to be able to use this to restore selection state when

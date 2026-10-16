@@ -15,10 +15,6 @@ function GlueMenuFrameMixin:OnShow()
 	NarrationUtil.NarrateCurrentScreen(NARRATION_CONTEXT_GAME_MENU);
 
 	GlueParent_AddModalFrame(self);
-
-	if InputUtil.IsGamepadUIEnabled() then
-		self.gamepadFooter:ShowAndActivateBindings();
-	end
 end
 
 function GlueMenuFrameMixin:OnHide()
@@ -26,7 +22,6 @@ function GlueMenuFrameMixin:OnHide()
 
 	if InputUtil.IsGamepadUIEnabled() then
 		self:ResetGamepadButtons();
-		self.gamepadFooter:HideAndDeactivateBindings();
 	end
 end
 
@@ -124,6 +119,14 @@ function GlueMenuFrameMixin:SmartNavigationCloseHandler()
 	return true;
 end
 
+function GlueMenuFrameMixin:FocusGamepad()
+	self.gamepadFooter:ShowAndActivateBindings();
+end
+
+function GlueMenuFrameMixin:UnfocusGamepad()
+	self.gamepadFooter:HideAndDeactivateBindings();
+end
+
 function GlueMenuFrameMixin:RegisterForTransitions()
 	InputUtil.RegisterForInterfaceTransitions(self);
 	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
@@ -136,8 +139,7 @@ function GlueMenuFrameMixin:SetupGamepad()
 	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "GlueMenuFooter");
 	self.gamepadFooter:AddPromptedBinding(selectPromptedBinding);
 	self.gamepadFooter:AddStandardBackPrompt(CLOSE);
-	self.gamepadFooter:SetAnchorOffsets(6, 0);
-
+	self.gamepadFooter:SetAnchorOffsets(10, 6);
 	self.gamepadFooter:Finalize();
 end
 

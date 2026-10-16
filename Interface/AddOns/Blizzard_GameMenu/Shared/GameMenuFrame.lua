@@ -53,7 +53,7 @@ function GameMenuFrameMixin:OnLoad()
 	self:AddStaticEventMethod(EventRegistry, "UIPanel.FrameHidden", GameMenuFrameMixin.OnUIPanelHidden);
 	self:AddStaticEventMethod(EventRegistry, "Store.FrameHidden", GameMenuFrameMixin.OnStoreFrameClosed);
 	-- This event can occur without the frame being shown.
-	EventRegistry:RegisterFrameEventAndCallback("EXTERNAL_EVENT_LAUNCH_URL_FAILED", GameMenuFrameMixin.OnExternalEventLaunchUrlFailed, self);
+	EventRegistry:RegisterFrameEventAndCallback("EXTERNAL_EVENT_LAUNCH_URL_RESULT", GameMenuFrameMixin.OnExternalEventLaunchUrlResult, self);
 
 	self:RegisterForTransitions();
 end
@@ -119,8 +119,10 @@ function GameMenuFrameMixin:ExternalEventClickCallback()
 	end
 end
 
-function GameMenuFrameMixin:OnExternalEventLaunchUrlFailed()
-	StaticPopup_Show("GAMEMENU_EXTERNALEVENT_FAILURE");
+function GameMenuFrameMixin:OnExternalEventLaunchUrlResult(result)
+	if not result then
+		StaticPopup_Show("GAMEMENU_EXTERNALEVENT_FAILURE");
+	end
 end
 
 function GameMenuFrameMixin:SetupGamepadButtons()
@@ -310,11 +312,10 @@ end
 function GameMenuFrameMixin:SetupGamepad()
 	local selectPromptedBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, nil, ACTION_LABEL_SELECT);
 
-	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "GlueMenuFooter");
+	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "GameMenuFooter");
 	self.gamepadFooter:AddPromptedBinding(selectPromptedBinding);
 	self.gamepadFooter:AddStandardBackPrompt(RETURN_TO_GAME);
-	self.gamepadFooter:SetAnchorOffsets(6, 0);
-
+	self.gamepadFooter:SetAnchorOffsets(10, 6);
 	self.gamepadFooter:Finalize();
 end
 

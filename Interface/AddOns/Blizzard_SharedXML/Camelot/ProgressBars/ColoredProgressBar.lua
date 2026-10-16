@@ -22,7 +22,7 @@ end
 
 function ColoredProgressBarMixin:SetFillPercent(percent)
 	local p = math.min(1, math.max(0, percent));
-	self:SetFillWidth(p * self:GetWidth());
+	self:SetFillWidth(p * self.FillArea:GetWidth());
 
 	self.Fill:SetTexCoord(0, p, 1, 0);
 end

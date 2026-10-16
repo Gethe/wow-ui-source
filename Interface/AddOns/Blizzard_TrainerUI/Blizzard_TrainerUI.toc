@@ -4,6 +4,6 @@
 
 Blizzard_TrainerUI_Bootstrap.lua [Bootstrap]
 [Family]\Blizzard_TrainerUI.lua
+[Family]\Blizzard_TrainerUI_Camelot.lua [AllowLoadGameType camelot]
 [Family]\Blizzard_TrainerUI.xml
 Localization.lua
-[Family]\Blizzard_TrainerUI_Camelot.lua [AllowLoadGameType camelot]

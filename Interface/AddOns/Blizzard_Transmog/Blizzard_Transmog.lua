@@ -137,6 +137,8 @@ function TransmogFrameMixin:OnLoad()
 	self.WardrobeCollection.GetCurrentTransmogInfoCallback = GenerateClosure(self.CharacterPreview.GetCurrentTransmogInfo, self.CharacterPreview);
 	self.WardrobeCollection.GetItemTransmogInfoListCallback = GenerateClosure(self.CharacterPreview.GetItemTransmogInfoList, self.CharacterPreview);
 	self.WardrobeCollection.GetSlotFrameCallback = GenerateClosure(self.CharacterPreview.GetSlotFrame, self.CharacterPreview);
+
+	self:RegisterForTransitions();
 end
 
 function TransmogFrameMixin:OnShow()
@@ -365,6 +367,183 @@ function TransmogFrameMixin:ToggleSheathe()
 	self.CharacterPreview:ToggleSheathe();
 end
 
+local INPUT_THRESHOLD = 0.5;
+local STICK_RESET_THRESHOLD = 0.25;
+function TransmogFrameMixin:NavigateSection(x, y, directionHandlers)
+	self.waitingForStickReset = self.waitingForStickReset or false;
+
+	if self.waitingForStickReset then
+		if math.abs(x) <= STICK_RESET_THRESHOLD and math.abs(y) <= STICK_RESET_THRESHOLD then
+			self.waitingForStickReset = false;
+		else
+			return;
+		end
+	end
+
+	local directionHandler;
+	if x >= INPUT_THRESHOLD then
+		directionHandler = directionHandlers.right;
+	elseif x <= -INPUT_THRESHOLD then
+		directionHandler = directionHandlers.left;
+	end
+
+	if directionHandler then
+		directionHandler();
+		self.waitingForStickReset = true;
+	end
+end
+
+local function IsDescendantOf(frame, ancestor)
+	while frame do
+		if frame == ancestor then
+			return true;
+		end
+
+		frame = frame:GetParent();
+	end
+
+	return false;
+end
+
+function TransmogFrameMixin:GetNavigationSections()
+	return {
+		self.OutfitCollection,
+		self.CharacterPreview,
+		self.WardrobeCollection,
+	};
+end
+
+function TransmogFrameMixin:NavigateHorizontalSection(direction)
+	local currentButton = SmartNavigation:GetCurrentButton();
+	if not currentButton then
+		return;
+	end
+
+	local navigationSections = self:GetNavigationSections();
+	local currentSectionIndex;
+	for index, section in ipairs(navigationSections) do
+		if IsDescendantOf(currentButton, section) then
+			currentSectionIndex = index;
+			break;
+		end
+	end
+
+	if not currentSectionIndex then
+		return;
+	end
+
+	local sectionIndex = currentSectionIndex + direction;
+	if sectionIndex < 1 or sectionIndex > #navigationSections then
+		return;
+	end
+	
+	local navigateTo = navigationSections[sectionIndex]:GetFirstButtonForSection();
+	if not navigateTo then
+		return;
+	end
+
+	SmartNavigation:SelectButton(nil);
+	SmartNavigation:SelectButton(navigateTo);
+end
+
+function TransmogFrameMixin:SetUpNavigation()
+	local TransmogFrameSectionHandlers = {
+		left = function()
+			self:NavigateHorizontalSection(-1);
+		end,
+
+		right = function()
+			self:NavigateHorizontalSection(1);
+		end,
+	};
+
+	self.navigateTransmogFrameSection = GamepadMode.CreateBindingGroup("TransmogNavigateSection");
+	self.navigateTransmogFrameSection:AddAxisBinding(GAMEPAD_STICK_LEFT,
+		function(x, y)
+			self:NavigateSection(x, y, TransmogFrameSectionHandlers);
+		end
+	);
+end
+
+function TransmogFrameMixin:SetUpTabbing()
+	local wardrobe = self.WardrobeCollection;
+	local tabs = {
+		wardrobe:GetTabButton(wardrobe.itemsTabID),
+		wardrobe:GetTabButton(wardrobe.setsTabID),
+		wardrobe:GetTabButton(wardrobe.customSetsTabID),
+		wardrobe:GetTabButton(wardrobe.situationsTabID),
+	};
+	self.TabIndicators:SetUpTabs(tabs);
+end
+
+function TransmogFrameMixin:RefreshTabIndicators()
+	self.TabIndicators:UpdateTabVisibility();
+
+	local currentTabID = self.WardrobeCollection:GetTab();
+	local currentTabButton = self.WardrobeCollection:GetTabButton(currentTabID);
+	local visibleIndex = tIndexOf(self.TabIndicators.visibleTabs, currentTabButton);
+	if visibleIndex then
+		self.TabIndicators:SetCurrentIndex(visibleIndex);
+		self.TabIndicators:UpdateTabIndicators();
+	end
+end
+
+function TransmogFrameMixin:SetUpGamepad()
+	local function ChangeNameOrIcon()
+		local element = SmartNavigation:GetCurrentButton():GetParent();
+		if element and element.OpenEditPopup and not C_TransmogOutfitInfo.InTransmogEvent() then
+			element:OpenEditPopup();
+		end
+	end
+	local changeNameOrIconAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, ChangeNameOrIcon, TRANSMOG_EDIT_OUTFIT_SLOT);
+	changeNameOrIconAction:AddButtonContext("ButtonContext_TransmogOutfitButton");
+	changeNameOrIconAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	self.transmogFrameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ClassTalentsFrameFooter");
+	self.transmogFrameFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
+	self.transmogFrameFooter:AddStandardSelectPrompt();
+	self.transmogFrameFooter:AddPromptedBinding(changeNameOrIconAction);
+	self.transmogFrameFooter:Finalize();
+
+	local pagedContent = self.WardrobeCollection.TabContent.ItemsFrame.PagedContent;
+	pagedContent:RegisterCallback(PagedContentFrameBaseMixin.Event.OnUpdate, function()
+		SmartNavigation:RefreshButtonGroups();
+	end, self);
+
+	self:SetUpNavigation();
+	self:SetUpTabbing();
+end
+
+function TransmogFrameMixin:FocusGamepad()
+	self.transmogFrameFooter:ShowAndActivateBindings();
+	GamepadMode.ActivateBindingGroup(self.navigateTransmogFrameSection);
+
+	SmartNavigation:SetScrollFrameForFrame(self, self.OutfitCollection.OutfitList.ScrollBox);
+	GamepadScrollBarHint:SetOwner(self.OutfitCollection.OutfitList.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+
+	self.TabIndicators:Show();
+	self:RefreshTabIndicators();
+end
+
+function TransmogFrameMixin:UnfocusGamepad()
+	self.transmogFrameFooter:HideAndDeactivateBindings();
+	GamepadMode.DeactivateBindingGroup(self.navigateTransmogFrameSection);
+
+	self.TabIndicators:Hide();
+	GamepadScrollBarHint:Hide();
+end
+
+function TransmogFrameMixin:InitializeGamepad()
+	-- Hide unnecessary TransmogFrame elements for gamepad.
+	self.CloseButton:Hide();
+end
+
+function TransmogFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetUpGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+end
 
 TransmogOutfitCollectionMixin = {
 	DYNAMIC_EVENTS = {
@@ -414,6 +593,20 @@ function TransmogOutfitCollectionMixin:OnLoad()
 	view:SetPadding(padTop, pad, pad, pad, spacing);
 
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.OutfitList.ScrollBox, self.OutfitList.ScrollBar, view);
+
+	local scrollBox = self.OutfitList.ScrollBox;
+	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnUpdate, function()
+		self:RefreshSmartNavJumps();
+	end, self);
+
+	scrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, function(_, frame)
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(frame.OutfitButton, SMART_NAV_INPUT_DIRECTION.DOWN);
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(frame.OutfitIcon, SMART_NAV_INPUT_DIRECTION.DOWN);
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(self.PurchaseOutfitButton, SMART_NAV_INPUT_DIRECTION.UP);
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(frame.OutfitButton, SMART_NAV_INPUT_DIRECTION.UP);
+	end, self);
+
+
 	ScrollUtil.AddResizableChildrenBehavior(self.OutfitList.ScrollBox);
 
 	self.PurchaseOutfitButton:SetScript("OnMouseDown", function(button)
@@ -662,6 +855,47 @@ function TransmogOutfitCollectionMixin:SetCostModifierTooltip(tooltip)
 	self.costModifierTooltip = tooltip;
 end
 
+function TransmogOutfitCollectionMixin:GetFirstButtonForSection()
+	if self.SaveOutfitButton:IsEnabled() then
+		return self.SaveOutfitButton;
+	end
+
+	local outfitButtons = self.OutfitList.ScrollBox:GetFrames();
+	return outfitButtons and outfitButtons[1] and outfitButtons[1].OutfitButton;
+end
+
+function TransmogOutfitCollectionMixin:RefreshSmartNavJumps()
+	local scrollBox = self.OutfitList.ScrollBox;
+
+	-- Clear previous overrides
+	for _, frame in ipairs(scrollBox:GetFrames()) do
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(frame.OutfitButton, SMART_NAV_INPUT_DIRECTION.DOWN);
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(frame.OutfitIcon, SMART_NAV_INPUT_DIRECTION.DOWN);
+	end
+	SmartNavigation_ClearJumpNavigationOverridesInDirection(self.PurchaseOutfitButton, SMART_NAV_INPUT_DIRECTION.UP);
+
+	-- Add jump override for last outft button
+	local dataProvider = scrollBox:GetDataProvider();
+	if not dataProvider or dataProvider:GetSize() == 0 then
+		return;
+	end
+
+	local firstElementData = dataProvider:Find(1);
+	local firstFrame = scrollBox:FindFrame(firstElementData);
+	if firstFrame then
+		SmartNavigation_AddJumpNavigationOverride(firstFrame.OutfitButton, SMART_NAV_INPUT_DIRECTION.UP, self.ShowEquippedGearSpellFrame.Button);
+	end
+
+	local lastElementData = dataProvider:Find(dataProvider:GetSize());
+	local lastFrame = scrollBox:FindFrame(lastElementData);
+	if not lastFrame then
+		return;
+	end
+
+	SmartNavigation_AddJumpNavigationOverride(lastFrame.OutfitButton, SMART_NAV_INPUT_DIRECTION.DOWN, self.PurchaseOutfitButton);
+	SmartNavigation_AddJumpNavigationOverride(lastFrame.OutfitIcon, SMART_NAV_INPUT_DIRECTION.DOWN, self.PurchaseOutfitButton);
+	SmartNavigation_AddJumpNavigationOverride(self.PurchaseOutfitButton, SMART_NAV_INPUT_DIRECTION.UP, lastFrame.OutfitButton);
+end
 
 ShowEquippedGearSpellFrameMixin = {};
 
@@ -726,6 +960,15 @@ function TransmogOutfitPopupMixin:OnShow()
 		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetFontObject(GameFontHighlightSmall);
 	end
 	self.IconSelector:SetSelectedCallback(OnIconSelected);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local returnButton;
+		if (self.openedFromContextActionMenu) then
+			returnButton = GamepadSharedUtility.ContextActionManager:GetPreviousFocusedButton();
+			self.openedFromContextActionMenu = nil;
+		end
+		self:GiveGamepadFocus(TransmogFrame, returnButton);
+	end
 end
 
 -- Overridden.
@@ -915,6 +1158,12 @@ function TransmogCharacterMixin:OnShow()
 	self:RefreshHideIgnoredToggle();
 	self:RefreshSheatheWeaponToggle();
 	self:RefreshPreviewedWeaponToggle();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local controlFrame = self.ModelScene.ControlFrame;
+		controlFrame:UpdateLayout();
+		controlFrame:Show();
+	end
 end
 
 function TransmogCharacterMixin:OnHide()
@@ -1195,20 +1444,23 @@ function TransmogCharacterMixin:RefreshSlots()
 				local slotID = transmogLocation:GetSlotID();
 				if slotID ~= nil then
 					local appearanceID = slotFrame:GetEffectiveTransmogID();
-					local itemTransmogInfo = ItemUtil.CreateItemTransmogInfo(appearanceID, secondaryAppearanceID, illusionID);
+					local itemTransmogInfo = nil;
+					if appearanceID ~= 0 or secondaryAppearanceID ~= 0 or illusionID ~= 0 then
+						itemTransmogInfo = ItemUtil.CreateItemTransmogInfo(appearanceID, secondaryAppearanceID, illusionID);
+					end
 					local currentItemTransmogInfo = actor:GetItemTransmogInfo(slotID);
 
 					-- Need the main category for mainhand.
 					local mainHandCategoryID;
 					local isLegionArtifact = false;
-					if transmogLocation:IsMainHand() then
+					if transmogLocation:IsMainHand() and appearanceID ~= 0 then
 						mainHandCategoryID = C_TransmogOutfitInfo.GetItemModifiedAppearanceEffectiveCategory(appearanceID);
 						isLegionArtifact = TransmogUtil.IsCategoryLegionArtifact(mainHandCategoryID);
 						itemTransmogInfo:ConfigureSecondaryForMainHand(isLegionArtifact);
 					end
 
 					-- Update only if there is a change or it can recurse (offhand is processed first and mainhand might override offhand).
-					if not itemTransmogInfo:IsEqual(currentItemTransmogInfo) or isLegionArtifact then
+					if (itemTransmogInfo and not itemTransmogInfo:IsEqual(currentItemTransmogInfo)) or isLegionArtifact then
 						-- if we are replacing, we need to reset the sheathing location for removal
 					
 						if transmogLocation:IsEitherHand() or transmogLocation:IsRangedSlot() then
@@ -1250,6 +1502,8 @@ function TransmogCharacterMixin:RefreshSlots()
 	if not self.selectedSlotData then
 		self:SetInitialSelectedSlot();
 	end
+
+	self:RefreshSmartNavJumps();
 end
 
 function TransmogCharacterMixin:RefreshSelectedSlot()
@@ -1262,6 +1516,28 @@ function TransmogCharacterMixin:RefreshSelectedSlot()
 		local forceRefresh = true;
 		TransmogFrame:SelectSlot(slotFrame, forceRefresh);
 	end
+end
+
+function TransmogCharacterMixin:RefreshSmartNavJumps()
+	-- Clear previous overrides
+	local leftSlotButtons = self.LeftSlots:GetLayoutChildren();
+	for _, button in ipairs(leftSlotButtons) do
+		SmartNavigation_ClearJumpNavigationOverrides(button);
+	end
+
+	local bottomSlotButtons = self.BottomSlots:GetLayoutChildren();
+	for _, button in ipairs(bottomSlotButtons) do
+		SmartNavigation_ClearJumpNavigationOverrides(button);
+	end
+
+	-- Add slot jump overrides
+	local lastLeftSlotButton = leftSlotButtons[#leftSlotButtons];
+	SmartNavigation_AddJumpNavigationOverride(lastLeftSlotButton, SMART_NAV_INPUT_DIRECTION.DOWN, TransmogFrame.OutfitCollection.PurchaseOutfitButton)
+
+	local lastBottomSlotButton = bottomSlotButtons[#bottomSlotButtons];
+	local rightSlotButtons = self.RightSlots:GetLayoutChildren();
+	local lastRightSlotButton = rightSlotButtons[#rightSlotButtons]
+	SmartNavigation_AddJumpNavigationOverride(lastBottomSlotButton, SMART_NAV_INPUT_DIRECTION.RIGHT, lastRightSlotButton)
 end
 
 function TransmogCharacterMixin:SetInitialSelectedSlot()
@@ -1427,6 +1703,10 @@ function TransmogCharacterMixin:GetItemTransmogInfoList()
 	return actor:GetItemTransmogInfoList();
 end
 
+function TransmogCharacterMixin:GetFirstButtonForSection()
+	local leftSlotButtons = self.LeftSlots:GetLayoutChildren();
+	return leftSlotButtons and leftSlotButtons[1];
+end
 
 TransmogWardrobeMixin = {
 	HELPTIP_INFO = {
@@ -1487,7 +1767,7 @@ function TransmogWardrobeMixin:OnLoad()
 
 	self.itemsTabID = self:AddNamedTab(TRANSMOG_TAB_ITEMS, self.TabContent.ItemsFrame);
 	self.setsTabID = self:AddNamedTab(TRANSMOG_TAB_SETS, self.TabContent.SetsFrame);
-	self.custmSetsTabID = self:AddNamedTab(TRANSMOG_TAB_CUSTOM_SETS, self.TabContent.CustomSetsFrame);
+	self.customSetsTabID = self:AddNamedTab(TRANSMOG_TAB_CUSTOM_SETS, self.TabContent.CustomSetsFrame);
 	self.situationsTabID = self:AddNamedTab(TRANSMOG_TAB_SITUATIONS, self.TabContent.SituationsFrame);
 
 	self:UpdateTabs();
@@ -1511,7 +1791,7 @@ end
 function TransmogWardrobeMixin:UpdateTabs()
 	self.TabHeaders:SetTabShown(self.itemsTabID, true);
 	self.TabHeaders:SetTabShown(self.setsTabID, C_TransmogSets:HasAnyValidSets());
-	self.TabHeaders:SetTabShown(self.custmSetsTabID, true);
+	self.TabHeaders:SetTabShown(self.customSetsTabID, true);
 	self.TabHeaders:SetTabShown(self.situationsTabID, true);
 end
 
@@ -1529,6 +1809,13 @@ function TransmogWardrobeMixin:SetTab(tabID)
 	TabSystemOwnerMixin.SetTab(self, tabID);
 
 	self:CheckShowHelptips(tabID);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local targetButton = self:GetFirstButtonForTab();
+		SmartNavigation:SelectButton(targetButton);
+
+		TransmogFrame:RefreshTabIndicators();
+	end
 end
 
 function TransmogWardrobeMixin:CheckShowHelptips(tabID)
@@ -1543,7 +1830,7 @@ function TransmogWardrobeMixin:CheckShowHelptips(tabID)
 		local customSets = C_TransmogCollection.GetCustomSets();
 		if #customSets > 0 then
 			bitfieldFlag = Enum.FrameTutorialAccount.TransmogCustomSetsMigration;
-			helpTipParent = self:GetTabButton(self.custmSetsTabID);
+			helpTipParent = self:GetTabButton(self.customSetsTabID);
 		else
 			local helptipInfo = self.HELPTIP_INFO[Enum.FrameTutorialAccount.TransmogCustomSetsMigration];
 			if helptipInfo then
@@ -1555,7 +1842,7 @@ function TransmogWardrobeMixin:CheckShowHelptips(tabID)
 	if not bitfieldFlag then
 		if tabID == self.setsTabID then
 			bitfieldFlag = Enum.FrameTutorialAccount.TransmogSets;
-		elseif tabID == self.custmSetsTabID then
+		elseif tabID == self.customSetsTabID then
 			bitfieldFlag = Enum.FrameTutorialAccount.TransmogCustomSets;
 		elseif tabID == self.situationsTabID then
 			bitfieldFlag = Enum.FrameTutorialAccount.TransmogSituations;
@@ -1577,6 +1864,30 @@ function TransmogWardrobeMixin:UpdateSlot(slotData, forceRefresh)
 	self:SetToItemsTab();
 end
 
+function TransmogWardrobeMixin:GetFirstButtonForSection()
+	local currentTabID = self:GetTab();
+	return self:GetFirstButtonForTab(currentTabID);
+end
+
+function TransmogWardrobeMixin:GetFirstButtonForTab()
+	SmartNavigation:RefreshButtonGroups();
+	local targetButton;
+
+	if TabSystemOwnerMixin.GetTab(self) == self.itemsTabID then
+		local wardrobeItems = self.TabContent.ItemsFrame.PagedContent:GetFrames();
+		targetButton = wardrobeItems[1] or self.TabContent.ItemsFrame.DisplayTypes.DisplayTypeUnassignedButton;
+	elseif TabSystemOwnerMixin.GetTab(self) == self.setsTabID then
+		local wardrobeSets = self.TabContent.SetsFrame.PagedContent:GetFrames();
+		targetButton = wardrobeSets[1] or nil;
+	elseif TabSystemOwnerMixin.GetTab(self) == self.customSetsTabID then
+		local customWardrobeSets = self.TabContent.CustomSetsFrame.PagedContent:GetFrames();
+		targetButton = customWardrobeSets[1] or self.TabContent.CustomSetsFrame.NewCustomSetButton;
+	elseif TabSystemOwnerMixin.GetTab(self) == self.situationsTabID then
+		targetButton = self.TabContent.SituationsFrame.DefaultsButton;
+	end
+
+	return targetButton;
+end
 
 TransmogWardrobeItemsMixin = {
 	DYNAMIC_EVENTS = {

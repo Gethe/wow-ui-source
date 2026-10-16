@@ -29,7 +29,7 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="Text" inherits="GameFontNormalLarge" justifyH="LEFT">
-					<Size x ="250" />
+					<Size x ="220" />
 					<Anchors>
 						<Anchor point="LEFT" relativeKey="$parent.Icon" relativePoint="RIGHT" x="10" />
 					</Anchors>
@@ -91,23 +91,6 @@
 			<KeyValue key="disabledOverlayAlpha" value="0.5" type="number"/>
 			<KeyValue key="buttonContext" value="ButtonContext_CharacterCreateRaceButton" type="string"/>
 		</KeyValues>
-		<Frames>
-			<Frame parentKey="RaceName">
-				<Size x="1" y="1"/>
-				<Anchors>
-					<Anchor point="TOP" relativePoint="BOTTOM" x="2" y="7"/>
-				</Anchors>
-				<Layers>
-					<Layer level="OVERLAY">
-						<FontString parentKey="Text" inherits="GameFontNormalMed2Outline" justifyH="CENTER" justifyV="MIDDLE">
-							<Anchors>
-								<Anchor point="TOP"/>
-							</Anchors>
-						</FontString>
-					</Layer>
-				</Layers>
-			</Frame>
-		</Frames>
 	</CheckButton>
 
 	<CheckButton name="CharacterCreateAllianceButtonTemplate" inherits="CharacterCreateRaceButtonTemplate" virtual="true">
@@ -317,7 +300,7 @@
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="1" type="number"/>
 						</KeyValues>
-						<Size x="390" y="260"/>
+						<Size x="360" y="260"/>
 						<Frames>
 							<Frame parentKey="ScrollBarHint" inherits="GamepadScrollBarHintTemplate" hidden="true"/>
 						</Frames>
@@ -326,7 +309,7 @@
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="2" type="number"/>
 						</KeyValues>
-						<Size x="390" y="260"/>
+						<Size x="360" y="260"/>
 						<Frames>
 							<Frame parentKey="ScrollBarHint" inherits="GamepadScrollBarHintTemplate" hidden="true"/>
 						</Frames>
@@ -335,7 +318,7 @@
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="3" type="number"/>
 						</KeyValues>
-						<Size x="390" y="260"/>
+						<Size x="360" y="260"/>
 						<Frames>
 							<Frame parentKey="ScrollBarHint" inherits="GamepadScrollBarHintTemplate" hidden="true"/>
 						</Frames>

@@ -761,7 +761,7 @@ function RealmList_SetupGamepad()
 	realmListSelectBinding:AddButtonContext("ButtonContext_RealmListRealmButton");
 
 	RealmList.footer = GamepadSharedUtility.CreatePromptedBindingFooter(RealmListBackground, "RealmList");
-	RealmList.footer:SetAnchorOffsets(10, -40);
+	RealmList.footer:SetAnchorOffsets(10, -20);
 	RealmList.footer:AddPromptedBinding(realmListSelectBinding);
 	RealmList.footer:AddStandardSelectPrompt();
 	RealmList.footer:AddStandardBackPrompt();

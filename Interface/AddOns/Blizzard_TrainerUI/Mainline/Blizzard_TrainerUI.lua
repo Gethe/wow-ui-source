@@ -745,6 +745,8 @@ function ClassTrainerFrame_InitServiceButton(skillButton, elementData)
 		skillButton.alternateCost:Hide();
 	end
 
+	skillButton:UpdateNameWidth();
+
 	-- Place the highlight and lock the highlight state
 	if isProfession then
 		local noAvailableSlot = select(2, GetProfessions()) ~= nil;
@@ -866,6 +868,9 @@ function ClassTrainerCategoryButtonMixin:OnSmartNavSelect()
 end
 
 ClassTrainerSkillButtonMixin = {};
+
+function ClassTrainerSkillButtonMixin:UpdateNameWidth()
+end
 
 function ClassTrainerSkillButtonMixin:OnSmartNavSelect()
 	-- Make sure smart nav stays in sync with selected services

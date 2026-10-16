@@ -31,11 +31,23 @@ function LegacyChallengesPageMixin:OnEvent(event, ...)
 			self:TrySelectChallengeResettingFilters(self.pendingChallengeID);
 			self.pendingChallengeID = nil;
 		end
+
+		self:TrySelectDefaultCategory();
 	end
 end
 
 function LegacyChallengesPageMixin:OnShow()
+	-- The client drops the search data on every loading screen and only rebuilds it when a search is set.
+	local searchText = self.CategoryList.SearchBox:GetText();
+	SetAchievementSearchString(searchText);
+
+	local categoryID = self:GetOpenCategoryID();
 	self:UpdateCategoryList();
+	if categoryID then
+		EventRegistry:TriggerEvent("Legacy.OpenToChallengeCategory", categoryID);
+	end
+
+	self:TrySelectDefaultCategory();
 
 	LegacyChallengeObjectives.clearOnClose = false;
 
@@ -49,6 +61,44 @@ end
 function LegacyChallengesPageMixin:UpdateCategoryList()
 	local dataProvider = self:GenerateDataProvider();
 	self.CategoryList.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.DiscardScrollPosition);
+end
+
+function LegacyChallengesPageMixin:GetOpenCategoryID()
+	local categoryList = self.CategoryList;
+	local selectedElementData = categoryList.selectionBehavior:GetFirstSelectedElementData();
+	if selectedElementData then
+		return selectedElementData:GetData().categoryInfo.id;
+	end
+
+	if categoryList.selectedInfo then
+		return categoryList.selectedInfo.id;
+	end
+
+	return categoryList.activeCollapsibleCategoryID;
+end
+
+function LegacyChallengesPageMixin:TrySelectDefaultCategory()
+	if self.defaultCategoryHandled then
+		return;
+	end
+
+	-- This is the case where we haven't fully built the achievements list yet, and will retry on ACHIEVEMENT_SEARCH_UPDATED.
+	if GetNumFilteredAchievements() == 0 then
+		return;
+	end
+
+	self.defaultCategoryHandled = true;
+
+	local categoryList = self.CategoryList;
+	if self.pendingChallengeID or categoryList.selectionBehavior:GetFirstSelectedElementData() then
+		return;
+	end
+
+	local _className, classFile = UnitClass("player");
+	local categoryID = LegacyChallengeDefaultCategories[classFile];
+	if categoryID then
+		EventRegistry:TriggerEvent("Legacy.OpenToChallengeCategory", categoryID);
+	end
 end
 
 local function HasChallenges(categoryID)
@@ -75,8 +125,8 @@ local function AllChallengesFiltered(categoryID)
 	local filteredChallenges = LegacySystem.GetFilteredChallenges();
 	local startOffset, count = LegacySystem.GetChallengeIndices(categoryID);
 	for index = 1 + startOffset, count + startOffset do
-		local achievementId = GetAchievementInfo(categoryID, index);
-		if filteredChallenges[achievementId] then
+		local achievementId, _,_,_,_,_,_,_,_,_,_,_, wasEarnedByMe = GetAchievementInfo(categoryID, index);
+		if LegacySystem.IsChallengeVisible(filteredChallenges, achievementId, wasEarnedByMe) then
 			return false;
 		end
 	end
@@ -207,12 +257,12 @@ function LegacyChallengesPageMixin:SetupFilterMenu(dropdown, rootDescription)
 end
 
 function LegacyChallengesPageMixin:OnFilterUpdate()
-	local selectedElementData = self.CategoryList.selectionBehavior:GetFirstSelectedElementData();
+	local categoryID = self:GetOpenCategoryID();
 
 	self:UpdateCategoryList();
 
-	if selectedElementData then
-		EventRegistry:TriggerEvent("Legacy.OpenToChallengeCategory", selectedElementData:GetData().categoryInfo.id);
+	if categoryID then
+		EventRegistry:TriggerEvent("Legacy.OpenToChallengeCategory", categoryID);
 	end
 end
 
@@ -247,7 +297,7 @@ function LegacyChallengesPageMixin:SelectChallenge(achievementID)
 		return;
 	end
 
-	-- The first time the page is shown, search results arrive after the category list is built.
+	-- Search results arrive after the page is shown, since showing the page requests them.
 	local awaitingSearchResults = GetNumFilteredAchievements() == 0;
 
 	local searchBox = self.CategoryList.SearchBox;

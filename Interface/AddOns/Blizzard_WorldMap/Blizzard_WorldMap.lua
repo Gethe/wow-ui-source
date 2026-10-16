@@ -915,7 +915,7 @@ function WorldMapMixin:FocusSelectedQuest()
 
 	if (questID == C_SuperTrack.GetSuperTrackedQuestID()) then
 		C_SuperTrack.ClearAllSuperTracked();
-	else
+	elseif questID ~= nil then
 		C_SuperTrack.SetSuperTrackedQuestID(questID);
 	end
 end

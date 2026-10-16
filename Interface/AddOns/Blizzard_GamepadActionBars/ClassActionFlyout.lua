@@ -68,7 +68,10 @@ function GamepadClassActionButtonMixin:OnUpdate(_)
 	else
 		if isShoulderDown and isTriggerDown and GamepadSharedUtility.InputBindingManager:IsOnlyCoreBindingSetActive() then
 			self:TriggerSecureClick("LeftButton", true);
+			-- Consume and reset targeting modifiers to ensure tab targeting doesn't kick in, and
+			-- that analog targeting gets disabled.
 			GamepadTargetLogic:ConsumeModifier();
+			GamepadMode.ResetModifiers();
 		end
 	end
 end
@@ -76,4 +79,9 @@ end
 function GamepadClassActionButtonMixin:ApplyPressedStyle(pressed)
 	self.isPressed = pressed;
 	GamepadActionBarButtonMixin.ApplyPressedStyle(self, pressed);
+end
+
+function GamepadClassActionButtonMixin:ReapplyStyle()
+	local isPressed = IsKeyDown(self.shoulderButton) and IsKeyDown(self.triggerButton);
+	self:ApplyPressedStyle(isPressed);
 end

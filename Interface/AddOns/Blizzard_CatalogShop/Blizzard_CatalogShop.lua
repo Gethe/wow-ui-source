@@ -870,6 +870,10 @@ function CatalogShopMixin:InitializeGamepad()
 	self.ProductDetailsContainerFrame.BackButton:Hide();
 	self.CatalogShopDetailsFrame.ButtonContainer.PurchaseButton:Hide();
 	self.CatalogShopDetailsFrame.ButtonContainer.DetailsButton:Hide();
+
+	local carousel = self.CatalogShopDetailsFrame.CarouselContainer;
+	carousel.CarouselLeftButton:Hide();
+	carousel.CarouselRightButton:Hide();
 end
 
 function CatalogShopMixin:FocusGamepad()

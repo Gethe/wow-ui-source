@@ -256,17 +256,10 @@
 					</Frame>
 					<Frame parentKey="TargetFrameContentContextual" setAllPoints="true">
 						<Layers>
-							<Layer level="OVERLAY" textureSubLevel="-1">
-								<Texture parentKey="PvpBackgroundCircle" inherits="PvpBackgroundCircleTemplate" hidden="true">
-									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent" relativePoint="TOPRIGHT" x="-23" y="-50"/>
-									</Anchors>
-								</Texture>
-							</Layer>
 							<Layer level="OVERLAY">
 								<Texture parentKey="PvpBackgroundIcon" inherits="PvpBackgroundIconTemplate" hidden="true">
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.PvpBackgroundCircle" relativePoint="CENTER" x="0" y="0"/>
+										<Anchor point="TOP" relativeKey="$parent" relativePoint="TOPRIGHT" x="-24" y="-65"/>
 									</Anchors>
 								</Texture>
 							</Layer>

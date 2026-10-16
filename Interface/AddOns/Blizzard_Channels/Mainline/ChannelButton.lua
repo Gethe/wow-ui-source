@@ -192,7 +192,16 @@ function ChannelButtonBaseMixin:SetIsSelectedChannel(isSelected)
 		self:LockHighlight();
 	else
 		self:SetHighlightAtlas("voicechat-channellist-row-highlight");
-		self:UnlockHighlight();
+		local isSmartNavFocused = InputUtil.IsGamepadUIEnabled() and SmartNavigation:IsCurrentButton(self);
+		if not isSmartNavFocused then
+			self:UnlockHighlight();
+		end
+	end
+end
+
+function ChannelButtonBaseMixin:OnSmartNavDeselect()
+	if self:GetChannelList():GetSelectedChannelButton() == self then
+		self:LockHighlight();
 	end
 end
 
@@ -246,13 +255,17 @@ function ChannelButtonMixin:OnLoad()
 	ChannelButtonBaseMixin.OnLoad(self);
 end
 
+function ChannelButtonMixin:HandleRightClick()
+	self:GetChannelList():ShowDropdown(self);
+end
+
 function ChannelButtonMixin:OnClick(button)
 	ChannelButtonBaseMixin.OnClick(self, button);
 
 	self:GetChannelList():SetSelectedChannel(self);
 
 	if button == "RightButton" then
-		self:GetChannelList():ShowDropdown(self);
+		self:HandleRightClick();
 	end
 end
 

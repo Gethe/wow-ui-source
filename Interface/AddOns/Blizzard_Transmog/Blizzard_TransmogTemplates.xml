@@ -9,6 +9,9 @@
 		</Anchors>
 		<Frames>
 			<Button parentKey="OutfitIcon" registerForClicks="LeftButtonUp, RightButtonUp">
+				<KeyValues>
+					<KeyValue key="buttonContext" value="ButtonContext_TransmogOutfitButton" type="string"/>
+				</KeyValues>
 				<Size x="45" y="45"/>
 				<Anchors>
 					<Anchor point="LEFT" x="5" y="0"/>
@@ -49,6 +52,9 @@
 				<HighlightTexture parentKey="HighlightTexture" atlas="transmog-outfit-spellframe" alphaMode="ADD"/>
 			</Button>
 			<Button parentKey="OutfitButton" registerForClicks="LeftButtonUp, RightButtonUp">
+				<KeyValues>
+					<KeyValue key="buttonContext" value="ButtonContext_TransmogOutfitButton" type="string"/>
+				</KeyValues>
 				<Size x="208" y="43"/>
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.OutfitIcon" relativePoint="RIGHT" x="3" y="0"/>

@@ -27,9 +27,6 @@ function GraphicsOverrides.CreateAdvancedSettingsTable(category, addFunc)
 	addFunc(advSettings, category, "graphicsViewDistance", FARCLIP, "PROXY_VIEW_DISTANCE");
 	addFunc(advSettings, category, "graphicsEnvironmentDetail", ENVIRONMENT_DETAIL, "PROXY_ENVIRONMENT_DETAIL");
 	addFunc(advSettings, category, "graphicsGroundClutter", GROUND_CLUTTER, "PROXY_GROUND_CLUTTER");
-	if (C_VideoOptions.IsLinearEnabledOnStart()) then
-		addFunc(advSettings, category, "graphicsBloomUserMult", BLOOM_MULT, "PROXY_BLOOM_MULT");
-	end
 	return advSettings;
 end
 
@@ -60,9 +57,6 @@ function GraphicsOverrides.CreateAdvancedRaidSettingsTable(category, addFunc)
 	addFunc(advRaidSettings, category, "raidGraphicsViewDistance", FARCLIP, "PROXY_RAID_VIEW_DISTANCE");
 	addFunc(advRaidSettings, category, "raidGraphicsEnvironmentDetail", ENVIRONMENT_DETAIL, "PROXY_RAID_ENVIRONMENT_DETAIL");
 	addFunc(advRaidSettings, category, "raidGraphicsGroundClutter", GROUND_CLUTTER, "PROXY_RAID_GROUND_CLUTTER");
-	if (C_VideoOptions.IsLinearEnabledOnStart()) then
-		addFunc(advRaidSettings, category, "raidGraphicsBloomUserMult", BLOOM_MULT, "PROXY_RAID_BLOOM_MULT");
-	end
 
 	return advRaidSettings;
 end
@@ -101,7 +95,7 @@ function GraphicsOverrides.CreateHDSDToggleOptions(category, layout)
 
 	local function SetValue(value)
 		if C_GameRules.IsSDHDToggleEnabled() then
-			C_GameRules.SetSDHDToggleValue(value);
+			C_GameRules.SetSDHDToggleValue(value, Enum.SdToggleUsageLocationUI.OptionsMenu);
 		end
 	end
 

@@ -773,6 +773,7 @@ EDIT_MODE_MODERN_SYSTEM_MAP =
 			relativePoint = "BOTTOM",
 			offsetX = -28,
 			offsetY = 128,
+			bottomBarOffsetX = BOTTOM_ACTION_BAR_DEFAULT_OFFSET_X,
 		},
 	},
 
@@ -1292,7 +1293,7 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 			relativeTo = "GamepadMainActionBarFrame",
 			relativePoint = "TOP",
 			offsetX = 0,
-			offsetY = 46,
+			offsetY = 20,
 		},
 	},
 

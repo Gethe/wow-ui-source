@@ -868,7 +868,7 @@ function CombatAudioAlertManagerMixin:ProcessTargetChange()
 	local finalText, categoryType;
 
 	if self:IsSayTargetNameEnabled() then
-		finalText = UnitName("target");
+		finalText = addonTable.GetUnitNameForSpeech("target");
 		categoryType = Enum.CombatAudioAlertCategory.General;
 	end
 
@@ -1255,6 +1255,11 @@ function addonTable:IsSayIfTargetedEnabled()
 	return (self:GetSayIfTargetedMode() > 0);
 end
 
+function addonTable.GetUnitNameForSpeech(unit)
+	local name, surname = UnitName(unit);
+	return NameUtil.GetFullNameWithoutRealm(name, surname);
+end
+
 function addonTable:GetUnitFormattedTargetingString(unit)
 	local sayIfTargetedMode = self:GetSayIfTargetedMode();
 
@@ -1264,7 +1269,7 @@ function addonTable:GetUnitFormattedTargetingString(unit)
 	elseif sayIfTargetedMode == Enum.CombatAudioAlertSayIfTargetedType.Targeted then
 		text = CAA_YOURE_TARGETED_TEXT;
 	elseif sayIfTargetedMode == Enum.CombatAudioAlertSayIfTargetedType.TargetedBy then
-		local unitName = UnitName(unit);
+		local unitName = addonTable.GetUnitNameForSpeech(unit);
 		if unitName then
 			text = CAA_TARGETED_BY_TEXT:format(unitName);
 		else

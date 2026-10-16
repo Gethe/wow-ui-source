@@ -137,6 +137,8 @@ end
 UIPanelCloseButtonDefaultAnchorsMixin = {};
 
 function UIPanelCloseButtonDefaultAnchorsMixin:OnLoad()
+	self:SetSize(24, 24);
+	self:ClearAllPoints();
 	self:SetPoint("TOPRIGHT", 1, 0);
 end
 
@@ -540,6 +542,17 @@ end
 function PanelTemplates_SetNumTabs(frame, numTabs)
 	frame.numTabs = numTabs;
 	PanelTemplates_AnchorTabs(frame);
+
+	if frame and frame.GetFocusFrameGlow and (frame.numTabs > 0) then
+		local frameGlow = frame:GetFocusFrameGlow();
+		local firstTab = GetTabByIndex(frame, 1);
+		local frameStrata = frame:GetFrameStrata();
+
+		if (frameStrata == frameGlow:GetFrameStrata()) and (frameStrata == firstTab:GetFrameStrata()) then
+			local tabLevel = firstTab:GetFrameLevel();
+			frameGlow:SetFrameLevel(tabLevel - 1);
+		end
+	end
 end
 
 function PanelTemplates_AnchorTabs(frame, numTabs)
@@ -657,6 +670,10 @@ function PanelTemplates_SetDisabledTabState(tab)
 end
 
 MaximizeMinimizeButtonFrameMixin = {};
+
+function MaximizeMinimizeButtonFrameMixin:OnLoad()
+	self:SetSize(24, 24);
+end
 
 function MaximizeMinimizeButtonFrameMixin:OnShow()
 	if self.isAutomaticAction then

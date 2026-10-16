@@ -4,6 +4,8 @@
 ## LoadFirst: 1
 ## AllowLoad: Glue
 ## EscalateErrorDuringLoad: 1
+[Family]\GlueParentUtil.lua [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\GlueParentUtil.lua [AllowLoadGameType camelot]
 Shared\GlueParentUtil.lua
 [Family]\GlueScreenTags.lua [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
 [Game]\GlueScreenTags.lua [AllowLoadGameType camelot]

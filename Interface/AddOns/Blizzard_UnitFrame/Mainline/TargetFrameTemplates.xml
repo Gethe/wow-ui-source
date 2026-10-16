@@ -9,7 +9,5 @@
 
 	<!--Dummy templates - overriden in other flavors-->
 	<Texture name="LevelBackgroundCircleTemplate" virtual="true"/>
-	<Texture name="PvpBackgroundCircleTemplate" virtual="true"/>
 	<Texture name="PvpBackgroundIconTemplate" virtual="true"/>
-
 </Ui>

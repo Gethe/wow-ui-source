@@ -99,6 +99,9 @@ function QuestFrame_OnEvent(self, event, ...)
 	if( not SplashFrame:IsShown() )then
 		QuestFrame_SetPortrait();
 		ShowUIPanel(QuestFrame);
+		if InputUtil.IsGamepadUIEnabled() then
+			self.gamepadFooter:Refresh();
+		end
 	end
 	if ( not QuestFrame:IsShown() ) then
 		QuestFrameGreetingPanel:Hide();
@@ -816,8 +819,8 @@ function QuestFrame_SetupGamepad(self)
 			SmartNavigation:SetScrollFrameForFrame(self, QuestRewardScrollFrame);
 			GamepadScrollBarHint:SetOwner(QuestRewardScrollFrame.ScrollBar.Track.Thumb, "CENTER");
 			GamepadScrollBarHint:Show();
-			SmartNavigation:SelectFirstButton();
 			SmartNavigation:SuspendCursor(false);
+			SmartNavigation:SelectFirstButton();
 		elseif QuestProgressScrollFrame:IsVisible() then
 			SmartNavigation:SetScrollFrameForFrame(self, QuestProgressScrollFrame);
 			GamepadScrollBarHint:SetOwner(QuestProgressScrollFrame.ScrollBar.Track.Thumb, "CENTER");
@@ -826,8 +829,8 @@ function QuestFrame_SetupGamepad(self)
 			SmartNavigation:SetScrollFrameForFrame(self, QuestGreetingScrollFrame);
 			GamepadScrollBarHint:SetOwner(QuestGreetingScrollFrame.ScrollBar.Track.Thumb, "CENTER");
 			GamepadScrollBarHint:Show();
-			SmartNavigation:SelectFirstButton();
 			SmartNavigation:SuspendCursor(false);
+			SmartNavigation:SelectFirstButton();
 		end
 	end
 

@@ -178,7 +178,7 @@
 	<Button name="TimeManagerClockButton" parent="MinimapCluster">
 		<Size x="40" y="16"/>
 		<Anchors>
-			<Anchor point="TOPRIGHT" relativeKey="$parent.BorderTop" x="-4" y="0"/>
+			<Anchor point="TOPRIGHT" relativeKey="$parent.ZoneTextButton" x="-4" y="0"/>
 		</Anchors>
 		<HitRectInsets>
 			<AbsInset left="8" right="5" top="3" bottom="3"/>

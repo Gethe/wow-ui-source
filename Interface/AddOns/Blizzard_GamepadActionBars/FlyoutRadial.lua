@@ -215,16 +215,23 @@ function GamepadFlyoutMixin:AttachToButton(button)
 
 	button:SetParent(self);
 
+	-- Re-anchor the popup to not have the flyout move if the button does
+	self:ClearAllPoints();
+	self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", button:GetCenter());
+
 	self.SelectionArrow:Hide();
 	self.SelectionIndicator:Hide();
 end
 
 -- Overrides FlyoutPopupMixin:DetachFromButton
 function GamepadFlyoutMixin:DetatchFromButton()
-	self.flyoutButton.Arrow:Show();
-	self.flyoutButton:SetParent(self.prevButtonParent);
+	local button = self.flyoutButton;
+	button.Arrow:Show();
+	button:SetParent(self.prevButtonParent);
 
 	FlyoutPopupMixin.DetatchFromButton(self);
+
+	button:ReapplyStyle();
 end
 
 function GamepadFlyoutMixin:OnLoad()

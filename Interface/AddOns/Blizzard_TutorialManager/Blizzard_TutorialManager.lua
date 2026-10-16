@@ -66,6 +66,12 @@ function TutorialManager:ResetTutorials()
 	EventRegistry:TriggerEvent("TutorialManager.TutorialsReset");
 end
 
+function TutorialManager:CanShutdownTutorial()
+	-- player is trying to shut the NPE Tutorial off
+	local _, _, _, completed = GetAchievementInfo(self.NPE_AchievementID);			
+	return completed; -- they can  ONLY do that if the achievement is completed
+end
+
 function TutorialManager:OnCVARsUpdated(cvar, value)
 	if (cvar == "showTutorials" ) then
 		local isActive = (value == "1");
@@ -75,10 +81,8 @@ function TutorialManager:OnCVARsUpdated(cvar, value)
 		self.IsActive = isActive;
 		if self.IsActive then
 			self:Begin();			
-		else
-			-- player is trying to shut the NPE Tutorial off
-			local _, _, _, completed = GetAchievementInfo(self.NPE_AchievementID);			
-			if (completed) then -- they can  ONLY do that if the achievement is completed
+		else	
+			if self:CanShutdownTutorial() then
 				self:Shutdown();
 			end
 		end
@@ -150,6 +154,10 @@ function TutorialManager:ShutdownTutorial(tutorialKey)
 	self:RemoveTutorial(tutorialKey);
 end
 
+function TutorialManager:CanShowSupertrackTutorial()
+	return true;
+end
+
 -- WATCHER API
 function TutorialManager:AddWatcher(tutorialInstance, autoStart, optionalOverrideKey, args)
 	if tutorialInstance and (tutorialInstance:Name() or optionalOverrideKey) then
@@ -219,6 +227,10 @@ function TutorialManager:CheckHasCompletedTutorial(tutorialBitfield, tutorial, c
 		local hasCompleted = GetCVarBitfield(tutorialBitfield, tutorial);
 		callback(hasCompleted);
 	end);
+end
+
+function TutorialManager:CanBootstrapNPE()
+	return C_PlayerInfo.IsPlayerNPERestricted();
 end
 
 TutorialManager:Initialize();

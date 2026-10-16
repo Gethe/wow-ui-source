@@ -37,16 +37,12 @@ end
 function LegacyChallengeDetailPaneMixin:GenerateDataProvider(categoryInfo)
 	self.info = categoryInfo;
 	local startOffset, count = LegacySystem.GetChallengeIndices(categoryInfo.id);
-	local hideIncomplete = not LegacyChallengeFilters[ACHIEVEMENTFRAME_FILTER_INCOMPLETE].value;
 	local filteredChallenges = LegacySystem.GetFilteredChallenges();
 
 	local newDataProvider = CreateDataProvider();
 	for index = 1 + startOffset, count + startOffset do
 		local achievementId, _,_,_,_,_,_,_,_,_,_,_, wasEarnedByMe = GetAchievementInfo(categoryInfo.id, index);
-		-- consider achievements earned by others incomplete
-		local shouldHideCompletedByOther = not wasEarnedByMe and hideIncomplete;
-		local passedFilter = filteredChallenges[achievementId];
-		if not shouldHideCompletedByOther and passedFilter then
+		if LegacySystem.IsChallengeVisible(filteredChallenges, achievementId, wasEarnedByMe) then
 			newDataProvider:Insert({category = categoryInfo.id, index = index, id = achievementId});
 		end
 	end

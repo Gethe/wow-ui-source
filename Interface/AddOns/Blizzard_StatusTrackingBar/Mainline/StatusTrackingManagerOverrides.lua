@@ -111,7 +111,7 @@ function StatusTrackingBarContainerMixin:UpdateDividers(numSegments)
 	for i = 1, numSegments - 1 do
 		local xOffset = segmentWidth * i;
 		local divider = dividersPool:Acquire();
-		divider:SetPoint("LEFT", self, "LEFT", xOffset, 0);
+		PixelUtil.SetPoint(divider, "LEFT", self, "LEFT", xOffset, 0);
 		divider:Show();
 	end
 end

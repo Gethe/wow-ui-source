@@ -62,8 +62,11 @@ function LFGListingMixin:OnLoad()
 				self:SetDirty(true);
 			end
 
+			local isDiscordVoiceEnabled = C_Discord.IsVoiceEnabled();
 			for _, voiceMode in ipairs(VOICE_CHAT_MODE_ORDER) do
-				rootDescription:CreateRadio(LFGVoiceChat.VoiceModeLabels[voiceMode], IsSelected, SetSelected, voiceMode);
+				if voiceMode ~= Enum.LFGEntryVoiceMode.Discord or isDiscordVoiceEnabled then
+					rootDescription:CreateRadio(LFGVoiceChat.VoiceModeLabels[voiceMode], IsSelected, SetSelected, voiceMode);
+				end
 			end
 		end);
 	end
@@ -738,6 +741,15 @@ function LFGListingOptionsButton:SetupOptionsMenu()
 end
 
 -------------------------------------------------------
+----------Level Ranges Checkbox
+-------------------------------------------------------
+LFGListingLevelRangesCheckboxMixin = { };
+
+function LFGListingLevelRangesCheckboxMixin:OnClick()
+	SetCVar("disableSuggestedLevelActivityFilter", self:GetChecked());
+end
+
+-------------------------------------------------------
 ----------Category Selection
 -------------------------------------------------------
 function LFGListingCategorySelection_OnShow(self)
@@ -775,7 +787,7 @@ function LFGListingCategorySelection_AddButton(self, btnIndex, categoryID)
 	local button = self.CategoryButtons[btnIndex];
 	if ( not button ) then
 		self.CategoryButtons[btnIndex] = CreateFrame("BUTTON", nil, self, "LFGListingCategoryTemplate");
-		self.CategoryButtons[btnIndex]:SetPoint("TOP", self.CategoryButtons[btnIndex - 1], "BOTTOM", 0, -8);
+		self.CategoryButtons[btnIndex]:SetPoint("TOP", self.CategoryButtons[btnIndex - 1], "BOTTOM", 0, -4);
 		button = self.CategoryButtons[btnIndex];
 	end
 
@@ -976,6 +988,10 @@ function LFGListingActivityView_UpdateActivities(self)
 		elseif (lhs.buttonType == LFGLISTING_BUTTONTYPE_ACTIVITY) then return ActivitySortComparator(lhsNode, rhsNode);
 		else return strcmputf8i(lhs.name, rhs.name) < 0;
 		end
+	end
+
+	if self.LevelRangesCheckbox then
+		self.LevelRangesCheckbox.Checkbox:SetChecked(GetCVarBool("disableSuggestedLevelActivityFilter"));
 	end
 
 	local categoryID = LFGListingFrame:GetCategorySelection();

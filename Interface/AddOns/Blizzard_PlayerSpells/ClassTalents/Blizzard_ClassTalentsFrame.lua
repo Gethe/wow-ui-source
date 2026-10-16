@@ -890,9 +890,20 @@ function ClassTalentsFrameMixin:RefreshConfigID()
 			self:SetConfigID(Constants.TraitConsts.VIEW_TRAIT_CONFIG_ID, forceUpdate);
 		end
 	else
-		local activeConfigID = C_ClassTalents.GetActiveConfigID() or self.configIDs[1];
+		local activeConfigID = C_ClassTalents.GetActiveConfigID();
+		if activeConfigID == nil and self.configIDs then
+			activeConfigID = self.configIDs[1];
+		end
+		if activeConfigID == nil then
+			activeConfigID = self:GetFallbackConfigID();
+		end
 		self:SetConfigID(activeConfigID);
 	end
+end
+
+-- Overridden in flavors that have a config to fall back on when there is no active config.
+function ClassTalentsFrameMixin:GetFallbackConfigID()
+	return nil;
 end
 
 function ClassTalentsFrameMixin:SetConfigID(configID, forceUpdate)

@@ -827,8 +827,9 @@ function UnitFrameHealthBar_Update(statusbar, unit)
 			if ( not statusbar.lockColor ) then
 				statusbar:SetStatusBarColor(0.5, 0.5, 0.5);
 			end
-			statusbar:SetValue(maxValue);
-			statusbar.currValue = maxValue;
+			local disconnectedValue = UnitIsDead(unit) and 0 or maxValue;
+			statusbar:SetValue(disconnectedValue);
+			statusbar.currValue = disconnectedValue;
 		else
 			local currValue = UnitHealth(unit);
 			if ( not statusbar.lockColor ) then
@@ -950,8 +951,9 @@ function UnitFrameManaBar_Update(statusbar, unit)
 
 		statusbar.disconnected = not UnitIsConnected(unit);
 		if ( statusbar.disconnected ) then
-			statusbar:SetValue(maxValue);
-			statusbar.currValue = maxValue;
+			local disconnectedValue = UnitIsDead(unit) and 0 or maxValue;
+			statusbar:SetValue(disconnectedValue);
+			statusbar.currValue = disconnectedValue;
 			if ( not statusbar.lockColor ) then
 				statusbar:SetStatusBarColor(0.5, 0.5, 0.5);
 			end

@@ -3842,6 +3842,7 @@ local Unit =
 				{ Name = "agilityDelta", Type = "number", Nilable = false },
 				{ Name = "staminaDelta", Type = "number", Nilable = false },
 				{ Name = "intellectDelta", Type = "number", Nilable = false },
+				{ Name = "spiritDelta", Type = "number", Nilable = false },
 			},
 		},
 		{

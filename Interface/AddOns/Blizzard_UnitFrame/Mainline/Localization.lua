@@ -45,7 +45,10 @@ local l10nTable = {
 			PetFrameManaBarTextRight:SetPoint("RIGHT", PetFrameManaBarText:GetParent(), "RIGHT", 0, 1);
 
 			-- Player Frame
-			PlayerLevelText:SetPoint("TOPRIGHT", -24.5, -26);
+			local playerFrameContentMain = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain;
+			if not playerFrameContentMain.skipLevelTextLocalizationAdjustment then
+				PlayerLevelText:SetPoint("TOPRIGHT", -24.5, -26);
+			end
 
 			local playerFrameHealthBar = PlayerFrame_GetHealthBar();
 			playerFrameHealthBar.TextString:SetPoint("CENTER", 0, 1);
@@ -84,7 +87,10 @@ local l10nTable = {
 
 		localizeFrames = function()
 			-- Player Frame
-			PlayerLevelText:SetPoint("TOPRIGHT", -24.5, -26);
+			local playerFrameContentMain = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain;
+			if not playerFrameContentMain.skipLevelTextLocalizationAdjustment then
+				PlayerLevelText:SetPoint("TOPRIGHT", -24.5, -26);
+			end
 
 			-- Target Frame
 			local targetFrameContentMain = TargetFrame.TargetFrameContent.TargetFrameContentMain;

@@ -58,13 +58,23 @@ local SecureTransfer =
 			},
 		},
 		{
-			Name = "GetMailInfo",
+			Name = "GetMailReceiveInfo",
 			Type = "Function",
 			HasRestrictions = true,
 
 			Returns =
 			{
-				{ Name = "mailInfo", Type = "MailInfo", Nilable = false },
+				{ Name = "mailInfo", Type = "MailReceiveInfo", Nilable = false },
+			},
+		},
+		{
+			Name = "GetMailSendInfo",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "mailInfo", Type = "MailSendInfo", Nilable = false },
 			},
 		},
 		{
@@ -92,6 +102,21 @@ local SecureTransfer =
 				{ Name = "shouldShow", Type = "bool", Nilable = false },
 			},
 		},
+		{
+			Name = "ShouldShowTradeRMTWarning",
+			Type = "Function",
+			HasRestrictions = true,
+
+			Returns =
+			{
+				{ Name = "shouldShow", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "TakeMailMoney",
+			Type = "Function",
+			HasRestrictions = true,
+		},
 	},
 
 	Events =
@@ -115,6 +140,12 @@ local SecureTransfer =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "SecureTransferConfirmTakeMailMoney",
+			Type = "Event",
+			LiteralName = "SECURE_TRANSFER_CONFIRM_TAKE_MAIL_MONEY",
+			SynchronousEvent = true,
+		},
+		{
 			Name = "SecureTransferConfirmTradeAccept",
 			Type = "Event",
 			LiteralName = "SECURE_TRANSFER_CONFIRM_TRADE_ACCEPT",
@@ -131,7 +162,16 @@ local SecureTransfer =
 	Tables =
 	{
 		{
-			Name = "MailInfo",
+			Name = "MailReceiveInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "sender", Type = "string", Nilable = false },
+				{ Name = "money", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "MailSendInfo",
 			Type = "Structure",
 			Fields =
 			{

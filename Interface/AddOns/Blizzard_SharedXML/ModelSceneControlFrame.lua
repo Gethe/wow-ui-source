@@ -241,6 +241,23 @@ function ModelScenelRotateButtonMixin:OnMouseUp()
 	end
 end
 
+function ModelScenelRotateButtonMixin:OnSmartNavClick()
+	self:RotateStep();
+end
+
+function ModelScenelRotateButtonMixin:RotateStep()
+	local camera = self.modelScene and self.modelScene:GetActiveCamera();
+	if not camera then
+		return;
+	end
+
+	if self.rotateDirection == "left" then
+		camera:AdjustYaw(-1, -1, 0.25);
+	else
+		camera:AdjustYaw(1, 1, 0.25);
+	end
+end
+
 --------------------------------------------------
 -- MODEL SCENE RESET BUTTON MIXIN
 ModelSceneResetButtonMixin = CreateFromMixins(ModelSceneControlButtonMixin);

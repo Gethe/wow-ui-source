@@ -55,6 +55,7 @@ local function GetCriticalHitChance(levelOffset, weaponSkill)
 end
 
 local WEAPON_SKILL_BOSS_LEVEL_OFFSET = 3;
+local RAID_BOSS_LEVEL = 63;
 local WEAPON_SKILL_SAME_LEVEL_OFFSET = 0;
 
 local function FormatSignedPercent(value)
@@ -278,13 +279,13 @@ function SkillDetailFrameMixin:AddWeaponSkillRows(skillInfo)
 	self:AddSpacer(8);
 	self:AddCategory(WEAPON_SKILL_DETAIL_BOSS_HEADER);
 
-	local bossHit = FormatSignedPercent(GetHitDodgeParryChance(WEAPON_SKILL_BOSS_LEVEL_OFFSET, weaponSkill));
-	local bossCrit = FormatSignedPercent(GetCriticalHitChance(WEAPON_SKILL_BOSS_LEVEL_OFFSET, weaponSkill));
+	local bossHit = FormatSignedPercent(GetHitDodgeParryChance(RAID_BOSS_LEVEL - UnitLevel("player"), weaponSkill));
+	local bossCrit = FormatSignedPercent(GetCriticalHitChance(RAID_BOSS_LEVEL - UnitLevel("player"), weaponSkill));
 
 	if isRanged then
 		self:AddWrappedRow(WEAPON_SKILL_DETAIL_BOSS_RANGED:format(bossHit, bossCrit), NORMAL_FONT_COLOR);
 	else
-		local bossDefenseSkill = GetExpectedSkillForLevelOffset(WEAPON_SKILL_BOSS_LEVEL_OFFSET);
+		local bossDefenseSkill = RAID_BOSS_LEVEL * SKILL_RANKS_PER_SKILL_LEVEL;
 		local glancingChance = FormatPercent(GetGlancingBlowChance(weaponSkill, bossDefenseSkill) * 100);
 		local glancingPenalty = FormatPercent(GetGlancingBlowPenalty(weaponSkill, bossDefenseSkill) * 100);
 		self:AddWrappedRow(WEAPON_SKILL_DETAIL_BOSS:format(bossHit, bossCrit, glancingChance, glancingPenalty), NORMAL_FONT_COLOR);

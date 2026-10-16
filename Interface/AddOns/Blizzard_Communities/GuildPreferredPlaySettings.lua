@@ -13,27 +13,6 @@ local function BuildLockoutText(secondsRemaining)
 	return format(PREFERRED_PLAY_SETTINGS_LOCKED_REASON_FORMAT, SecondsToTime(secondsRemaining));
 end
 
-local function FindNameForID(ids, names, targetID)
-	if not ids then
-		return nil;
-	end
-
-	for index, id in ipairs(ids) do
-		if id == targetID then
-			return (names and names[index]) or tostring(id);
-		end
-	end
-
-	return nil;
-end
-
--- All dropdowns share the same DropDownList frames, so the text has to be set explicitly rather
--- than letting UIDropDownMenu_SetSelectedValue derive it from whichever menu was populated last.
-local function SetDropdownSelection(dropdown, selectedID, ids, names)
-	UIDropDownMenu_SetSelectedValue(dropdown, selectedID);
-	UIDropDownMenu_SetText(dropdown, FindNameForID(ids, names, selectedID) or "");
-end
-
 function CommunitiesGuildPreferredPlaySettingsFrameMixin:OnLoad()
 	self.state = {
 		loaded = false,
@@ -52,16 +31,11 @@ function CommunitiesGuildPreferredPlaySettingsFrameMixin:OnLoad()
 	self.DatacenterLabel:SetText(PREFERRED_GUILD_DATACENTER_LOCALITY_LABEL);
 	self.LocaleApplyButton:SetMotionScriptsWhileDisabled(true);
 	self.DatacenterApplyButton:SetMotionScriptsWhileDisabled(true);
+	self.LocaleDropdown:SetWidth(180);
+	self.DatacenterDropdown:SetWidth(180);
 
-	UIDropDownMenu_SetWidth(self.LocaleDropdown, 180);
-	UIDropDownMenu_Initialize(self.LocaleDropdown, function(dropdown, level)
-		self:InitializeLocaleDropdown(level);
-	end);
-
-	UIDropDownMenu_SetWidth(self.DatacenterDropdown, 180);
-	UIDropDownMenu_Initialize(self.DatacenterDropdown, function(dropdown, level)
-		self:InitializeDatacenterDropdown(level);
-	end);
+	self:InitializeLocaleDropdown();
+	self:InitializeDatacenterDropdown();
 
 	self:RegisterEvent("GUILD_PREFERRED_PLAY_SETTINGS_UPDATED");
 end
@@ -111,12 +85,8 @@ function CommunitiesGuildPreferredPlaySettingsFrameMixin:RefreshState()
 	self.LocaleApplyButton:SetShown(canChangeLocale);
 	self.LocaleLabel:SetShown(canChangeLocale);
 	if canChangeLocale then
-		local localeIDs, localeNames = C_AccountServices.GetPreferredLocales();
-		SetDropdownSelection(self.LocaleDropdown, self.stagedLocaleID, localeIDs, localeNames);
-		UIDropDownMenu_EnableDropDown(self.LocaleDropdown);
-		if not isGuildMaster then
-			UIDropDownMenu_DisableDropDown(self.LocaleDropdown);
-		end
+		self:InitializeLocaleDropdown()
+		self.LocaleDropdown:SetEnabled(isGuildMaster);
 
 		local localeLockoutSeconds = GetLockoutSecondsRemaining(lastPreferredLocaleChangeDate, changeCooldownDays);
 		local canApplyLocale = isGuildMaster and loaded and localeLockoutSeconds == 0 and self.stagedLocaleID ~= preferredLocaleID;
@@ -132,12 +102,8 @@ function CommunitiesGuildPreferredPlaySettingsFrameMixin:RefreshState()
 	self.DatacenterApplyButton:SetShown(canChangeDatacenterLocality);
 	self.DatacenterLabel:SetShown(canChangeDatacenterLocality);
 	if canChangeDatacenterLocality then
-		local datacenterLocalityIDs, datacenterLocalityNames = C_AccountServices.GetPreferredDatacenterLocalities();
-		SetDropdownSelection(self.DatacenterDropdown, self.stagedDatacenterLocalityID, datacenterLocalityIDs, datacenterLocalityNames);
-		UIDropDownMenu_EnableDropDown(self.DatacenterDropdown);
-		if not isGuildMaster then
-			UIDropDownMenu_DisableDropDown(self.DatacenterDropdown);
-		end
+		self:InitializeDatacenterDropdown();
+		self.DatacenterDropdown:SetEnabled(isGuildMaster);
 
 		local datacenterLockoutSeconds = GetLockoutSecondsRemaining(lastPreferredDatacenterLocalityChangeDate, changeCooldownDays);
 		local canApplyDatacenter = isGuildMaster and loaded and datacenterLockoutSeconds == 0 and self.stagedDatacenterLocalityID ~= preferredDatacenterLocalityID;
@@ -150,42 +116,52 @@ function CommunitiesGuildPreferredPlaySettingsFrameMixin:RefreshState()
 	end
 end
 
-function CommunitiesGuildPreferredPlaySettingsFrameMixin:InitializeLocaleDropdown(level)
-	local localeIDs, localeNames = C_AccountServices.GetPreferredLocales();
-	localeIDs = localeIDs or {};
-	localeNames = localeNames or {};
-
-	for index, localeID in ipairs(localeIDs) do
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = localeNames[index] or tostring(localeID);
-		info.value = localeID;
-		info.func = function(button)
-			self.stagedLocaleID = button.value;
-			SetDropdownSelection(self.LocaleDropdown, button.value, localeIDs, localeNames);
-			self:RefreshState();
-		end;
-		info.checked = (self.stagedLocaleID == localeID);
-		UIDropDownMenu_AddButton(info, level);
+function CommunitiesGuildPreferredPlaySettingsFrameMixin:InitializeLocaleDropdown()
+	local function IsSelected(localeID)
+		return self.stagedLocaleID == localeID;
 	end
+
+	local function SetSelection(localeID)
+		self.stagedLocaleID = localeID;
+		self:RefreshState();
+	end
+
+	self.LocaleDropdown:SetupMenu(function(dropdown, rootDescription)
+		local localeIDs, localeNames = C_AccountServices.GetPreferredLocales();
+		localeIDs = localeIDs or {};
+		localeNames = localeNames or {};
+
+		for index, localeID in ipairs(localeIDs) do
+			local text = localeNames[index] or tostring(localeID);
+			local radio = rootDescription:CreateButton(text, nop, localeID);
+			radio:SetIsSelected(IsSelected);
+			radio:SetResponder(SetSelection);
+		end
+	end);
 end
 
-function CommunitiesGuildPreferredPlaySettingsFrameMixin:InitializeDatacenterDropdown(level)
-	local datacenterLocalityIDs, datacenterLocalityNames = C_AccountServices.GetPreferredDatacenterLocalities();
-	datacenterLocalityIDs = datacenterLocalityIDs or {};
-	datacenterLocalityNames = datacenterLocalityNames or {};
-
-	for index, datacenterLocalityID in ipairs(datacenterLocalityIDs) do
-		local info = UIDropDownMenu_CreateInfo();
-		info.text = datacenterLocalityNames[index] or tostring(datacenterLocalityID);
-		info.value = datacenterLocalityID;
-		info.func = function(button)
-			self.stagedDatacenterLocalityID = button.value;
-			SetDropdownSelection(self.DatacenterDropdown, button.value, datacenterLocalityIDs, datacenterLocalityNames);
-			self:RefreshState();
-		end;
-		info.checked = (self.stagedDatacenterLocalityID == datacenterLocalityID);
-		UIDropDownMenu_AddButton(info, level);
+function CommunitiesGuildPreferredPlaySettingsFrameMixin:InitializeDatacenterDropdown()
+	local function IsSelected(datacenterLocalityID)
+		return self.stagedDatacenterLocalityID == datacenterLocalityID;
 	end
+
+	local function SetSelection(datacenterLocalityID)
+		self.stagedDatacenterLocalityID = datacenterLocalityID;
+		self:RefreshState();
+	end
+
+	self.DatacenterDropdown:SetupMenu(function(dropdown, rootDescription)
+		local datacenterLocalityIDs, datacenterLocalityNames = C_AccountServices.GetPreferredDatacenterLocalities();
+		datacenterLocalityIDs = datacenterLocalityIDs or {};
+		datacenterLocalityNames = datacenterLocalityNames or {};
+
+		for index, datacenterLocalityID in ipairs(datacenterLocalityIDs) do
+			local text = datacenterLocalityNames[index] or tostring(datacenterLocalityID);
+			local radio = rootDescription:CreateButton(text, nop, datacenterLocalityID);
+			radio:SetIsSelected(IsSelected);
+			radio:SetResponder(SetSelection);
+		end
+	end);
 end
 
 function CommunitiesGuildPreferredPlaySettingsFrameMixin:ApplyLocaleSelection()

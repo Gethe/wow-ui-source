@@ -1,5 +1,5 @@
 StaticPopupDialogs["CONFIRM_OVERWRITE_EQUIPMENT_SET"].OnAccept = function(dialog, data)
-	 C_EquipmentSet.SaveEquipmentSet(data, dialog.selectedIcon); 
+	 C_EquipmentSet.SaveEquipmentSet(data, dialog.selectedIcon);
 	 GearManagerPopupFrame:Hide();
 end;
 
@@ -325,6 +325,7 @@ StaticPopupDialogs["DEATH"] = {
 	hideOnEscape = false,
 	noCloseOnAlt = true,
 	cancels = "RECOVER_CORPSE",
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
@@ -402,6 +403,7 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 	end,
 	timeout = StaticPopupTimeoutSec,
 	whileDead = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["PLUNDERSTORM_LEAVE"] = {
@@ -904,37 +906,23 @@ StaticPopupDialogs["CONFIRM_DESTROY_COMMUNITY"] = {
 	exclusive = 1,
 	whileDead = 1,
 	hideOnEscape = 1,
-	hasEditBox = 1,
 	maxLetters = 32,
+	requiresConfirmation = true,
+	confirmationString = COMMUNITIES_DELETE_CONFIRM_STRING,
 	OnShow = function(dialog, clubInfo)
 		if clubInfo.clubType == Enum.ClubType.BattleNet then
-			dialog:SetText(CONFIRM_DESTROY_COMMUNITY:format(clubInfo.name));
+			dialog:SetText(CONFIRM_DESTROY_COMMUNITY_UNPROMPTED:format(clubInfo.name));
 		else
-			dialog:SetText(CONFIRM_DESTROY_CHARACTER_COMMUNITY:format(clubInfo.name));
+			dialog:SetText(CONFIRM_DESTROY_CHARACTER_COMMUNITY_UNPROMPTED:format(clubInfo.name));
 		end
 
 		dialog:GetButton1():Disable();
 		dialog:GetButton2():Enable();
-		dialog:GetEditBox():SetFocus();
 	end,
 	OnHide = function(dialog, data)
 		ChatFrameUtil.FocusActiveWindow();
-		dialog:GetEditBox():SetText("");
 		MerchantFrame_ResetRefundItem();
 	end,
-	EditBoxOnEnterPressed = function(editBox, data)
-		if ( editBox:GetParent():GetButton1():IsEnabled() ) then
-			editBox:GetParent():GetButton1():Click();
-			editBox:GetParent():Hide();
-		end
-	end,
-	EditBoxOnTextChanged = function(editBox, data)
-		StaticPopup_StandardConfirmationTextHandler(editBox, COMMUNITIES_DELETE_CONFIRM_STRING);
-	end,
-	EditBoxOnEscapePressed = function(editBox, data)
-		StaticPopup_StandardEditBoxOnEscapePressed(editBox);
-		ClearCursor();
-	end
 };
 
 local function ClubInviteDisabledOnEnter(dialog)
@@ -1342,6 +1330,7 @@ StaticPopupDialogs["LEAVING_TUTORIAL_AREA"] = {
 		end
 	end,
 	selectCallbackByIndex = true,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["CLUB_FINDER_ENABLED_DISABLED"] = {
@@ -1590,4 +1579,5 @@ StaticPopupDialogs["VOICE_CHAT_JOIN_GROUP"] = {
 	showAlert = 1,
 	hideOnEscape = 1,
 	whileDead = 1,
+	skipGamepadAutoFocus = 1,
 };

@@ -36,11 +36,7 @@
 			<AbsInset left="0" right="30" top="0" bottom="74"/>
 		</HitRectInsets>
 		<Frames>
-			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
-				<Anchors>
-					<Anchor point="TOPRIGHT" x="0" y="0"/>
-				</Anchors>
-			</Button>
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
 
 			<Button name="$parentTab1" parentKey="Tab1" inherits="LFGVanillaTabButtonTemplate" mixin="LFGVanillaListTabButtonMixin" id="1" text="LFG_LIST_TAB_1">
 				<KeyValues>

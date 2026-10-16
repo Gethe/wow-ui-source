@@ -35,11 +35,52 @@ function CommunitiesAvatarPickerDialogMixin:OnLoad()
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 end
 
+function CommunitiesAvatarPickerDialogMixin:SetupGamepad()
+	GamepadBaseDialogMixin.SetupGamepad(self);
+
+	SmartNavigation:SetSmartNavPanelInfoAddedCallback(self, function()
+		SmartNavigation:SetScrollFrameForFrame(self, self.ScrollBox)
+		local selectedButton = self:ScrollSelectionIntoView();
+		if selectedButton then
+			SmartNavigation:SetTargetButtonForFrame(self, selectedButton);
+		end
+	end);
+end
+
+function CommunitiesAvatarPickerDialogMixin:InitGamepad()
+	GamepadBaseDialogMixin.InitGamepad(self);
+
+	self.Selector.CancelButton:Hide();
+	self.Selector.OkayButton:Hide();
+	self.Selector.BottomRightCorner:SetAtlas("macropopup-bottomright-nobuttons", true);
+end
+
+function CommunitiesAvatarPickerDialogMixin:UninitGamepad()
+	GamepadBaseDialogMixin.UninitGamepad(self);
+
+	self.Selector.CancelButton:Show();
+	self.Selector.OkayButton:Show();
+	self.Selector.BottomRightCorner:SetAtlas("macropopup-bottomright", true);
+end
+
+function CommunitiesAvatarPickerDialogMixin:SmartNavigationCloseHandler()
+	self.Selector.CancelButton:Click();
+	return true;
+end
+
+function CommunitiesAvatarPickerDialogMixin:ScrollSelectionIntoView()
+	local selectedIndex = table.indexof(self.avatarIdList, self.avatarId);
+	if selectedIndex then
+		self.ScrollBox:ScrollToElementDataIndex(selectedIndex);
+		return self.ScrollBox:FindFrame(selectedIndex);
+	end
+end
+
 function CommunitiesAvatarPickerDialogMixin:OnShow()
 	self:SetAttribute("shown", true);
 
 	FrameUtil.RegisterFrameForEvents(self, COMMUNITIES_AVATAR_PICKER_DIALOG_SCROLL_FRAME_EVENTS);
-	
+
 	self.ScrollBox:ScrollToBegin();
 	self.avatarIdList = C_Club.GetAvatarIdList(self:GetClubType());
 	self:Refresh();
@@ -100,4 +141,12 @@ end
 function CommunitiesAvatarButtonMixin:OnClick(buttonName, down)
 	CommunitiesAvatarPickerDialog:SetAvatarId(self.avatarId);
 	CommunitiesAvatarPickerDialog:Refresh();
+end
+
+function CommunitiesAvatarButtonMixin:OnSmartNavSelect()
+	self:OnClick();
+end
+
+function CommunitiesAvatarButtonMixin:OnSmartNavClick()
+	CommunitiesAvatarPickerDialog.Selector.OkayButton:Click();
 end

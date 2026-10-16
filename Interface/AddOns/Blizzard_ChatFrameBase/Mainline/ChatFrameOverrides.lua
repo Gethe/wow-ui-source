@@ -192,14 +192,25 @@ local function GetRegionalChatUnavailableString()
 	return DoesActivePlayerHaveMentorStatus() and NPEV2_CHAT_UNAVAILABLE or NPEV2_REGIONAL_CHAT_UNAVAILABLE;
 end
 
+-- This is level up event has a lot of stats deltas.
+function ChatFrameMixin:PlayerLevelUp(...)
+end
+
+function ChatFrameMixin:PlayerLevelChanged(...)
+	local oldLevel, newLevel, real = ...;
+	ChatFrameUtil.DisplayLevelUp(self, oldLevel, newLevel, real);
+end
+
 function ChatFrameMixin:SystemEventHandler(event, ...)
 	if ( event == "TIME_PLAYED_MSG" ) then
 		local arg1, arg2 = ...;
 		ChatFrameUtil.DisplayTimePlayed(self, arg1, arg2);
 		return true;
+	elseif ( event == "PLAYER_LEVEL_UP" ) then
+		self:PlayerLevelUp(...);
+		return true;
 	elseif ( event == "PLAYER_LEVEL_CHANGED" ) then
-		local oldLevel, newLevel, real = ...;
-		ChatFrameUtil.DisplayLevelUp(self, oldLevel, newLevel, real);
+		self:PlayerLevelChanged(...);
 		return true;
 	elseif ( event == "GUILD_MOTD" ) then
 		ChatFrameUtil.DisplayGMOTD(self, ...);

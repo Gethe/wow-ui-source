@@ -26,6 +26,15 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "AreRealIDFriendsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areRealIDFriendsEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "AreTitleFriendCustomNamesEnabled",
 			Type = "Function",
 
@@ -164,6 +173,21 @@ local BattleNet =
 			Returns =
 			{
 				{ Name = "inviteInfo", Type = "BNetFriendInviteInfo", Nilable = true },
+			},
+		},
+		{
+			Name = "GetFriendLevelFromInviteText",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inviteText", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "friendLevel", Type = "BattleNetFriendLevel", Nilable = false },
 			},
 		},
 		{

@@ -24,6 +24,17 @@ local Tutorial =
 			Name = "ReturnToTutorialArea",
 			Type = "Function",
 		},
+		{
+			Name = "SendTutorialStartButtonTelem",
+			Type = "Function",
+			HasRestrictions = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "skipTutorial", Type = "bool", Nilable = false },
+			},
+		},
 	},
 
 	Events =

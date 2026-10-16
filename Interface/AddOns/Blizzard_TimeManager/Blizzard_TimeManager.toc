@@ -9,5 +9,6 @@
 Blizzard_TimeManager_Bootstrap.lua [Bootstrap]
 [Family]\Blizzard_TimeManager.lua
 Cata\Blizzard_TimeManagerOverrides.lua	[AllowLoadGameType cata, mists]
+Camelot\Blizzard_TimeManagerOverrides.lua [AllowLoadGameType camelot]
 [Family]\Blizzard_TimeManager.xml
 [Family]\Localization.lua

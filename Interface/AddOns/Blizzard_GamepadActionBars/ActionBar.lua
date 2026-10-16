@@ -188,9 +188,13 @@ end
 ]]
 function GamepadActionBarMixin:IsBarEmpty()
 	for _, actionButton in ipairs(self.actionButtons) do
-		local pageUnitSlotID = actionButton:GetGamepadPageUnitSlotID();
-		if not GamepadActionBarBindingUtil.IsBindablePageUnitSlotID(pageUnitSlotID) then
-			return false;	-- Handle hardcoded bindings.
+		if self.supportsActionButtonPaging then
+			local pageUnitSlotID = actionButton:GetGamepadPageUnitSlotID();
+			assert(pageUnitSlotID);
+
+			if not GamepadActionBarBindingUtil.IsBindablePageUnitSlotID(pageUnitSlotID) then
+				return false;	-- Handle hardcoded bindings.
+			end
 		end
 
 		if (actionButton:HasAction()) then

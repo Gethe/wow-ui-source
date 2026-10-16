@@ -1,4 +1,5 @@
 local AUTO_ATTACK_SPELL_ID = 6603;
+local AUTO_RANGED_ATTACK_SPELL_ID = 75;
 
 GamepadMainActionBarFrameMixin = {};
 
@@ -64,20 +65,36 @@ function GamepadMainActionBarFrameMixin:CycleActionBarPages()
 	self.PageUnit:ClickChangePageButton("LeftButton", true);
 end
 
+function GamepadMainActionBarFrameMixin:ResyncAttackState()
+	self.isMeleeAttacking = C_Spell.IsCurrentSpell(AUTO_ATTACK_SPELL_ID);
+	self:RefreshAttackFlash();
+	self:UpdateInteractIcons();
+end
+
 function GamepadMainActionBarFrameMixin:InitializeGamepad()
 	self:Show();
 	self:RegisterEvent("PLAYER_ENTER_COMBAT");
 	self:RegisterEvent("PLAYER_LEAVE_COMBAT");
+	self:RegisterEvent("START_AUTOREPEAT_SPELL");
+	self:RegisterEvent("STOP_AUTOREPEAT_SPELL");
+
+	self:ResyncAttackState();
 end
 
 function GamepadMainActionBarFrameMixin:UninitializeGamepad()
 	self:Hide();
 	self:UnregisterEvent("PLAYER_ENTER_COMBAT");
 	self:UnregisterEvent("PLAYER_LEAVE_COMBAT");
+	self:UnregisterEvent("START_AUTOREPEAT_SPELL");
+	self:UnregisterEvent("STOP_AUTOREPEAT_SPELL");
 end
 
 function GamepadMainActionBarFrameMixin:OnAutoLootCVarChanged()
 	self.autoLootOnTap = CVarCallbackRegistry:GetCVarValueBool("autoLootDefault");
+end
+
+function GamepadMainActionBarFrameMixin:OnAutoRangedCombatCVarChanged()
+	self:ResyncAttackState();
 end
 
 function GamepadMainActionBarFrameMixin:SetUseCompactLayout(useCompactLayout)
@@ -125,6 +142,7 @@ function GamepadMainActionBarFrameMixin:OnLoad()
 	self.showButtonIcons = false;
 	self.showHighlight = true;
 	self.shouldExpand = true;
+	self.buttonOwners = {};
 
 	EditModeSystemMixin.OnSystemLoad(self);
 
@@ -136,6 +154,7 @@ function GamepadMainActionBarFrameMixin:OnLoad()
 
 	self.autoLootOnTap = CVarCallbackRegistry:GetCVarValueBool("autoLootDefault");
 	CVarCallbackRegistry:RegisterCallback("autoLootDefault", self.OnAutoLootCVarChanged, self);
+	CVarCallbackRegistry:RegisterCallback("autoRangedCombat", self.OnAutoRangedCombatCVarChanged, self);
 
 	InputUtil.RegisterForInterfaceTransitions(self);
 	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
@@ -185,8 +204,23 @@ local function MakeInteractIconHandler(unit, name)
 	end;
 end
 
+local function IsAutoRangedCombatEnabled()
+	return not GetBuildOption("CanChangeAutoRangedCombatSpell") or C_CVar.GetCVarBool("autoRangedCombat");
+end
+
+-- Only hunters swap between auto attack and auto shot.
+local function IsAutoRangedCombatActive()
+	return UnitClassBase("player") == "HUNTER" and
+		IsAutoRangedCombatEnabled() and
+		C_Spell.IsAutoRepeatSpell(AUTO_RANGED_ATTACK_SPELL_ID);
+end
+
 local function GetAttackIcon()
-	return C_Spell.GetSpellTexture(AUTO_ATTACK_SPELL_ID);
+	local icon = AUTO_ATTACK_SPELL_ID;
+	if IsAutoRangedCombatActive() then
+		icon = AUTO_RANGED_ATTACK_SPELL_ID;
+	end
+	return C_Spell.GetSpellTexture(icon);
 end
 
 local interactActions = {
@@ -297,15 +331,25 @@ function GamepadMainActionBarFrameMixin:OnEvent(event, ...)
 		self.PageUnit:RefreshActionBarVisibilities();
 		self:UpdateInteractIcons();
 	else
-		local actionBars = self:GetActionBars();
-		local interactButton = actionBars.topBar.Right.ActionButton1;
 		if (event == "PLAYER_ENTER_COMBAT") then
-			interactButton:StartFlash();
-			interactButton.CheckedTexture:Show();
+			self.isMeleeAttacking = true;
 		elseif (event == "PLAYER_LEAVE_COMBAT") then
-			interactButton:StopFlash();
-			interactButton.CheckedTexture:Hide();
+			self.isMeleeAttacking = false;
 		end
+		self:RefreshAttackFlash();
+		self:UpdateInteractIcons();
+	end
+end
+
+-- Auto shot replaces the melee swing (leaving melee combat), so flash while either is active.
+function GamepadMainActionBarFrameMixin:RefreshAttackFlash()
+	local interactButton = self:GetActionBars().topBar.Right.ActionButton1;
+	if self.isMeleeAttacking or IsAutoRangedCombatActive() then
+		interactButton:StartFlash();
+		interactButton.CheckedTexture:Show();
+	else
+		interactButton:StopFlash();
+		interactButton.CheckedTexture:Hide();
 	end
 end
 
@@ -557,15 +601,42 @@ function GamepadMainActionBarFrameMixin:OnInputModifierStateChange(modifierDown)
 end
 
 function GamepadMainActionBarFrameMixin:PressActionButton(inIndex, button, down)
-	local actionBar = self.PageUnit:GetActiveBar();
-	local actionButton = actionBar:GetActionButtonByIndex(inIndex);
+	if button == nil then
+		button = "LeftButton";
+	end
 
-	if actionButton:IsEnabled() then
-		actionButton:Click(button, down);
-		if down then
+	-- On a down we record the owner button of that index so we can ensure the release is sent to
+	-- the same button, even if another action bar becomes active between the down and up.
+	local ownersPerButton = self.buttonOwners[inIndex];
+	if not ownersPerButton then
+		ownersPerButton = {};
+		self.buttonOwners[inIndex] = ownersPerButton;
+	end
+
+	local currOwner = ownersPerButton[button];
+
+	if down then
+		local actionBar = self.PageUnit:GetActiveBar();
+		local actionButton = actionBar:GetActionButtonByIndex(inIndex);
+
+		if actionButton:IsEnabled() then
+			-- Force-release the previous owner
+			if currOwner then
+				self:PressActionButton(inIndex, button, false);
+			end
+
+
+			ownersPerButton[button] = actionButton;
 			actionButton:SetButtonState("PUSHED");
-		else
-			actionButton:SetButtonState("NORMAL");
+			actionButton:Click(button, down);
 		end
+	elseif currOwner then
+		-- Always release the owner rather than the button on the currently active bar. This is
+		-- allowed even if the button is disabled (but it should remain disabled)
+		ownersPerButton[button] = nil;
+		if currOwner:IsEnabled() then
+			currOwner:SetButtonState("NORMAL");
+		end
+		currOwner:Click(button, down);
 	end
 end

@@ -43,6 +43,15 @@ local Expansion =
 			},
 		},
 		{
+			Name = "GetCreditsDisplayInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "info", Type = "table", InnerType = "CreditsDisplayInfo", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCurrentRegionName",
 			Type = "Function",
 
@@ -291,6 +300,20 @@ local Expansion =
 				{ Name = "Standard", Type = "SubscriptionInterstitialType", EnumValue = 0 },
 				{ Name = "LeftNpeArea", Type = "SubscriptionInterstitialType", EnumValue = 1 },
 				{ Name = "MaxLevel", Type = "SubscriptionInterstitialType", EnumValue = 2 },
+			},
+		},
+		{
+			Name = "CreditsDisplayInfo",
+			Type = "Structure",
+			Fields =
+			{
+				{ Name = "isDefault", Type = "bool", Nilable = false },
+				{ Name = "creditsFileID", Type = "number", Nilable = false },
+				{ Name = "keyArt", Type = "string", Nilable = false },
+				{ Name = "background", Type = "string", Nilable = false },
+				{ Name = "name", Type = "string", Nilable = false },
+				{ Name = "logo", Type = "fileID", Nilable = false },
+				{ Name = "soundKit", Type = "number", Nilable = true },
 			},
 		},
 		{

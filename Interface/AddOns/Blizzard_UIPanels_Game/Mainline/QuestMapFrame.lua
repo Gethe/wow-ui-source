@@ -1077,8 +1077,8 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	QuestMapFrame.QuestsFrame.ScrollFrame:Hide();
 	detailsFrame:Show();
 
-	-- save current view
-	detailsFrame.returnMapID = QuestMapFrame:GetParent():GetMapID();
+	-- save current view; SetMapID below re-enters this function, so keep the first value
+	detailsFrame.returnMapID = detailsFrame.returnMapID or QuestMapFrame:GetParent():GetMapID();
 
 	-- destination/waypoint
 	local ignoreWaypoints = false;

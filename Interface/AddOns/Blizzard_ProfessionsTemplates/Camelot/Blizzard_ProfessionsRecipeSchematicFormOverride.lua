@@ -15,3 +15,11 @@ end
 function ProfessionsRecipeSchematicFormMixin:OnReagentSlotCreated(slot)
 	slot:SetWidth(REAGENT_SLOT_WIDTH);
 end
+
+function ProfessionsRecipeSchematicFormMixin:GetOutputItemMaxWidth()
+	return 225;
+end
+
+function ProfessionsRecipeSchematicFormMixin:ShouldAllowMultiline()
+	return true;
+end

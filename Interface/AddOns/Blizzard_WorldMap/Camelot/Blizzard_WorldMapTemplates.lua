@@ -6,3 +6,11 @@ end
 function WorldMapTrackingOptionsButtonMixin:RefreshFilterCounter()
 	-- No-op in Camelot.
 end
+
+function WorldMapTrackingOptionsButtonMixin:CanShowRefreshAccountCompletedQuestFilterTutorial()
+	return false;
+end
+
+function WorldMapTrackingOptionsButtonMixin:CanShowDungeonEntrancesOnMapFilterOption()
+	return false;
+end

@@ -16,6 +16,11 @@ TutorialData.DRUID_BEAR_FORM_LEVEL = 8;
 TutorialData.HUNTER_STABLE_MAX_LEVEL = 9;
 TutorialData.LOW_HEALTH_PERCENTAGE = 0.5;
 TutorialData.MAX_LOOT_CORPSE_LEVEL = 4;
+TutorialData.MAX_CHANGE_EQUIPMENT_LEVEL = 0; -- 0 means it will never stop.
+TutorialData.CHANGE_EQUIPMENT_LIMIT = 0; -- 0 means it will never stop.
+TutorialData.PICK_REWARD_LEVEL = 0; -- 0 means it will never stop.
+
+TutorialData.AUTO_ATTACK_SPELL_ID = 6603; 
 
 TutorialData.UI_Elements = {};
 TutorialData.UI_Elements.BACKPACK =	{MainMenuBarBackpackButton};
@@ -418,6 +423,34 @@ TutorialData.Alliance = {
 	SpecQuestTrackID = 87547;
 }
 
+function TutorialData.Alliance:GetStartingQuest()
+	return TutorialData.Alliance.StartingQuest;
+end
+
+function TutorialData.Alliance:GetStartingQuestGiverCreatureID()
+	return TutorialData.Alliance.StartingQuestGiverCreatureID;
+end
+
+function TutorialData.Alliance:GetStartingQuestInteractString()
+	return TutorialData.Alliance.StartingQuestInteractString;
+end
+
+function TutorialData.Alliance:GetEarlyKillQuestCreaturesByRace()
+	return nil;
+end
+
+function TutorialData.Alliance:GetEarlyKillQuestIDsByRace()
+	return nil;
+end
+
+function TutorialData.Alliance:GetEarlyHostileQuestCreaturesByRace()
+	return nil;
+end
+
+function TutorialData.Alliance:GetEarlyHostileQuestIDByRace()
+	return nil;
+end
+
 -- ------------------------------------------------------------------------------------------------------------
 TutorialData.Horde = {
 	StartingQuest = 59926;
@@ -499,3 +532,31 @@ TutorialData.Horde = {
 
 	SpecQuestTrackID = 90840;
 }
+
+function TutorialData.Horde:GetStartingQuest()
+	return TutorialData.Horde.StartingQuest;
+end
+
+function TutorialData.Horde:GetStartingQuestGiverCreatureID()
+	return TutorialData.Horde.StartingQuestGiverCreatureID;
+end
+
+function TutorialData.Horde:GetStartingQuestInteractString()
+	return TutorialData.Horde.StartingQuestInteractString;
+end
+
+function TutorialData.Horde:GetEarlyKillQuestCreaturesByRace()
+	return nil;
+end
+
+function TutorialData.Horde:GetEarlyKillQuestIDsByRace()
+	return nil;
+end
+
+function TutorialData.Horde:GetEarlyHostileQuestCreaturesByRace()
+	return nil;
+end
+
+function TutorialData.Horde:GetEarlyHostileQuestIDByRace()
+	return nil;
+end

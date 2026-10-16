@@ -1,4 +1,3 @@
-
 -- Copied here for access in the secure environment.
 local HearthsteelAtlasMarkup = CreateAtlasMarkup("hearthsteel-icon-32x32", 16, 16, 0, -1);
 
@@ -47,7 +46,7 @@ function GetSecureMoneyString(money, separateThousands)
 		silverString = SILVER_AMOUNT_TEXTURE:format(silver, 0, 0);
 		copperString = COPPER_AMOUNT_TEXTURE:format(copper, 0, 0);
 	end
-	
+
 	local moneyString = "";
 	local separator = "";
 	if ( gold > 0 ) then
@@ -61,7 +60,7 @@ function GetSecureMoneyString(money, separateThousands)
 	if ( copper > 0 or moneyString == "" ) then
 		moneyString = moneyString..separator..copperString;
 	end
-	
+
 	return moneyString;
 end
 
@@ -74,17 +73,39 @@ function GetSecureTradeWarningString()
 	return nil;
 end
 
+function GetSecureTradeRMTWarningString()
+	if (C_SecureTransfer.ShouldShowTradeRMTWarning()) then
+		return TRADE_RMT_WARNING;
+	end
+
+	return nil;
+end
+
+SecureTransferDialogMixin = {};
+
+function SecureTransferDialogMixin:FocusGamepad()
+	SecureTransferOutbound.FocusGamepad(self);
+end
+
+function SecureTransferDialogMixin:UnfocusGamepad()
+	SecureTransferOutbound.UnfocusGamepad(self);
+end
+
 function SecureTransferDialog_DelayedAccept(self)
-    self.Button1:Disable();
-    C_Timer.After(1, function()
-        self.Button1:Enable();
-    end);
+	self.Button1:Disable();
+	C_Timer.After(1, function()
+		self.Button1:Enable();
+	end);
 end
 
 function SecureTransferDialog_TimerOnAccept(self)
 	self.Button1:Disable();
 	self.acceptTimeLeft = 3;
 	self.Button1:SetText(self.acceptTimeLeft);
+
+	if self.ticker then
+		self.ticker:Cancel();
+	end
 	self.ticker = C_Timer.NewTicker(1, function()
 		self.acceptTimeLeft = self.acceptTimeLeft - 1;
 		if (self.acceptTimeLeft == 0) then
@@ -99,29 +120,42 @@ function SecureTransferDialog_TimerOnAccept(self)
 end
 
 local SECURE_TRANSFER_DIALOGS = {
-    ["CONFIRM_TRADE"] = {
-        text = TRADE_ACCEPT_CONFIRMATION,
+	["CONFIRM_TRADE"] = {
+		text = TRADE_ACCEPT_CONFIRMATION,
 		acceptWarning = GetSecureTradeWarningString,
+		rmtWarning = GetSecureTradeRMTWarningString,
 		onShow = SecureTransferDialog_TimerOnAccept,
-        onAccept = function()
-            C_SecureTransfer.AcceptTrade();
-        end,
-    },
-    ["SEND_MONEY_TO_STRANGER"] = {
-        text = SEND_MONEY_TO_STRANGER_WARNING,
-        money = function() local mailInfo = C_SecureTransfer.GetMailInfo(); return GetSecureMoneyString(mailInfo.sendMoney); end,
+		onAccept = function()
+			C_SecureTransfer.AcceptTrade();
+		end,
+	},
+	["SEND_MONEY_TO_STRANGER"] = {
+		text = SEND_MONEY_TO_STRANGER_WARNING,
+		money = function() local mailInfo = C_SecureTransfer.GetMailSendInfo(); return GetSecureMoneyString(mailInfo.sendMoney); end,
 		onShow = SecureTransferDialog_TimerOnAccept,
-        onAccept = function(self)
-            C_SecureTransfer.SendMail();
-        end,
-    },
-    ["SEND_ITEMS_TO_STRANGER"] = {
-        text = SEND_ITEMS_TO_STRANGER_WARNING,
+		onAccept = function(self)
+			C_SecureTransfer.SendMail();
+		end,
+	},
+	["SEND_ITEMS_TO_STRANGER"] = {
+		text = SEND_ITEMS_TO_STRANGER_WARNING,
 		onShow = SecureTransferDialog_TimerOnAccept,
-        onAccept = function(self)
-            C_SecureTransfer.SendMail();
-        end,
-    },
+		onAccept = function(self)
+			C_SecureTransfer.SendMail();
+		end,
+	},
+	["TAKE_MONEY_FROM_STRANGER"] = {
+		text = TAKE_MONEY_FROM_STRANGER_WARNING,
+		money = function() local info = C_SecureTransfer.GetMailReceiveInfo(); return GetSecureMoneyString(info.money); end,
+		rmtWarning = function() return TRADE_RMT_WARNING; end,
+		onShow = SecureTransferDialog_DelayedAccept,
+		onAccept = function()
+			C_SecureTransfer.TakeMailMoney();
+		end,
+		onCancel = function(self)
+			C_SecureTransfer.Cancel();
+		end,
+	},
 	["CONFIRM_HOUSING_PURCHASE"] = {
 		button1 = ACCEPT,
 		text = HOUSING_MARKET_PURCHASE_CONFIRMATION,
@@ -140,7 +174,7 @@ local SECURE_TRANSFER_DIALOGS = {
 				self:Hide();
 			elseif result == Enum.BulkPurchaseResult.ResultInsufficientFunds then
 				-- Show failure dialog before hiding
-				SecureTransferDialog_Show("HOUSING_PURCHASE_FAILURE_INSUFFICIENT_FUNDS");			
+				SecureTransferDialog_Show("HOUSING_PURCHASE_FAILURE_INSUFFICIENT_FUNDS");
 			else
 				-- Show failure dialog before hiding
 				SecureTransferDialog_Show("HOUSING_PURCHASE_FAILURE");
@@ -207,41 +241,62 @@ local function GetHearthsteelQuantityFromProduct(productInfo)
 end
 
 function SecureTransferDialog_Show(which, ...)
-    if (not SECURE_TRANSFER_DIALOGS[which]) then
-        return;
-    end
+	if (not SECURE_TRANSFER_DIALOGS[which]) then
+		return;
+	end
 
-    local height = 92;
+	local height = 92;
 
-    currentDialog = SECURE_TRANSFER_DIALOGS[which];
-    if (select('#', ...) > 0) then
-        SecureTransferDialog.Text:SetText(string.format(currentDialog.text, ...));
-    else
-        SecureTransferDialog.Text:SetText(currentDialog.text);
-    end
-
-    height = height + SecureTransferDialog.Text:GetHeight();
-
-    if (currentDialog.money) then
-        if (type(currentDialog.money) == "function") then
-            SecureTransferDialog.MoneyLabel:SetText(currentDialog.money());
-        else
-            SecureTransferDialog.MoneyLabel:SetText(currentDialog.money);
-        end
-        SecureTransferDialog.MoneyLabel:Show();
-        height = height + SecureTransferDialog.MoneyLabel:GetHeight();
-    else
-        SecureTransferDialog.MoneyLabel:Hide();
-    end
-
-	if (currentDialog.acceptWarning) then
-		SecureTransferDialog.WarningText:SetText(currentDialog.acceptWarning());
-		height = height + SecureTransferDialog.WarningText:GetHeight();
+	currentDialog = SECURE_TRANSFER_DIALOGS[which];
+	if (select('#', ...) > 0) then
+		SecureTransferDialog.Text:SetText(string.format(currentDialog.text, ...));
 	else
+		SecureTransferDialog.Text:SetText(currentDialog.text);
+	end
+
+	height = height + SecureTransferDialog.Text:GetHeight();
+
+	if (currentDialog.money) then
+		if (type(currentDialog.money) == "function") then
+			SecureTransferDialog.MoneyLabel:SetText(currentDialog.money());
+		else
+			SecureTransferDialog.MoneyLabel:SetText(currentDialog.money);
+		end
+		SecureTransferDialog.MoneyLabel:Show();
+		height = height + SecureTransferDialog.MoneyLabel:GetHeight();
+	else
+		SecureTransferDialog.MoneyLabel:SetText(nil);
+		SecureTransferDialog.MoneyLabel:Hide();
+	end
+
+	local warningString = currentDialog.acceptWarning and currentDialog.acceptWarning();
+	if (warningString) then
+		local _, _, _, _, yOffset = SecureTransferDialog.WarningText:GetPoint();
+
+		SecureTransferDialog.WarningText:SetText(warningString);
+		height = height + SecureTransferDialog.WarningText:GetHeight() - yOffset;
+		SecureTransferDialog.WarningText:Show();
+	else
+		SecureTransferDialog.WarningText:SetText(nil);
 		SecureTransferDialog.WarningText:Hide();
 	end
 
-    SecureTransferDialog:SetHeight(height);
+	local rmtWarningString = currentDialog.rmtWarning and currentDialog.rmtWarning();
+	if (rmtWarningString) then
+		local _, _, _, _, yOffset = SecureTransferDialog.RMTWarningText:GetPoint();
+		local anchorTo = warningString and SecureTransferDialog.WarningText or SecureTransferDialog.MoneyLabel;
+
+		SecureTransferDialog.RMTWarningText:ClearAllPoints();
+		SecureTransferDialog.RMTWarningText:SetPoint("TOP", anchorTo, "BOTTOM", 0, yOffset);
+
+		SecureTransferDialog.RMTWarningText:SetText(rmtWarningString);
+		height = height + SecureTransferDialog.RMTWarningText:GetHeight() - yOffset;
+		SecureTransferDialog.RMTWarningText:Show();
+	else
+		SecureTransferDialog.RMTWarningText:Hide();
+	end
+
+	SecureTransferDialog:SetHeight(height);
 
 	local parent = SecureTransferOutbound.GetAppropriateTopLevelParent();
 	FrameUtil.SetParentMaintainRenderLayering(SecureTransferDialog, parent);
@@ -280,28 +335,34 @@ function SecureTransferDialog_Show(which, ...)
 		SecureTransferDialog.Button1:SetPoint("BOTTOMRIGHT", SecureTransferDialog, "BOTTOM", -8, 16);
 	end
 
-    SecureTransferDialog:Show();
+	SecureTransferDialog:Show();
 end
 
 function SecureTransferDialog_OnLoad(self)
 	self:RegisterEvent("SECURE_TRANSFER_CONFIRM_TRADE_ACCEPT");
 	self:RegisterEvent("SECURE_TRANSFER_CONFIRM_SEND_MAIL");
+	self:RegisterEvent("SECURE_TRANSFER_CONFIRM_TAKE_MAIL_MONEY");
 	self:RegisterEvent("SECURE_TRANSFER_CONFIRM_HOUSING_PURCHASE");
 	self:RegisterEvent("SECURE_TRANSFER_HOUSING_CURRENCY_PURCHASE_CONFIRMATION");
 	self:RegisterEvent("SECURE_TRANSFER_CANCEL");
 	self:RegisterEvent("BULK_PURCHASE_RESULT_RECEIVED");
+
+	SecureTransferOutbound.SetupGamepad(self);
 end
 
 function SecureTransferDialog_OnEvent(self, event, ...)
-    if (event == "SECURE_TRANSFER_CONFIRM_TRADE_ACCEPT") then
-        SecureTransferDialog_Show("CONFIRM_TRADE");
-    elseif (event == "SECURE_TRANSFER_CONFIRM_SEND_MAIL") then
-        local mailInfo = C_SecureTransfer.GetMailInfo();
-        if (mailInfo.sendMoney > 0) then
-            SecureTransferDialog_Show("SEND_MONEY_TO_STRANGER", mailInfo.target);
-        else
-            SecureTransferDialog_Show("SEND_ITEMS_TO_STRANGER", mailInfo.target);
-        end
+	if (event == "SECURE_TRANSFER_CONFIRM_TRADE_ACCEPT") then
+		SecureTransferDialog_Show("CONFIRM_TRADE");
+	elseif (event == "SECURE_TRANSFER_CONFIRM_SEND_MAIL") then
+		local mailSendInfo = C_SecureTransfer.GetMailSendInfo();
+		if (mailSendInfo.sendMoney > 0) then
+			SecureTransferDialog_Show("SEND_MONEY_TO_STRANGER", mailSendInfo.target);
+		else
+			SecureTransferDialog_Show("SEND_ITEMS_TO_STRANGER", mailSendInfo.target);
+		end
+	elseif (event == "SECURE_TRANSFER_CONFIRM_TAKE_MAIL_MONEY") then
+		local mailReceiveInfo = C_SecureTransfer.GetMailReceiveInfo();
+		SecureTransferDialog_Show("TAKE_MONEY_FROM_STRANGER", mailReceiveInfo.sender);
 	elseif (event == "SECURE_TRANSFER_CONFIRM_HOUSING_PURCHASE") then
 		local numProducts = C_SecureTransfer.GetHousingPurchaseQuantity();
 		local costText = C_SecureTransfer.GetHousingPurchaseCost() .. HearthsteelAtlasMarkup;
@@ -317,20 +378,20 @@ function SecureTransferDialog_OnEvent(self, event, ...)
 		-- We're not formatting in the currency icon because the currency name is spelled out in the dialog text.
 		local quantity = GetHearthsteelQuantityFromProduct(productInfo);
 		SecureTransferDialog_Show("START_HOUSING_VC_PURCHASE", quantity);
-    elseif (event == "SECURE_TRANSFER_CANCEL") then
-        SecureTransferDialog:Hide();
+	elseif (event == "SECURE_TRANSFER_CANCEL") then
+		SecureTransferDialog:Hide();
 	elseif (self.waitingForEvents and currentDialog and currentDialog.waitForEvent) then
 		if (event == currentDialog.waitForEvent) then
 			if (self.timeoutTimer) then
 				self.timeoutTimer:Cancel();
 				self.timeoutTimer = nil;
 			end
-			
+
 			if (self.timedOut) then
 				self.timedOut = false;
 				return;
 			end
-			
+
 			if (self.spinnerTimer) then
 				self.spinnerTimer:Cancel();
 				self.spinnerTimer = nil;
@@ -338,16 +399,18 @@ function SecureTransferDialog_OnEvent(self, event, ...)
 			self.Spinner:Hide();
 			self.DarkOverlay:Hide();
 			self.waitingForEvents = false;
-			
+
 			currentDialog.eventCallback(self, ...);
 		end
-    end
+	end
 end
 
 function SecureTransferDialog_OnShow(self)
-    if currentDialog.onShow then
+	if currentDialog.onShow then
 		currentDialog.onShow(self);
 	end
+
+	SecureTransferOutbound.FrameShown(self);
 end
 
 function SecureTransferDialog_OnHide(self)
@@ -371,32 +434,39 @@ function SecureTransferDialog_OnHide(self)
 		self.timedOut = false;
 	end
 
-    currentDialog = nil;
+	if self.ticker then
+		self.ticker:Cancel();
+		self.ticker = nil;
+	end
+
+	currentDialog = nil;
 
 	-- If our parent hides, make sure we're hidden.
 	self:Hide();
+
+	SecureTransferOutbound.FrameHidden(self);
 end
 
 function SecureTransferDialogButton_OnClick(self, button, down)
-    if (self:GetID() == 1) then
-        if (currentDialog.onAccept) then
-            currentDialog.onAccept();
-        end
-		
+	if (self:GetID() == 1) then
+		if (currentDialog.onAccept) then
+			currentDialog.onAccept();
+		end
+
 		if (currentDialog.waitForEvent) then
 			self:Disable();
 			self:GetParent().Button2:Disable();
-			
+
 			local beforeSpinnerWaitTime = currentDialog.beforeSpinnerWaitTime or 0;
 			local spinnerTimer = C_Timer.NewTimer(beforeSpinnerWaitTime, function()
 				SecureTransferDialog.DarkOverlay:Show();
 				SecureTransferDialog.Spinner:Show();
 			end);
-			
+
 			SecureTransferDialog.spinnerTimer = spinnerTimer;
 			SecureTransferDialog.waitingForEvents = true;
 			SecureTransferDialog.timedOut = false;
-			
+
 			-- Start timeout timer if specified
 			if (currentDialog.timeoutTime) then
 				SecureTransferDialog.timeoutTimer = C_Timer.NewTimer(currentDialog.timeoutTime, function()
@@ -408,14 +478,13 @@ function SecureTransferDialogButton_OnClick(self, button, down)
 					end
 				end);
 			end
-			
+
 			return;
 		end
-    else
-        if (currentDialog.onCancel) then
-            currentDialog.onCancel();
-        end
-    end
-    self:GetParent():Hide();
+	else
+		if (currentDialog.onCancel) then
+			currentDialog.onCancel();
+		end
+	end
+	self:GetParent():Hide();
 end
-

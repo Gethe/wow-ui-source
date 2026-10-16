@@ -1341,6 +1341,15 @@ function ProfessionsRecipeSchematicFormMixin:Init(recipeInfo, isRecraftOverride)
 	end
 end
 
+function ProfessionsRecipeSchematicFormMixin:GetOutputItemMaxWidth()
+	local minimized = ProfessionsUtil.IsCraftingMinimized();
+	return minimized and 250 or 800;
+end
+
+function ProfessionsRecipeSchematicFormMixin:ShouldAllowMultiline()
+	return ProfessionsUtil.IsCraftingMinimized();
+end
+
 function ProfessionsRecipeSchematicFormMixin:UpdateOutputItem()
 	local reagentInfos = self.transaction:CreateCraftingReagentInfoTbl();
 	local outputItemInfo = C_TradeSkillUI.GetRecipeOutputItemData(self.transaction:GetRecipeID(), reagentInfos, self.transaction:GetAllocationItemGUID());
@@ -1361,9 +1370,8 @@ function ProfessionsRecipeSchematicFormMixin:UpdateOutputItem()
 
 	local currentRecipeInfo = self:GetRecipeInfo();
 	local isRecipeInfoRecraft = currentRecipeInfo and currentRecipeInfo.isRecraft;
-	local minimized = ProfessionsUtil.IsCraftingMinimized();
-	local maxWidth = minimized and 250 or 800;
-	local multiline = minimized;
+	local maxWidth = self:GetOutputItemMaxWidth();
+	local multiline = self:ShouldAllowMultiline();
 	if isRecipeInfoRecraft then
 		SetTextToFit(self.RecraftingOutputText, PROFESSIONS_CRAFTING_RECRAFTING, maxWidth, multiline);
 	elseif self.isRecraft then

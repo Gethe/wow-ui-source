@@ -17,9 +17,6 @@ SEND_MAIL_TAB_LIST[5] = "SendMailMoneyCopper";
 
 local MAX_INBOX_SIZE = 100;
 
-local INBOX_FOCUS = "Inbox";
-local SEND_MAIL_FOCUS = "Send Mail";
-
 MailMixin = {};
 
 function MailMixin:OnLoad()
@@ -57,7 +54,6 @@ function MailMixin:OnHide()
 	SendMailSubjectEditBox:SetText("");
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	SetSendMailShowing(false);
-	self.hasDoneInitialFocus = false
 end
 
 function MailMixin:RegisterForTransitions()
@@ -69,9 +65,6 @@ end
 
 function MailMixin:SetupGamepad()
 	self.TabIndicators:SetUpTabs(self.Tabs);
-
-	SmartNavigation_MarkFrameSubSection(self.InboxFrame, INBOX_FOCUS);
-	SmartNavigation_MarkFrameSubSection(self.SendMail, SEND_MAIL_FOCUS);
 end
 
 function MailMixin:InitializeGamepad()
@@ -87,7 +80,6 @@ function MailMixin:FocusGamepad()
 	if not self.activeSubFrame then
 		self.activeSubFrame = self.InboxFrame;
 	end
-	SmartNavigation:EnterFocusGroup(self.activeSubFrame.smartNavigationFocusKey);
 	self.activeSubFrame:FocusGamepad();
 end
 
@@ -228,10 +220,14 @@ function MailFrameTab_OnClick(self, tabID)
 		SendMailFrame.sendMode = "send";
 	end
 	MailFrame.activeSubFrame:Show();
+	if InputUtil.IsGamepadUIEnabled() then
+		MailFrame.activeSubFrame:FocusGamepad();
+		SmartNavigation:SelectFirstButton();
+	end
 
 	PlaySound(SOUNDKIT.IG_SPELLBOOK_OPEN);
 
-	if InputUtil.IsGamepadUIEnabled() and MailFrame.hasDoneInitialFocus then
+	if InputUtil.IsGamepadUIEnabled() then
 		GamepadMode.FrameControlsManager:FocusFrame(MailFrame);
 	end
 end
@@ -305,6 +301,10 @@ function InboxMixin:FocusGamepad()
 	SmartNavigation:RegisterCallback("HitLeftEdge", self.PrevPageButton.OnClick, self.PrevPageButton);
 	SmartNavigation:RegisterCallback("HitRightEdge", self.NextPageButton.OnClick, self.NextPageButton);
 	self.gamepadFooter:ShowAndActivateBindings();
+end
+
+function InboxMixin:RefreshFooter()
+	self.gamepadFooter:Refresh();
 end
 
 function InboxMixin:UnfocusGamepad()
@@ -448,10 +448,11 @@ function InboxMixin:Update()
 		InboxTooMuchMail:Hide();
 	end
 
-	if InputUtil.IsGamepadUIEnabled() and not MailFrame.hasDoneInitialFocus then
-		-- We can focus MailFrame now that the available options have loaded.
-		GamepadMode.FrameControlsManager:FocusFrame(MailFrame);
-		MailFrame.hasDoneInitialFocus = true;
+	if InputUtil.IsGamepadUIEnabled() then
+		self:RefreshFooter();
+		if not SmartNavigation:GetCurrentButton() and (SmartNavigation:GetActiveFrame() == MailFrame) then
+			SmartNavigation:SelectFirstButton();
+		end
 	end
 end
 
@@ -629,6 +630,10 @@ function OpenMailMixin:FocusGamepad()
 	GamepadScrollBarHint:Show();
 
 	self.gamepadFooter:ShowAndActivateBindings();
+end
+
+function OpenMailMixin:RefreshFooter()
+	self.gamepadFooter:Refresh();
 end
 
 function OpenMailMixin:UnfocusGamepad()
@@ -1208,14 +1213,10 @@ function SendMailMixin:SetupGamepad()
 end
 
 function SendMailMixin:InitializeGamepad()
-	self.SendButton:Hide();
-	self.CancelButton:Hide();
 	self.ScrollFrame.GamepadFocusArea:Show();
 end
 
 function SendMailMixin:UninitializeGamepad()
-	self.SendButton:Show();
-	self.CancelButton:Show();
 	self.ScrollFrame.GamepadFocusArea:Hide();
 end
 
@@ -1225,6 +1226,10 @@ function SendMailMixin:FocusGamepad()
 	GamepadScrollBarHint:Show();
 
 	self.gamepadFooter:ShowAndActivateBindings();
+end
+
+function SendMailMixin:RefreshFooter()
+	self.gamepadFooter:Refresh();
 end
 
 function SendMailMixin:UnfocusGamepad()
@@ -1527,6 +1532,7 @@ function OpenAllMailMixin:StartOpening()
 	self:SetText(OPEN_ALL_MAIL_BUTTON_OPENING);
 	self:RegisterEvent("MAIL_INBOX_UPDATE");
 	self:RegisterEvent("MAIL_FAILED");
+	self:RegisterEvent("MAIL_OPEN_ALL_CANCELED");
 	self.numToOpen = GetInboxNumItems();
 	self:AdvanceAndProcessNextItem();
 end
@@ -1540,6 +1546,7 @@ function OpenAllMailMixin:StopOpening()
 	self:SetText(OPEN_ALL_MAIL_BUTTON);
 	self:UnregisterEvent("MAIL_INBOX_UPDATE");
 	self:UnregisterEvent("MAIL_FAILED");
+	self:UnregisterEvent("MAIL_OPEN_ALL_CANCELED");
 end
 
 function OpenAllMailMixin:ShouldSkipCurrentMail()
@@ -1663,6 +1670,8 @@ function OpenAllMailMixin:OnEvent(event, ...)
 		if itemID then
 			self:AddFailedItem(itemID);
 		end
+	elseif event == "MAIL_OPEN_ALL_CANCELED" then
+		self:StopOpening();
 	end
 end
 

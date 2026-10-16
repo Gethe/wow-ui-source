@@ -9,6 +9,13 @@ function LegacySystem.GetFilteredChallenges()
 	return result;
 end
 
+function LegacySystem.IsChallengeVisible(filteredChallenges, achievementId, wasEarnedByMe)
+	local hideIncomplete = not LegacyChallengeFilters[ACHIEVEMENTFRAME_FILTER_INCOMPLETE].value;
+	-- Achievements earned by other characters count as incomplete.
+	local hiddenAsIncomplete = not wasEarnedByMe and hideIncomplete;
+	return filteredChallenges[achievementId] and not hiddenAsIncomplete;
+end
+
 function LegacySystem.GetChallengeIndices(categoryID)
 	local numAchievements, numCompleted, numIncomplete = GetCategoryNumAchievements(categoryID);
 	local startOffset = 0;

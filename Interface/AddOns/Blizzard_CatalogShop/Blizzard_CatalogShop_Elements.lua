@@ -836,6 +836,81 @@ function CarouselControlMixin:SetCarouselItems(modelScene, actor, itemModifiedAp
 	self:SetShown(showCarousel);	
 end
 
+function CarouselControlMixin:OnHide()
+	self:ExitGamepadFocus();
+end
+
+function CarouselControlMixin:SelectPrevious()
+	self.CarouselLeftButton:Click();
+end
+
+function CarouselControlMixin:SelectNext()
+	self.CarouselRightButton:Click();
+end
+
+function CarouselControlMixin:HasGamepadFocus()
+	return self.hasGamepadFocus;
+end
+
+function CarouselControlMixin:EnterGamepadFocus()
+	if self.hasGamepadFocus then
+		return;
+	end
+
+	if self.needsFrameControlsManagerCleanup then
+		self.needsFrameControlsManagerCleanup = nil;
+		CatalogShopOutbound.HandleGamepadFrameHidden(self);
+	end
+
+	self.hasGamepadFocus = true;
+	CatalogShopOutbound.EnterCarouselGamepadFocus(self);
+end
+
+function CarouselControlMixin:ExitGamepadFocus()
+	if not self.hasGamepadFocus then
+		return;
+	end
+
+	self.hasGamepadFocus = false;
+	CatalogShopOutbound.ExitCarouselGamepadFocus(self);
+end
+
+function CarouselControlMixin:ToggleGamepadFocus()
+	if self.hasGamepadFocus then
+		self:ExitGamepadFocus();
+	else
+		self:EnterGamepadFocus();
+	end
+end
+
+-- Called instead of HideUIPanel when the UI loses focus, since the carousel must stay visible.
+function CarouselControlMixin:SmartNavigationCloseHandler()
+	self:ExitGamepadFocus();
+	return true;
+end
+
+function CarouselControlMixin:FocusGamepad()
+	CatalogShopOutbound.FocusCarouselGamepad(self);
+end
+
+function CarouselControlMixin:UnfocusGamepad()
+	if self.hasGamepadFocus then
+		self.hasGamepadFocus = false;
+		self.needsFrameControlsManagerCleanup = true;
+		CatalogShopOutbound.DeferGamepadFrameHidden(self);
+	end
+
+	CatalogShopOutbound.UnfocusCarouselGamepad(self);
+end
+
+function CarouselControlMixin:StartFocus()
+	self.CarouselLabelContainer.FrameGlow:Show();
+end
+
+function CarouselControlMixin:EndFocus()
+	self.CarouselLabelContainer.FrameGlow:Hide();
+end
+
 ----------------------------------------------------------------------------------
 -- ImageCarouselElementTemplateMixin
 ----------------------------------------------------------------------------------

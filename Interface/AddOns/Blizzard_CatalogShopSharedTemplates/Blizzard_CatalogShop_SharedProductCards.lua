@@ -315,7 +315,7 @@ end
 function CatalogShopDefaultProductCardMixin:OnSmartNavSelect()
 	-- Forbidden cards can't simulate a real click so select the underlying
 	-- element data directly via the scroll box's selection behavior instead
-	if self.selectionBehavior then
+	if self.selectionBehavior and self.GetElementData then
 		self.selectionBehavior:Select(self);
 	end
 end

@@ -24,7 +24,9 @@ function ActionButtonUtil.SetAllQuickKeybindButtonHighlights(show)
 		PetActionBar.actionButtons[i]:DoModeChange(show);
 		StanceBar.actionButtons[i]:DoModeChange(show);
 	end
-	ExtraActionButton1:DoModeChange(show);
+	if not ActionButtonUtil.IsExtraActionButtonDisabled() then
+		ExtraActionButton1:DoModeChange(show);
+	end
 	MainActionBar.ActionBarPageNumber.UpButton:DoModeChange(show);
 	MainActionBar.ActionBarPageNumber.DownButton:DoModeChange(show);
 

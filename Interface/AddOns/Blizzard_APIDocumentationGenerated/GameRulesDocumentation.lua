@@ -327,6 +327,7 @@ local GameRules =
 			Arguments =
 			{
 				{ Name = "setToSD", Type = "bool", Nilable = false },
+				{ Name = "usageLocation", Type = "SdToggleUsageLocationUI", Nilable = false },
 			},
 		},
 	},
@@ -396,6 +397,20 @@ local GameRules =
 			{
 				{ Name = "Classic", Type = "ForeverExperiencePreset", EnumValue = 0 },
 				{ Name = "Modern", Type = "ForeverExperiencePreset", EnumValue = 1 },
+			},
+		},
+		{
+			Name = "SdToggleUsageLocationUI",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "BeforeLogin", Type = "SdToggleUsageLocationUI", EnumValue = 0 },
+				{ Name = "CharacterCreation", Type = "SdToggleUsageLocationUI", EnumValue = 1 },
+				{ Name = "BarberShop", Type = "SdToggleUsageLocationUI", EnumValue = 2 },
+				{ Name = "OptionsMenu", Type = "SdToggleUsageLocationUI", EnumValue = 3 },
 			},
 		},
 		{

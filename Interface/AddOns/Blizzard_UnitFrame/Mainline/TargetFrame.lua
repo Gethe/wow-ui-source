@@ -384,8 +384,6 @@ end
 
 function TargetFrameMixin:CheckClassification()
 	local classification = UnitClassification(self.unit);
-	local healthBarsContainer = self.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer;
-	local healthBar = healthBarsContainer.HealthBar;
 	local manaBar = self.TargetFrameContent.TargetFrameContentMain.ManaBar;
 
 	-- Base frame/health/mana pieces
@@ -400,15 +398,6 @@ function TargetFrameMixin:CheckClassification()
 		if (self.threatIndicator) then
 			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
 		end
-
-		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
-		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
-		healthBarsContainer:SetHeight(12);
-		healthBarsContainer:SetWidth(125);
-		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 148, -1);
-
-		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 2);
 
 		manaBar.pauseUpdates = true;
 		manaBar:Hide();
@@ -426,16 +415,8 @@ function TargetFrameMixin:CheckClassification()
 		if (self.threatIndicator) then
 			self.threatIndicator:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
 		end
-
-		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
-		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
-		healthBarsContainer:SetHeight(20);
-		healthBarsContainer:SetWidth(126);
-		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 149, -10);
-
-		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 6);
 	end
+	self:UpdateHealthBarVisuals(classification);
 
 	-- Boss frame pieces (dragon frame, icons)
 	local bossPortraitFrameTexture = self.TargetFrameContainer.BossPortraitFrameTexture;
@@ -463,6 +444,31 @@ function TargetFrameMixin:CheckClassification()
 		targetFrameContenContextual.BossIcon:Show();
 	else
 		targetFrameContenContextual.BossIcon:Hide();
+	end
+end
+
+function TargetFrameMixin:UpdateHealthBarVisuals(classification)
+	local healthBarsContainer = self.TargetFrameContent.TargetFrameContentMain.HealthBarsContainer;
+	local healthBar = healthBarsContainer.HealthBar;
+
+	if (classification == "minus") then
+		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
+		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer:SetHeight(12);
+		healthBarsContainer:SetWidth(125);
+		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 148, -1);
+
+		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-MinusMob-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 2);
+	else
+		healthBarsContainer.TempMaxHealthLoss.TempMaxHealthLossTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-TempHPLoss", TextureKitConstants.UseAtlasSize);
+		healthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer:SetHeight(20);
+		healthBarsContainer:SetWidth(126);
+		healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 149, -10);
+
+		healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
+		healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 6);
 	end
 end
 
@@ -872,9 +878,13 @@ local targetOfTargetCVar = "showTargetOfTarget";
 
 TargetOfTargetMixin = {};
 
-function TargetOfTargetMixin:OnLoad()
+function TargetOfTargetMixin:OnLoadBase()
 	CVarCallbackRegistry:RegisterCallback(targetOfTargetCVar, self.OnTargetOfTargetCVarChanged, self);
 	self:OnTargetOfTargetCVarChanged();
+end
+
+function TargetOfTargetMixin:OnLoad()
+	self:OnLoadBase();
 end
 
 function TargetOfTargetMixin:OnTargetOfTargetCVarChanged()

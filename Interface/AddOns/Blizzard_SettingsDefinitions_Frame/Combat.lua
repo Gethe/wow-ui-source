@@ -197,6 +197,11 @@ local function Register()
 
 	CombatOverrides.AdjustCombatSettings(category);
 
+	-- Auto Ranged Combat
+	if GetBuildOption("CanChangeAutoRangedCombatSpell") then
+		Settings.SetupCVarCheckbox(category, "autoRangedCombat", AUTO_RANGED_COMBAT_TEXT, OPTION_TOOLTIP_AUTO_RANGED_COMBAT);
+	end
+
 	Settings.RegisterCategory(category, SETTING_GROUP_GAMEPLAY);
 end
 

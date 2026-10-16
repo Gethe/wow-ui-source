@@ -824,7 +824,6 @@ function ProfessionsMixin:SetUpGamepadBookPageFooter(toggleTooltips)
 	self.bookPageFooter:AddPromptedBinding(moreOptions);
 	self.bookPageFooter:AddStandardBackPrompt();
 	self.bookPageFooter:AddStandardSelectPrompt();
-	self.bookPageFooter:SetAnchorOffsets(0, -5);
 	self.bookPageFooter:Finalize();
 end
 
@@ -1074,7 +1073,6 @@ function ProfessionsMixin:SetUpGamepadCraftingPageFooter(toggleTooltips)
 	self.craftingPageFooter:AddStandardFrameControlManagerBindings(self);
 	self.craftingPageFooter:AddStandardBackPrompt();
 	self.craftingPageFooter:AddStandardSelectPrompt();
-	self.craftingPageFooter:SetAnchorOffsets(0, -5);
 	self.craftingPageFooter:Finalize();
 end
 

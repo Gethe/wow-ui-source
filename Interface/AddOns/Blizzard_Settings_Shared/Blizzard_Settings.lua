@@ -414,6 +414,10 @@ function Settings.CreateDropdown(category, setting, options, tooltip)
 end
 
 function Settings.CreateOptionsInitTooltip(setting, name, tooltip, options, initializer)
+	if initializer and initializer.noTooltip then
+		return function() end
+	end
+
 	local function InitTooltip()
 		Settings.InitTooltip(name, tooltip);
 
@@ -501,6 +505,13 @@ function Settings.CreateDropdownCheckbox(rootDescription, optionData, isSelected
 	local optionsDescription = rootDescription:CreateCheckbox(optionData.label, isSelected, setSelected, optionData);
 	MenuUtil.SetElementText(optionsDescription, optionData.text);
 
+	if optionData.displayCheckboxTooltip and optionData.tooltip then
+		optionsDescription:SetTooltip(function(tooltip, elementDescription)
+			GameTooltip_SetTitle(tooltip, optionData.label);
+			GameTooltip_AddNormalLine(tooltip, optionData.tooltip);
+		end);
+	end
+
 	-- Move checkboxes in options dropdowns a bit further from the left side of the dropdown than normal.
 	local function CheckBoxInitializer(frame, description, menu)
 		frame.leftTexture1:SetPoint("LEFT", frame, "LEFT", 4, 0);
@@ -549,7 +560,7 @@ function Settings.CreateDropdownOptionInserter(setting, optionsFunc, initializer
 	return Inserter;
 end
 
-function Settings.InitDropdown(dropdown, setting, elementInserter, initTooltip)
+function Settings.InitDropdown(dropdown, setting, elementInserter, initTooltip, initializer)
 	-- The setting may have been backed by a lazy initializer that doesn't return correctly
 	-- the first time it is called, so it's called again.
 	local settingValue = setting:GetValue();
@@ -559,10 +570,15 @@ function Settings.InitDropdown(dropdown, setting, elementInserter, initTooltip)
 	assertsafe(settingValue ~= nil, ("Missing value for setting '%s'"):format(setting:GetName()));
 
 	dropdown:SetDefaultText(CUSTOM);
-	dropdown:SetupMenu(function(dropdown, rootDescription)
-		rootDescription:SetGridMode(MenuConstants.VerticalGridDirection);
-		elementInserter(setting, rootDescription);
-	end);
+
+	if (initializer and initializer.customMenuGenerator) then
+		dropdown:SetupMenu(initializer.customMenuGenerator);
+	else
+		dropdown:SetupMenu(function(dropdown, rootDescription)
+			rootDescription:SetGridMode(MenuConstants.VerticalGridDirection);
+			elementInserter(setting, rootDescription);
+		end);
+	end
 
 	dropdown:SetTooltipFunc(initTooltip);
 	dropdown:SetDefaultTooltipAnchors();

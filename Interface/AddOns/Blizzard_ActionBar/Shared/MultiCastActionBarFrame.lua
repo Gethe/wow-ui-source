@@ -330,7 +330,11 @@ function TotemActionBarMixin:SetIsInEditMode(isInEditMode)
 end
 
 function TotemActionBarMixin:UpdateShownState()
+	local wasShown = self:IsShown();
 	self:SetShown((self.isInEditMode or self.numActiveSlots > 0) and self.inMainActionBarState);
+	if wasShown ~= self:IsShown() then
+		EventRegistry:TriggerEvent("EditModeManager.UpdateBottomActionBarPositions");
+	end
 end
 
 function TotemActionBarMixin:MainActionBarStateOverridden(overridden)
@@ -404,6 +408,10 @@ function MultiCastSlotButton_Update(self, slot)
 	end
 end
 
+function MultiCastButton_ApplyOverrides(button)
+	-- Overridden for various game flavors.
+end
+
 
 --
 -- MultiCastActionButton
@@ -418,6 +426,7 @@ function MultiCastActionButton_OnLoad(self)
 	self.CheckedTexture:SetSize(MULTI_CAST_BUTTON_SIZE, MULTI_CAST_BUTTON_SIZE);
 	self.PushedTexture:SetSize(MULTI_CAST_BUTTON_SIZE, MULTI_CAST_BUTTON_SIZE);
 	self.Arrow:Hide();
+	MultiCastButton_ApplyOverrides(self);
 
 	-- setup action button stuff
 	self.buttonType = "MULTICASTACTIONBUTTON";
@@ -835,6 +844,7 @@ function MultiCastSpellButton_OnLoad(self)
 	self.CheckedTexture:SetSize(MULTI_CAST_BUTTON_SIZE, MULTI_CAST_BUTTON_SIZE);
 	self.PushedTexture:SetSize(MULTI_CAST_BUTTON_SIZE, MULTI_CAST_BUTTON_SIZE);
 	self.Arrow:Hide();
+	MultiCastButton_ApplyOverrides(self);
 end
 
 function MultiCastSpellButton_OnEvent(self, event, ...)

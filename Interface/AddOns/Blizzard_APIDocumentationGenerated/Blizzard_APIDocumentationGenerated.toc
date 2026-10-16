@@ -469,8 +469,10 @@ CurrencyConstants_MainlineDocumentation.lua
 CursorConstDocumentation.lua
 DamageConstantsDocumentation.lua
 DamageMeterConstantsDocumentation.lua
+DeathRecapConstantsDocumentation.lua
 DelvesConstantsDocumentation.lua
 DiscordConstantsDocumentation.lua
+DistrictConstantsDocumentation.lua
 DungeonEncounterConstantsDocumentation.lua
 DurationTextBindingSharedDocumentation.lua
 DyeColorInfoSharedDocumentation.lua

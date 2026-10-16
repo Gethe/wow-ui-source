@@ -142,16 +142,22 @@ function ReadyCheckListenerFrameMixin:SetupGamepad()
 
 	GamepadMode.SetGamepadIconShown(self.yesIcon, false);
 	GamepadMode.SetGamepadIconShown(self.noIcon, false);
+end
 
-	-- Changing the FrameGlow's anchors since the ReadyCheckFrame has slightly different proportions than other PortraitFrameTemplate layout types.
-	self.FrameGlow:ClearAllPoints();
-	self.FrameGlow:SetPoint("TOPLEFT", self, "TOPLEFT", -20, 24);
-	self.FrameGlow:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", 16, -18);
+function ReadyCheckListenerFrameMixin:InitGamepad()
+	-- Just ensures the dialog can be clicked on for gamepad focus
+	self:EnableMouse(true);
+end
+
+function ReadyCheckListenerFrameMixin:UninitGamepad()
+	self:EnableMouse(false);
 end
 
 function ReadyCheckListenerFrameMixin:RegisterForTransitions()
 	InputUtil.RegisterForInterfaceTransitions(self, nil);
 	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitGamepad, self));
 end
 
 --

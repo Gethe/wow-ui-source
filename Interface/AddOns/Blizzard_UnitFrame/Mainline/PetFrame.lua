@@ -4,7 +4,7 @@ function PetFrameMixin:UpdateAuras(unitAuraUpdateInfo)
 	self:UpdateMemberAuras(unitAuraUpdateInfo);
 end
 
-function PetFrameMixin:OnLoad()
+function PetFrameMixin:OnLoadBase()
 	PetFrameHealthBar.LeftText = PetFrameHealthBarTextLeft;
 	PetFrameHealthBar.RightText = PetFrameHealthBarTextRight;
 	PetFrameManaBar.LeftText = PetFrameManaBarTextLeft;
@@ -68,6 +68,10 @@ function PetFrameMixin:OnLoad()
 	end
 
 	SecureUnitButton_OnLoad(self, "pet", OpenContextMenu);
+end
+
+function PetFrameMixin:OnLoad()
+	self:OnLoadBase();
 end
 
 function PetFrameMixin:Update(override)

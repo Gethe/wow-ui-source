@@ -91,6 +91,8 @@ function LFGWhoListButtonMixin:InitButton(elementData, selected)
 		self.tooltip3 = nil;
 	end
 
+	local isOwnListing = info.fullName == GetUnitName("player");
+	self.InviteButton:SetShown(not isOwnListing);
 	self.InviteButton.info = info;
 end
 
@@ -269,10 +271,8 @@ function LFGWhoListMixin:UpdateWhoList()
 	end
 	self.ScrollBox:SetDataProvider(dataProvider, ScrollBoxConstants.RetainScrollPosition);
 
-	if not C_SocialUI.IsSystemEnabled() then
-		PanelTemplates_SetTab(LFGParentFrame, 3);
-		ShowUIPanel(LFGParentFrame);
-	end
+	PanelTemplates_SetTab(LFGParentFrame, 3);
+	ShowUIPanel(LFGParentFrame);
 end
 
 function LFGWhoListMixin:InitFilterMenu(dropdown, onUpdate, onDefault, ignoreSkillLine)
@@ -337,11 +337,20 @@ function LFGWhoListFilterUtil.InitClassFilters(rootDescription)
 	classSubmenu:CreateButton(CHECK_ALL, LFGWhoListFilterUtil.SetAllClassesFiltered, false);
 	classSubmenu:CreateButton(UNCHECK_ALL, LFGWhoListFilterUtil.SetAllClassesFiltered, true);
 
+	local classes = {};
 	for _, classID in ipairs(C_SpecializationInfo.GetAllClassIDs()) do
-		local classDisplayName = GetClassInfo(classID);
 		if classID then
-			classSubmenu:CreateCheckbox(classDisplayName, IsClassChecked, SetClassChecked, classID);
+			local classDisplayName = GetClassInfo(classID);
+			tinsert(classes, { classID = classID, classDisplayName = classDisplayName });
 		end
+	end
+
+	table.sort(classes, function(a, b)
+		return strcmputf8i(a.classDisplayName, b.classDisplayName) < 0;
+	end);
+
+	for _, classInfo in ipairs(classes) do
+		classSubmenu:CreateCheckbox(classInfo.classDisplayName, IsClassChecked, SetClassChecked, classInfo.classID);
 	end
 end
 
@@ -376,7 +385,12 @@ function LFGWhoListFilterUtil.InitRaceFilters(rootDescription)
 	raceSubmenu:CreateButton(CHECK_ALL, LFGWhoListFilterUtil.SetAllRacesFiltered, false);
 	raceSubmenu:CreateButton(UNCHECK_ALL, LFGWhoListFilterUtil.SetAllRacesFiltered, true);
 
-	for index, raceFilter in ipairs(C_FriendList.GetWhoRaceFilters()) do
+	local raceFilters = C_FriendList.GetWhoRaceFilters();
+	table.sort(raceFilters, function(a, b)
+		return strcmputf8i(a.name, b.name) < 0;
+	end);
+
+	for _, raceFilter in ipairs(raceFilters) do
 		raceSubmenu:CreateCheckbox(raceFilter.name, IsRaceChecked, SetRaceChecked, raceFilter.ID);
 	end
 end
@@ -448,7 +462,7 @@ function LFGWhoListFilterUtil.InitMapFilters(rootDescription)
 					AddMapChildren(childMenu, childMapInfo.mapID);
 				else
 					if not LFGWhoListFilterUtil.mapFiltersDefaulted then
-						LFGWhoListFilterUtil.mapsIncluded[childMapInfo.mapID] = true;
+						LFGWhoListFilterUtil.mapsIncluded[childMapInfo.mapID] = nil;
 					end
 					menuDescription:CreateCheckbox(childMapInfo.name, IsMapChecked, SetMapChecked, childMapInfo.mapID);
 				end

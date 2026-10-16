@@ -148,37 +148,41 @@ function ChannelRosterButtonMixin:ClearVoiceInfo()
 	self:SetVoiceMuted(nil);
 end
 
+function ChannelRosterButtonMixin:HandleRightClick()
+	local channel = ChannelFrame:GetList():GetSelectedChannelButton();
+	if not channel then
+		return;
+	end
+
+	local playerLocation = self:GetMemberPlayerLocation();
+	local guid = playerLocation and playerLocation:GetGUID() or nil;
+
+	local contextData = {
+		name = self:GetMemberName(),
+		fromRosterFrame = true,
+		owner = self:IsMemberOwner(),
+		moderator = self:IsMemberModerator(),
+		channelName = channel:GetChannelName(),
+		category = channel:GetCategory(),
+		channelType = channel:GetChannelType(),
+		guid = guid,
+		isSelf = self:IsLocalPlayer(),
+		isOffline = (self:IsConnected() == false),
+		voiceChannel = channel:GetVoiceChannel(),
+		ownerFrame = self,
+	};
+
+	local voiceChannelID = channel:GetVoiceChannelID();
+	if voiceChannelID and guid then
+		contextData.voiceMemberID = C_VoiceChat.GetMemberID(voiceChannelID, guid);
+	end
+
+	UnitPopup_OpenMenu("CHAT_ROSTER", contextData);
+end
+
 function ChannelRosterButtonMixin:OnClick(button)
 	if button == "RightButton" then
-		local channel = ChannelFrame:GetList():GetSelectedChannelButton();
-		if not channel then
-			return;
-		end
-
-		local playerLocation = self:GetMemberPlayerLocation();
-		local guid = playerLocation and playerLocation:GetGUID() or nil;
-
-		local contextData = {
-			name = self:GetMemberName(),
-			fromRosterFrame = true,
-			owner = self:IsMemberOwner(),
-			moderator = self:IsMemberModerator(),
-			channelName = channel:GetChannelName(),
-			category = channel:GetCategory(),
-			channelType = channel:GetChannelType(),
-			guid = guid,
-			isSelf = self:IsLocalPlayer(),
-			isOffline = (self:IsConnected() == false),
-			voiceChannel = channel:GetVoiceChannel(),
-			ownerFrame = self,
-		};
-
-		local voiceChannelID = channel:GetVoiceChannelID();
-		if voiceChannelID and guid then
-			contextData.voiceMemberID = C_VoiceChat.GetMemberID(voiceChannelID, guid);
-		end
-
-		UnitPopup_OpenMenu("CHAT_ROSTER", contextData);
+		self:HandleRightClick();
 	end
 end
 

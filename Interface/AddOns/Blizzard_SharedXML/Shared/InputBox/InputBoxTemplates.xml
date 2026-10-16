@@ -152,6 +152,9 @@
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="BORDER">
 						<FontString parentKey="Instructions" inherits="GameFontNormalSmall" justifyH="LEFT" justifyV="TOP">
@@ -173,7 +176,7 @@
 			</EditBox>
 		</ScrollChild>
 	</ScrollFrame>
-	
+
 	<EditBox name="InputBoxInstructionsTemplate" inherits="InputBoxTemplate" virtual="true">
 		<!--KeyValues>
 			Optional
@@ -201,7 +204,7 @@
 		</Scripts>
 		<FontString inherits="GameFontHighlightSmall"/>
 	</EditBox>
-	
+
 	<!-- NarrationSearchBoxMixin overrides NarrationEditBoxMixin inherited from InputBoxScriptTemplate. -->
 	<EditBox name="SearchBoxTemplate" mixin="NarrationSearchBoxMixin" inherits="InputBoxInstructionsTemplate" autoFocus="false" virtual="true">
 		<KeyValues>
@@ -404,7 +407,7 @@
 			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
-	
+
 	<!-- Version of SearchBoxTemplate that better supports nine sliced art. -->
 	<EditBox name="InputBoxInstructionsNineSliceTemplate" inherits="InputBoxScriptTemplate" virtual="true">
 		<!--KeyValues>

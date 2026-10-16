@@ -7,10 +7,11 @@
 		<DisabledFont style="GlueFontDisable"/>
 	</Button>
 
-	<Frame name="GlueMenuFrame" mixin="GlueMenuFrameMixin" inherits="MainMenuFrameTemplate" frameLevel="7" parent="GlueParent" hidden="true">
+	<Frame name="GlueMenuFrame" mixin="GlueMenuFrameMixin, FocusFramesInterfaceMixin" inherits="MainMenuFrameTemplate" frameLevel="7" parent="GlueParent" hidden="true">
 		<KeyValues>
 			<KeyValue key="buttonTemplate" value="GlueMenuFrameButtonTemplate" type="string"/>
 			<KeyValue key="dialogHeaderFont" value="GlueFontNormal" type="string"/>
+			<KeyValue key="layoutType" value="DialogFrameWithHeaderTemplate" type="string"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -20,5 +21,11 @@
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 		</Scripts>
+		<Frames>
+			<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameLevel="505"/>
+			<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
+			<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
+			<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
+		</Frames>
 	</Frame>
 </Ui>

@@ -10,4 +10,5 @@ Blizzard_BattlefieldMap_Bootstrap.lua [Bootstrap]
 [Family]\Blizzard_BattlefieldMap_Bootstrap.lua [Bootstrap]
 [Family]\Blizzard_BattlefieldMap.lua
 [Family]\Blizzard_BattlefieldMap.xml
+[Game]\Blizzard_BattlefieldMap.lua [AllowLoadGameType camelot]
 [Family]\Localization.lua [AllowLoadGameType classic]

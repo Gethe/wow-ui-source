@@ -8,6 +8,18 @@ function VoiceChatHeadsetButtonMixin:OnLoad()
 	self:RegisterEvent("VOICE_CHAT_LOGOUT");
 	self:RegisterEvent("VOICE_CHAT_PENDING_CHANNEL_JOIN_STATE");
 	self:RegisterEvent("VOICE_CHAT_ERROR");
+
+	EventRegistry:RegisterCallback("ChannelFrame.VoiceChannelRequestCompleted", self.OnVoiceChannelRequestCompleted, self);
+end
+
+function VoiceChatHeadsetButtonMixin:OnVoiceChannelRequestCompleted()
+	if self.awaitingVoiceChannelRequest then
+		self.awaitingVoiceChannelRequest = nil;
+
+		if not self:GetVoiceChannel() then
+			self:ClearPendingState();
+		end
+	end
 end
 
 function VoiceChatHeadsetButtonMixin:OnEvent(event, ...)
@@ -102,6 +114,10 @@ function VoiceChatHeadsetButtonMixin:OnClick()
 		else
 			C_VoiceChat.ActivateChannel(voiceChannel.channelID);
 		end
+	elseif ChannelFrame:IsVoiceChannelRequestInProgress() then
+		-- Another channel's join/login is still in flight; don't interrupt it. Show pending until it completes.
+		operationRequested = false;
+		self.awaitingVoiceChannelRequest = true;
 	elseif self:IsCommunityChannel() then
 		operationRequested = ChannelFrame:TryJoinCommunityStreamChannel(self.clubId, self.streamId);
 	else

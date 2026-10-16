@@ -1123,6 +1123,7 @@ end
 
 function MerchantFrame_OnSellAllJunkButtonConfirmed()
 	C_MerchantFrame.SellAllJunkItems();
+	EventRegistry:TriggerEvent("MerchantFrame.SellAllJunkButtonConfirmed");
 end
 
 local popupData = { text = SELL_ALL_JUNK_ITEMS_POPUP, callback = MerchantFrame_OnSellAllJunkButtonConfirmed };
@@ -1130,6 +1131,7 @@ local popupData = { text = SELL_ALL_JUNK_ITEMS_POPUP, callback = MerchantFrame_O
 function MerchantFrame_OnSellAllJunkButtonClicked()
 	GameTooltip:Hide();
 	StaticPopup_ShowCustomGenericConfirmation(popupData);
+	EventRegistry:TriggerEvent("MerchantFrame.SellAllJunkButtonClicked");
 end
 
 function MerchantRepairItemButton_OnClick()

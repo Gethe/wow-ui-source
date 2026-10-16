@@ -184,10 +184,13 @@ function ProfessionsFlyoutMixin:OnLoad()
 		button:Init(elementData, self:GetBehavior());
 
 		button:SetScript("OnEnter", function(button)
+			local behavior = self:GetBehavior();
+			if not self:IsShown() or not behavior then
+				return;
+			end
+
 			GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
-
-			self:GetBehavior():OnElementEnter(elementData, GameTooltip);
-
+			behavior:OnElementEnter(elementData, GameTooltip);
 			GameTooltip:Show();
 		end);
 

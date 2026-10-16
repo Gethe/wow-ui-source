@@ -65,6 +65,17 @@ function CatalogShopOutboundInterface.HandleGamepadFrameHidden(frame)
 	end);
 end
 
+function CatalogShopOutboundInterface.DeferGamepadFrameHidden(frame)
+	RunNextFrame(function()
+		securecallfunction(function()
+			if frame.needsFrameControlsManagerCleanup and not frame.hasGamepadFocus then
+				frame.needsFrameControlsManagerCleanup = nil;
+				GamepadMode.FrameControlsManager:FrameHidden(frame);
+			end
+		end);
+	end);
+end
+
 function CatalogShopOutboundInterface.SetupGamepad(frame)
 	securecall("CatalogShopSetupGamepad", frame);
 end
@@ -91,4 +102,31 @@ end
 
 function CatalogShopOutboundInterface.RefreshGamepadPurchaseButton(frame)
 	securecall("CatalogShopRefreshGamepadPurchaseButton", frame);
+end
+
+function CatalogShopOutboundInterface.EnterCarouselGamepadFocus(carousel)
+	securecallfunction(function()
+		local manager = GamepadMode.FrameControlsManager;
+		manager:SuspendFrame();
+		manager:UseCustomNavigation(carousel);
+		manager:DismissOnUnfocus(carousel);
+		manager:DisableFrameFocusPagingWhenFocused(carousel);
+		manager:FrameShown(carousel);
+	end);
+end
+
+function CatalogShopOutboundInterface.ExitCarouselGamepadFocus(carousel)
+	securecallfunction(function()
+		local manager = GamepadMode.FrameControlsManager;
+		manager:FrameHidden(carousel);
+		manager:UnsuspendFrame();
+	end);
+end
+
+function CatalogShopOutboundInterface.FocusCarouselGamepad(carousel)
+	securecall("CatalogShopFocusCarouselGamepad", carousel);
+end
+
+function CatalogShopOutboundInterface.UnfocusCarouselGamepad(carousel)
+	securecall("CatalogShopUnfocusCarouselGamepad", carousel);
 end

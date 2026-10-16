@@ -211,6 +211,9 @@ function DressUpModelFrameMixin:ToggleCustomSetDetails()
 	SetCVar("showCustomSetDetails", show);
 end
 
+local FULL_MODEL_SCENE_HEIGHT = 454;
+local FULL_BACKGROUND_BOTTOM_HEIGHT = 90;
+
 function DressUpModelFrameMixin:ConfigureSize(isMinimized)
 	if isMinimized then
 		self:SetSize(334, 423);
@@ -229,6 +232,9 @@ function DressUpModelFrameMixin:ConfigureSize(isMinimized)
 		self.CustomSetDropdown:SetPoint("TOP", -39, -31);
 		self.CustomSetDropdown:SetWidth(203);
 	end
+	local backgroundBottomHeight = FULL_BACKGROUND_BOTTOM_HEIGHT * self.ModelScene:GetHeight() / FULL_MODEL_SCENE_HEIGHT;
+	self.ModelScene.BGBottomLeft:SetHeight(backgroundBottomHeight);
+	self.ModelScene.BGBottomRight:SetHeight(backgroundBottomHeight);
 	UpdateUIPanelPositions(self);
 end
 

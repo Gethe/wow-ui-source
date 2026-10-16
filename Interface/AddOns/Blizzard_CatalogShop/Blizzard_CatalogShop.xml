@@ -524,7 +524,7 @@
 					</Layer>
 				</Layers>
 				<Frames>
-					<Frame name="CarouselContainer" inherits="CarouselControlTemplate" hidden="true" >
+					<Frame name="CarouselContainer" parentKey="CarouselContainer" inherits="CarouselControlTemplate" hidden="true" >
 						<Size x="320" y="41"/>
 						<KeyValues>
 							<KeyValue key="layoutIndex" value="40" type="number"/>

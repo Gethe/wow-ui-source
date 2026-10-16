@@ -184,7 +184,6 @@ end
 
 function LegacySystemFrameMixin:SetupGamepadRewardTrackFooter(navigateElements, toggleTooltips)
 	local rewardTrackFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "LegacySystemFooter_RewardTrack");
-	rewardTrackFooter:SetAnchorOffsets(0, -5);
 	rewardTrackFooter:AddPromptedBinding(toggleTooltips);
 	rewardTrackFooter:AddPromptedBinding(navigateElements);
 	rewardTrackFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
@@ -244,7 +243,6 @@ function LegacySystemFrameMixin:SetupGamepadChallengeFooter(navigateElements, to
 	linkInChat:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
 
 	local challengeFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "LegacySystemFooter_Challenge");
-	challengeFooter:SetAnchorOffsets(0, -5);
 	challengeFooter:AddStandardSelectPrompt();
 	challengeFooter:AddPromptedBinding(linkInChat);
 	challengeFooter:AddPromptedBinding(toggleTooltips);
@@ -421,7 +419,6 @@ function LegacySystemFrameMixin:SetupGamepadTreeFooter(navigateElements, toggleT
 	applyChanges:AddCustomPromptHoldFunction(applyChangesIconBinding, { holdTime = holdTime });
 
 	local treeFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "LegacySystemFooter_Tree");
-	treeFooter:SetAnchorOffsets(0, -5);
 	treeFooter:AddPromptedBinding(removePoint);
 	treeFooter:AddPromptedBinding(undoChanges);
 	treeFooter:AddPromptedBinding(resetChanges);

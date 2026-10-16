@@ -81,10 +81,31 @@ function ChannelListMixin:AddCommunityChannelButton(channelID, clubId, streamInf
 	end
 end
 
+function ChannelListMixin:UpdateSmartNavJumps()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+	for _, element in ipairs(self.buttons) do
+		SmartNavigation_ClearJumpNavigationOverrides(element);
+		SmartNavigation_AddJumpNavigationOverride(
+			element,
+			SMART_NAV_INPUT_DIRECTION.RIGHT,
+			GenerateClosure(self.GetChannelListNavRightTarget, self)
+		);
+	end
+end
+
+function ChannelListMixin:GetChannelListNavRightTarget()
+	return self:GetChannelFrame():GetNavRightTarget();
+end
+
 function ChannelListMixin:Update()
 	local previouslySelectedChannelID = self:GetSelectedChannelButton() and self:GetSelectedChannelButton():GetChannelID();
-	self:SetSelectedChannel(nil);
+	local focusedButton = SmartNavigation and SmartNavigation:GetCurrentButton();
+	-- The rebuild of the channel list may relocate our smart nav cursor. We must refocus the desired element.
+	local previouslyFocusedChannelID = focusedButton and focusedButton.GetChannelID and focusedButton:GetChannelID();
 
+	self:SetSelectedChannel(nil);
 	self.textChannelButtonPool:ReleaseAll();
 	self.voiceChannelButtonPool:ReleaseAll();
 	self.communityChannelButtonPool:ReleaseAll();
@@ -142,6 +163,19 @@ function ChannelListMixin:Update()
 	if not self:GetSelectedChannelButton() then
 		self:SetSelectedChannel(self:GetFirstAvailableChannelButton());
 	end
+
+	if previouslyFocusedChannelID then
+		local newFocusedButton = self:GetButtonForChannelID(previouslyFocusedChannelID);
+		-- If it still exists, refocus it.
+		if newFocusedButton then
+			SmartNavigation:SelectButton(newFocusedButton, true);
+		-- If it does not, fall back to whatever is the new selected button.
+		else
+			SmartNavigation:SelectButton(self:GetSelectedChannelButton(), true);
+		end
+	end
+
+	self:UpdateSmartNavJumps();
 end
 
 local function nameCheckPredicate(button, name)
@@ -245,6 +279,10 @@ function ChannelListMixin:GetHeightFromActiveButtons()
 	end
 
 	return totalHeight;
+end
+
+function ChannelListMixin:GetScrollBar()
+	return self.ScrollBar;
 end
 
 function ChannelListMixin:UpdateScrollBar()

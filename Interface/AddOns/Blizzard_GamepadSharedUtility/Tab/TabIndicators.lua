@@ -37,6 +37,16 @@ function GamepadTabIndicatorsMixin:SetUpTabs(inTabs, reverse)
 	end
 
 	self:UpdateTabVisibility();
+
+	local parent = self:GetParent();
+	if parent and parent.GetFocusFrameGlow then
+		local frameGlow = parent:GetFocusFrameGlow();
+		local firstTab = inTabs[1];
+		local firstTabLevel = firstTab:GetFrameLevel();
+
+		self.LeftTabButton:SetFrameLevel(firstTabLevel);
+		self.RightTabButton:SetFrameLevel(firstTabLevel);
+	end
 end
 
 function GamepadTabIndicatorsMixin:UpdateTabVisibility()

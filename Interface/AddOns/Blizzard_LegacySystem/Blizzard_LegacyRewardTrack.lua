@@ -210,7 +210,10 @@ function LegacyRewardTrackPageMixin:SetupProgressDetails()
 
 	local maxValue = 100;
 	local displayValue = 0;
-	if thresholdLevel < 1 or thresholdLevel < minIndex then
+	if thresholdLevel < 1 and minIndex <= 1 then
+		-- Before the first tier the bar fills from the left edge to the first card.
+		displayValue = cardPositions[2 - minIndex] * progressToNextLevel / nextLevelThresholdDifference;
+	elseif thresholdLevel < 1 or thresholdLevel < minIndex then
 		displayValue = progressToNextLevel;
 	elseif thresholdLevel > maxIndex then
 		displayValue = maxValue;

@@ -269,6 +269,33 @@ function GamepadPopupHandler:TrackPopupFrames()
 		PopupEventManager:UnregisterCallback("PopupOpened", self);
 		PopupEventManager:UnregisterCallback("PopupClosed", self);
 	end);
+
+	EventRegistry:RegisterCallback("Gamepad.RefreshFrameFocus", self.RefreshFrameFocus, self);
+end
+
+function GamepadPopupHandler:RefreshFrameFocus()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	-- FrameControlsManager may not have been set yet
+	local FrameControlsManager = GamepadMode and GamepadMode.FrameControlsManager;
+	if not FrameControlsManager then
+		return;
+	end
+
+	-- FrameControlsManager takes over some of our bindings, since its binding group gets bound
+	-- after ours. Ensure we have ours bound when one of our popups are active.
+	local focusedFrame = FrameControlsManager:GetActiveFrame();
+
+	for _, popup in ipairs(self.visiblePopups) do
+		if focusedFrame == popup then
+			self:EnableBindings();
+			return;
+		end
+	end
+
+	self:DisablePopupBindings();
 end
 
 function GamepadPopupHandler:TryClickOrHoldButton(button, down)
@@ -327,13 +354,13 @@ function GamepadPopupHandler:ClearFocus()
 		end
 		self.activePopup = nil;
 	end
-	
+
 	self:UpdateVisiblePopups();
 	self:DisablePopupBindings();
 end
 
 function GamepadPopupHandler:EnableBindings()
-	GamepadMode.ActivateBindingGroup(self.gamepadBindings);
+	GamepadMode.ActivateBindingGroup(self.gamepadBindings, true);
 end
 
 function GamepadPopupHandler:DisablePopupBindings()

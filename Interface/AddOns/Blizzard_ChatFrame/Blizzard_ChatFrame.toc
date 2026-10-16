@@ -23,6 +23,8 @@ Shared\TextToSpeechFrame.lua
 Shared\TextToSpeechFrame.xml
 Shared\TextToSpeech.lua
 Shared\TextToSpeech.xml
+Mainline\ChatConfigFrameOverrides.lua [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\ChatConfigFrameOverrides.lua [AllowLoadGameType camelot]
 Mainline\ChatConfigFrame.lua [AllowLoadGameType mainline]
 Vanilla\ChatConfigFrame.lua [AllowLoadGameType vanilla, tbc]
 Wrath\ChatConfigFrame.lua [AllowLoadGameType wrath, cata, mists]

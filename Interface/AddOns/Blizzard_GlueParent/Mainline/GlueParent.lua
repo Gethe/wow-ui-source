@@ -22,6 +22,19 @@ GLUE_SECONDARY_SCREENS = {
 ACCOUNT_SUSPENDED_ERROR_CODE = 53;
 GENERIC_DISCONNECTED_ERROR_CODE = 319;
 
+local function Gamepad_OnScreenHidden(frame)
+	if (SmartNavigation) then
+		GamepadMode.FrameControlsManager:FrameHidden(frame);
+		SmartNavigation:HandlePanelClose(frame);
+	end
+end
+
+local function Gamepad_OnScreenShown(frame)
+	if (SmartNavigation) then
+		GamepadMode.FrameControlsManager:FrameShown(frame);
+	end
+end
+
 local function GlueParent_SetSecondaryScreen(secondaryScreen, contextKey)
 	GlueParent.currentSecondaryScreen = secondaryScreen;
 	GlueParent.currentSecondaryScreenContextKey = contextKey;
@@ -441,10 +454,7 @@ local function GlueParent_ChangeScreen(screenInfo, screenTable, oldScreen)
 	for key, info in pairs(screenTable) do
 		if ( info ~= screenInfo and _G[info.frame] ) then
 			local frame = _G[info.frame];
-			if (SmartNavigation) then
-				GamepadMode.FrameControlsManager:FrameHidden(frame);
-				SmartNavigation:HandlePanelClose(frame);
-			end
+			Gamepad_OnScreenHidden(frame);
 			frame:Hide();
 		end
 	end
@@ -455,9 +465,7 @@ local function GlueParent_ChangeScreen(screenInfo, screenTable, oldScreen)
 	--Actually show this screen
 	local frameToShow = _G[screenInfo.frame];
 	frameToShow:Show();
-	if (SmartNavigation) then
-		GamepadMode.FrameControlsManager:FrameShown(frameToShow);
-	end
+	Gamepad_OnScreenShown(frameToShow);
 end
 
 function GlueParent_GetCurrentScreen()
@@ -515,7 +523,9 @@ local function GlueParent_CloseSecondaryScreenInternal(openingNewScreen)
 			GlueParent_UpdateScreenSound(GLUE_SCREENS[primaryScreen]);
 		end
 
-		_G[screenInfo.frame]:Hide();
+		local frame = _G[screenInfo.frame];
+		frame:Hide();
+		Gamepad_OnScreenHidden(frame);
 
 		--Show the original screen if we hid it. Have to do this last in case it opens a new secondary screen.
 		if (screenInfo.fullScreen) then
@@ -547,7 +557,9 @@ function GlueParent_OpenSecondaryScreen(screen, contextKey)
 			if ( GlueParent.currentScreen ) then
 				local mainScreenInfo = GLUE_SCREENS[GlueParent.currentScreen];
 				if ( mainScreenInfo ) then
-					_G[mainScreenInfo.frame]:Hide();
+					local mainScreenFrame = _G[mainScreenInfo.frame];
+					mainScreenFrame:Hide();
+					Gamepad_OnScreenHidden(mainScreenFrame);
 				end
 			end
 		else

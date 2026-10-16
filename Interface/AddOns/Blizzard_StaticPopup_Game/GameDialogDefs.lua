@@ -708,7 +708,8 @@ StaticPopupDialogs["MACRO_ACTION_FORBIDDEN"] = {
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["ADDON_ACTION_FORBIDDEN"] = {
@@ -722,7 +723,8 @@ StaticPopupDialogs["ADDON_ACTION_FORBIDDEN"] = {
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
@@ -1186,6 +1188,7 @@ StaticPopupDialogs["RESURRECT"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
 	noCancelOnReuse = 1,
+	skipGamepadAutoFocus = 1,
 };
 StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	StartDelay = GetCorpseRecoveryDelay,
@@ -2034,13 +2037,15 @@ StaticPopupDialogs["DUEL_REQUESTED"] = {
 		CancelDuel();
 	end,
 	timeout = StaticPopupTimeoutSec,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["DUEL_OUTOFBOUNDS"] = {
 	text = DUEL_OUTOFBOUNDS_TIMER,
 	GetExpirationText = GameDialogDefsUtil.GetDefaultExpirationText,
 	timeout = 10,
+	skipGamepadAutoFocus = 1,
 };
 StaticPopupDialogs["PET_BATTLE_PVP_DUEL_REQUESTED"] = {
 	text = PET_BATTLE_PVP_DUEL_REQUESTED,
@@ -2054,7 +2059,8 @@ StaticPopupDialogs["PET_BATTLE_PVP_DUEL_REQUESTED"] = {
 		C_PetBattles.CancelPVPDuel();
 	end,
 	timeout = StaticPopupTimeoutSec,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["RECOVER_CORPSE"] = {
@@ -2076,6 +2082,7 @@ StaticPopupDialogs["RECOVER_CORPSE"] = {
 	whileDead = 1,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
+	skipGamepadAutoFocus = 1,
 };
 StaticPopupDialogs["RECOVER_CORPSE_INSTANCE"] = {
 	text = RECOVER_CORPSE_INSTANCE,
@@ -2234,7 +2241,7 @@ StaticPopupDialogs["END_BOUND_TRADEABLE"] = {
 
 local function GetInstanceOrGarrisonBootExpiryText(dialog, data, timeleft)
 	local dialogInfo = dialog.dialogInfo;
-	if GetClassicExpansionLevel() < LE_EXPANSION_WRATH_OF_THE_LICH_KING then
+	if ClassicExpansionAtMost(LE_EXPANSION_BURNING_CRUSADE) then
 		if timeleft < 60 then
 			return string.format(dialogInfo.text, GetBindLocation(), timeleft, SECONDS);
 		else
@@ -2534,6 +2541,7 @@ StaticPopupDialogs["DOWNLOAD_HIGH_RES_TEXTURES"] = {
 	OnAccept = function(dialog, data)
 		C_BattleNet.InstallHighResTextures();
 	end,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["BILLING_NAG"] = {
@@ -2745,6 +2753,7 @@ StaticPopupDialogs["VOTE_BOOT_PLAYER"] = {
 	whileDead = 1,
 	interruptCinematic = 1,
 	timeout = 0,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["VOTE_BOOT_REASON_REQUIRED"] = {
@@ -3422,6 +3431,31 @@ StaticPopupDialogs["SHARD_TRANSFER_IMMINENT_EVENT"] = {
 	button2 = OKAY,
 	OnShow = function(dialog, data)
 		dialog.timeleft = GetEvictionTimeRemaining();
+		local button1 = dialog:GetButton1();
+		button1:SetMotionScriptsWhileDisabled(true);
+		button1:SetScript("OnEnter", function(button)
+			if ( UnitAffectingCombat("player") ) then
+				GameTooltip:SetOwner(button, "ANCHOR_NONE");
+				GameTooltip:ClearAllPoints();
+				GameTooltip:SetPoint("BOTTOMLEFT", button, "TOPRIGHT");
+				GameTooltip_AddNormalLine(GameTooltip, SHARD_TRANSFER_COMBAT);
+				GameTooltip:Show();
+			end
+		end);
+		button1:SetScript("OnLeave", GameTooltip_Hide);
+	end,
+	OnUpdate = function(dialog, elapsed)
+		if ( UnitAffectingCombat("player") ) then
+			dialog:GetButton1():Disable();
+		else
+			dialog:GetButton1():Enable();
+		end
+	end,
+	OnHide = function(dialog, data)
+		local button1 = dialog:GetButton1();
+		button1:SetScript("OnEnter", nil);
+		button1:SetScript("OnLeave", nil);
+		GameTooltip_Hide();
 	end,
 	skipGamepadAutoFocus = 1,
 };
@@ -3432,6 +3466,33 @@ StaticPopupDialogs["SHARD_TRANSFER_IMMEDIATE"] = {
 	OnButton1 = function(dialog, data)
 		C_PlayerInteractionManager.ShardTransferConfirm();
 		return;
+	end,
+	OnShow = function(dialog, data)
+		local button1 = dialog:GetButton1();
+		button1:SetMotionScriptsWhileDisabled(true);
+		button1:SetScript("OnEnter", function(button)
+			if ( UnitAffectingCombat("player") ) then
+				GameTooltip:SetOwner(button, "ANCHOR_NONE");
+				GameTooltip:ClearAllPoints();
+				GameTooltip:SetPoint("BOTTOMLEFT", button, "TOPRIGHT");
+				GameTooltip_AddNormalLine(GameTooltip, SHARD_TRANSFER_COMBAT);
+				GameTooltip:Show();
+			end
+		end);
+		button1:SetScript("OnLeave", GameTooltip_Hide);
+	end,
+	OnUpdate = function(dialog, elapsed)
+		if ( UnitAffectingCombat("player") ) then
+			dialog:GetButton1():Disable();
+		else
+			dialog:GetButton1():Enable();
+		end
+	end,
+	OnHide = function(dialog, data)
+		local button1 = dialog:GetButton1();
+		button1:SetScript("OnEnter", nil);
+		button1:SetScript("OnLeave", nil);
+		GameTooltip_Hide();
 	end,
 	skipGamepadAutoFocus = 1,
 };
@@ -3493,6 +3554,7 @@ if (C_GameRules.IsHardcoreActive()) then
 		noCloseOnAlt = true,
 		cancels = "HARDCORE_RECOVER_CORPSE",
 		timeoutInformationalOnly = 1,
+		skipGamepadAutoFocus = 1,
 	};
 	StaticPopupDialogs["HARDCORE_RECOVER_CORPSE"] = {
 		text = HARDCORE_RECOVER_CORPSE,
@@ -3503,7 +3565,8 @@ if (C_GameRules.IsHardcoreActive()) then
 		end,
 		whileDead = 1,
 		interruptCinematic = 1,
-		notClosableByLogout = 1
+		notClosableByLogout = 1,
+		skipGamepadAutoFocus = 1,
 	};
 	StaticPopupDialogs["HARDCORE_RECOVER_CORPSE_INSTANCE"] = {
 		text = HARDCORE_RECOVER_CORPSE_INSTANCE,
@@ -3577,7 +3640,8 @@ if (C_GameRules.IsHardcoreActive()) then
 			GameTooltip:Hide();
 		end,
 		timeout = StaticPopupTimeoutSec,
-		hideOnEscape = 1
+		hideOnEscape = 1,
+		skipGamepadAutoFocus = 1,
 	};
 	StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED_CONFIRM"] = {
 		text = DUEL_TO_THE_DEATH_REQUEST_CONFIRM,

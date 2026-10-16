@@ -364,6 +364,20 @@ function DropdownButtonMixin:HasAnyRadioDescriptions()
 	end);
 end
 
+function DropdownButtonMixin:HasOnlyRadioDescriptions()
+	local foundRadio = false;
+	local foundCheckbox = MenuUtil.TraverseMenu(self:GetMenuDescription(), function(description)
+		if description:IsCheckbox() then
+			return true;
+		elseif description:IsRadio() then
+			foundRadio = true;
+		end
+		return false;
+	end);
+
+	return foundRadio and (not foundCheckbox);
+end
+
 function DropdownButtonMixin:Increment()
 	local previousRadio, nextRadio, selections = CollectSelectionData(self:GetMenuDescription());
 	self:Pick(nextRadio, MenuInputContext.MouseWheel);

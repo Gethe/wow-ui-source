@@ -81,9 +81,9 @@ end
 
 function StackSplitMixin:FocusGamepad()
 	if self.isMultiStack then
-		self.footer:SetAnchorOffsets(12, 19);
+		self.footer:SetAnchorOffsets(12, 22);
 	else
-		self.footer:SetAnchorOffsets(12, 8);
+		self.footer:SetAnchorOffsets(12, 12);
 	end
 	self.footer:ShowAndActivateBindings();
 	GamepadMode.ActivateBindingGroup(self.splitBindings);

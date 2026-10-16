@@ -61,9 +61,18 @@
 		</Anchors>
 		<Layers>
 			<!-- The glow needs to be below StaticPopupTemplate's lowest sublevel. -->
-			<Layer level="BACKGROUND" textureSubLevel="-8"> 
+			<Layer level="BACKGROUND" textureSubLevel="-8">
 				<Texture parentKey="GlowTexture" atlas="gamepad-uiframediamondmetal-focus-small"/>
 			</Layer>
 		</Layers>
+	</Frame>
+
+	<Frame name="FocusFramesInterfaceTemplate" mixin="FocusFramesInterfaceMixin" virtual="true">
+		<Frames>
+			<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameLevel="505"/>
+			<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameLevel="515"/>
+		</Frames>
 	</Frame>
 </Ui>

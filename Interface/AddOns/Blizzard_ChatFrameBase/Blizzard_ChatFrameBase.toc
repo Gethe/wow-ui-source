@@ -33,7 +33,9 @@ Shared\ChatFrameEditBox.lua
 Shared\ChatFrame.lua
 [Family]\ChatFrameEditBoxOverrides.lua
 [Family]\ChatFrameUtilOverrides.lua
+[Game]\ChatFrameUtilOverrides.lua [AllowLoadGameType camelot]
 [Family]\ChatFrameOverrides.lua
+[Game]\ChatFrameOverrides.lua [AllowLoadGameType camelot]
 [Family]\ChatFrameEditBox.xml
 [Family]\ChatFrameMenuButton.lua
 [Family]\ChatFrame.xml
@@ -41,6 +43,7 @@ Shared\ChatAlertFrameMixin.lua
 [Family]\ChannelFrameButtonMixin.lua
 [Family]\FriendFrameButtonMixin.lua [AllowLoadGameType classic]
 Shared\FloatingChatFrame.lua
+Shared\FloatingChatFrameGame.lua [AllowLoad game]
 [Family]\FloatingChatFrame.lua
 [Family]\FloatingChatFrame.xml
 Shared\MacroExecutionManager.lua

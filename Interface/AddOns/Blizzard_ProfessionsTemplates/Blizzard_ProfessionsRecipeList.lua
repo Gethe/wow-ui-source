@@ -356,6 +356,10 @@ function ProfessionsRecipeListRecipeMixin:SetLabelFontColors(color)
 end
 
 function ProfessionsRecipeListRecipeMixin:OnEnter()
+	if not self.GetElementData then
+		return;
+	end
+
 	self:SetLabelFontColors(HIGHLIGHT_FONT_COLOR);
 	local elementData = self:GetElementData();
 	local recipeID = elementData.data.recipeInfo.recipeID;

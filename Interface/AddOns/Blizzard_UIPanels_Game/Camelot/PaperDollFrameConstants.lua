@@ -16,6 +16,11 @@ local POLEARMS_WEAPON_SKILL_ID = 229;
 local FIST_WEAPONS_WEAPON_SKILL_ID = 473;
 local FERAL_COMBAT_SKILL_ID = 134;
 
+local function IsPlayerWarlock()
+	local _className, classFilename = UnitClass("player");
+	return classFilename == "WARLOCK";
+end
+
 STAMINA_BREAK = 20;
 INTELLECT_BREAK = 20;
 MANA_PER_INTELLECT = 15;
@@ -89,6 +94,15 @@ PAPERDOLL_STATCATEGORIES= {
 		unit = "pet",
 		stats = {
 			{ stat = "HEALTH" },
+			{ stat = "POWER", showFunc = IsPlayerWarlock },
+			{ stat = "MANAREGEN", hideAt = 0, showFunc = IsPlayerWarlock },
+			{ stat = "MOVESPEED" },
+		},
+	},
+	{
+		categoryName = STAT_CATEGORY_COMBAT,
+		unit = "pet",
+		stats = {
 			{ stat = "ARMOR" },
 			{ stat = "MAINHAND_DAMAGE" },
 			{ stat = "ATTACK_AP", hideAt = 0 },
@@ -96,7 +110,8 @@ PAPERDOLL_STATCATEGORIES= {
 			{ stat = "HITCHANCE", hideAt = 0 },
 			{ stat = "CRITCHANCE", hideAt = 0 },
 			{ stat = "HASTE", hideAt = 0 },
-			{ stat = "MOVESPEED" },
+			{ stat = "EXPERTISE", hideAt = 0 },
+			{ stat = "DODGE", hideAt = 0 },
 		},
 	},
 };

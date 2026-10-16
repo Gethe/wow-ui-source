@@ -150,7 +150,8 @@ local CooldownViewer =
 			Type = "Structure",
 			Fields =
 			{
-				{ Name = "spellID", Type = "number", Nilable = false },
+				{ Name = "spellID", Type = "number", Nilable = false, Documentation = { "The persisted key for this item, shared by every rank of the spell." } },
+				{ Name = "displaySpellID", Type = "number", Nilable = false, Documentation = { "The spell used for name, icon and tooltip: the highest known rank, or the lowest rank if none are known." } },
 				{ Name = "name", Type = "cstring", Nilable = false },
 				{ Name = "iconID", Type = "fileID", Nilable = false },
 				{ Name = "flags", Type = "GroupBuffItemFlags", Nilable = false },

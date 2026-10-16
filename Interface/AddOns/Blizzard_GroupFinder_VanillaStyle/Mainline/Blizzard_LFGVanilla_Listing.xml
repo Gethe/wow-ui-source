@@ -519,7 +519,7 @@
 					</Frame>
 					<Button parentArray="CategoryButtons" inherits="LFGListingCategoryTemplate">
 						<Anchors>
-							<Anchor point="TOP" x="0" y="-20"/>
+							<Anchor point="TOP" x="0" y="-8"/>
 						</Anchors>
 					</Button>
 				</Frames>
@@ -563,12 +563,12 @@
 					</DropdownButton>
 					<Frame parentKey="LevelRangesCheckbox" inherits="ResizeLayoutFrame">
 						<Anchors>
-							<Anchor point="TOPRIGHT"  x="-42" y="-10"/>
+							<Anchor point="TOPRIGHT"  x="-42" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString parentKey="Text" inherits="GameFontNormalSmall" text="LFG_LIST_IGNORE_SUGGESTED_LEVEL">
-									<Size x="0" y="0"/>
+								<FontString parentKey="Text" inherits="GameFontNormalSmall" text="LFG_LIST_IGNORE_SUGGESTED_LEVEL" justifyH="RIGHT" justifyV="MIDDLE" maxLines="2" wordwrap="true">
+									<Size x="120" y="30"/>
 									<Anchors>
 										<Anchor point="RIGHT"/>
 									</Anchors>
@@ -576,11 +576,14 @@
 							</Layer>
 						</Layers>
 						<Frames>
-							<CheckButton parentKey="Checkbox" inherits="UICheckButtonTemplate">
+							<CheckButton parentKey="Checkbox" inherits="UICheckButtonTemplate" mixin="LFGListingLevelRangesCheckboxMixin">
 								<Size x="26" y="26"/>
 								<Anchors>
 									<Anchor point="LEFT" relativeKey="$parent.Text" relativePoint="RIGHT" x="2" y="-1"/>
 								</Anchors>
+								<Scripts>
+									<OnClick method="OnClick"/>
+								</Scripts>
 							</CheckButton>
 						</Frames>
 					</Frame>					

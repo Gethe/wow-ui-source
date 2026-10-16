@@ -14,10 +14,12 @@ local FrameGlowTable = {
 	StackSplitTemplate = { atlas = "gamepad-uiframemetal-focus", x = 0, y = 0, x1 = 0, y1 = 0, },
 	CompactRaidFrameTemplate = { atlas = "gamepad-uiframemetal-focus", x = -18, y = 9, x1 = 10, y1 = -9, },
 	DialogFrameTemplate = { atlas = "gamepad-uiframediamondmetal-focus-large", x =-6, y = 6, x1 = 6, y1 = -6, },
+	Dialog = { atlas = "gamepad-uiframediamondmetal-focus-large", x =-6, y = 6, x1 = 6, y1 = -6, },
 	DialogFrameWithHeaderTemplate = {
 		atlas = "gamepad-uiframediamondmetal-focus-large", x = -6, y = 6, x1 = 6, y1 = -6,
 		header = { atlas = "gamepad-uiframediamondmetal-focus-large", x = -7, y = 7, x1 = 7, y1 = -7 },
 	},
+	CatalogShopCarousel = { atlas = "gamepad-menuproxy-focus-prototype", x = -16, y = 10, x1 = 16, y1 = -10, },
 };
 
 -- Following the implementation of the function of the same name from NineSlicePanelMixin
@@ -99,11 +101,16 @@ function FocusFramesInterfaceMixin:GetFocusFrameRoot()
 	return self.FocusFrameParent and self[self.FocusFrameParent] or self;
 end
 
+function FocusFramesInterfaceMixin:GetFocusFrameGlow()
+	return self:GetFocusFrameRoot().FrameGlow;
+end
+
 function FocusFramesInterfaceMixin:RefreshFocus()
+	local frameGlow = self:GetFocusFrameGlow();
 	if self.isFocused or self.lockedFocus then
-		self:GetFocusFrameRoot().FrameGlow:Show();
+		frameGlow:Show();
 	else
-		self:GetFocusFrameRoot().FrameGlow:Hide();
+		frameGlow:Hide();
 	end
 end
 

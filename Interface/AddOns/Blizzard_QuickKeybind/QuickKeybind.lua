@@ -147,6 +147,8 @@ function QuickKeybindFrameMixin:OnShow()
 
 	self.mouseOverButton = nil;
 
+	EventRegistry:TriggerEvent("QuickKeybindFrame.QuickKeybindModeEnabled");
+
 	ActionButtonUtil.ShowAllActionButtonGrids();
 	ActionButtonUtil.ShowAllQuickKeybindButtonHighlights();
 	local showQuickKeybindEffects = true;

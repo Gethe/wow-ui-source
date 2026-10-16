@@ -8,8 +8,6 @@
 	</FontString>
 
 	<!--Dummy templates - overriden in other flavors-->
-	<Texture name="PlayerPvpBackgroundCircleTemplate" virtual="true"/>
 	<Texture name="PlayerPvpBackgroundIconTemplate" virtual="true"/>
 	<Texture name="PlayerLevelBackgroundCircleTemplate" virtual="true"/>
-
 </Ui>

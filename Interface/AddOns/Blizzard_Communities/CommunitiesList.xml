@@ -3,6 +3,9 @@
 
 	<Button name="CommunitiesListEntryTemplate" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true" motionScriptsWhileDisabled="true" mixin="CommunitiesListEntryMixin">
 		<Size x="178" y="68"/>
+		<KeyValues>
+			<KeyValue key="buttonContext" type="string" value="ButtonContext_CommunitiesListEntryButton"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" file="Interface\Common\bluemenu-main">

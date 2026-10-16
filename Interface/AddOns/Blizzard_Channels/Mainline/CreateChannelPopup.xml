@@ -24,7 +24,10 @@
 		<DisabledFont style="GameFontDisableSmall"/>
 	</Button>
 
-	<Frame name="CreateChannelPopup" mixin="CreateChannelPopupMixin" parent="UIParent" frameStrata="DIALOG" hidden="true" enableKeyboard="true" enableMouse="true">
+	<Frame name="CreateChannelPopup" mixin="CreateChannelPopupMixin, FocusFramesInterfaceMixin" parent="UIParent" frameStrata="DIALOG" hidden="true" enableKeyboard="true" enableMouse="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="DialogFrameWithHeaderTemplate" />
+		</KeyValues>
 		<Size x="212" y="200"/>
 		<Frames>
 			<Frame parentKey="Header" inherits="DialogHeaderTemplate">
@@ -97,10 +100,15 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameLevel="505"/>
+			<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameLevel="515"/>
+			<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameLevel="515"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnHide method="OnHide"/>
+			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>
 </Ui>

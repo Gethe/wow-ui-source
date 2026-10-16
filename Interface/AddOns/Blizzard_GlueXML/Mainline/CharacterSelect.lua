@@ -3070,6 +3070,22 @@ function CharacterSelectFrameMixin:SetUpGamepad()
 	charSelectMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_RESTORE_CHARACTERS, CharacterSelect_StartCharacterUndelete, function() return CharSelectUndeleteCharacterButton:IsEnabled(); end );
 	charSelectMoreActions:AddMoreActionsRedEntry(DELETE_CHARACTER, CharacterSelect_Delete, nil);
 
+	local function IsUpgradeSubscribeButtonSelected()
+		return SmartNavigation:GetCurrentButton() == CharSelectAccountUpgradePanel.UpgradeButton;
+	end
+	local function UpgradeExpandButtonClick()
+		CharSelectAccountUpgradePanel.ExpandBar.ExpandButton:Click();
+	end
+
+	local accountUpgradeBannerCollapseAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, "AccountUpgrade_Collapse");
+	accountUpgradeBannerCollapseAction:AddFooterBinding({
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.NEVER,
+		conditions = { IsUpgradeSubscribeButtonSelected, }
+	});
+	accountUpgradeBannerCollapseAction:AddFooterFunction({
+		bindingFunctions = UpgradeExpandButtonClick,
+	});
+
 	local placeCharacterFromMove = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(self.ExitMoveCharacterState, self, true), CONTEXT_ACTION_LABEL_PLACE);
 	placeCharacterFromMove:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
 	placeCharacterFromMove:AddCondition(GenerateClosure(self.IsPlaceCharacterContextActionValid, self));
@@ -3091,7 +3107,9 @@ function CharacterSelectFrameMixin:SetUpGamepad()
 	toggleUIAction:AddCondition(GenerateClosure(self.IsInSelectCharacterMode, self));
 	toggleUIAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
 
+	local footerAnchor = CreateAnchor("BOTTOM", self, "BOTTOM", 0, 15);
 	self.frameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CharacterSelectFooter");
+	self.frameFooter:SetCustomAnchor(footerAnchor);
 	self.frameFooter:AddPromptedBinding(selectElement);
 	self.frameFooter:AddPromptedBinding(backAction);
 	self.frameFooter:AddPromptedBinding(enterWorldAction);
@@ -3099,12 +3117,11 @@ function CharacterSelectFrameMixin:SetUpGamepad()
 	self.frameFooter:AddPromptedBinding(toggleUIAction);
 	self.frameFooter:AddPromptedBinding(createCharacterAction);
 	self.frameFooter:AddPromptedBinding(charSelectMoreActions);
+	self.frameFooter:AddPromptedBinding(accountUpgradeBannerCollapseAction);
 	self.frameFooter:AddPromptedBinding(placeCharacterFromMove);
 	self.frameFooter:AddPromptedBinding(confirmCharacterMove);
 	self.frameFooter:AddPromptedBinding(restoreCharacterAction);
 	self.frameFooter:Finalize();
-	self.frameFooter.inputLegend:ClearAllPoints();
-	self.frameFooter.inputLegend:SetPoint("BOTTOM", 0, 15);
 
 	function CharacterSelect.UnfocusGamepad()
 		GamepadMode.DeactivateBindingGroup(self.characterSelectBindings);

@@ -355,6 +355,22 @@ local AuctionHouse =
 			},
 		},
 		{
+			Name = "GetItemKeySampleLink",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns a link for an item in this key's results with player-applied enchants, gems and reforges stripped" },
+
+			Arguments =
+			{
+				{ Name = "itemKey", Type = "ItemKey", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "sampleItemLink", Type = "string", Nilable = true },
+			},
+		},
+		{
 			Name = "GetItemSearchResultInfo",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

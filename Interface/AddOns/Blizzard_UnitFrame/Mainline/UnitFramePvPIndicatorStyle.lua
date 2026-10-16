@@ -8,5 +8,4 @@ addonTable.PvPIndicatorStyle = {
 	neutralPrestigePortraitAtlas = "honorsystem-portrait-neutral",
 	factionPrestigePortraitAtlasPrefix = "honorsystem-portrait-",
 	supportsPrestige = true,
-	usesBackground = false,
 };

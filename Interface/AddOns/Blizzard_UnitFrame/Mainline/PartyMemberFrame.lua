@@ -1,6 +1,114 @@
 
 PartyMemberFrameMixin = CreateFromMixins(PartyMemberAuraMixin);
 
+PartyMemberFrameMixin.ArtLayoutInfo = {
+	Player = {
+		Name = {
+			Width = 57
+		},
+		Role = {
+			OffsetX = -5,
+			OffsetY = -5
+		},
+		Health = {
+			Width = 70,
+			Height = 10,
+			OffsetX = 45,
+			OffsetY = -19,
+			OffsetXMask = -29,
+			OffsetYMask = 3
+		},
+		HealthOnly = {
+			Width = 74,
+			Height = 30,
+			OffsetX = 43,
+			OffsetY = -16,
+			OffsetXMask = -27,
+			OffsetYMask = 4
+		},
+		Mana = {
+			Width = 74,
+			OffsetX = 41,
+			OffsetY = -30,
+			OffsetXMask = 14,
+			OffsetYMask = -26
+		},
+		Flash = {
+			OffsetX = 1,
+			OffsetY = -2
+		},
+		Status = {
+			OffsetX = 1,
+			OffsetY = -2
+		}
+	},
+	Character = {
+		Name = {
+			Width = 57
+		},
+		Role = {
+			OffsetX = -5,
+			OffsetY = -5
+		},
+		Health = {
+			Width = 70,
+			Height = 10,
+			OffsetX = 45,
+			OffsetY = -19,
+			OffsetXMask = -29,
+			OffsetYMask = 3
+		},
+		Mana = {
+			Width = 69,
+			OffsetX = 46,
+			OffsetY = -30,
+			WidthMask = 128,
+			HeightMask = 9,
+			OffsetXMask = 17,
+			OffsetYMask = -28
+		},
+		Flash = {
+			OffsetX = 1,
+			OffsetY = -2
+		},
+		Status = {
+			OffsetX = 1,
+			OffsetY = -2
+		}
+	},
+	Vehicle = {
+		Name = {
+			Width = 56
+		},
+		Role = {
+			OffsetX = -5,
+			OffsetY = -5
+		},
+		Health = {
+			Width = 67,
+			OffsetX = 48,
+			OffsetY = -29,
+			OffsetXMask = 16,
+			OffsetYMask = -25
+		},
+		Mana = {
+			Width = 70,
+			OffsetX = 45,
+			OffsetY = -29,
+			OffsetXMask = 16,
+			OffsetYMask = -25
+		},
+		Flash = {
+			OffsetX = -4,
+			OffsetY = 4
+		},
+		Status = {
+			OffsetX = -3,
+			OffsetY = 3
+		}
+	}
+};
+
 function PartyMemberFrameMixin:GetUnit()
 	-- Override unit is set when we get in a vehicle
 	-- Override unit will always be the original (most likely player/party member)
@@ -24,44 +132,47 @@ function PartyMemberFrameMixin:ToPlayerArt()
 	self.VehicleTexture:Hide();
 	self.Texture:Show();
 
+	local artLayoutInfo = self.ArtLayoutInfo.Player;
+
 	self.Flash:SetAtlas("ui-hud-unitframe-party-portraiton-incombat", TextureKitConstants.UseAtlasSize);
-	self.Flash:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -2);
+	self.Flash:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Flash.OffsetX, artLayoutInfo.Flash.OffsetY);
 
 	self.PartyMemberOverlay.Status:SetAtlas("ui-hud-unitframe-party-portraiton-status", TextureKitConstants.UseAtlasSize);
-	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -2);
+	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT",  artLayoutInfo.Status.OffsetX, artLayoutInfo.Status.OffsetY);
 
 	self.HealthBarContainer.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
 
-	if (UNIT_FRAME_SHOW_HEALTH_ONLY) then
-		self.HealthBarContainer.HealthBar:SetHeight(24);
-		self.HealthBarContainer:SetSize(74, 30);
-		self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 43, -16);
-		self.HealthBarContainer.HealthBar:SetSize(74, 30);
+	if (UNIT_FRAME_SHOW_HEALTH_ONLY and artLayoutInfo.HealthOnly) then
+		self.HealthBarContainer:SetSize(artLayoutInfo.HealthOnly.Width, artLayoutInfo.HealthOnly.Height);
+		self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.HealthOnly.OffsetX, artLayoutInfo.HealthOnly.OffsetY);
+		self.HealthBarContainer.HealthBar:SetSize(artLayoutInfo.HealthOnly.Width, artLayoutInfo.HealthOnly.Height);
 		self:UpdateHealthBarTextAnchors();
 		self.Texture:SetAtlas("plunderstorm-UI-HUD-UnitFrame-Party-PortraitOn");
 
 		self.HealthBarContainer.HealthBarMask:SetAtlas("plunderstorm-ui-hud-unitframe-party-portraiton-bar-health-mask", TextureKitConstants.UseAtlasSize);
-		self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", -27, 4);
+		self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", artLayoutInfo.HealthOnly.OffsetXMask, artLayoutInfo.HealthOnly.OffsetYMask);
 	else
-		self.HealthBarContainer.HealthBar:SetHeight(10);
-		self.HealthBarContainer:SetWidth(70);
-		self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
+		self.HealthBarContainer.HealthBar:SetHeight(artLayoutInfo.Health.Height);
+		self.HealthBarContainer:SetWidth(artLayoutInfo.Health.Width);
+		self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Health.OffsetX, artLayoutInfo.Health.OffsetY);
 		self:UpdateHealthBarTextAnchors();
 		self.Texture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn");
 
 		self.HealthBarContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-		self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", -29, 3);
+		self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", artLayoutInfo.Health.OffsetXMask, artLayoutInfo.Health.OffsetYMask);
 	end
 
-	self.ManaBar:SetWidth(74);
-	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 41, -30);
+	self.ManaBar:SetWidth(artLayoutInfo.Mana.Width);
+	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Mana.OffsetX, artLayoutInfo.Mana.OffsetY);
 	self:UpdateManaBarTextAnchors();
 
 	self.ManaBar.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
-	self.ManaBar.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", 14, -26);
+	self.ManaBar.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Mana.OffsetXMask, artLayoutInfo.Mana.OffsetYMask);
 
-	self.Name:SetWidth(57);
+	self.Name:SetWidth(artLayoutInfo.Name.Width);
 	self:UpdateNameTextAnchors();
+
+	self.PartyMemberOverlay.RoleIcon:SetPoint("TOPRIGHT", self.PartyMemberOverlay, "TOPRIGHT", artLayoutInfo.Role.OffsetX, artLayoutInfo.Role.OffsetY);
 
 	UnitFrame_SetUnit(self, self.unit, self.HealthBarContainer.HealthBar, self.ManaBar);
 	UnitFrame_SetUnit(self.PetFrame, self.PetFrame.unit, self.PetFrame.HealthBar, nil);
@@ -75,18 +186,20 @@ function PartyMemberFrameMixin:ToCharacterStyleArt()
 	self.VehicleTexture:Hide();
 	self.Texture:Show();
 
+	local artLayoutInfo = self.ArtLayoutInfo.Character;
+
 	self.Flash:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-InCombat", TextureKitConstants.UseAtlasSize);
-	self.Flash:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -2);
+	self.Flash:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Flash.OffsetX, artLayoutInfo.Flash.OffsetY);
 
 	self.PartyMemberOverlay.Status:SetAtlas("ui-hud-unitframe-party-portraiton-status", TextureKitConstants.UseAtlasSize);
-	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", 1, -2);
+	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Status.OffsetX, artLayoutInfo.Status.OffsetY);
 
 	self.PortraitMask:SetAtlas("UI-HUD-UnitFrame-Player-Portrait-Mask");
 	self.Texture:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn", TextureKitConstants.UseAtlasSize);
 
-	self.HealthBarContainer.HealthBar:SetHeight(10);
-	self.HealthBarContainer:SetWidth(70);
-	self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -19);
+	self.HealthBarContainer.HealthBar:SetHeight(artLayoutInfo.Health.Height);
+	self.HealthBarContainer:SetWidth(artLayoutInfo.Health.Width);
+	self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Health.OffsetX, artLayoutInfo.Health.OffsetY);
 	self:UpdateHealthBarTextAnchors();
 
 	self.HealthBarContainer.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Bar-Health", TextureKitConstants.UseAtlasSize);
@@ -98,21 +211,23 @@ function PartyMemberFrameMixin:ToCharacterStyleArt()
 	self.HealthBarContainer.TempMaxHealthLoss.Texture:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Bar-TempHPLoss");
 
 	self.HealthBarContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-	self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", -29, 3);
+	self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", artLayoutInfo.Health.OffsetXMask, artLayoutInfo.Health.OffsetYMask);
 
-	self.ManaBar:SetWidth(69);
-	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 46, -30);
+	self.ManaBar:SetWidth(artLayoutInfo.Mana.Width);
+	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Mana.OffsetX, artLayoutInfo.Mana.OffsetY);
 	self.ManaBar.Texture:SetAtlas("UI-HUD-UnitFrame-Player-PortraitOn-Bar-Mana");
 	self:UpdateManaBarTextAnchors();
 
 	self.ManaBar.ManaBarMask:SetAtlas("ui-hud-unitframe-playerframeonparty-portraiton-bar-mana-mask");
-	self.ManaBar.ManaBarMask:SetSize(128, 9);
-	self.ManaBar.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", 17, -28);
+	self.ManaBar.ManaBarMask:SetSize(artLayoutInfo.Mana.WidthMask, artLayoutInfo.Mana.HeightMask);
+	self.ManaBar.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Mana.OffsetXMask, artLayoutInfo.Mana.OffsetYMask);
 
 	self.PartyMemberOverlay.Status:SetAtlas("UI-HUD-UnitFrame-CharacterFrameOnParty-PortraitOn-Status", TextureKitConstants.UseAtlasSize);
 
-	self.Name:SetWidth(57);
+	self.Name:SetWidth(artLayoutInfo.Name.Width);
 	self:UpdateNameTextAnchors();
+
+	self.PartyMemberOverlay.RoleIcon:SetPoint("TOPRIGHT", self.PartyMemberOverlay, "TOPRIGHT", artLayoutInfo.Role.OffsetX, artLayoutInfo.Role.OffsetY);
 
 	UnitFrame_SetUnit(self, self.unit, self.HealthBarContainer.HealthBar, self.ManaBar);
 	UnitFrame_SetUnit(self.PetFrame, self.PetFrame.unit, self.PetFrame.HealthBar, nil);
@@ -126,30 +241,34 @@ function PartyMemberFrameMixin:ToVehicleArt()
 	self.Texture:Hide();
 	self.VehicleTexture:Show();
 
+	local artLayoutInfo = self.ArtLayoutInfo.Vehicle;
+
 	self.Flash:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-InCombat", TextureKitConstants.UseAtlasSize);
-	self.Flash:SetPoint("TOPLEFT", self, "TOPLEFT", -4, 4);
+	self.Flash:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Flash.OffsetX, artLayoutInfo.Flash.OffsetY);
 
 	self.PartyMemberOverlay.Status:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Status", TextureKitConstants.UseAtlasSize);
-	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", -3, 3);
+	self.PartyMemberOverlay.Status:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Status.OffsetX, artLayoutInfo.Status.OffsetY);
 
 	self.HealthBarContainer.HealthBar.HealthBarTexture:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Health", TextureKitConstants.UseAtlasSize);
-	self.HealthBarContainer:SetWidth(67);
-	self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", 48, -18);
+	self.HealthBarContainer:SetWidth(artLayoutInfo.Health.Width);
+	self.HealthBarContainer:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Health.OffsetX, artLayoutInfo.Health.OffsetY);
 	self:UpdateHealthBarTextAnchors();
 
 	-- Party frames when in a vehicle do not have a mask for the health bar, so remove any applied target mask that would not fit.
 	self.HealthBarContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
-	self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", -30, 3);
+	self.HealthBarContainer.HealthBarMask:SetPoint("TOPLEFT", artLayoutInfo.Health.OffsetXMask, artLayoutInfo.Health.OffsetYMask);
 
-	self.ManaBar:SetWidth(70);
-	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", 45, -29);
+	self.ManaBar:SetWidth(artLayoutInfo.Mana.Width);
+	self.ManaBar:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Mana.OffsetX, artLayoutInfo.Mana.OffsetY);
 	self:UpdateManaBarTextAnchors();
 
 	self.ManaBar.ManaBarMask:SetAtlas("UI-HUD-UnitFrame-Party-PortraitOn-Vehicle-Bar-Mana-Mask", TextureKitConstants.UseAtlasSize);
-	self.ManaBar.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", 16, -25);
+	self.ManaBar.ManaBarMask:SetPoint("TOPLEFT", self, "TOPLEFT", artLayoutInfo.Mana.OffsetXMask, artLayoutInfo.Mana.OffsetYMask);
 
-	self.Name:SetWidth(56);
+	self.Name:SetWidth(artLayoutInfo.Name.Width);
 	self:UpdateNameTextAnchors();
+
+	self.PartyMemberOverlay.RoleIcon:SetPoint("TOPRIGHT", self.PartyMemberOverlay, "TOPRIGHT", artLayoutInfo.Role.OffsetX, artLayoutInfo.Role.OffsetY);
 
 	UnitFrame_SetUnit(self, self.petUnitToken, self.HealthBarContainer.HealthBar, self.ManaBar);
 	UnitFrame_SetUnit(self.PetFrame, self.overrideUnit, self.PetFrame.HealthBar, nil);
@@ -631,7 +750,7 @@ function PartyMemberFrameMixin:UpdateOnlineStatus()
 		-- Handle disconnected state
 		local unitHPMin, unitHPMax = healthBar:GetMinMaxValues();
 
-		healthBar:SetValue(unitHPMax);
+		healthBar:SetValue(UnitIsDead(self:GetUnit()) and 0 or unitHPMax);
 		healthBar:SetStatusBarDesaturated(true);
 		self.Portrait:SetDesaturated(true);
 		self.PartyMemberOverlay.Disconnect:Show();

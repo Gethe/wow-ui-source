@@ -52,72 +52,8 @@ local itemDisplayTable = {} -- Used for ordering items by location
 
 EquipmentFlyoutMixin = {};
 
-function EquipmentFlyoutMixin:SmartNavigationCloseHandler()
-	self:Hide();
-	return true;
-end
-
-function EquipmentFlyoutMixin:RegisterForInterfaceTransitions()
-	InputUtil.RegisterForInterfaceTransitions(self, nil);
-	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
-	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
-	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
-end
-
-function EquipmentFlyoutMixin:SetupGamepad()
-	self.changeToPrevPage = GenerateFlatClosure(EquipmentFlyout_ChangePage, -1);
-	self.changeToNextPage = GenerateFlatClosure(EquipmentFlyout_ChangePage, 1);
-
-	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "EquipmentFlyoutFooter");
-	self.gamepadFooter:SetCustomAnchor(
-		CreateAnchor("TOPLEFT", self.NavigationFrame, "BOTTOMLEFT", 0, 0)
-	);
-	self.gamepadFooter:AddFunctionBinding(GAMEPAD_SHOULDER_LEFT, self.changeToPrevPage);
-	self.gamepadFooter:AddFunctionBinding(GAMEPAD_SHOULDER_RIGHT, self.changeToNextPage);
-	self.gamepadFooter:Finalize();
-end
-
-function EquipmentFlyoutMixin:InitializeGamepad()
-	local navFrame = self.NavigationFrame;
-	navFrame.PreviousPageText:Hide();
-	navFrame.NextPageText:Hide();
-	navFrame.PrevButton:Hide();
-	navFrame.NextButton:Hide();
-
-	navFrame.PrevPagePrompt:Show();
-	navFrame.NextPagePrompt:Show();
-	navFrame.PageTurnIndicatorLeft:Show();
-	navFrame.PageTurnIndicatorRight:Show();
-end
-
-function EquipmentFlyoutMixin:UninitializeGamepad()
-	local navFrame = self.NavigationFrame;
-	navFrame.PreviousPageText:Show();
-	navFrame.NextPageText:Show();
-	navFrame.PrevButton:Show();
-	navFrame.NextButton:Show();
-
-	navFrame.PrevPagePrompt:Hide();
-	navFrame.NextPagePrompt:Hide();
-	navFrame.PageTurnIndicatorLeft:Hide();
-	navFrame.PageTurnIndicatorRight:Hide();
-end
-
-function EquipmentFlyoutMixin:FocusGamepad()
-	local navFrame = self.NavigationFrame;
-	navFrame.PageTurnIndicatorLeft:SetScript("OnClick", self.changeToPrevPage);
-	navFrame.PageTurnIndicatorRight:SetScript("OnClick", self.changeToNextPage);
-
-	self.gamepadFooter:ShowAndActivateBindings();
-end
-
-function EquipmentFlyoutMixin:UnfocusGamepad()
-	self.gamepadFooter:HideAndDeactivateBindings();
-end
-
 function EquipmentFlyout_OnLoad(self)
 	self.buttons = {};
-	self:RegisterForInterfaceTransitions();
 end
 
 function EquipmentFlyout_CreateButton()
@@ -159,13 +95,6 @@ end
 function EquipmentFlyout_OnShow(self)
 	self:RegisterEvent("BAG_UPDATE");
 	self:RegisterEvent("UNIT_INVENTORY_CHANGED");
-
-	if (InputUtil.IsGamepadUIEnabled()) then
-		GamepadMode.FrameControlsManager:SuspendFrameWithFooter();
-		GamepadMode.FrameControlsManager:DismissOnUnfocus(self);
-		GamepadMode.FrameControlsManager:FrameShown(self);
-		SmartNavigation:SetWrapping(self, true);
-	end
 end
 
 function EquipmentFlyout_OnHide(self)
@@ -177,11 +106,6 @@ function EquipmentFlyout_OnHide(self)
 	self.button = nil;
 	self:UnregisterEvent("BAG_UPDATE");
 	self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
-
-	if (InputUtil.IsGamepadUIEnabled()) then
-		GamepadMode.FrameControlsManager:FrameHidden(self);
-		GamepadMode.FrameControlsManager:UnsuspendFrame();
-	end
 end
 
 function EquipmentFlyout_OnEvent (self, event, ...)
@@ -309,12 +233,6 @@ end
 function EquipmentFlyout_ChangePage(delta)
 	EquipmentFlyoutFrame.currentPage = EquipmentFlyoutFrame.currentPage + delta;
 	EquipmentFlyout_UpdateItems();
-
-	if (InputUtil.IsGamepadUIEnabled()) then
-		-- Force a re-selection of the first button in case the button that is currently being focused on is the first button with different data.
-		local forceReselect = true;
-		SmartNavigation:SelectFirstButton(forceReselect);
-	end
 end
 
 -- Displays the items on the current page using the items in itemDisplayTable

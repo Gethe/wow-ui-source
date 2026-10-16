@@ -178,6 +178,12 @@ local System =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "ShardTransferCancelled",
+			Type = "Event",
+			LiteralName = "SHARD_TRANSFER_CANCELLED",
+			SynchronousEvent = true,
+		},
+		{
 			Name = "ShardTransferImminent",
 			Type = "Event",
 			LiteralName = "SHARD_TRANSFER_IMMINENT",

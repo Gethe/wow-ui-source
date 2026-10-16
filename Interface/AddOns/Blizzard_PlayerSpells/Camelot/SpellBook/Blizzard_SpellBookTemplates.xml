@@ -10,6 +10,11 @@
 	<Frame name="PagedSpellsTemplate" inherits="PagedCondensedVerticalGridContentFrameTemplate" virtual="true">
 	</Frame>
 
+	<!-- Same height as a spell row so rows after a header line up with rows on the facing page -->
+	<Frame name="SpellBookHeaderSizeTemplate" virtual="true">
+		<Size x="300" y="60"/>
+	</Frame>
+
 	<Frame name="PagedSpellsView1Template" inherits="StaticGridLayoutFrame" virtual="true">
 		<Size x="680" y="590"/>
 		<Anchors>

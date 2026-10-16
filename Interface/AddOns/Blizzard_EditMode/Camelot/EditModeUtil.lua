@@ -17,7 +17,8 @@ function EditModeUtil.GetBottomActionBars()
 		StanceBar,
 		PetActionBar,
 		PossessActionBar,
-		MainMenuBarVehicleLeaveButton
+		MainMenuBarVehicleLeaveButton,
+		MultiCastActionBarFrame,
 	}
 	return bottomActionBars;
 end

@@ -107,7 +107,7 @@ end
 function SmartNavigation_SelectScrollBoxCurrentOrTop(scrollBox)
 	local scrollBoxFrames = scrollBox:GetFrames();
 	local index = scrollBox:GetScrollPercentage() == 0 and 1 or math.ceil(#scrollBoxFrames * 0.5);
-	if not SmartNavigation_IsFrameFocusable(scrollBoxFrames[index]) then
+	if not SmartNavigation:IsButtonValid(scrollBoxFrames[index]) then
 		-- If the current frame is not focusable, assume it is a header and select the next one down.
 		index = index + 1;
 	end

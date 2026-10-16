@@ -73,6 +73,8 @@
 				<HighlightTexture parentKey="HighlightTexture" atlas="common-button-tertiary-square-normal" alphaMode="ADD"/>
 				<Scripts>
 					<OnClick method="OnClick" />
+					<OnEnter method="OnEnter" />
+					<OnLeave method="OnLeave" />
 				</Scripts>
 			</Button>
 		</Frames>

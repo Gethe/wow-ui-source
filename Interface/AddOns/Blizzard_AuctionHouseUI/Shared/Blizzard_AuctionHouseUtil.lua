@@ -318,9 +318,23 @@ function AuctionHouseUtil.GetItemDisplayText(itemName, itemLevel)
 	return itemName;
 end
 
+function AuctionHouseUtil.GetItemKeyDisplayLevel(itemKey)
+	if AuctionHouse_ShouldUseRequiredLevel() then
+		local requiredLevel = C_AuctionHouse.GetItemKeyRequiredLevel(itemKey);
+		if requiredLevel == 0 then
+			return nil;
+		end
+		return requiredLevel;
+	end
+
+	return itemKey.itemLevel;
+end
+
 function AuctionHouseUtil.GetItemDisplayTextFromItemKey(itemKey, itemKeyInfo, hideItemLevel)
-	local shouldDisplayItemLevel = itemKeyInfo.isEquipment and itemKey.itemLevel and not hideItemLevel;
-	local itemDisplayText = AuctionHouseUtil.GetItemDisplayText(itemKeyInfo.itemName, shouldDisplayItemLevel and itemKey.itemLevel or nil);
+	local displayLevel = AuctionHouseUtil.GetItemKeyDisplayLevel(itemKey);
+
+	local shouldDisplayItemLevel = itemKeyInfo.isEquipment and displayLevel and not hideItemLevel;
+	local itemDisplayText = AuctionHouseUtil.GetItemDisplayText(itemKeyInfo.itemName, shouldDisplayItemLevel and displayLevel or nil);
 	local itemQuality = itemKeyInfo.quality;
 
 	local colorData = ColorManager.GetColorDataForItemQuality(itemQuality);
@@ -366,8 +380,9 @@ end
 
 function AuctionHouseUtil.GetDisplayTextFromOwnedAuctionData(ownedAuctionData, itemKeyInfo, hideItemLevel)
 	local itemKey = ownedAuctionData.itemKey;
-	local shouldDisplayItemLevel = itemKeyInfo.isEquipment and itemKey.itemLevel and not hideItemLevel;
-	local itemDisplayText = AuctionHouseUtil.GetItemDisplayText(itemKeyInfo.itemName, shouldDisplayItemLevel and itemKey.itemLevel or nil);
+	local displayLevel = AuctionHouseUtil.GetItemKeyDisplayLevel(itemKey);
+	local shouldDisplayItemLevel = itemKeyInfo.isEquipment and displayLevel and not hideItemLevel;
+	local itemDisplayText = AuctionHouseUtil.GetItemDisplayText(itemKeyInfo.itemName, shouldDisplayItemLevel and displayLevel or nil);
 
 	local itemQualityColor = AuctionHouseUtil.GetItemQualityColorFromOwnedAuctionData(ownedAuctionData, itemKeyInfo);
 	return itemQualityColor:WrapTextInColorCode(itemDisplayText);

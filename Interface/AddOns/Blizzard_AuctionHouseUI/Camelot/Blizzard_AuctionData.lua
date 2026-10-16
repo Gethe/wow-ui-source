@@ -1,6 +1,10 @@
 PRICE_DISPLAY_WIDTH = 120;
 PRICE_DISPLAY_WITH_CHECKMARK_WIDTH = 140;
 
+function AuctionHouse_ShouldUseRequiredLevel()
+	return true;
+end
+
 function AuctionCategoryMixin:AddBulkInventoryTypeCategories(classID, subClassID, inventoryTypes)
 	local inventoryTypeNone = nil;
 	local useParentFilters = true;
@@ -12,6 +16,7 @@ end
 
 do -- Weapons
 	local weaponsCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_WEAPONS);
+	weaponsCategory:SetDetailColumnString(AUCTION_HOUSE_BROWSE_HEADER_REQUIRED_LEVEL);
 	
 	local oneHandedCategory = weaponsCategory:CreateNamedSubCategory(AUCTION_SUBCATEGORY_ONE_HANDED);
 	oneHandedCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Weapon, Enum.ItemWeaponSubclass.Axe1H);
@@ -61,6 +66,7 @@ do -- Armor
 	};
 
 	local armorCategory = AuctionFrame_CreateCategory(AUCTION_CATEGORY_ARMOR);
+	armorCategory:SetDetailColumnString(AUCTION_HOUSE_BROWSE_HEADER_REQUIRED_LEVEL);
 	
 	local plateCategory = armorCategory:CreateSubCategoryAndFilter(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Plate);
 	plateCategory:AddBulkInventoryTypeCategories(Enum.ItemClass.Armor, Enum.ItemArmorSubclass.Plate, ArmorInventoryTypes);

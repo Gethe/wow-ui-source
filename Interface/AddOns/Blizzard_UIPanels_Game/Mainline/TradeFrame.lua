@@ -25,6 +25,10 @@ function TradeFrame_OnShow(self)
 	self.acceptState = 0;
 	TradeFrameTradeButton.enabled = TradeFrameTradeButton:IsEnabled();
 	TradeFrame_UpdateMoney();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		OpenBackpack();
+	end
 end
 
 function TradeFrame_OnEvent(self, event, ...)
@@ -234,6 +238,10 @@ end
 function TradeFrame_OnHide()
 	CloseTrade();
 	MoneyInputFrame_SetCopper(TradePlayerInputMoneyFrame, 0);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		CloseAllBags();
+	end
 end
 
 function TradeFrame_OnMouseUp()

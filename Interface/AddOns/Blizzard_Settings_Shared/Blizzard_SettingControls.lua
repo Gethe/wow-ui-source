@@ -862,8 +862,8 @@ function SettingsDropdownControlMixin:InitDropdown()
 	if forceSteppersHidden then
 		self.Control:HideSteppers();
 	else
-		local hasAnyRadioDescriptions = self.Control.Dropdown:HasAnyRadioDescriptions();
-		self.Control:SetSteppersShown(hasAnyRadioDescriptions);
+		local hasOnlyRadioDescriptions = self.Control.Dropdown:HasOnlyRadioDescriptions();
+		self.Control:SetSteppersShown(hasOnlyRadioDescriptions);
 	end
 
 	if initializer.getSelectionTextFunc then
@@ -874,7 +874,7 @@ end
 
 function SettingsDropdownControlMixin:SetupDropdownMenu(button, setting, options, initTooltip, initializer)
 	local inserter = Settings.CreateDropdownOptionInserter(setting, options, initializer);
-	Settings.InitDropdown(self.Control.Dropdown, setting, inserter, initTooltip);
+	Settings.InitDropdown(self.Control.Dropdown, setting, inserter, initTooltip, initializer);
 end
 
 function SettingsDropdownControlMixin:Release()
@@ -1611,8 +1611,8 @@ function SettingsCheckboxDropdownControlMixin:Init(initializer)
 		self.Control.Dropdown:UpdateToMenuSelections(self.Control.Dropdown:GetMenuDescription());
 	end
 
-	local hasAnyRadioDescriptions = self.Control.Dropdown:HasAnyRadioDescriptions();
-	self.Control:SetSteppersShown(hasAnyRadioDescriptions);
+	local hasOnlyRadioDescriptions = self.Control.Dropdown:HasOnlyRadioDescriptions();
+	self.Control:SetSteppersShown(hasOnlyRadioDescriptions);
 
 	self:EvaluateState();
 	self:SetSmartNavCursorAnchor(self);

@@ -107,7 +107,7 @@ end
 
 local function CheckBeginTutorial()
 	TutorialManager:CheckHasCompletedFrameTutorial(LE_FRAME_TUTORIAL_HOW_TO_SUPERTRACK, function(hasCompletedTutorial)
-		if not hasCompletedTutorial then
+		if TutorialManager:CanShowSupertrackTutorial() and not hasCompletedTutorial then
 			CreateAndInitFromMixin(SupertrackTutorialMixin):BeginInitialState();
 		end
 	end);

@@ -1,0 +1,75 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="FloatingPetBattleAbilityTooltip" inherits="SharedPetBattleAbilityTooltipTemplate" movable="true" toplevel="true">
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="80"/>
+		</Anchors>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="FloatingFrameCloseButtonDefaultAnchors"/>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				self:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				self:StopMovingOrSizing();
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+
+	<Frame name="BattlePetTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP" clampedToScreen="true" virtual="true" hidden="true" inherits="TooltipBackdropTemplate">
+		<Size x="260" y="67"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" wordwrap="false" inherits="GameFontNormalLargeLeft">
+					<Size x="238" y="0"/>
+					<Anchors>
+						<Anchor point="TOP" x="0" y="-10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad function="BattlePetTooltip_OnLoad" inherit="prepend"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="FloatingBattlePetTooltip" inherits="BattlePetTooltipTemplate" movable="true" toplevel="true">
+		<Size x="260" y="67"/>
+		<Anchors>
+			<Anchor point="BOTTOM" x="0" y="80"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Delimiter">
+					<Size x="251" y="2"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Name" relativePoint="BOTTOMLEFT" x="-6" y="-5"/>
+					</Anchors>
+					<Color r="0.2" g="0.2" b="0.2"/>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="FloatingFrameCloseButtonDefaultAnchors"/>
+			<Button parentKey="JournalClick" text="BATTLE_PET_TOOLTIP_CLICK">
+				<Size x="238" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" relativeKey="$parent.Delimiter" relativePoint="BOTTOM" x="0" y="-3"/>
+				</Anchors>
+				<NormalFont style="GameFontNormalLeft"/>
+				<Scripts>
+					<OnClick function="BattlePetTooltipJournalClick_OnClick"/>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Scripts>
+			<OnMouseDown>
+				self:StartMoving();
+			</OnMouseDown>
+			<OnMouseUp>
+				self:StopMovingOrSizing();
+			</OnMouseUp>
+		</Scripts>
+	</Frame>
+</Ui>

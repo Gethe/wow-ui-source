@@ -478,6 +478,8 @@ do
 			local clampNameSize = true;
 			self.Dropdown.SelectionDetails:Init(currentChoice, optionData.currentChoiceIndex, selected, failedReq, lockedChoice, clampNameSize);
 			self.Dropdown.SelectionDetails:Layout();
+			-- Rects can still be unresolved here, so lay out again once they are.
+			self.Dropdown.SelectionDetails:MarkDirty();
 		end
 		
 		-- TODO Should be converted to a generator function.

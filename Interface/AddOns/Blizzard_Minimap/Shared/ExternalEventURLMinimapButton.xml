@@ -1,0 +1,54 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Button name="ExternalEventURLMinimapButtonTemplate" virtual="true" mixin="ExternalEventURLMinimapButtonMixin">
+		<Size x="32" y="32"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnEvent method="OnEvent"/>
+			<OnClick method="OnClick"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
+		</Scripts>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon" file="Interface\Icons\Spell_nature_timestop">
+					<Size x="34" y="34"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="0" y="0"/>
+						<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+					</Anchors>
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Border" file="Interface\Common\RingBorder">
+					<Size x="42" y="42"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Frames>
+			<ModelScene parentKey="SpellEffectModelScene" inherits="NonInteractableModelSceneMixinTemplate" drawLayer="BACKGROUND" hidden="true" useParentLevel="true">
+				<Size x="151" y="151"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+			</ModelScene>
+		</Frames>
+	</Button>
+</Ui>

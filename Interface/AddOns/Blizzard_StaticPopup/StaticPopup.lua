@@ -237,7 +237,7 @@ end
 -- .cancelText: custom text for the cancel button.
 -- .showAlert: whether or not the alert texture should show.
 -- .referenceKey: used with StaticPopup_IsCustomGenericConfirmationShown.
--- .skipGamepadAutoFocus: used to indicate the popup should not gain focus immediately when using non mouse based inputs. 
+-- .skipGamepadAutoFocus: used to indicate the popup should not gain focus immediately when using non mouse based inputs.
 function StaticPopup_ShowCustomGenericConfirmation(customData, insertedFrame)
 	StaticPopup_Show("GENERIC_CONFIRMATION", nil, nil, customData, insertedFrame);
 end
@@ -594,6 +594,10 @@ function StaticPopup_OnShow(dialog)
 	local dialogInfo = StaticPopupDialogs[dialog.which];
 	if dialogInfo.OnShow then
 		dialogInfo.OnShow(dialog, dialog.data);
+
+		if InputUtil.IsMKBUIEnabled() and dialogInfo.hasConfirmationEditBox then
+			dialog:GetEditBox():SetFocus();
+		end
 	end
 
 	-- The "cover" parameter means use the GlueFrame BlockingFrame (not the Cover frame defined in the dialog itself).

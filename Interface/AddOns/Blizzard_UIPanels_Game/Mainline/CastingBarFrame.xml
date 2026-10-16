@@ -479,8 +479,7 @@
 		</Scripts>
 	</StatusBar>
 
-	<StatusBar name="PlayerCastingBarFrame" inherits="PlayerCastingBarFrameTemplate, BottomManagedFrameTemplate" mixin="PlayerCastingBarFrameMixin"/>
-	<StatusBar name="GamepadPlayerCastingBarFrame" inherits="PlayerCastingBarFrameTemplate" mixin="GamepadPlayerCastingBarFrameMixin"/>
+	<StatusBar name="PlayerCastingBarFrame" inherits="PlayerCastingBarFrameTemplate, BottomManagedFrameTemplate" parent="UIParent" mixin="PlayerCastingBarFrameMixin"/>
 
 	<StatusBar name="OverlayPlayerCastingBarFrame" toplevel="true" inherits="CastingBarFrameTemplate" parent="UIParent" hidden="true" frameStrata="HIGH" mixin="OverlayPlayerCastingBarMixin">
 		<Size x="208" y="11"/>

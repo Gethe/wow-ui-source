@@ -478,11 +478,11 @@ function WoWAccountSelect_OnAccept()
 end
 
 function WoWAccountSelect_SetUpGamepad(self)
+	local footerAnchor = CreateAnchor("TOPLEFT", self.Background, "BOTTOMLEFT", 10, 5);
 	self.frameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "AccountSelectFooter");
+	self.frameFooter:SetCustomAnchor(footerAnchor);
 	self.frameFooter:AddStandardSelectPrompt();
 	self.frameFooter:Finalize();
-	self.frameFooter.inputLegend:ClearAllPoints();
-	self.frameFooter.inputLegend:SetPoint("TOPLEFT", self.Background, "BOTTOMLEFT", 10, 0);
 
 	local accountSelectFrame = AccountLogin.UI.WoWAccountSelectDialog;
 	function accountSelectFrame.UnfocusGamepad()

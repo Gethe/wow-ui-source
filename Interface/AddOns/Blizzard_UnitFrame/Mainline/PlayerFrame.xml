@@ -87,22 +87,16 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="3">
-								<Texture parentKey="PvpBackgroundCircle" inherits="PlayerPvpBackgroundCircleTemplate" hidden="true">
+								<Texture parentKey="LevelBackgroundCircle" inherits="PlayerLevelBackgroundCircleTemplate" hidden="true">
 									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent" relativePoint="TOPLEFT" x="20" y="-50"/>
+										<Anchor point="BOTTOMLEFT" x="13" y="7"/>
 									</Anchors>
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="4">
-								<!-- PvpBackgroundIcon must outrank PvpBackgroundCircle; the circle art is opaque and would hide it. -->
 								<Texture parentKey="PvpBackgroundIcon" inherits="PlayerPvpBackgroundIconTemplate" hidden="true">
 									<Anchors>
-										<Anchor point="CENTER" relativeKey="$parent.PvpBackgroundCircle" relativePoint="CENTER" x="0" y="0"/>
-									</Anchors>
-								</Texture>
-								<Texture parentKey="LevelBackgroundCircle" inherits="PlayerLevelBackgroundCircleTemplate" hidden="true">
-									<Anchors>
-										<Anchor point="BOTTOMLEFT" x="13" y="7"/>
+										<Anchor point="TOP" relativeKey="$parent" relativePoint="TOPLEFT" x="22" y="-65"/>
 									</Anchors>
 								</Texture>
 								<FontString name="PlayerLevelText" inherits="PlayerLevelTextTemplate"/>
@@ -341,11 +335,6 @@
 									</Anchors>
 								</Texture>
 								<!-- The AttackIcon and PlayerPortraitCornerIcon are in roughly the same position. Currently only one can show at a time. -->
-								<Texture parentKey="AttackIcon" atlas="UI-HUD-UnitFrame-Player-CombatIcon" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="64" y="-62"/>
-									</Anchors>
-								</Texture>
 								<Texture parentKey="PlayerPortraitCornerIcon" atlas="UI-HUD-UnitFrame-Player-PortraitOn-CornerEmbellishment" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="58.5" y="-53.5"/>
@@ -367,6 +356,12 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="3">
+								<!-- The AttackIcon and PlayerPortraitCornerIcon are in roughly the same position. Currently only one can show at a time. -->
+								<Texture parentKey="AttackIcon" atlas="UI-HUD-UnitFrame-Player-CombatIcon" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="64" y="-62"/>
+									</Anchors>
+								</Texture>
 								<Texture parentKey="PrestigeBadge" hidden="true">
 									<Size x="30" y="30"/>
 									<Anchors>

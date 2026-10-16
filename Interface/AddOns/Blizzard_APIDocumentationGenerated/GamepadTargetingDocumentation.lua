@@ -21,15 +21,6 @@ local GamepadTargeting =
 			Type = "Function",
 		},
 		{
-			Name = "HasReticleHoverTarget",
-			Type = "Function",
-
-			Returns =
-			{
-				{ Name = "hasReticleHoverTarget", Type = "bool", Nilable = false },
-			},
-		},
-		{
 			Name = "SetFilter",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

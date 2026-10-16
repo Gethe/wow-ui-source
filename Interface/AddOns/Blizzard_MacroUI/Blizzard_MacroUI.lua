@@ -382,7 +382,6 @@ function MacroFrameMixin:SetUpGamepad()
 	bind:AddButtonContext("ButtonContext_MacroButton");
 
 	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "MacroUIFooter");
-	self.footer:SetAnchorOffsets(0, -5);
 	self.footer:AddPromptedBinding(bind);
 	self.footer:AddStandardBackPrompt();
 	self.footer:Finalize();

@@ -465,6 +465,9 @@
 					<Anchor point="TOPLEFT"/>
 					<Anchor point="BOTTOMRIGHT"/>
 				</Anchors>
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnoredDontPropagate" value="true" type="boolean"/>
+				</KeyValues>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString name="SendMailErrorText" inherits="GameFontRedSmall" hidden="true">

@@ -42,6 +42,9 @@ InputHandlers\InputButtonUtility.lua
 InputSequence\InputSequence.lua
 InputSequence\InputSequence.xml
 
+Templates\BaseDialog.lua
+Templates\BaseDialog.xml
+
 FrameReformUtility.lua
 
 FrameControlsManager.lua

@@ -1369,31 +1369,23 @@ function PlayerCastingBarMixin:OnLoad()
 	local showShieldNo = false;
 	CastingBarMixin.OnLoad(self, "player", showTradeSkills, showShieldNo);
 	self.Icon:Hide();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.isManagedFrame = false;
+		self.isBottomManagedFrame = false;
+	end
 end
 
 function PlayerCastingBarMixin:IsAttachedToPlayerFrame()
 	return self.attachedToPlayerFrame;
 end
 
-function PlayerCastingBarMixin:OnEvent(...)
-	if not InputUtil.IsGamepadUIEnabled() then
-		CastingBarMixin.OnEvent(self, ...)
-	end
-end
-
 PlayerCastingBarFrameMixin = {};
 
 function PlayerCastingBarFrameMixin:OnShow()
 	CastingBarMixin.OnShow(self);
-	ManagedFrameMixin.OnShow(self);
-end
-
--- Gamepad UI specific overrides
-GamepadPlayerCastingBarFrameMixin = {};
-
-function GamepadPlayerCastingBarFrameMixin:OnEvent(...)
-	if InputUtil.IsGamepadUIEnabled() then
-		CastingBarMixin.OnEvent(self, ...)
+	if self.isManagedFrame then
+		ManagedFrameMixin.OnShow(self);
 	end
 end
 

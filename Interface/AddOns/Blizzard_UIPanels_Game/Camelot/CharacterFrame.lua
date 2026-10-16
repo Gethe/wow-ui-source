@@ -635,10 +635,7 @@ function CharacterFrameMixin:SetupGamepad()
 	end
 
 	local function SetUpLegend()
-		local LEGEND_VERTICAL_OFFSET = -12;
-
 		self.leftFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CharacterLeftFooter");
-		self.leftFooter:SetAnchorOffsets(0, LEGEND_VERTICAL_OFFSET);
 		self.leftFooter:AddPromptedBindings(PaperDollFrame:CreateGamepadPromptedBindings());
 		self.leftFooter:AddNonFallbackSelectPrompt();
 		self.leftFooter:AddStandardFrameControlManagerBindings(self);
@@ -646,7 +643,6 @@ function CharacterFrameMixin:SetupGamepad()
 		self.leftFooter:Finalize();
 
 		self.rightFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CharacterRightFooter");
-		self.rightFooter:SetAnchorOffsets(0, LEGEND_VERTICAL_OFFSET);
 		self.rightFooter:AddPromptedBindings(PaperDollFrame.EquipmentManagerPane:CreateGamepadPromptedBindings());
 		self.rightFooter:AddNonFallbackSelectPrompt();
 		self.rightFooter:AddStandardFrameControlManagerBindings(self);

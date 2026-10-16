@@ -269,21 +269,29 @@ local function ResetConfirmationPopups()
 end
 
 function InterfaceOverrides.ShowTutorialsOnButtonClick()
-		SetCVar("closedInfoFrames", ""); -- reset the help plates too
-		SetCVar("closedInfoFramesAccountWide", "");
-		SetCVar("showNPETutorials", "1");
-		ResetTutorials();
-		TutorialFrame_ClearQueue();
-		if C_PlayerInfo.IsPlayerNPERestricted() and UnitLevel("player") == 1 then
-			SetCVar("showTutorials", 1);
-		end
+	SetCVar("skipTutorialAchievement", "1");
+	SetCVar("performedVendorTutorial", "0");
+	SetCVar("performedDeathTutorial", "0");
+	SetCVar("closedInfoFrames", ""); -- reset the help plates too
+	SetCVar("closedInfoFramesAccountWide", "");
+	SetCVar("showNPETutorials", "1");
+	ResetTutorials();
+	TutorialFrame_ClearQueue();
+	local canResetTutorials = InterfaceOverrides.CanResetTutorials();
+	if canResetTutorials and UnitLevel("player") == 1 then
+		SetCVar("showTutorials", 1);
+	end
 
-		if GetTutorialsEnabled() and C_PlayerInfo.IsPlayerNPERestricted() then
-			NPE_LoadUI();
-		end
-		TriggerTutorial(1);
-		ResetConfirmationPopups();
-		TutorialManager:ResetTutorials();
+	if GetTutorialsEnabled() and canResetTutorials then
+		NPE_LoadUI();
+	end
+	TriggerTutorial(1);
+	ResetConfirmationPopups();
+	TutorialManager:ResetTutorials();
+end
+
+function InterfaceOverrides.CanResetTutorials()
+	return C_PlayerInfo.IsPlayerNPERestricted();
 end
 
 function InterfaceOverrides.RunSettingsCallback(callback)

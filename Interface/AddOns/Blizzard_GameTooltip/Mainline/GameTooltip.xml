@@ -328,5 +328,8 @@
 		</KeyValues>
 	</GameTooltip>
 	<GameTooltip name="BuffFrameTooltip" inherits="GameTooltipTemplate" parent="UIParent">
+		<Scripts>
+			<OnUpdate function="GameTooltip_OnUpdate"/>
+		</Scripts>
 	</GameTooltip>
 </Ui>

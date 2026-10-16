@@ -94,11 +94,11 @@ function LFGBrowseMixin:OnLoad()
 			end);
 		elseif data.category then
 			factory("LFGBrowseNestedSearchEntryTemplate", function(frame, elementNode)
-				LFGBrowseSearchEntry_Init(frame, elementNode.data);
+				LFGBrowseSearchEntry_Init(frame, elementNode.data, self);
 			end);
 		else
 			factory("LFGBrowseSearchEntryTemplate", function(frame, elementNode)
-				LFGBrowseSearchEntry_Init(frame, elementNode.data);
+				LFGBrowseSearchEntry_Init(frame, elementNode.data, self);
 			end);
 		end
 	end);
@@ -354,9 +354,10 @@ end
 -------------------------------------------------------
 ----------Search Entry
 -------------------------------------------------------
-function LFGBrowseSearchEntry_Init(self, elementData)
+function LFGBrowseSearchEntry_Init(self, elementData, browseFrame)
 	self.resultID = elementData.resultID;
 	self.isDelisted = false;
+	LFGBrowseSearchEntry_SetSelection(self, browseFrame.selectionBehavior:IsSelected(self));
 	LFGBrowseSearchEntry_Update(self);
 end
 
@@ -558,6 +559,16 @@ function LFGBrowseSearchEntryTooltip_Load(self)
 	self.completedEncounterPool = CreateFontStringPool(self, "ARTWORK", 0, "LFGBrowseSearchEntryTooltipCompletedEncounterTemplate")
 end
 
+local function LFGBrowseSearchEntryTooltip_GetMemberRowLevelAndRoleWidth(frame)
+	local roleIconsWidth = 0;
+	for _, icon in ipairs(frame.Roles) do
+		if (icon:IsShown()) then
+			roleIconsWidth = roleIconsWidth + icon:GetWidth();
+		end
+	end
+	return frame.Level:GetWidth() + 4 + roleIconsWidth;
+end
+
 function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	local searchResultInfo = C_LFGList.GetSearchResultInfo(resultID);
 	local numMembers = searchResultInfo.numMembers;
@@ -591,6 +602,7 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 	end
 	local lastMemberFrame = self.Leader;
 	local maxNameWidth = 0;
+	local maxMemberLevelAndRoleWidth = 0;		-- Maximum width of the lines that contain the leader or members
 	if (numMembers > 1) then
 		self.LeaderIcon:Show();
 		self.Leader:SetPoint("TOPLEFT", self.LeaderIcon, "TOPRIGHT", 0, -2)
@@ -616,6 +628,7 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 			self.Leader:Show();
 
 			maxNameWidth = math.max(maxNameWidth, self.Leader.Name:GetWidth());
+			maxMemberLevelAndRoleWidth = math.max(maxMemberLevelAndRoleWidth, LFGBrowseSearchEntryTooltip_GetMemberRowLevelAndRoleWidth(self.Leader));
 		else
 			self.Leader:Hide();
 			self.LeaderIcon:Hide();
@@ -641,16 +654,24 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 				frame:Show();
 
 				maxNameWidth = math.max(maxNameWidth, frame.Name:GetWidth());
+				maxMemberLevelAndRoleWidth = math.max(maxMemberLevelAndRoleWidth, LFGBrowseSearchEntryTooltip_GetMemberRowLevelAndRoleWidth(frame));
 			end
 		end
 	end
 
-	-- Standardize name width to whatever our max is.
 	if (maxNameWidth > 0) then
+		-- Standardize name width to whatever our max is.
 		self.Leader.Name:SetWidth(maxNameWidth);
 		for frame in self.memberPool:EnumerateActive() do
 			frame.Name:SetWidth(maxNameWidth);
 		end
+
+		-- Add the standardized name width and leader icon to the existing longest row calculation, and update maxContentWidth used to resize the tooltip background if necessary.
+		local maxMemberRowContentWidth = maxNameWidth + 4 + maxMemberLevelAndRoleWidth;
+		if (self.LeaderIcon:IsShown()) then
+			maxMemberRowContentWidth = maxMemberRowContentWidth + self.LeaderIcon:GetWidth();
+		end
+		maxContentWidth = math.max(maxContentWidth, maxMemberRowContentWidth);
 	end
 
 	-- Comment

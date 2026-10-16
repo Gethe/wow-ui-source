@@ -212,21 +212,37 @@ function GameDialogMixin:SetupInsertedFrame(insertedFrame)
 end
 
 function GameDialogMixin:SetupConfirmation(dialogInfo)
+	if dialogInfo.confirmationString then
+		-- For backwards compatibility reasons we _do_ allow having hasEditBox and
+		-- requiresConfirmation both be true. If requiresConfirmation is present without
+		-- confirmationString, the confirmation only applies to gamepad mode. Thus we only want the
+		-- edit box if confirmationString is set, regardless of if requiresConfirmation is set.
+		dialogInfo.hasConfirmationEditBox = InputUtil.IsMKBUIEnabled();
+		dialogInfo.requiresConfirmation = true;
+	end
+
+	self.ConfirmText:SetText("");
+	self.GamepadSequence:Hide();
+
 	if dialogInfo.requiresConfirmation then
 		if InputUtil.IsGamepadUIEnabled() then
-			self.GamepadSequence:ResetButtons();
+			self.ConfirmText:SetText(DIALOG_CONFIRMATION_PROMPT_GAMEPAD);
 			self.GamepadSequence:Show();
+		elseif dialogInfo.confirmationString then
+			self.ConfirmText:SetText(DIALOG_CONFIRMATION_PROMPT_MKB:format(dialogInfo.confirmationString));
 		end
-	else
-		self.GamepadSequence:Hide();
 	end
 end
 
 function GameDialogMixin:SetupEditBox(dialogInfo)
+	-- Can't have both a caller-requested editbox and a confirmation input, only one or the other.
+	assert((not dialogInfo.hasEditBox) or (not dialogInfo.hasConfirmationEditBox));
+
 	-- Set the editbox of the dialog
 	local editBox = self:GetEditBox();
-	editBox:SetShown(dialogInfo.hasEditBox);
-	if dialogInfo.hasEditBox then
+	local needsEditBox = dialogInfo.hasEditBox or dialogInfo.hasConfirmationEditBox;
+	editBox:SetShown(needsEditBox);
+	if needsEditBox then
 		editBox.Instructions:SetText(dialogInfo.editBoxInstructions or "");
 
 		if dialogInfo.maxLetters then
@@ -459,23 +475,29 @@ local function GetSpacing_ButtonsAfterText(_previous, _current, dialog, dialogIn
 end
 
 local DialogElementLayout = CreateAndInitFromMixin(RegionLayoutManager, "None", "Any", 0);
+DialogElementLayout:AddSpacingPair("Text", "ConfirmText", -16);
 DialogElementLayout:AddSpacingPair("Text", "SubText", GetSpacing_SubTextAfterText);
+DialogElementLayout:AddSpacingPair("ConfirmText", "SubText", GetSpacing_SubTextAfterText);
 DialogElementLayout:AddSpacingPair("ItemFrame", "SubText", GetSpacing_SubTextAfterItemFrame);
 DialogElementLayout:AddSpacingPair("Any", "ItemFrame", -16);
 DialogElementLayout:AddSpacingPair("Text", "ItemFrame", -5);
+DialogElementLayout:AddSpacingPair("ConfirmText", "ItemFrame", -5);
 DialogElementLayout:AddSpacingPair("Any", "insertedFrame", 0);
 DialogElementLayout:AddSpacingPair("insertedFrame", "MoneyFrame", 0);
 DialogElementLayout:AddSpacingPair("insertedFrame", "MoneyInputFrame", 0);
 DialogElementLayout:AddSpacingPair("SubText", "MoneyFrame", -5);
 DialogElementLayout:AddSpacingPair("SubText", "MoneyInputFrame", -5);
 DialogElementLayout:AddSpacingPair("Text", "MoneyFrame", -5);
+DialogElementLayout:AddSpacingPair("ConfirmText", "MoneyFrame", -5);
 DialogElementLayout:AddSpacingPair("Text", "MoneyInputFrame", -5);
+DialogElementLayout:AddSpacingPair("ConfirmText", "MoneyInputFrame", -5);
 DialogElementLayout:AddSpacingPair("Any", "EditBox", -8);
 DialogElementLayout:AddSpacingPair("SubText", "EditBox", -10);
 DialogElementLayout:AddSpacingPair("Any", "GamepadSequence", -8);
 DialogElementLayout:AddSpacingPair("Any", "Dropdown", -5);
 DialogElementLayout:AddSpacingPair("Any", "ButtonContainer", -9);
 DialogElementLayout:AddSpacingPair("Text", "ButtonContainer", GetSpacing_ButtonsAfterText);
+DialogElementLayout:AddSpacingPair("ConfirmText", "ButtonContainer", GetSpacing_ButtonsAfterText);
 DialogElementLayout:AddSpacingPair("ItemFrame", "ButtonContainer", GetSpacing_ButtonContainerAfterItemFrame);
 DialogElementLayout:AddSpacingPair("EditBox", "ButtonContainer", -12);
 DialogElementLayout:AddSpacingPair("ButtonContainer", "ProgressBarSpacer", 8);
@@ -505,6 +527,10 @@ function GameDialogMixin:SetupElementAnchoring()
 	self.previousRegionKey = "Text";
 
 	local itemFrameAboveSubText = dialogInfo.itemFrameAboveSubtext and dialogInfo.hasItemFrame and dialogInfo.subText;
+
+	if dialogInfo.requiresConfirmation then
+		self:SetupAnchor("ConfirmText");
+	end
 
 	if itemFrameAboveSubText then
 		self:SetupAnchor("ItemFrame");
@@ -568,6 +594,10 @@ end
 
 function GameDialogMixin:GetButton4()
 	return self:GetButton(4);
+end
+
+function GameDialogMixin:GetExtraButton()
+	return self.ExtraButton;
 end
 
 function GameDialogMixin:GetButton(index)
@@ -653,6 +683,7 @@ function GameDialogMixin:Resize()
 
 	local desiredTextWidth = GetDesiredTextWidth(dialogInfo);
 	self.Text:SetDesiredWidth(desiredTextWidth);
+	self.ConfirmText:SetDesiredWidth(desiredTextWidth);
 	self.SubText:SetDesiredWidth(GetDesiredSubTextWidth(dialogInfo));
 
 	-- Through a lot of hardcoded calculations because the source of truth is in several different places

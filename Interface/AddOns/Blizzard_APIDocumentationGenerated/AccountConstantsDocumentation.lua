@@ -282,6 +282,20 @@ local AccountConstants =
 				{ Name = "HouseType", Type = "ItemCollectionType", EnumValue = 13 },
 			},
 		},
+		{
+			Name = "SdToggleUsageLocation",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "BeforeLogin", Type = "SdToggleUsageLocation", EnumValue = 0 },
+				{ Name = "CharacterCreation", Type = "SdToggleUsageLocation", EnumValue = 1 },
+				{ Name = "BarberShop", Type = "SdToggleUsageLocation", EnumValue = 2 },
+				{ Name = "OptionsMenu", Type = "SdToggleUsageLocation", EnumValue = 3 },
+			},
+		},
 	},
 
 	Predicates =

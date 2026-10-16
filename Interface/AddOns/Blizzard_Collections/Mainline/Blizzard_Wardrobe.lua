@@ -573,10 +573,12 @@ function WardrobeItemsCollectionMixin:OnLoad()
 end
 
 function WardrobeItemsCollectionMixin:CheckHelpTip()
+	if(not C_TransmogSets:HasAnyValidSets()) then  
+		return;
+	end
 	if (GetCVarBitfield("closedInfoFramesAccountWide", Enum.FrameTutorialAccount.TransmogSetsTab)) then
 		return;
 	end
-
 	local helpTipInfo = {
 		text = TRANSMOG_SETS_TAB_TUTORIAL,
 		buttonStyle = HelpTip.ButtonStyle.Close,

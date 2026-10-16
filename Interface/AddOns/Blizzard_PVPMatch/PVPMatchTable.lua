@@ -88,7 +88,8 @@ function PVPCellClassMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	local className = self.rowData.className or "";
 	local talentSpec = self.rowData.talentSpec;
-	if talentSpec then
+	-- Some games have a single spec per class named after the class.
+	if talentSpec and talentSpec ~= className then
 		local tooltipText = format(TALENT_SPEC_AND_CLASS, talentSpec, className);
 		GameTooltip_AddNormalLine(GameTooltip, tooltipText, true);
 	else
@@ -103,20 +104,43 @@ end
 
 PVPCellHonorLevelMixin = CreateFromMixins(TableBuilderCellMixin);
 
-function PVPCellHonorLevelMixin:Populate(rowData, dataIndex)
+function PVPCellHonorLevelMixin:GetIconAtlas(rowData)
+	return nil;
+end
+
+function PVPCellHonorLevelMixin:GetIconTexture(rowData)
 	local honorLevel = rowData.honorLevel;
 	if honorLevel then
 		local honorRewardInfo = C_PvP.GetHonorRewardInfo(honorLevel);
-		local fileID = honorRewardInfo and honorRewardInfo.badgeFileDataID;
-		self.icon:SetTexture(fileID);
+		return honorRewardInfo and honorRewardInfo.badgeFileDataID;
+	end
+
+	return nil;
+end
+
+function PVPCellHonorLevelMixin:GetTooltipText(rowData)
+	local honorLevel = rowData.honorLevel;
+	if honorLevel and honorLevel > 0 then
+		return HONOR_LEVEL_TOOLTIP:format(honorLevel);
+	end
+
+	return nil;
+end
+
+function PVPCellHonorLevelMixin:Populate(rowData, dataIndex)
+	local atlas = self:GetIconAtlas(rowData);
+	if atlas then
+		self.icon:SetAtlas(atlas);
+	else
+		self.icon:SetTexture(self:GetIconTexture(rowData));
 	end
 end
 
 function PVPCellHonorLevelMixin:OnEnter()
-	local honorLevel = self.rowData.honorLevel;
-	if honorLevel and honorLevel > 0 then
+	local tooltipText = self:GetTooltipText(self.rowData);
+	if tooltipText then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip_AddNormalLine(GameTooltip, HONOR_LEVEL_TOOLTIP:format(honorLevel), true);
+		GameTooltip_AddNormalLine(GameTooltip, tooltipText, true);
 		GameTooltip:Show();
 	end
 end
@@ -187,6 +211,11 @@ function PVPCellStringMixin:OnEnter()
 		if value then
 			if type(value) == "number" then
 				value = BreakUpLargeNumbers(value);
+			end
+
+			-- Nothing to add when the cell already shows the full value.
+			if value == self.text:GetText() then
+				return;
 			end
 
 			GameTooltip:SetOwner(self, "ANCHOR_RIGHT");

@@ -50,7 +50,7 @@ function TutorialHelper:FormatString(str)
 			if (spellID) then
 				local btn = self:GetActionButtonBySpellID(tonumber(spellID));
 				if (btn) then
-					bindingString = GetBindingKey("ACTIONBUTTON" .. btn.action);
+					bindingString = GetBindingKey(btn.commandName);
 				end
 			end
 
@@ -238,14 +238,26 @@ function TutorialHelper:GetFrameButtonEdgeOffset(frame, button)
 	local posY = -100;
 	local posX = 0;
 
-	if (button) then
-		posY = button:GetTop() - frame:GetTop() - (button:GetHeight() / 2);
+	if (button and frame) then
+		local buttonTop = button:GetTop();
+		local frameTop = frame:GetTop();
+		local frameRight = frame:GetRight();
 
-		local fontString = button:GetFontString();
-		if (fontString) then
-			posX = -(frame:GetRight() - fontString:GetLeft() - fontString:GetStringWidth());
-		else
-			posX = -(frame:GetRight() - button:GetLeft() - button:GetWidth());
+		if (buttonTop and frameTop and frameRight) then
+			posY = buttonTop - frameTop - (button:GetHeight() / 2);
+
+			local fontString = button:GetFontString();
+			if (fontString) then
+				local fontLeft = fontString:GetLeft();
+				if (fontLeft) then
+					posX = -(frameRight - fontLeft - fontString:GetStringWidth());
+				end
+			else
+				local buttonLeft = button:GetLeft();
+				if (buttonLeft) then
+					posX = -(frameRight - buttonLeft - button:GetWidth());
+				end
+			end
 		end
 	end
 

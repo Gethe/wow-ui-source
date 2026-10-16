@@ -613,6 +613,13 @@ function CommunitiesMemberListMixin:RefreshLayout()
 		end
 	end
 
+	for _, columnButton in ipairs({self.ColumnDisplay:GetChildren()}) do
+		SmartNavigation_AddJumpNavigationOverride(columnButton, SMART_NAV_INPUT_DIRECTION.DOWN, function()
+			SmartNavigation_SelectScrollBoxCurrentOrTop(self.ScrollBox);
+			return true;
+		end);
+	end
+
 	self.ScrollBox:ForEachFrame(function(button, elementData)
 		button:SetExpanded(self.expandedDisplay);
 		button:SetGuildColumnIndex(guildColumnIndex);

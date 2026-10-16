@@ -1,6 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
-	
+
 	<CheckButton name="CommunitiesNotificationSettingsStreamEntryCheckButtonTemplate" inherits="UIRadioButtonTemplate" virtual="true">
 		<!-- Set the filter type with a KeyValue
 		<KeyValues>
@@ -20,7 +20,7 @@
 			</OnClick>
 		</Scripts>
 	</CheckButton>
-	
+
 	<Button name="CommunitiesNotificationSettingsStreamEntryTemplate" mixin="CommunitiesNotificationSettingsStreamEntryMixin" virtual="true">
 		<Size x="560" y="42"/>
 		<Layers>
@@ -63,7 +63,7 @@
 			<Color r="1" g="1" b="1" a="0.05"/>
 		</HighlightTexture>
 	</Button>
-	
+
 	<Button name="CommunitiesMassNotificationsSettingsButtonTemplate" inherits="UIMenuButtonStretchTemplate" virtual="true">
 		<Size x="50" y="22"/>
 		<!-- Set the filter type with a KeyValue
@@ -77,9 +77,12 @@
 		<NormalFont style="GameFontHighlightSmall"/>
 		<HighlightFont style="GameFontHighlightSmall"/>
 	</Button>
-	
-	<Frame name="CommunitiesEditStreamDialogTemplate" frameStrata="DIALOG" mixin="CommunitiesEditStreamDialogMixin" virtual="true">
+
+	<Frame name="CommunitiesEditStreamDialogTemplate" inherits="GamepadBaseDialogTemplate, FocusFramesInterfaceTemplate" frameStrata="DIALOG" mixin="CommunitiesEditStreamDialogMixin" virtual="true">
 		<Size x="350" y="320"/>
+		<KeyValues>
+			<KeyValue key="layoutType" type="string" value="DialogFrameTemplate"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="TitleLabel" inherits="GameFontHighlight">
@@ -170,12 +173,15 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnShow method="OnShow" inherit="prepend"/>
 		</Scripts>
 	</Frame>
-	
-	<Frame name="CommunitiesNotificationSettingsDialogTemplate" frameStrata="DIALOG" enableMouse="true" mixin="CommunitiesNotificationSettingsDialogMixin" virtual="true">
+
+	<Frame name="CommunitiesNotificationSettingsDialogTemplate" inherits="GamepadBaseDialogTemplate, FocusFramesInterfaceTemplate" frameStrata="DIALOG" enableMouse="true" mixin="CommunitiesNotificationSettingsDialogMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="layoutType" type="string" value="DialogFrameTemplate"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="TitleLabel" inherits="GameFontHighlight" text="COMMUNITIES_NOTIFICATION_SETTINGS_DIALOG_LABEL">
@@ -280,8 +286,8 @@
 			</ScrollFrame>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
-			<OnShow method="OnShow"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnShow method="OnShow" inherit="prepend"/>
 		</Scripts>
 	</Frame>
 
@@ -299,7 +305,7 @@
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</DropdownButton>
-		
+
 	<DropdownButton name="StreamDropdownTemplate" inherits="WowStyle1DropdownTemplate" mixin="CommunitiesStreamDropdownMixin" virtual="true">
 		<Frames>
 			<Frame parentKey="NotificationOverlay" frameLevel="100" setAllPoints="true" hidden="true">

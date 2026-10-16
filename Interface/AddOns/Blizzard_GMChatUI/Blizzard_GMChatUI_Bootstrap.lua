@@ -6,7 +6,8 @@ end
 
 function GMChatFrame_OnWhisperFromGM(event, ...)
 	if select(1, ...) then
-		if GMChatFrame_LoadUI() then
+		local wasLoaded = C_AddOns.IsAddOnLoaded(AddonName);
+		if GMChatFrame_LoadUI() and not wasLoaded then
 			GMChatFrame_OnEvent(GMChatFrame, event, ...);
 		end
 	end

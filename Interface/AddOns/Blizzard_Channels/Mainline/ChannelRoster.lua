@@ -51,7 +51,95 @@ function ChannelRosterMixin:GetRosterButtonForVoiceMemberID(voiceMemberID)
 	end);
 end
 
+function ChannelRosterMixin:UpdateSmartNavJumps()
+	if not self.ScrollBox then
+		return;
+	end
+	for _, element in self.ScrollBox:EnumerateFrames() do
+		SmartNavigation_ClearJumpNavigationOverrides(element);
+		SmartNavigation_AddJumpNavigationOverride(
+			element,
+			SMART_NAV_INPUT_DIRECTION.LEFT,
+			GenerateClosure(self.GetChannelFrameNavLeftTarget, self)
+		);
+	end
+end
+
+function ChannelRosterMixin:GetChannelFrameNavLeftTarget()
+	return self:GetChannelFrame():GetNavLeftTarget();
+end
+
+function ChannelRosterMixin:ResetScrollAndGetTopEntry()
+	self:ResetScrollPosition();
+	if self.ScrollBox:GetDataProviderSize() <= 0 then
+		return nil;
+	end
+	
+	return self.ScrollBox:FindFrame(self.ScrollBox:FindElementData(1));
+end
+
+function ChannelRosterMixin:GetGamepadSelectionData()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return nil;
+	end
+
+	if not self.ScrollBox then
+		return nil;
+	end
+
+	local channelFrame = self:GetChannelFrame();
+	if not channelFrame.isFocused then
+		return nil;
+	end
+
+	local currentButton = SmartNavigation:GetCurrentButton();
+	if not currentButton then
+		return nil;
+	end
+
+	local dataIndex = self.ScrollBox:FindFrameElementDataIndex(currentButton);
+	if not dataIndex then
+		return nil;
+	end
+
+	local buttonName = currentButton.GetMemberName and currentButton:GetMemberName();
+	return { dataIndex=dataIndex, buttonName=buttonName };
+end
+
+function ChannelRosterMixin:RestorePreviousSelectionData(previousSelectionData)
+	if not InputUtil.IsGamepadUIEnabled() or not previousSelectionData then
+		return;
+	end
+
+	local bestMatch = nil;
+	for index, elementData in self.ScrollBox:EnumerateDataProviderEntireRange() do
+		local button = self.ScrollBox:FindFrame(elementData);
+
+		-- Find the closest index
+		if button and index <= previousSelectionData.dataIndex then
+			bestMatch = button;
+		end
+
+		-- But if we ever match the button exactly, immediately exit (regardless of index)
+		local buttonName = button and button.GetMemberName and button:GetMemberName();
+		if buttonName and buttonName == previousSelectionData.buttonName then
+			bestMatch = button;
+			break;
+		end
+	end
+
+	-- If the update leaves the view without a selectable button, fall back to the channel frame.
+	if not bestMatch then
+		bestMatch = self:GetChannelFrameNavLeftTarget();
+	end
+
+	SmartNavigation:SelectButton(bestMatch);
+end
+
 function ChannelRosterMixin:Update()
+	-- After update, channel roster may have released the button that was focused. If so, react.
+	local previousSelectionData = self:GetGamepadSelectionData();
+
 	local channel = self:GetChannelFrame():GetList():GetSelectedChannelButton();
 	if channel then
 		if channel:ChannelIsCommunity() then
@@ -62,6 +150,10 @@ function ChannelRosterMixin:Update()
 			self:UpdateFromVoiceChannelID(channel:GetVoiceChannelID());
 		end
 	end
+
+	-- As a result of an update, we may have lost our focus target.
+	self:UpdateSmartNavJumps();
+	self:RestorePreviousSelectionData(previousSelectionData);
 end
 
 function ChannelRosterMixin:ResetScrollPosition()

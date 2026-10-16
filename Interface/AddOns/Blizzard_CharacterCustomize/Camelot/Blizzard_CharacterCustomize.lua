@@ -3,6 +3,9 @@
 CHAR_CUSTOMIZE_MAX_SCALE = 0.75;
 
 local MAX_ALTERED_FORMS_DROPDOWN_HEIGHT = 625;
+local OPTIONS_SCROLL_PAN_EXTENT = 56;
+local OPTIONS_BOTTOM_GAP = 10;
+local MIN_OPTIONS_SCROLL_HEIGHT = 1;
 
 ----------------- Char-Specific Base Parent Frame -----------------
 
@@ -281,8 +284,15 @@ CharCustomizeMixin = CreateFromMixins(CustomizationFrameBaseMixin);
 function CharCustomizeMixin:OnLoad()
 	-- Expose container children as direct fields so CustomizationFrameBaseMixin methods can access them.
 	self.Categories = self.CustomizeOptionsContainerFrame.Categories;
-	self.Options = self.CustomizeOptionsContainerFrame.Options;
+	self.OptionsScrollBox = self.CustomizeOptionsContainerFrame.OptionsScrollBox;
+	self.Options = self.OptionsScrollBox.Options;
 	self.RandomizeAppearanceButton = self.CustomizeOptionsContainerFrame.RandomizeAppearanceButton;
+
+	local optionsScrollView = CreateScrollBoxLinearView();
+	optionsScrollView:SetPanExtent(OPTIONS_SCROLL_PAN_EXTENT);
+	local optionsScrollBar = self.CustomizeOptionsContainerFrame.OptionsScrollBar;
+	ScrollUtil.InitScrollBoxWithScrollBar(self.OptionsScrollBox, optionsScrollBar, optionsScrollView);
+	ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.OptionsScrollBox, optionsScrollBar);
 
 	self:CustomizationFrameBase_OnLoad();
 
@@ -299,12 +309,55 @@ function CharCustomizeMixin:OnLoad()
 end
 
 function CharCustomizeMixin:OnShow()
+	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+	self:RegisterEvent("UI_SCALE_CHANGED");
+	self:UpdateOptionsScrollBox();
+	SmartNavigation:RegisterCallback("SelectedButtonUpdated", self.OnSmartNavSelectedButtonUpdated, self);
 	EventRegistry:TriggerEvent("CharCustomize.OnShow", self);
 end
 
 function CharCustomizeMixin:OnHide()
 	CustomizationFrameBaseMixin.OnHide(self);
+	self:UnregisterEvent("DISPLAY_SIZE_CHANGED");
+	self:UnregisterEvent("UI_SCALE_CHANGED");
+	SmartNavigation:UnregisterCallback("SelectedButtonUpdated", self);
 	EventRegistry:TriggerEvent("CharCustomize.OnHide", self);
+end
+
+function CharCustomizeMixin:OnEvent(event, ...)
+	CustomizationFrameBaseMixin.OnEvent(self, event, ...);
+
+	if event == "DISPLAY_SIZE_CHANGED" or event == "UI_SCALE_CHANGED" then
+		-- The options height cap depends on the bottom frame's screen position, which moves with the display size.
+		self:UpdateOptionsScrollBox();
+	end
+end
+
+-- Jump navigation overrides can land on an option that is clipped by the scroll box, so bring it into view.
+function CharCustomizeMixin:OnSmartNavSelectedButtonUpdated()
+	local option = SmartNavigation:GetCurrentButton();
+	if not option or option:GetParent() ~= self.Options then
+		return;
+	end
+
+	local scrollBox = self.OptionsScrollBox;
+	local optionTop = option:GetTop();
+	local optionBottom = option:GetBottom();
+	local scrollTop = scrollBox:GetTop();
+	local scrollBottom = scrollBox:GetBottom();
+	if not (optionTop and optionBottom and scrollTop and scrollBottom) then
+		return;
+	end
+
+	if optionTop <= scrollTop and optionBottom >= scrollBottom then
+		return;
+	end
+
+	local optionOffset = self.Options:GetTop() - optionTop;
+	local optionHeight = option:GetHeight();
+	local alignment = ScrollBoxConstants.AlignCenter;
+	local noInterpolation = true;
+	scrollBox:ScrollToOffsetWithAdjustment(optionOffset, optionHeight, alignment, noInterpolation);
 end
 
 function CharCustomizeMixin:GetAlteredFormsButtonPool()
@@ -571,23 +624,61 @@ function CharCustomizeMixin:UpdateOptionButtons(forceReset)
 	end
 end
 
+function CharCustomizeMixin:UpdateOptionsPanel()
+	local container = self.CustomizeOptionsContainerFrame;
+	local hasContent = self.numSubcategories > 1 or #self.Options:GetLayoutChildren() > 0;
+
+	container.Frame:SetShown(hasContent);
+	container.FrameTopRight:SetShown(hasContent);
+	container.FrameBottomRight:SetShown(hasContent);
+	container.Backdrop:SetShown(hasContent);
+
+	-- Gamepad mode keeps the randomize button hidden.
+	self.RandomizeAppearanceButton:SetShown(hasContent and not InputUtil.IsGamepadUIEnabled());
+end
+
 function CharCustomizeMixin:UpdateOptionsContainer()
 	-- Overrides CustomizationFrameBaseMixin
 
-	-- Push options up into categories a little bit if we don't have enough
-	-- vertical space for spacing at all.
-	self.Options:UpdateSpacing();
-	if self.Options:GetSpacing() < 0 then
-		self.Options:SetPoint("TOPRIGHT", 30, -82);
-	else
-		self.Options:SetPoint("TOPRIGHT", self.Categories, "BOTTOMRIGHT", 30, -30);
-	end
+	self:UpdateOptionsPanel();
 
-	-- This will update the spacing again based on the adjusted point above.
+	CustomizationFrameBaseMixin.UpdateOptionsContainer(self);
+end
+
+function CharCustomizeMixin:SetOptionsSpacingConfiguration(_topFrame, bottomFrame)
+	-- Overrides CustomizationFrameBaseMixin. Options scroll instead of squeezing their spacing.
+	self.optionsBottomFrame = bottomFrame;
+end
+
+-- Sizes the options scroll box to its content, capped so the container's bottom stays above optionsBottomFrame.
+function CharCustomizeMixin:UpdateOptionsScrollBox()
+	local container = self.CustomizeOptionsContainerFrame;
+	local scrollBox = self.OptionsScrollBox;
+
 	self.Options:Layout();
 
-	self.CustomizeOptionsContainerFrame:MarkDirty();
-	self.CustomizeOptionsContainerFrame:Layout();
+	local height = self.Options:GetHeight();
+	local scrollTop = scrollBox:GetTop();
+	local bottomFrameTop = self.optionsBottomFrame and self.optionsBottomFrame:GetTop();
+	if scrollTop and bottomFrameTop then
+		local minScrollBottom = bottomFrameTop + OPTIONS_BOTTOM_GAP + container:GetHeightPadding();
+		height = math.min(height, scrollTop - minScrollBottom);
+	end
+
+	local scrollHeight = math.max(height, MIN_OPTIONS_SCROLL_HEIGHT);
+	scrollBox:SetHeight(scrollHeight);
+	scrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately);
+
+	-- Fixed height keeps the container from being sized by its own anchored textures.
+	local containerTop = container:GetTop();
+	if scrollTop and containerTop then
+		local heightPadding = container:GetHeightPadding();
+		local containerHeight = (containerTop - scrollTop) + scrollHeight + heightPadding;
+		container:SetFixedHeight(containerHeight);
+	end
+
+	container:MarkDirty();
+	container:Layout();
 end
 
 function CharCustomizeMixin:UpdateCategoriesContainer()
@@ -602,8 +693,7 @@ function CharCustomizeMixin:UpdateCategoriesContainer()
 		self.Categories:SetSize(30, 30);
 	end
 
-	self.CustomizeOptionsContainerFrame:MarkDirty();
-	self.CustomizeOptionsContainerFrame:Layout();
+	self:UpdateOptionsScrollBox();
 end
 
 function CharCustomizeMixin:UpdateModelDressState()
@@ -764,7 +854,9 @@ function CharCustomizeMixin:SetupGamepad()
 		self.SmallButtons.ResetCameraButton:Click();
 	end, ACTION_LABEL_RESET_VIEW);
 
+	local footerAnchor = CreateAnchor("BOTTOM", self, "BOTTOM", 0, 8);
 	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self);
+	self.footer:SetCustomAnchor(footerAnchor);
 	self.footer:AddStandardSelectPrompt();
 	self.footer:AddPromptedBinding(resetView);
 	self.footer:AddPromptedBinding(finishAction);
@@ -774,8 +866,6 @@ function CharCustomizeMixin:SetupGamepad()
 	self.footer:AddPromptedBinding(prevCategory);
 	self.footer:AddStandardBackPrompt();
 	self.footer:Finalize();
-	self.footer.inputLegend:ClearAllPoints();
-	self.footer.inputLegend:SetPoint("BOTTOM", 0, 8);
 end
 
 function CharCustomizeMixin:InitializeGamepad()

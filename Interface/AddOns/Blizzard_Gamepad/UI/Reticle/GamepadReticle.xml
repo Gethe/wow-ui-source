@@ -1,37 +1,110 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 	<Frame name="GamepadReticle" parent="UIParent" hidden="true" frameStrata="LOW" toplevel="false" mixin="GamepadReticleMixin">
-		<Size x="25" y="25" />
+		<Size x="32" y="32" />
 		<Anchors>
 			<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER" x="0" y="90"/>
 		</Anchors>
-		<Animations>
-			<AnimationGroup parentKey="IntroAnim">
-				<Scale childKey="TargetingIcon" order="1" duration="0.25" smoothing="IN" fromScaleX="0.1" fromScaleY="0.1" toScaleX="1" toScaleY="1"/>
-			</AnimationGroup>
-			<AnimationGroup parentKey="UpdateAnim">
-				<Scale childKey="TargetingIcon" order="1" duration="0.2" smoothing="IN" fromScaleX="1.2" fromScaleY="1.2" toScaleX="1" toScaleY="1"/>
-			</AnimationGroup>
-		</Animations>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="StandardIcon" alphaMode="BLEND" file="Interface\CharacterFrame\TempPortraitAlphaMask">
-					<Size x="4" y="4" />
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="TargetingIcon" alphaMode="BLEND" atlas="gamepad-reticletargeting-indicator-x1" useAtlasSize="false">
-					<Size x="40" y="40" />
-					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent" relativePoint="CENTER"/>
-					</Anchors>
-				</Texture>
-			</Layer>
-		</Layers>
+		<Frames>
+			<Frame parentKey="SwingTimer" mixin="GamepadReticleSwingTimerMixin" hidden="true">
+				<Size x="26" y="26"/>
+				<Anchors>
+					<Anchor point="CENTER"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="LoadBarBG" atlas="gamepad-press&amp;hold-loadBar-BG" setAllPoints="true"/>
+						<Texture parentKey="LoadBarGlow" atlas="gamepad-press&amp;hold-loadBar-glw-BG" setAllPoints="true"/>
+						<Texture parentKey="LeftSideLoadBarGlow" atlas="gamepad-press&amp;hold-loadBar-glw-BG" setAllPoints="true" hidden="true"/>
+						<Texture parentKey="RightSideLoadBarGlow" atlas="gamepad-press&amp;hold-loadBar-glw-BG" setAllPoints="true" hidden="true"/>
+					</Layer>
+					<Layer level="ARTWORK">
+						<Texture parentKey="LoadBar" atlas="gamepad-press&amp;hold-loadBar" setAllPoints="true">
+							<RadialProgressBar startOffset="0.5"/>
+						</Texture>
+						<Texture parentKey="LeftSideLoadBar" atlas="gamepad-press&amp;hold-loadBar" setAllPoints="true" hidden="true">
+							<RadialProgressBar endOffset="0.5"/>
+						</Texture>
+						<Texture parentKey="RightSideLoadBar" atlas="gamepad-press&amp;hold-loadBar" setAllPoints="true" hidden="true">
+							<RadialProgressBar endOffset="0.5" reverse="true"/>
+						</Texture>
+						<Texture parentKey="SpinnerTip" atlas="gamepad-press&amp;hold-spinnerTip" setAllPoints="true"/>
+						<Texture parentKey="LeftSideSpinnerTip" atlas="gamepad-press&amp;hold-spinnerTip" setAllPoints="true" hidden="true" rotation="180"/>
+						<Texture parentKey="RightSideSpinnerTip" atlas="gamepad-press&amp;hold-spinnerTip" setAllPoints="true" hidden="true" rotation="180">
+							<TexCoords left="1" right="0"/>
+						</Texture>
+						<MaskTexture hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Color r="0" g="0" b="0" a="1"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT" relativePoint="BOTTOM"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="LeftSideLoadBarGlow"/>
+								<MaskedTexture childKey="LeftSideLoadBar"/>
+								<MaskedTexture childKey="LeftSideSpinnerTip"/>
+							</MaskedTextures>
+						</MaskTexture>
+						<MaskTexture hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
+							<Color r="0" g="0" b="0" a="1"/>
+							<Anchors>
+								<Anchor point="TOPLEFT" relativePoint="TOP"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+							<MaskedTextures>
+								<MaskedTexture childKey="RightSideLoadBarGlow"/>
+								<MaskedTexture childKey="RightSideLoadBar"/>
+								<MaskedTexture childKey="RightSideSpinnerTip"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+				</Layers>
+				<Animations>
+					<!-- These animations must have a duration set even though it gets changed before playing so they don't start in a finished state -->
+					<AnimationGroup parentKey="FullCircleAnim" setToFinalAlpha="true">
+						<Rotation childKey="SpinnerTip" order="1" degrees="-360" duration="1">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<RadialProgress childKey="LoadBar" order="1" fromPercent="0" toPercent="1" duration="1"/>
+						<Alpha childKey="LoadBarGlow" order="1" fromAlpha="0" toAlpha="1" duration="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="LeftSideAnim" setToFinalAlpha="true">
+						<Rotation childKey="LeftSideSpinnerTip" order="1" degrees="-180" duration="1">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<RadialProgress childKey="LeftSideLoadBar" order="1" fromPercent="0" toPercent="1" duration="1"/>
+						<Alpha childKey="LeftSideLoadBarGlow" order="1" fromAlpha="0" toAlpha="1" duration="1"/>
+					</AnimationGroup>
+					<AnimationGroup parentKey="RightSideAnim" setToFinalAlpha="true">
+						<Rotation childKey="RightSideSpinnerTip" order="1" degrees="180" duration="1">
+							<Origin point="CENTER"/>
+						</Rotation>
+						<RadialProgress childKey="RightSideLoadBar" order="1" fromPercent="0" toPercent="1" duration="1"/>
+						<Alpha childKey="RightSideLoadBarGlow" order="1" fromAlpha="0" toAlpha="1" duration="1"/>
+					</AnimationGroup>
+				</Animations>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnEvent method="OnEvent"/>
+				</Scripts>
+			</Frame>
+			<Frame parentKey="Icons" setAllPoints="true">
+				<Layers>
+					<Layer level="ARTWORK">
+						<Texture parentKey="StandardIcon" alphaMode="BLEND" file="Interface\CharacterFrame\TempPortraitAlphaMask">
+							<Size x="4" y="4" />
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
 		</Scripts>
 	</Frame>
 </Ui>

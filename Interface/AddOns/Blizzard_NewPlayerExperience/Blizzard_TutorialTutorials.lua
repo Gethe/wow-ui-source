@@ -26,11 +26,11 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Intro_KeyboardMouse = class("Intro_KeyboardMouse", Class_TutorialBase);
 function Class_Intro_KeyboardMouse:OnInitialize()
-	self.questID = TutorialData:GetFactionData().StartingQuest;
+	self.questID = TutorialData:GetFactionData():GetStartingQuest();
 end
 
 function Class_Intro_KeyboardMouse:CanBegin()
-	if TutorialHelper:IsQuestCompleteOrActive(self.questID) then
+	if TutorialHelper:IsQuestCompleteOrActive(TutorialData:GetFactionData():GetStartingQuest()) then
 		TutorialManager:Finished(self:Name());
 		return false;
 	end
@@ -107,7 +107,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Intro_CameraLook = class("Intro_CameraLook", Class_TutorialBase);
 function Class_Intro_CameraLook:OnInitialize()
-	self.questID = TutorialData:GetFactionData().StartingQuest;
+	self.questID = TutorialData:GetFactionData():GetStartingQuest();
 end
 
 function Class_Intro_CameraLook:CanBegin()
@@ -178,7 +178,7 @@ function Class_Intro_ApproachQuestGiver:OnBegin()
 	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
 
 	self:ShowWalkTutorial();
-	local unit = TutorialData:GetFactionData().StartingQuestGiverCreatureID;
+	local unit = TutorialData:GetFactionData():GetStartingQuestGiverCreatureID();
 	if (unit) then
 		TutorialRangeManager:StartWatching(unit, TutorialRangeManager.Type.Unit, 5, function() TutorialManager:Finished(self:Name()); end);
 	end	
@@ -209,7 +209,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Intro_Interact = class("Intro_Interact", Class_TutorialBase);
 function Class_Intro_Interact:OnInitialize()
-	self.questID = TutorialData:GetFactionData().StartingQuest;
+	self.questID = TutorialData:GetFactionData():GetStartingQuest();
 end
 
 function Class_Intro_Interact:CanBegin()
@@ -224,7 +224,7 @@ function Class_Intro_Interact:OnBegin()
 	Dispatcher:RegisterEvent("QUEST_DETAIL", self);
 	Dispatcher:RegisterEvent("QUEST_ACCEPTED", self);
 	if not QuestFrame:IsShown() then
-		local content = {text = TutorialData:GetFactionData().StartingQuestInteractString, icon = "newplayertutorial-icon-mouse-rightbutton"};
+		local content = {text = TutorialData:GetFactionData():GetStartingQuestInteractString(), icon = "newplayertutorial-icon-mouse-rightbutton"};
 		self:ShowScreenTutorial(content, nil, TutorialMainFrameMixin.FramePositions.Low);
 	end
 end
@@ -256,7 +256,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Intro_CombatDummyInRange = class("Intro_CombatDummyInRange", Class_TutorialBase);
 function Class_Intro_CombatDummyInRange:OnInitialize()
-	self.questID = TutorialData:GetFactionData().StartingQuest;
+	self.questID = TutorialData:GetFactionData():GetStartingQuest();
 end
 
 function Class_Intro_CombatDummyInRange:OnAdded()
@@ -324,7 +324,7 @@ function Class_Intro_CombatDummyInRange:CheckFinished()
 end
 
 function Class_Intro_CombatDummyInRange:QUEST_REMOVED(questID)
-	if questID == TutorialData:GetFactionData().StartingQuest then
+	if questID == TutorialData:GetFactionData():GetStartingQuest() then
 		self.success = false;
 		TutorialManager:Finished(self:Name());
 	end
@@ -353,7 +353,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Intro_CombatTactics = class("Intro_CombatTactics", Class_TutorialBase);
 function Class_Intro_CombatTactics:OnInitialize()
-	self.questID = TutorialData:GetFactionData().StartingQuest;
+	self.questID = TutorialData:GetFactionData():GetStartingQuest();
 	self.playerClass = TutorialHelper:GetClass();
 end
 
@@ -492,7 +492,7 @@ function Class_Intro_CombatTactics:QUEST_LOG_UPDATE()
 end
 
 function Class_Intro_CombatTactics:QUEST_REMOVED(questIDRemoved)
-	local questID = TutorialData:GetFactionData().StartingQuest;
+	local questID = TutorialData:GetFactionData():GetStartingQuest();
 	if questID == questIDRemoved then
 		self.success = false;
 		TutorialManager:Finished(self:Name());
@@ -590,7 +590,7 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_QuestCompleteHelp = class("QuestCompleteHelp", Class_TutorialBase);
 function Class_QuestCompleteHelp:OnInitialize()
-	self.questID = TutorialData:GetFactionData().StartingQuest;
+	self.questID = TutorialData:GetFactionData():GetStartingQuest();
 end
 
 function Class_QuestCompleteHelp:CanBegin()
@@ -644,7 +644,7 @@ function Class_QuestCompleteHelp:QUEST_COMPLETE()
 end
 
 function Class_QuestCompleteHelp:QUEST_REMOVED(questIDRemoved)
-	local questID = TutorialData:GetFactionData().StartingQuest;
+	local questID = TutorialData:GetFactionData():GetStartingQuest();
 	if questID == questIDRemoved then
 		self:HidePointerTutorials();
 	end
@@ -739,6 +739,10 @@ function Class_QuestRewardChoice:CanBegin()
 end
 
 function Class_QuestRewardChoice:OnBegin(args)
+	if not QuestFrame:IsVisible() then
+		TutorialManager:Finished(self:Name());
+		return;
+	end
 	local areAllItemsUsable = unpack(args);
 	local prompt = TutorialHelper:FormatString(NPE_QUESTREWARDCHOICE);
 
@@ -1053,13 +1057,29 @@ end
 Class_ChangeEquipment = class("ChangeEquipment", Class_TutorialBase);
 function Class_ChangeEquipment:OnInitialize()
 	self:DelayWhileFrameVisible(QuestFrame);
+	self.equipCount = 0;
 end
 
 function Class_ChangeEquipment:CanBegin(args)
+	return self:CanPerformChangeEquipmentTutorial();
+end
+
+function Class_ChangeEquipment:CanPerformChangeEquipmentTutorial()
+	local level = UnitLevel("player");
+	if TutorialData.MAX_CHANGE_EQUIPMENT_LEVEL > 0 and level > TutorialData.MAX_CHANGE_EQUIPMENT_LEVEL then
+		return false;
+	end
+	if TutorialData.CHANGE_EQUIPMENT_LIMIT > 0 and TutorialData.CHANGE_EQUIPMENT_LIMIT <= self.equipCount then
+		return false;
+	end
 	return true;
 end
 
 function Class_ChangeEquipment:OnBegin(args)
+	if not self:CanPerformChangeEquipmentTutorial() then
+		self:Interrupt(self);
+		return;
+	end
 	self.data = unpack(args);
 	if (MerchantFrame:IsVisible()) then
 		self:Interrupt(self);
@@ -1104,6 +1124,10 @@ function Class_ChangeEquipment:PrepBags()
 	TutorialDragButton:Hide();
 
 	self.Timer = C_Timer.NewTimer(0.1, function()
+		-- protect an edge case where the pointer tutorial gets stuck
+		if self.data == nil then
+			return;
+		end
 		local key = TutorialHelper:GetBagBinding();
 		local tutorialString = TutorialHelper:FormatString(string.format(NPEV2_SHOW_BAGS, key))
 		self:ShowPointerTutorial(tutorialString, "DOWN", MainMenuBarBackpackButton, 0, 0);
@@ -1186,6 +1210,7 @@ function Class_ChangeEquipment:PLAYER_EQUIPMENT_CHANGED()
 		-- the player successfully equipped the item
 		Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
 		self.success = true;
+		self.equipCount = self.equipCount + 1;
 		TutorialDragButton:Hide();
 		self.animationPlaying = false;
 
@@ -2305,6 +2330,9 @@ function Class_UseVendor:OnInitialize()
 	self.questID = tutorialData.UseVendorQuest;
 end
 
+function Class_UseVendor:OnAdded()
+end
+
 function Class_UseVendor:CanBegin()
 	if C_QuestLog.IsQuestFlaggedCompleted(self.questID) then
 		TutorialManager:Finished(self:Name());
@@ -2314,26 +2342,29 @@ function Class_UseVendor:CanBegin()
 end
 
 function Class_UseVendor:OnBegin()
+	self:SetupMerchantCallbacks();
+end
+
+function Class_UseVendor:SetupMerchantCallbacks()
 	Dispatcher:RegisterEvent("MERCHANT_SHOW", self);
+	EventRegistry:RegisterCallback("MerchantFrame.SellAllJunkButtonClicked", self.SellAllJunkButtonClicked, self);
 
 	self:HideScreenTutorial();
 	self.buyTutorialComplete = false;
 	self.sellTutorialComplete = false;
 	self.buyBackTutorialComplete = false;
-
-	EventRegistry:RegisterCallback("MerchantFrame.BuyBackTabShow", self.BuyBackTabHelp, self);
-	EventRegistry:RegisterCallback("MerchantFrame.MerchantTabShow", self.MerchantTabHelp, self);
+	
+	if self:ShouldShowBuyBackTabHelp() then
+		EventRegistry:RegisterCallback("MerchantFrame.BuyBackTabShow", self.BuyBackTabHelp, self);
+		EventRegistry:RegisterCallback("MerchantFrame.MerchantTabShow", self.MerchantTabHelp, self);
+	end
 end
 
-function Class_UseVendor:UpdateGreyItemPointer()
-	if not self.merchantTab or self.sellTutorialComplete == true then
-		if self.sellPointerID then
-			self:HidePointerTutorial(self.sellPointerID);
-		end
-		return;
-	end
+function Class_UseVendor:ShouldShowBuyBackTabHelp()
+	return true;
+end
 
-	local itemFrame = nil;
+function Class_UseVendor:GetGreyItemFrame()
 	local greyItemQuality = 0;
 	for containerIndex = Enum.BagIndex.Backpack, Constants.InventoryConstants.NumBagSlots do
 		local slots = C_Container.GetContainerNumSlots(containerIndex);
@@ -2342,20 +2373,33 @@ function Class_UseVendor:UpdateGreyItemPointer()
 				local itemInfo = C_Container.GetContainerItemInfo(containerIndex, slotIndex);
 				local itemQuality = itemInfo and itemInfo.quality;
 				if itemQuality == greyItemQuality then
-					itemFrame = TutorialHelper:GetItemContainerFrame(containerIndex, slotIndex);
-					break;
+					local itemFrame = TutorialHelper:GetItemContainerFrame(containerIndex, slotIndex);
+					return itemFrame;
 				end
 			end
 		end
 	end
+	return nil;
+end
 
-	if self.sellPointerID then
-		self:HidePointerTutorial(self.sellPointerID);
+function Class_UseVendor:UpdateGreyItemPointer()
+	if not self.merchantTab or self.sellTutorialComplete == true then
+		self:HideGreyItemPointer();
+		return;
 	end
+
+	self:HideGreyItemPointer();
+	local itemFrame = self:GetGreyItemFrame();
 	if itemFrame then
 		self.sellPointerID = self:AddPointerTutorial(NPEV2_SELL_GREY_ITEMS, "DOWN", itemFrame, 0, 0);
 	else
 		self.sellTutorialComplete = true;
+	end
+end
+
+function Class_UseVendor:HideGreyItemPointer()
+	if self.sellPointerID then
+		self:HidePointerTutorial(self.sellPointerID);
 	end
 end
 
@@ -2386,7 +2430,7 @@ function Class_UseVendor:BuyBackTabHelp()
 end
 
 function Class_UseVendor:MerchantTabHelp()
-	self.buyBackTab = false;
+	self.buyBackTab = false; 
 	self.merchantTab = true;
 	if self.buyBackPointerID then
 		self:HidePointerTutorial(self.buyBackPointerID);
@@ -2394,9 +2438,21 @@ function Class_UseVendor:MerchantTabHelp()
 
 	if not self.buyTutorialComplete then
 		Dispatcher:RegisterEvent("BAG_NEW_ITEMS_UPDATED", self);
-		self.buyPointerID = self:AddPointerTutorial(TutorialHelper:FormatString(NPEV2_BUY_ITEMS_FROM_VENDOR), "LEFT", MerchantItem2, 0, 0);
+		self:StartBuyItemTutorial();
 	end
 
+	self:StartGreyItemTutorial();
+end
+
+function Class_UseVendor:StartBuyItemTutorial()
+	self.buyPointerID = self:AddPointerTutorial(TutorialHelper:FormatString(NPEV2_BUY_ITEMS_FROM_VENDOR), "LEFT", MerchantItem2, 0, 0);
+end
+
+function Class_UseVendor:SellAllJunkButtonClicked()
+	self:HideGreyItemPointer(); 
+end
+
+function Class_UseVendor:StartGreyItemTutorial()
 	if not self.sellTutorialComplete then
 		self.Timer = C_Timer.NewTimer(4, function()
 			self:UpdateGreyItemPointer();
@@ -2405,6 +2461,10 @@ function Class_UseVendor:MerchantTabHelp()
 end
 
 function Class_UseVendor:BAG_NEW_ITEMS_UPDATED()
+	self:BagNewItemsUpdated();
+end
+
+function Class_UseVendor:BagNewItemsUpdated()
 	--the player bought something
 	Dispatcher:UnregisterEvent("BAG_NEW_ITEMS_UPDATED", self);
 	self:HidePointerTutorials();
@@ -2420,11 +2480,19 @@ function Class_UseVendor:MERCHANT_SHOW()
 
 	Dispatcher:RegisterEvent("MERCHANT_CLOSED", self);
 	Dispatcher:RegisterEvent("ITEM_LOCKED", self);
+	self:HandleMerchantShow();
+end
+
+function Class_UseVendor:HandleMerchantShow()
 	self:MerchantTabHelp();
 end
 
+function Class_UseVendor:CanEndTutorial()
+	return self.buyTutorialComplete == true and self.sellTutorialComplete == true --[[and self.buyBackTutorialComplete == true]];
+end
+
 function Class_UseVendor:MERCHANT_CLOSED()
-	if self.buyTutorialComplete == true and self.sellTutorialComplete == true --[[and self.buyBackTutorialComplete == true]] then
+	if self:CanEndTutorial() then
 		TutorialManager:Finished(self:Name());
 		return;
 	end
@@ -2442,6 +2510,7 @@ end
 function Class_UseVendor:OnComplete()
 	EventRegistry:UnregisterCallback("MerchantFrame.BuyBackTabShow", self);
 	EventRegistry:UnregisterCallback("MerchantFrame.MerchantTabShow", self);
+	EventRegistry:UnregisterCallback("MerchantFrame.SellAllJunkButtonClicked", self);
 	Dispatcher:UnregisterEvent("MERCHANT_SHOW", self);
 	Dispatcher:UnregisterEvent("BAG_UPDATE_DELAYED", self);
 	Dispatcher:UnregisterEvent("BAG_NEW_ITEMS_UPDATED", self);
@@ -3014,6 +3083,8 @@ end
 -- ------------------------------------------------------------------------------------------------------------
 Class_Death_ReleaseCorpse = class("Death_ReleaseCorpse", Class_TutorialBase);
 function Class_Death_ReleaseCorpse:OnInitialize()
+	self.corpsePointerID = nil;
+	self.corpseAnchor = nil;
 end
 
 function Class_Death_ReleaseCorpse:CanBegin()
@@ -3043,10 +3114,12 @@ function Class_Death_ReleaseCorpse:OnComplete()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
--- Sequence: Relesase Corpse - [Map Prompt] - Resurrect Prompt
+-- Sequence: Release Corpse - [Map Prompt] - Resurrect Prompt
 -- ------------------------------------------------------------------------------------------------------------
 Class_Death_MapPrompt = class("Death_MapPrompt", Class_TutorialBase);
 function Class_Death_MapPrompt:OnInitialize()
+	self.corpsePointerID = nil;
+	self.corpseAnchor = nil;
 end
 
 function Class_Death_MapPrompt:CanBegin()
@@ -3060,6 +3133,68 @@ function Class_Death_MapPrompt:OnBegin()
 
 	Dispatcher:RegisterEvent("CORPSE_IN_RANGE", self);
 	Dispatcher:RegisterEvent("PLAYER_UNGHOST", self);
+	Dispatcher:RegisterScript(WorldMapFrame, "OnShow", self);
+	Dispatcher:RegisterScript(WorldMapFrame, "OnHide", self);
+
+	self.MapProvider = MapBridgeDataProviderMixin:New();
+	self.MapProvider:SetOnMapChangedCallback(function()
+		local mapID = self.MapProvider:GetMap():GetMapID();
+		if (mapID ~= self.MapID) then
+			self:HideReturnToCorpsePointer();
+		else
+			self:ShowCorpsePointer();
+		end
+	end);
+end
+
+function Class_Death_MapPrompt:ShowCorpsePointer()
+	if not UnitIsGhost("player") then
+		return;
+	end
+	if not self:ShowIndicatorOnMap() then
+		return;
+	end
+	self.MapID = WorldMapFrame:GetMapID();
+	local pos = self.MapID and C_DeathInfo.GetCorpseMapPosition(self.MapID);
+	if pos then
+		local x, y = pos:GetXY();
+		local canvas = WorldMapFrame:GetCanvas();
+
+		if not self.corpseAnchor then
+			self.corpseAnchor = CreateFrame("Frame", nil, canvas);
+			self.corpseAnchor:SetSize(1, 1);
+		end
+
+		self.corpseAnchor:SetParent(canvas);
+		self.corpseAnchor:ClearAllPoints();
+		self.corpseAnchor:SetPoint("CENTER", canvas, "TOPLEFT", x * canvas:GetWidth(), -y * canvas:GetHeight());
+		self.corpseAnchor:Show();
+
+		self.corpsePointerID = self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_RETURN_TO_CORPSE), "LEFT", self.corpseAnchor, 20, 0, nil);
+	end
+end
+
+function Class_Death_MapPrompt:HideReturnToCorpsePointer()
+	if self.corpsePointerID ~= nil then
+		self:HidePointerTutorial(self.corpsePointerID);
+		self.corpsePointerID = nil;
+	end
+	if self.corpseAnchor then
+		self.corpseAnchor:Hide();
+		self.corpseAnchor:ClearAllPoints();
+	end
+end
+
+function Class_Death_MapPrompt:ShowIndicatorOnMap()
+	return false;
+end
+
+function Class_Death_MapPrompt:OnShow()
+	self:ShowCorpsePointer();
+end
+
+function Class_Death_MapPrompt:OnHide()
+	self:HideReturnToCorpsePointer();
 end
 
 function Class_Death_MapPrompt:PLAYER_UNGHOST()
@@ -3077,14 +3212,22 @@ end
 function Class_Death_MapPrompt:OnComplete()
 	Dispatcher:UnregisterEvent("CORPSE_IN_RANGE", self);
 	Dispatcher:UnregisterEvent("PLAYER_UNGHOST", self);
+	Dispatcher:UnregisterScript(WorldMapFrame, "OnShow", self);
+	Dispatcher:UnregisterScript(WorldMapFrame, "OnHide", self);
 	self:HideSingleKeyTutorial();
+	self:HideReturnToCorpsePointer();
 	if (UnitIsGhost("player")) then
 		TutorialManager:Queue(Class_Death_ResurrectPrompt.name);
+	end
+	if self.MapProvider then
+		WorldMapFrame:RemoveDataProvider(self.MapProvider);
+		self.MapProvider:SetOnMapChangedCallback(nil);
+		self.MapProvider = nil;
 	end
 end
 
 -- ------------------------------------------------------------------------------------------------------------
--- Sequence: Relesase Corpse - Map Prompt - [Resurrect Prompt]
+-- Sequence: Release Corpse - Map Prompt - [Resurrect Prompt]
 -- ------------------------------------------------------------------------------------------------------------
 Class_Death_ResurrectPrompt = class("Death_ResurrectPrompt", Class_TutorialBase);
 function Class_Death_ResurrectPrompt:OnInitialize()
@@ -3113,7 +3256,7 @@ function Class_Death_ResurrectPrompt:OnComplete()
 end
 
 -- ------------------------------------------------------------------------------------------------------------
--- Prompt the user to loot a coprpse.  Is only successful when the player closes the window and the unit is no
+-- Prompt the user to loot a corpse.  Is only successful when the player closes the window and the unit is no
 -- longer lootable.  If the window is closed and is still lootable, the pointer is re-invoked
 -- ------------------------------------------------------------------------------------------------------------
 Class_LootCorpse = class("LootCorpse", Class_TutorialBase);
@@ -3253,4 +3396,327 @@ function Class_HousingSkip:PLAYER_ENTERING_WORLD()
 	if instanceType == "neighborhood" then
 		TutorialManager:Shutdown();
 	end
+end
+
+
+-- ------------------------------------------------------------------------------------------------------------
+-- Target Creature Tutorial - waits to see if the player is in melee combat range
+-- ------------------------------------------------------------------------------------------------------------
+Class_Intro_TargetCreatureInRange = class("Intro_TargetCreatureInRange", Class_TutorialBase);
+function Class_Intro_TargetCreatureInRange:OnInitialize()
+	self.questIDs = TutorialData:GetFactionData():GetEarlyKillQuestIDsByRace();
+	self.questCreatures = TutorialData:GetFactionData():GetEarlyKillQuestCreaturesByRace();
+	self.distance = TutorialData:GetDistanceToKillQuestCreature();
+	self.didEnterCombat = false;
+	self.targetedCreature = false;
+	self.inRange = false;
+	self.attackPointerID = nil;
+	self.isRunning = false;
+	self.spellID = TutorialData.AUTO_ATTACK_SPELL_ID;
+end
+
+function Class_Intro_TargetCreatureInRange:CanBegin()
+	if not self.questIDs or self:IsQuestCompleted() then
+		return false;
+	end
+	return self:IsOnQuest() and not self.inRange and not self.isRunning;
+end
+
+function Class_Intro_TargetCreatureInRange:OnBegin()
+	self.isRunning = true;
+	self.targetedCreature = self:IsTargetingCreature();
+	
+	Dispatcher:RegisterEvent("UNIT_TARGET", self);
+	Dispatcher:RegisterEvent("PLAYER_ENTER_COMBAT", self);
+	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
+	Dispatcher:RegisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+	Dispatcher:RegisterEvent("PLAYER_DEAD", self);
+
+	if self.questCreatures then
+		for i, questCreature in ipairs(self.questCreatures) do
+			TutorialRangeManager:StartWatching(questCreature, TutorialRangeManager.Type.Unit, self.distance, function() self:NearCreature(); end);
+		end
+	end
+end
+
+function Class_Intro_TargetCreatureInRange:IsQuest(newQuestID)
+	for i, questID in ipairs(self.questIDs) do
+		if questID == newQuestID then
+			return true;
+		end
+	end
+	return false;
+end
+
+function Class_Intro_TargetCreatureInRange:IsOnQuest()
+	for i, questID in ipairs(self.questIDs) do
+		if (C_QuestLog.GetLogIndexForQuestID(questID)) ~= nil and (not C_QuestLog.ReadyForTurnIn(questID)) then
+			local objectives = C_QuestLog.GetQuestObjectives(questID);
+			for _, objective in ipairs(objectives) do
+				if objective.numFulfilled <= 0 then
+					return true;
+				end
+			end
+		end
+	end
+	return false;
+end
+
+function Class_Intro_TargetCreatureInRange:IsQuestCompleted()
+	for i, questID in ipairs(self.questIDs) do
+		if C_QuestLog.IsQuestFlaggedCompleted(questID) then
+			return true;
+		end
+	end
+	return false;
+end
+
+function Class_Intro_TargetCreatureInRange:NearCreature()
+	self.inRange = true;
+	TutorialRangeManager:Shutdown();
+	self:ShowStartAttackingScreenTutorial();
+	self:ShowAutoAttackPointer();
+end
+
+function Class_Intro_TargetCreatureInRange:ShowStartAttackingScreenTutorial()
+	local content = {text = NPEV2_START_ATTACKING, icon="newplayertutorial-icon-mouse-rightbutton"};
+	self:ShowScreenTutorial(content, nil, TutorialMainFrameMixin.FramePositions.Low);
+end
+
+function Class_Intro_TargetCreatureInRange:ShowPlaceAbilityBackTutorial()
+	local spenderSpellIDString = "{$"..self.spellID.."}";
+	local tutorialString = TutorialHelper:FormatString(NPEV2_PLACE_ABILITY_BACK_ON_ACTION_BAR:format(spenderSpellIDString));
+	local content = {text = tutorialString};
+	self:ShowScreenTutorial(content, nil, TutorialMainFrameMixin.FramePositions.Low);
+end
+
+function Class_Intro_TargetCreatureInRange:IsTargetingCreature()
+	local unitGUID = UnitGUID("target");
+	if not unitGUID then
+		return false;
+	end
+	if not self.questCreatures then
+		return false;
+	end
+	for i, creatureID in ipairs(self.questCreatures) do
+		if C_CreatureInfo.GetCreatureID(unitGUID) == creatureID then
+			return true;
+		end
+	end
+	return false;
+end
+
+function Class_Intro_TargetCreatureInRange:UNIT_TARGET()
+	if self:IsTargetingCreature() then
+		self.targetedCreature = true;
+		self:CheckFinished();
+	end
+end
+
+function Class_Intro_TargetCreatureInRange:ACTIONBAR_SLOT_CHANGED()
+	if self.attackPointerID ~= nil then
+		self:HidePointerTutorial(self.attackPointerID);
+		self:ShowAutoAttackPointer();
+	end
+	-- If they remove the attack button from the action bar then show a different tutorial message until it returns.
+	if self:IsOnQuest() then
+		local button = TutorialHelper:GetActionButtonBySpellID(self.spellID);
+		if button == nil then
+			self:HideScreenTutorial();
+			self:ShowPlaceAbilityBackTutorial();
+		else
+			self:HideScreenTutorial();
+			if self.inRange then
+				self:ShowStartAttackingScreenTutorial();
+			end
+		end
+	end
+end
+
+function Class_Intro_TargetCreatureInRange:PLAYER_ENTER_COMBAT()
+	self.didEnterCombat = true;
+	self:HidePointerTutorial(self.attackPointerID);
+	self.attackPointerID = nil;
+	self:CheckFinished(); 
+end
+
+function Class_Intro_TargetCreatureInRange:ShowAutoAttackPointer()
+	local button = TutorialHelper:GetActionButtonBySpellID(self.spellID);
+	local keyBindString = "{KB|"..self.spellID.."}";
+	local spenderSpellIDString = "{$"..self.spellID.."}";
+	local tutorialString = NPEV2_PRESS_KEY_TO_USE_ABILITY:format(keyBindString, spenderSpellIDString);
+	if button then
+		self.attackPointerID = self:AddPointerTutorial(TutorialHelper:FormatString(tutorialString), "DOWN", button, 0, 10, nil, "DOWN");
+	end
+end
+
+function Class_Intro_TargetCreatureInRange:CheckFinished()
+	if self.targetedCreature and self.didEnterCombat then
+		TutorialManager:Finished(self:Name());
+	end
+end
+
+function Class_Intro_TargetCreatureInRange:QUEST_REMOVED(questID)
+	if self:IsQuest(questID) then
+		TutorialManager:Finished(self:Name());
+	end
+end
+
+function Class_Intro_TargetCreatureInRange:PLAYER_DEAD()
+	TutorialManager:Finished(self:Name());
+end
+
+function Class_Intro_TargetCreatureInRange:OnInterrupt(interruptedBy)
+	TutorialManager:Finished(self:Name());
+end
+
+function Class_Intro_TargetCreatureInRange:OnComplete()
+	self.isRunning = false; 
+	self.didEnterCombat = false;
+	self.targetedCreature = false;
+	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
+	Dispatcher:UnregisterEvent("PLAYER_ENTER_COMBAT", self);
+	Dispatcher:UnregisterEvent("UNIT_TARGET", self);
+	Dispatcher:UnregisterEvent("ACTIONBAR_SLOT_CHANGED", self);
+	Dispatcher:UnregisterEvent("PLAYER_DEAD", self);
+	TutorialRangeManager:Shutdown();
+	self:HidePointerTutorials();
+	self:HideScreenTutorial();
+end
+
+-- ------------------------------------------------------------------------------------------------------------
+-- Enter Hostile area tutorial - detect when a player is entering their first area full of hostile monsters
+-- ------------------------------------------------------------------------------------------------------------
+Class_EnterHostileZone = class("Class_EnterHostileZone", Class_TutorialBase);
+function Class_EnterHostileZone:OnInitialize()
+	self.questIDs = TutorialData:GetFactionData():GetEarlyHostileQuestIDByRace();
+	self.questCreatures = TutorialData:GetFactionData():GetEarlyHostileQuestCreaturesByRace();
+	self.timeElapsed = 0;
+	self.ShowCount = 0;
+	self.isRunning = false;
+	self.chatPointerTutorialID = nil;
+end
+
+function Class_EnterHostileZone:IsFromPlayer(...)
+	return select(12, ...) == UnitGUID("player");
+end
+
+function Class_EnterHostileZone:CHAT_MSG_SAY(...)
+	if self:IsFromPlayer(...) then
+		self:SentChatMessage();
+	end
+end
+
+function Class_EnterHostileZone:CHAT_MSG_CHANNEL(...)
+	if self:IsFromPlayer(...) then
+		self:SentChatMessage();
+	end
+end
+
+function Class_EnterHostileZone:SentChatMessage()
+	if self.chatPointerTutorialID ~= nil then
+		self:HidePointerTutorial(self.chatPointerTutorialID);
+		self.chatPointerTutorialID = nil;
+	end
+	TutorialManager:Finished(self:Name());
+end
+
+function Class_EnterHostileZone:CanBegin()
+	return self:IsOnQuest() and not self.isRunning and self.ShowCount <= 0;
+end
+
+function Class_EnterHostileZone:OnBegin()
+	self.isRunning = true;
+	Dispatcher:RegisterEvent("QUEST_REMOVED", self);
+	Dispatcher:RegisterEvent("CHAT_MSG_SAY", self);
+	Dispatcher:RegisterEvent("CHAT_MSG_CHANNEL", self);
+	if self.questCreatures then
+		for i, questCreature in ipairs(self.questCreatures) do
+			TutorialRangeManager:StartWatching(questCreature, TutorialRangeManager.Type.Unit, 40, function() self:NearCreature(); end);
+		end
+	end
+end
+
+function Class_EnterHostileZone:IsOnQuest()
+	for i, questID in ipairs(self.questIDs) do
+		if (C_QuestLog.GetLogIndexForQuestID(questID)) ~= nil and (not C_QuestLog.ReadyForTurnIn(questID)) then
+			return true;
+		end
+	end
+	return false;
+end
+
+function Class_EnterHostileZone:IsQuestCompleted()
+	for i, questID in ipairs(self.questIDs) do
+		if C_QuestLog.IsQuestFlaggedCompleted(questID) then
+			return true;
+		end
+	end
+	return false;
+end
+
+function Class_EnterHostileZone:NearCreature()
+	TutorialRangeManager:Shutdown();
+	TutorialManager:Queue(self:Name());
+
+	local editBox = ChatFrameUtil.GetActiveWindow() or ChatFrameUtil.GetLastActiveWindow();
+	if (editBox) then
+		self.ShowCount = self.ShowCount + 1;
+		if (self.ShowCount == 1) then
+			self.chatPointerTutorialID = self:ShowPointerTutorial(TutorialHelper:FormatString(NPEV2_CHATFRAME3), "LEFT", editBox, 0, 0, nil);
+		end
+
+		self.timeElapsed = 0;
+		Dispatcher:RegisterEvent("OnUpdate", self);
+		Dispatcher:RegisterEvent("PLAYER_DEAD", self);
+		Dispatcher:RegisterEvent("MERCHANT_SHOW", self);
+	end
+end
+
+function Class_EnterHostileZone:OnUpdate(elapsed)
+	self.timeElapsed = self.timeElapsed + elapsed;
+	-- Give the player a few a long time to read the message.
+	if (self.timeElapsed > 120) then
+		TutorialManager:Finished(self:Name());
+	end
+end
+
+function Class_EnterHostileZone:IsQuest(newQuestID)
+	for i, questID in ipairs(self.questIDs) do
+		if questID == newQuestID then
+			return true;
+		end
+	end
+	return false;
+end
+
+function Class_EnterHostileZone:QUEST_REMOVED(questID)
+	if self:IsQuest(questID) then
+		TutorialManager:Finished(self:Name());
+	end
+end
+
+function Class_EnterHostileZone:PLAYER_DEAD()
+	TutorialManager:Finished(self:Name());
+end
+
+function Class_EnterHostileZone:MERCHANT_SHOW()
+	TutorialManager:Finished(self:Name());
+end
+
+function Class_EnterHostileZone:OnInterrupt(interruptedBy)
+	TutorialManager:Finished(self:Name());
+end
+
+function Class_EnterHostileZone:OnComplete()
+	self.timeElapsed = 0;
+	self.isRunning = false;
+	Dispatcher:UnregisterEvent("QUEST_REMOVED", self);
+	Dispatcher:UnregisterEvent("OnUpdate", self);
+	Dispatcher:UnregisterEvent("CHAT_MSG_SAY", self);
+	Dispatcher:UnregisterEvent("CHAT_MSG_CHANNEL", self);
+	Dispatcher:UnregisterEvent("PLAYER_DEAD", self);
+	Dispatcher:UnregisterEvent("MERCHANT_SHOW", self);
+	self:HidePointerTutorials();
+	TutorialRangeManager:Shutdown();
 end

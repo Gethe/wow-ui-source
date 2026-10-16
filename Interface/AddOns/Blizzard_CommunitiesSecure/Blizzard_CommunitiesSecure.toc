@@ -1,6 +1,7 @@
 ## Title: Blizzard_CommunitiesSecure
 ## UseSecureEnvironment: 1
 ## RequiredDep: Blizzard_SharedXML
+## RequiredDep: Blizzard_GamepadSharedUtilitySecure
 
 CommunitiesAddDialog.xml
 CommunitiesAddDialogOutbound.lua

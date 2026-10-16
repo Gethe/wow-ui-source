@@ -167,6 +167,11 @@ function StaticOverrideActionBarMixin:RefreshActionBarVisibility()
 	end
 end
 
+function StaticOverrideActionBarMixin:IsBarEmpty()
+	-- These bars hold hardcoded actions rather than stored ones, so the bar is never empty
+	return false;
+end
+
 function StaticOverrideActionBarMixin:IsBarActivelyOverridingActionBar(actionBar)
 	return self ~= actionBar and self.isOverrideBarActive and actionBar:GetParent() == self:GetParent();
 end

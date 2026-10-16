@@ -657,6 +657,16 @@ local PlayerScript =
 			},
 		},
 		{
+			Name = "GetOffhandHitModifier",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetOverrideAPBySpellPower",
 			Type = "Function",
 			SecretWhenUnitStatsRestricted = true,
@@ -745,6 +755,27 @@ local PlayerScript =
 		},
 		{
 			Name = "GetParryChanceFromAttribute",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+
+			Returns =
+			{
+				{ Name = "result", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetCritChance",
+			Type = "Function",
+			SecretWhenUnitStatsRestricted = true,
+
+			Returns =
+			{
+				{ Name = "meleeCrit", Type = "number", Nilable = false },
+				{ Name = "spellCrit", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "GetPetDodgeChance",
 			Type = "Function",
 			SecretWhenUnitStatsRestricted = true,
 

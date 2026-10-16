@@ -211,7 +211,7 @@ end
 function FloatingChatFrameMixin:CreateFooter()
 	local editBoxButtonContext = "ButtonContext_FloatingChatFrameEditBox";
 
-	local chatChannels = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.OpenGamepadChatMenu, self), ACTION_LABEL_CHAT_CHANNELS);
+	local chatChannels = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.OpenChatChannelsMenu, self), ACTION_LABEL_CHAT_CHANNELS);
 	chatChannels:AddButtonContext(editBoxButtonContext);
 
 	local tabSettings = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.OpenGamepadTabMenu, self), ACTION_LABEL_TAB_SETTINGS);
@@ -230,111 +230,16 @@ function FloatingChatFrameMixin:CreateFooter()
 	self.footer:Finalize();
 end
 
-function FloatingChatFrameMixin:OpenGamepadChatMenu()
+function FloatingChatFrameMixin:OpenChatChannelsMenu()
 	if not self:HasGamepadFocus() then
 		return;
 	end
 
-	self.isGamepadMenuOpen = true;
+	if not ChannelFrame:IsShown() then
+		ChannelFrame:SetShouldReturnToChat(true);
+	end
 
-	local editBox = self.editBox;
-
-	local menu = MenuUtil.CreateContextMenu(editBox, function(_, rootDescription)
-		rootDescription:SetTag("CHAT_WINDOW_CHAT_CHANNEL_MENU");
-		local numTotalChatChannels = GetNumDisplayChannels();
-
-		-------------
-		-- GENERAL --
-		-------------
-		local general = rootDescription:CreateButton(GENERAL);
-
-		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, SAY_MESSAGE, SLASH_SAY1, ChatFrameMenuButtonMixin.CHAT_TYPES.SAY, self);
-		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, PARTY_MESSAGE, SLASH_PARTY1, ChatFrameMenuButtonMixin.CHAT_TYPES.PARTY, self);
-		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, RAID_MESSAGE, SLASH_RAID1, ChatFrameMenuButtonMixin.CHAT_TYPES.RAID, self);
-		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, INSTANCE_CHAT_MESSAGE, SLASH_INSTANCE_CHAT1, ChatFrameMenuButtonMixin.CHAT_TYPES.INSTANCE_CHAT, self);
-		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, GUILD_MESSAGE, SLASH_GUILD1, ChatFrameMenuButtonMixin.CHAT_TYPES.GUILD, self);
-		ChatFrameMenuButtonMixin.CreateButtonWithShortcut(general, YELL_MESSAGE, SLASH_YELL1, ChatFrameMenuButtonMixin.CHAT_TYPES.YELL, self);
-
-		local whisperButton = general:CreateButton(WHISPER_MESSAGE, function()
-			ChatFrameUtil.OpenChat(SLASH_SMART_WHISPER1.." "..editBox:GetText());
-			editBox:SetText(SLASH_SMART_WHISPER1.." "..editBox:GetText());
-		end);
-		ChatFrameMenuButtonMixin.AddSlashInitializer(whisperButton, SLASH_SMART_WHISPER1);
-
-		local replyButton = general:CreateButton(REPLY_MESSAGE, function()
-			ChatFrameUtil.ReplyTell();
-		end);
-		ChatFrameMenuButtonMixin.AddSlashInitializer(replyButton, SLASH_REPLY1);
-
-		-- Add active world channels.
-		for channelIndex = 1, numTotalChatChannels do
-			local name, header, _, channelNumber, _, active, category = GetChannelDisplayInfo(channelIndex);
-			if (active and ChannelFrame_IsCategoryGlobal(category) and not header) then
-				local worldChannelSlashCommand = "/"..tostring(channelNumber);
-				local worldButton = general:CreateButton(name, function()
-					local existingText = self.editBox:GetText();
-					ChatFrameUtil.OpenChat(worldChannelSlashCommand.." "..existingText, self);
-				end);
-				ChatFrameMenuButtonMixin.AddSlashInitializer(worldButton, worldChannelSlashCommand);
-			end
-		end
-
-		------------
-		-- CUSTOM --
-		------------
-		local custom = rootDescription:CreateButton(CUSTOM);
-
-		local foundActiveCustomChannel = false;
-		for channelIndex = 1, numTotalChatChannels do
-			local name, header, _, channelNumber, _, active, category = GetChannelDisplayInfo(channelIndex);
-			if (active and ChannelFrame_IsCategoryCustom(category) and not header) then
-				foundActiveCustomChannel = true;
-				local customChannelSlashCommand = "/"..tostring(channelNumber);
-				local customButton = custom:CreateButton(name, function()
-					local existingText = self.editBox:GetText();
-					ChatFrameUtil.OpenChat(customChannelSlashCommand.." "..existingText);
-				end);
-				ChatFrameMenuButtonMixin.AddSlashInitializer(customButton, customChannelSlashCommand);
-			end
-		end
-
-		if (not foundActiveCustomChannel) then
-			custom:SetEnabled(false);
-		end
-
-		---------------
-		-- LANGUAGES --
-		---------------
-		if (not isOnGlueScreen) then
-			local languageButton = rootDescription:CreateButton(LANGUAGE);
-
-			local numLanguages = GetNumLanguages();
-			if (numLanguages == 0) then
-				languageButton:SetEnabled(false);
-			else
-				for i = 1, numLanguages do
-					local language, languageID = GetLanguageByIndex(i);
-					local function SetLanguage(languageData)
-						ChatFrameMenuButtonMixin.SetLanguageSelected(languageData);
-						self.editBox:SetFocus();
-					end
-					languageButton:CreateRadio(language, ChatFrameMenuButtonMixin.IsLanguageSelected, SetLanguage, {language, languageID});
-				end
-			end
-		end
-
-		------------------------
-		-- OPEN CHANNEL FRAME --
-		------------------------
-		rootDescription:CreateButton(ACTION_LABEL_CHAT_CHANNELS, ToggleChannelFrame);
-	end);
-
-	menu:ClearAllPoints();
-	menu:SetPoint("BOTTOMLEFT", editBox, "TOPLEFT", 10, -5);
-	menu:SetClosedCallback(function()
-		self.isGamepadMenuOpen = false;
-		self:SetGamepadFocus();
-	end);
+	ToggleChannelFrame();
 end
 
 function FloatingChatFrameMixin:DontRestoreGamepadFocusOnMenuClose()

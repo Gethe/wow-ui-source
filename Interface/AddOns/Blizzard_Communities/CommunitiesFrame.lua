@@ -127,6 +127,39 @@ function CommunitiesFrameMixin:OnLoad()
 	self.GuildNameAlertFrame:SetScript("OnClick", GenerateClosure(self.OnGuildNameAlertFrameClicked, self));
 
 	EventRegistry:RegisterCallback("AccountInfo.ChatDisabled", self.OnChatDisabledChanged, self);
+
+	self:RegisterForTransitions();
+end
+
+function CommunitiesFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+end
+
+function CommunitiesFrameMixin:SetupGamepad()
+	local function RightClick()
+		local button = SmartNavigation:GetCurrentButton();
+		button:Click("RightButton");
+	end
+
+	local openContextMenu = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, RightClick, CONTEXT_ACTION_LABEL_MORE_ACTIONS);
+	openContextMenu:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+	openContextMenu:AddButtonContext("ButtonContext_CommunitiesMemberListEntryButton");
+	openContextMenu:AddButtonContext("ButtonContext_CommunitiesListEntryButton");
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CommunitiesFooter");
+	self.footer:AddPromptedBinding(openContextMenu);
+	self.footer:AddStandardSelectPrompt();
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+end
+
+function CommunitiesFrameMixin:FocusGamepad()
+	self.footer:ShowAndActivateBindings();
+end
+
+function CommunitiesFrameMixin:UnfocusGamepad()
+	self.footer:HideAndDeactivateBindings();
 end
 
 function CommunitiesFrameMixin:OnShow()

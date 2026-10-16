@@ -1,6 +1,6 @@
 local forceinsecure = forceinsecure;
 
-AddonCompartmentMixin = { };
+AddonCompartmentMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
 local function SortAddons(addonData1, addonData2)
 	return strcmputf8i(C_StringUtil.StripHyperlinks(addonData1.text), C_StringUtil.StripHyperlinks(addonData2.text)) < 0;
@@ -8,16 +8,7 @@ end
 
 function AddonCompartmentMixin:OnLoad()
 	self.registeredAddons = { };
-
-	self:SetScript("OnEnter", function()
-		GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-		GameTooltip_SetTitle(GameTooltip, ADDONS);
-		GameTooltip:Show();
-	end);
-
-	self:SetScript("OnLeave", function()
-		GameTooltip:Hide();
-	end);
+	ButtonStateBehaviorMixin.OnLoad(self);
 
 	self:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_ADDON_COMPARTMENT");
@@ -64,6 +55,40 @@ function AddonCompartmentMixin:OnLoad()
 	end);
 
 	self:RegisterEvent("PLAYER_ENTERING_WORLD");
+end
+
+function AddonCompartmentMixin:OnEnter()
+	ButtonStateBehaviorMixin.OnEnter(self);
+
+	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
+	GameTooltip_SetTitle(GameTooltip, ADDONS);
+	GameTooltip:Show();
+end
+
+function AddonCompartmentMixin:OnLeave()
+	ButtonStateBehaviorMixin.OnLeave(self);
+	GameTooltip:Hide();
+end
+
+function AddonCompartmentMixin:OnButtonStateChanged()
+	local atlas = self.normalAtlas;
+	if self:IsDownOver() or self:IsDown() then
+		atlas = self.pressedAtlas;
+	elseif self:IsOver() or self:IsMenuOpen() then
+		atlas = self.mouseoverAtlas;
+	end
+
+	self.StateTexture:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+end
+
+function AddonCompartmentMixin:OnMenuOpened(menu)
+	DropdownButtonMixin.OnMenuOpened(self, menu); 
+	self:OnButtonStateChanged();
+end
+
+function AddonCompartmentMixin:OnMenuClosed(menu, closeReason)
+	DropdownButtonMixin.OnMenuClosed(self, menu, closeReason);
+	self:OnButtonStateChanged();
 end
 
 function AddonCompartmentMixin:OnEvent(event, ...)

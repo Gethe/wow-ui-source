@@ -130,10 +130,6 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	local settingViewDistance = settings["graphicsViewDistance"] or settings["raidGraphicsViewDistance"];
 	local settingEnvironmentDetail = settings["graphicsEnvironmentDetail"] or settings["raidGraphicsEnvironmentDetail"];
 	local settingGroundClutter = settings["graphicsGroundClutter"] or settings["raidGraphicsGroundClutter"];
-	local settingBloomMult = nil;
-	if(C_VideoOptions.IsLinearEnabledOnStart()) then
-		settingBloomMult = settings["graphicsBloomUserMult"] or settings["raidGraphicsBloomUserMult"];
-	end
 
 	local function GetShadowQualityOptions()
 		local container = Settings.CreateControlTextContainer();
@@ -183,8 +179,10 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	local function GetParticleDensityOptions()
 		local container = Settings.CreateControlTextContainer();
 		local cvar = settingParticleDensity.cvar;
-		local data = AddValidatedSettingOption(container, cvar, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
-		data.warning = WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING);
+		if not C_VideoOptions.IsSecondaryLightingSupported() then
+			local data = AddValidatedSettingOption(container, cvar, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
+			data.warning = WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING);
+		end
 		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_LOW);
 		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_FAIR);
 		AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_MEDIUM);
@@ -220,8 +218,8 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	local function GetComputeEffectOptions()
 		local container = Settings.CreateControlTextContainer();
 		local cvar = settingComputeEffects.cvar;
-		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_DISABLED, VIDEO_OPTIONS_COMPUTE_EFFECTS_DISABLED);
-		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_COMPUTE_EFFECTS_LOW);
+		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_LOW, VIDEO_OPTIONS_COMPUTE_EFFECTS_DISABLED);
+		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_FAIR, VIDEO_OPTIONS_COMPUTE_EFFECTS_LOW);
 		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_MEDIUM, VIDEO_OPTIONS_COMPUTE_EFFECTS_MEDIUM);
 		AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_HIGH, VIDEO_OPTIONS_COMPUTE_EFFECTS_HIGH);
 		AddValidatedSettingOption(container, cvar, raid, 4, VIDEO_OPTIONS_ULTRA, VIDEO_OPTIONS_COMPUTE_EFFECTS_ULTRA);
@@ -257,15 +255,6 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		local data = AddValidatedSettingOption(container, cvar, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
 		data.warning = WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING);
 		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_ENABLED);
-		AddRecommended(container, cvar);
-		return container:GetData();
-	end
-
-	local function GetBloomMultOptions()
-		local container = Settings.CreateControlTextContainer();
-		local cvar = settingBloomMult.cvar;
-		AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_LOW);
-		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_HIGH);
 		AddRecommended(container, cvar);
 		return container:GetData();
 	end
@@ -466,13 +455,6 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 	end
 	InitControlDropdown(self.ParticleDensity, settingParticleDensity, PARTICLE_DENSITY, OPTION_TOOLTIP_PARTICLE_DENSITY, GetParticleDensityOptions);
 	InitControlDropdown(self.SSAO, settingSSAO,	SSAO_LABEL, OPTION_TOOLTIP_SSAO, GetSSAOOptions);
-	if(C_VideoOptions.IsLinearEnabledOnStart()) then
-		InitControlDropdown(self.BloomMult, settingBloomMult, BLOOM_MULT, OPTION_TOOLTIP_BLOOM_MULT, GetBloomMultOptions);
-	else
-		self.BloomMult:Hide()
-		local point, _, relativePoint, offsetX, offsetY = self.DepthEffects:GetPoint();
-		self.DepthEffects:SetPoint(point, self.SSAO, relativePoint, offsetX, offsetY);
-	end
 	InitControlDropdown(self.DepthEffects, settingDepthEffects, DEPTH_EFFECTS, OPTION_TOOLTIP_DEPTH_EFFECTS, GetDepthEffectOptions);
 	InitControlDropdown(self.ComputeEffects, settingComputeEffects, COMPUTE_EFFECTS, OPTION_TOOLTIP_COMPUTE_EFFECTS, GetComputeEffectOptions);
 	if(C_VideoOptions.IsOutlineModeSupported()) then
@@ -988,7 +970,7 @@ local function Register()
 	end
 
 	-- Low Latency Mode
-	do
+	if not IsMacClient() then
 		local cvar = "LowLatencyMode";
 
 		local function GetOptions()
@@ -1294,7 +1276,7 @@ local function Register()
 	end
 
 	-- Ray Traced Shadows
-	if (not C_VideoOptions.IsSecondaryLightingSupported()) then
+	if not C_VideoOptions.IsSecondaryLightingSupported() and not IsMacClient() then
 		local cvar = "shadowrt";
 
 		local function GetOptions()
@@ -1328,7 +1310,7 @@ local function Register()
 	end
 
 	-- Variable Rate Shading (VRS)
-	do
+	if not IsMacClient() then
 		local cvar = "vrsValar";
 
 		local function GetOptions()
@@ -1344,7 +1326,7 @@ local function Register()
 	end
 
 	-- Graphics API
-	do
+	if not IsMacClient() then
 		-- here, CVar("gxapi") refers to the current requested api
 
 		local apis = {GetGraphicsAPIs()};
@@ -1587,6 +1569,16 @@ local function Register()
 		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
 		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, RoundToOneTenth);
 		Settings.SetupCVarSlider(category, "Gamma", options, GAMMA, OPTION_TOOLTIP_GAMMA);
+	end
+
+	-- Bloom
+	if C_VideoOptions.IsLinearEnabledOnStart() then
+		local cvar = "bloomUserMult";
+
+		local minValue, maxValue, step = 0, 1, 0.2;
+		local options = Settings.CreateSliderOptions(minValue, maxValue, step);
+		options:SetLabelFormatter(MinimalSliderWithSteppersMixin.Label.Right, RoundToOneTenth);
+		Settings.SetupCVarSlider(category, cvar, options, BLOOM_MULT, OPTION_TOOLTIP_BLOOM_MULT);
 	end
 
 	do

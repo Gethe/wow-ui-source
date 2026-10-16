@@ -38,6 +38,7 @@ Mists\AlternatePowerBar.xml				[AllowLoadGameType mists]
 Shared\GroupFrameVisibility.lua
 Shared\PartyMemberFrame.lua
 [Family]\PartyMemberFrame.lua
+[Game]\PartyMemberFrame.lua				[AllowLoadGameType camelot]
 Shared\PartyFrameTemplates.xml
 [Family]\PartyFrameTemplates.xml
 Shared\PartyFrame.lua
@@ -50,13 +51,14 @@ Shared\TargetFrameAuraButton.lua		[AllowLoadGameType mainline] [LoadIntoEnvironm
 Shared\TargetFrameAuraButton.xml		[AllowLoadGameType mainline]
 [Family]\TargetFrame.lua
 Vanilla\TargetFrameOverrides.lua		[AllowLoadGameType vanilla]
-[Game]\TargetFrame.lua							[AllowLoadGameType camelot]
-[Family]\TargetFrameTemplates.xml				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
-[Game]\TargetFrameTemplates.xml					[AllowLoadGameType camelot]
+[Game]\TargetFrame.lua					[AllowLoadGameType camelot]
+[Family]\TargetFrameTemplates.xml		[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\TargetFrameTemplates.xml			[AllowLoadGameType camelot]
 [Family]\TargetFrame.xml
 [Family]\TotemFrame.lua					[AllowLoadGameType mainline, tbc, wrath, cata, mists]
 [Family]\TotemFrame.xml					[AllowLoadGameType mainline, tbc, wrath, cata, mists]
 [Family]\PetFrame.lua
+[Game]\PetFrame.lua						[AllowLoadGameType camelot]
 [Family]\PetFrame.xml
 [Family]\RogueComboPoint.lua			[AllowLoadGameType mainline]
 [Family]\RogueComboPoint.xml			[AllowLoadGameType mainline]
@@ -132,7 +134,8 @@ Cata\EclipseBarFrame.xml				[AllowLoadGameType cata, mists]
 [Game]\MonkStaggerBar.xml				[AllowLoadGameType mists]
 [Game]\PriestBar.lua					[AllowLoadGameType mists]
 [Game]\PriestBar.xml					[AllowLoadGameType mists]
-Shared\Localization.lua
+Shared\Localization.lua					[ExcludeLoadGameType camelot]
+[Game]\Localization.lua					[AllowLoadGameType camelot]
 [Family]\Localization.lua
 [Family]\TargetFrameUtils.lua				[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
 [Game]\TargetFrameUtils.lua					[AllowLoadGameType camelot]

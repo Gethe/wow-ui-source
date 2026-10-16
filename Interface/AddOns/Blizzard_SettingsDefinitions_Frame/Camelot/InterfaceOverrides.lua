@@ -57,6 +57,10 @@ function InterfaceOverrides.HasSwingTimer()
 	return true;
 end
 
+function InterfaceOverrides.CanResetTutorials()
+	return true;
+end
+
 function InterfaceOverrides.AdjustDisplaySettings(category)
 	
 	-- Loading Screen Tips

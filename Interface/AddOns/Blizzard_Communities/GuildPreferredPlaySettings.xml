@@ -27,11 +27,11 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="LocaleDropdown" inherits="UIDropDownMenuTemplate">
+			<DropdownButton parentKey="LocaleDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.LocaleLabel" relativePoint="BOTTOMLEFT" x="-16" y="-4"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.LocaleLabel" relativePoint="BOTTOMLEFT" y="-4"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Button parentKey="LocaleApplyButton" inherits="UIPanelButtonTemplate" text="APPLY">
 				<Size x="90" y="22"/>
 				<Anchors>
@@ -43,11 +43,11 @@
 					<OnLeave function="CommunitiesGuildPreferredPlaySettingsFrame_OnLocaleApplyButtonLeave"/>
 				</Scripts>
 			</Button>
-			<Frame parentKey="DatacenterDropdown" inherits="UIDropDownMenuTemplate">
+			<DropdownButton parentKey="DatacenterDropdown" inherits="WowStyle1DropdownTemplate">
 				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.DatacenterLabel" relativePoint="BOTTOMLEFT" x="-16" y="-4"/>
+					<Anchor point="TOPLEFT" relativeKey="$parent.DatacenterLabel" relativePoint="BOTTOMLEFT" y="-4"/>
 				</Anchors>
-			</Frame>
+			</DropdownButton>
 			<Button parentKey="DatacenterApplyButton" inherits="UIPanelButtonTemplate" text="APPLY">
 				<Size x="90" y="22"/>
 				<Anchors>

@@ -3,6 +3,9 @@
 	<DropdownButton name="AddonCompartmentFrame" parent="MinimapCluster" mixin="AddonCompartmentMixin">
 		<KeyValues>
 			<KeyValue key="menuPoint" type="string" value="TOPRIGHT"/>
+			<KeyValue key="normalAtlas" type="string" value="ui-hud-minimap-button"/>
+			<KeyValue key="pressedAtlas" type="string" value="ui-hud-minimap-button-down"/>
+			<KeyValue key="mouseoverAtlas" type="string" value="ui-hud-minimap-button"/>
 		</KeyValues>
 		<Size x="16" y="16"/>
 		<Anchors>
@@ -11,6 +14,12 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnable method="OnEnable"/>
+			<OnDisable method="OnDisable"/>
 		</Scripts>
 		<NormalFont style="GameFontHighlightSmall"/>
 		<ButtonText parentKey="Text" text="0" setAllPoints="true">
@@ -18,8 +27,10 @@
 				<Anchor point="CENTER" x="1" y="0"/>
 			</Anchors>
 		</ButtonText>
-		<NormalTexture atlas="ui-hud-minimap-button"/>
-		<PushedTexture atlas="ui-hud-minimap-button-down"/>
-		<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alpha="0.5" alphaMode="ADD"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture parentKey="StateTexture" atlas="ui-hud-minimap-button" useAtlasSize="true"/>
+			</Layer>
+		</Layers>
 	</DropdownButton>
 </Ui>

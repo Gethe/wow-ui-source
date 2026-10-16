@@ -9,6 +9,10 @@
 
 	<Frame name="PagedSpellsTemplate" inherits="PagedCondensedVerticalGridContentFrameTemplate" virtual="true"/>
 
+	<Frame name="SpellBookHeaderSizeTemplate" virtual="true">
+		<Size x="300" y="51"/>
+	</Frame>
+
 	<Frame name="PagedSpellsView1Template" inherits="StaticGridLayoutFrame" virtual="true">
 		<Size x="680" y="650"/>
 		<Anchors>

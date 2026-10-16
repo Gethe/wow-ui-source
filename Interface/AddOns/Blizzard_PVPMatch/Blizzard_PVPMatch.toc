@@ -4,5 +4,6 @@
 ## AllowLoadGameType: standard, camelot
 PVPMatchUtil.lua
 PVPMatchTable.xml
+[Game]\PVPMatchTableOverrides.lua [AllowLoadGameType camelot]
 PVPMatchResults.xml
 PVPMatchScoreboard.xml

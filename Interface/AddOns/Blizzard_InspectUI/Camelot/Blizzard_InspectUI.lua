@@ -373,8 +373,6 @@ function InspectFrameMixin:SetupGamepad()
 		self.frameFooter:AddPromptedBinding(dressingRoom);
 		self.frameFooter:AddStandardBackPrompt();
 		self.frameFooter:Finalize();
-		self.frameFooter.inputLegend:ClearAllPoints();
-		self.frameFooter.inputLegend:SetPoint("TOPLEFT", InspectFrame, "BOTTOMLEFT", 0, -10);
 	end
 
 	local function SetUpTabs()

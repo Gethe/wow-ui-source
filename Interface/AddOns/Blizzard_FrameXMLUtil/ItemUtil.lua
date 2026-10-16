@@ -47,6 +47,7 @@ ItemButtonUtil.ItemContextEnum = {
 	Enchanting = 15,
 	CheckItemCondition = 16,
 	FeedPet = 17,
+	GuildBankDepositing = 18,
 };
 
 ItemButtonUtil.ItemContextMatchResult = {
@@ -101,6 +102,8 @@ function ItemButtonUtil.GetItemContext()
 		return ItemButtonUtil.ItemContextEnum.JumpUpgradeTrack;
 	elseif BankPanel and BankPanel:IsVisible() then
 		return ItemButtonUtil.ItemContextEnum.BankDepositing;
+	elseif GuildBankFrame and GuildBankFrame:IsShown() and C_Bank then
+		return ItemButtonUtil.ItemContextEnum.GuildBankDepositing;
 	elseif C_Spell.TargetSpellIsEnchanting() then
 		return ItemButtonUtil.ItemContextEnum.Enchanting;
 	elseif C_Spell.TargetSpellChecksItemCondition() then
@@ -225,6 +228,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 			return CheckMatch(C_Item.DoesItemMatchTrackJump(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.BankDepositing then
 			return CheckMatch(C_Bank.IsItemAllowedInBankType(BankFrame:GetActiveBankType(), itemLocation));
+		elseif itemContext == ItemButtonUtil.ItemContextEnum.GuildBankDepositing then
+			return CheckMatch(C_Bank.IsItemAllowedInBankType(Enum.BankType.Guild, itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.Enchanting then
 			return CheckMatch(C_Item.DoesItemMatchTargetEnchantingSpell(itemLocation));
 		elseif itemContext == ItemButtonUtil.ItemContextEnum.FeedPet then
@@ -238,7 +243,8 @@ function ItemButtonUtil.GetItemContextMatchResultForItem(itemLocation)
 end
 
 function ItemButtonUtil.GetItemContextMatchResultForContainer(bagID)
-	if ItemButtonUtil.GetItemContext() == nil then
+	local itemContext = ItemButtonUtil.GetItemContext();
+	if itemContext == nil or itemContext == ItemButtonUtil.ItemContextEnum.BankDepositing then
 		return ItemButtonUtil.ItemContextMatchResult.DoesNotApply;
 	end
 

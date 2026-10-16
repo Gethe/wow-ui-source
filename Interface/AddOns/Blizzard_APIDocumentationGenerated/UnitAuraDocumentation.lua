@@ -376,6 +376,7 @@ local UnitAura =
 		{
 			Name = "GetGroupBuffVisualAlerts",
 			Type = "Function",
+			Documentation = { "Returns the alerts passed to SetGroupBuffVisualAlerts plus an entry for every linked rank spell of those group buffs." },
 
 			Returns =
 			{
@@ -385,6 +386,7 @@ local UnitAura =
 		{
 			Name = "GetHiddenGroupBuffs",
 			Type = "Function",
+			Documentation = { "Returns the spell IDs passed to SetHiddenGroupBuffs plus every linked rank spell of those group buffs." },
 
 			Returns =
 			{
@@ -622,6 +624,7 @@ local UnitAura =
 			Type = "Event",
 			LiteralName = "GROUP_BUFF_VISUAL_ALERTS_CHANGED",
 			SynchronousEvent = true,
+			Documentation = { "The payload matches GetGroupBuffVisualAlerts, including linked rank spells." },
 			Payload =
 			{
 				{ Name = "visualAlerts", Type = "table", InnerType = "GroupBuffVisualAlertInfo", Nilable = false },
@@ -632,6 +635,7 @@ local UnitAura =
 			Type = "Event",
 			LiteralName = "HIDDEN_GROUP_BUFFS_CHANGED",
 			SynchronousEvent = true,
+			Documentation = { "The payload matches GetHiddenGroupBuffs, including linked rank spells." },
 			Payload =
 			{
 				{ Name = "spellIDs", Type = "table", InnerType = "number", Nilable = false },

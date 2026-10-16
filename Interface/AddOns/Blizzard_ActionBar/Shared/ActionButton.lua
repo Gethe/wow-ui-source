@@ -1840,8 +1840,13 @@ end
 function ActionButtonCastingAnimFrameMixin:OnHide()
 	local parent = self:GetParent();
 	parent:ClearReticle();
-	parent.cooldown:SetSwipeColor(0, 0, 0, 1);
+	local alpha = self:GetCooldownFrameAlpha();
+	parent.cooldown:SetSwipeColor(0, 0, 0, alpha);
 	ActionButton_UpdateCooldown(parent);
+end
+
+function ActionButtonCastingAnimFrameMixin:GetCooldownFrameAlpha()
+	return 1;
 end
 
 function ActionButtonCastingAnimFrameMixin:FinishAnimAndPlayBurst()

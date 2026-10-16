@@ -26,16 +26,11 @@ function StableFrameMixin:OnLoad()
 	};
 	RegisterUIPanel(self, panelAttributes);
 
-	self.expBar.GetLevelData = function()
-		local petInfo = C_StableInfo.GetStablePetInfo(self.selectedPet or CURRENT_PET_SLOT);
+	self.BottomDividerFrame.horzDivider:ClearAllPoints();
+	self.BottomDividerFrame.horzDivider:SetPoint("TOP", self.modelScene, "BOTTOM", 0, 6);
 
-		if petInfo then
-			return petInfo.experience, petInfo.experienceNeeded, petInfo.level;
-		end
-
-		return 0, 0, 0;
-	end
-	self.expBar:SetTextLocked(true);
+	self.TopDividerFrame.horzDivider:ClearAllPoints();
+	self.TopDividerFrame.horzDivider:SetPoint("TOP", self.modelScene, "TOP", 0, 6);
 
 	self:RegisterForTransitions();
 end
@@ -54,14 +49,15 @@ end
 
 function StableFrameMixin:OnShow()
 	self:SetPortraitToUnit(UnitGUID("npc") and "npc" or "player");
-	self.loyaltyLevel:Hide();
 	self:SelectPet(CURRENT_PET_SLOT);
+	self:SetTitle(STABLES);
 end
 
 function StableFrameMixin:OnHide()
 	C_StableInfo.ClosePetStables();
 	StableUtils.ClearPetCursor();
 	self.selectedPet = nil;
+	self.expBar:Hide();
 end
 
 function StableFrameMixin:RegisterForTransitions()
@@ -124,7 +120,6 @@ function StableFrameMixin:SetupGamepad()
 	local paperDollRotate = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_HORIZONTAL, nil, ACTION_LABEL_ROTATE);
 	local paperDollReset = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, GenerateClosure(self.modelScene.Reset, self.modelScene), RESET);
 	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "StableFrameFooter");
-	self.footer:SetAnchorOffsets(0, -5);
 	self.footer:AddPromptedBinding(placePetBinding);
 	self.footer:AddPromptedBinding(pickUpPetBinding);
 	self.footer:AddPromptedBinding(purchaseSlotBinding);
@@ -150,7 +145,7 @@ function StableFrameMixin:InitializeGamepad()
 	PetStableCurrentPet.Text:SetFontObject(GameFontNormal);
 	PetStableStabledPet1.Text:SetFontObject(GameFontNormal);
 
-	PetStableCurrentPet:SetPointsOffset(-69, -40);
+	PetStableCurrentPet:SetPointsOffset(-69, -32);
 	PetStableCurrentPet.Text:SetPointsOffset(0, 12);
 	PetStableStabledPet1.Text:SetPointsOffset(24, 12);
 
@@ -231,6 +226,9 @@ function StableFrameMixin:Update()
 		self.modelScene:SetPet(selectedPetInfo);
 	end
 
+	local showExpBar = selectedPetInfo ~= nil and selectedPetInfo.level < GetMaxPlayerLevel();
+	self.expBar:SetShown(showExpBar);
+
 	if InputUtil.IsGamepadUIEnabled() then
 		local canPurchase = C_StableInfo.GetNumStableSlots() < Constants.PetConsts.MAX_STABLE_SLOTS;
 		self.GamepadSlotCostText:SetShown(canPurchase);
@@ -240,9 +238,9 @@ function StableFrameMixin:Update()
 		self.purchaseButton:Update();
 
 		if not self.purchaseButton:IsShown() then
-			PetStableCurrentPet:SetPoint("TOP", self.modelScene, "BOTTOM", -69, -43);
+			PetStableCurrentPet:SetPoint("TOP", self.modelScene, "BOTTOM", -69, -48);
 		else
-			PetStableCurrentPet:SetPoint("TOP", self.modelScene, "BOTTOM", -69, -23);
+			PetStableCurrentPet:SetPoint("TOP", self.modelScene, "BOTTOM", -69, -34);
 		end
 	end
 end
@@ -280,24 +278,7 @@ function StableFrameMixin:SelectPet(index)
 			PetStableLevelText:SetText(petInfo.name .. " " .. format(UNIT_LEVEL_TEMPLATE, petInfo.level) .. " ".. petInfo.familyName);
 		end
 
-		PetStableLoyaltyText:SetText(petInfo.loyaltyName);
-
-		self.loyaltyLevel:Show();
-		self.loyaltyLevel.levelText:SetText(petInfo.loyaltyLevel);
-		local xOffset = (petInfo.loyaltyLevel == 1) and self.loyaltyLevel.levelTextOffsetXLevelOne or self.loyaltyLevel.levelTextOffsetX;
-		self.loyaltyLevel.levelText:ClearAllPoints();
-		self.loyaltyLevel.levelText:SetPoint("CENTER", xOffset, 0);
-		self.loyaltyLevel.tooltip = format(LOYALTY_LEVEL, petInfo.loyaltyLevel);
-
-		if petInfo.experienceNeeded > 0 then
-			if self.expBar:IsShown() then
-				self.expBar:Update();
-			else
-				self.expBar:Show();
-			end
-		else
-			self.expBar:Hide();
-		end
+		PetStableLoyaltyText:SetText(format(PET_LOYALTY_TEMPLATE, petInfo.loyaltyName, petInfo.loyaltyLevel));
 	end
 
 	for i=1,Constants.PetConsts.NUM_PET_SLOTS_HUNTER,1 do
@@ -369,7 +350,8 @@ function PetStableSlotMixin:Update()
 
 	local petInfo = C_StableInfo.GetStablePetInfo(id);
 
-	local unlocked = id == CURRENT_PET_SLOT or id - 2 < C_StableInfo.GetNumStableSlots();
+	local isCurrentPetSlot = id == CURRENT_PET_SLOT;
+	local unlocked = isCurrentPetSlot or id - 2 < C_StableInfo.GetNumStableSlots();
 
 	if petInfo then
 		SetItemButtonTexture(self, petInfo.icon);
@@ -381,12 +363,13 @@ function PetStableSlotMixin:Update()
 		self.tooltipSubtext = "";
 	end
 
-	if unlocked then
-		self.background:SetVertexColor(1.0, 1.0, 1.0);
-	else
-		self.background:SetVertexColor(1.0, 0.1, 0.1);
-	end
+	self.lockedBackground:SetShown(not unlocked);
+	self.unlockedBackground:SetShown(not isCurrentPetSlot and unlocked);
+	self.currentBackground:SetShown(isCurrentPetSlot and unlocked);
 
+	self.lockIcon:SetShown(not unlocked);
+	self.genericPetIcon:SetShown(unlocked);
+	self.currentGlow:SetShown(isCurrentPetSlot);
 end
 
 function PetStableSlotMixin:OnSmartNavSelect()
@@ -427,12 +410,12 @@ function PetStablePurchaseButtonMixin:OnClick()
 	StaticPopup_Show("CONFIRM_BUY_STABLE_SLOT");
 end
 
-PetStableLoyaltyLevelMixin = {};
+StableExpBarMixin = {};
 
-function PetStableLoyaltyLevelMixin:OnEnter()
-	if self.tooltip then
-		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-		GameTooltip:SetText(self.tooltip);
-		GameTooltip:Show();
-	end
+function StableExpBarMixin:GetPetExperience()
+	local stableFrame = self:GetParent();
+	local petInfo = C_StableInfo.GetStablePetInfo(stableFrame.selectedPet or CURRENT_PET_SLOT);
+	local currXP = petInfo and petInfo.experience or 0;
+	local nextXP = petInfo and petInfo.experienceNeeded or 0;
+	return currXP, nextXP;
 end

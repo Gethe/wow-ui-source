@@ -3,8 +3,8 @@ local DielFrameData =
 	BorderAtlas = "UI-HUD-Minimap-Frame-Cycle",
 	DayAtlas = "UI-HUD-Minimap-DayCycle",
 	NightAtlas = "UI-HUD-Minimap-NightCycle",
-	AnchorX = 63,
-	AnchorY = 72,
+	AnchorX = 55,
+	AnchorY = 86,
 };
 
 local function SetDielCycleIndicator(isDayTime)
@@ -16,7 +16,8 @@ local function SetDielCycleIndicator(isDayTime)
 end
 
 local function CreateDielCycleFrame()
-	local dielFrame = CreateFrame("Frame", nil, MinimapCluster);
+	local parent = MinimapCluster.MinimapContainer;
+	local dielFrame = CreateFrame("Frame", nil, parent);
 	MinimapCluster.DielFrame = dielFrame;
 
 	-- Prevent this overlay from inflating MinimapCluster's ResizeLayoutFrame bounds.
@@ -24,11 +25,12 @@ local function CreateDielCycleFrame()
 
 	local atlasInfo = C_Texture.GetAtlasInfo(DielFrameData.BorderAtlas);
 	dielFrame:SetSize(atlasInfo.width, atlasInfo.height);
+	dielFrame:SetPoint("CENTER", DielFrameData.AnchorX, DielFrameData.AnchorY);
 
-	-- Elevated so the minimap arrow can pass below it when it rotated mode.
+	-- Elevated so the minimap arrow can pass below it when in rotated mode.
 	dielFrame:SetFrameLevel(5);
-	dielFrame:RegisterEvent("DIEL_CYCLE_CHANGED")
-	dielFrame:SetScript("OnEvent", function(frame, event, ...)
+	dielFrame:RegisterEvent("DIEL_CYCLE_CHANGED");
+	dielFrame:SetScript("OnEvent", function(_frame, event, ...)
 		if event == "DIEL_CYCLE_CHANGED" then
 			local isDayTime = ...;
 			SetDielCycleIndicator(isDayTime);
@@ -44,29 +46,26 @@ local function CreateDielCycleFrame()
 	border:SetAtlas(DielFrameData.BorderAtlas, TextureKitConstants.UseAtlasSize);
 end
 
+local function SetDielFrameTransform(scale)
+	local appliedScale = (scale and scale > 0) and scale or 1.0;
+	local invScale = 1.0 / appliedScale;
+
+	local dielFrame = MinimapCluster.DielFrame;
+	dielFrame:SetScale(invScale);
+	dielFrame:ClearAllPoints();
+	dielFrame:SetPoint("CENTER", DielFrameData.AnchorX * appliedScale, DielFrameData.AnchorY * appliedScale);
+end
+
 local originalSetEditModeScale = MinimapCluster.SetEditModeScale;
 local function SetEditModeScale(minimapCluster, scale)
-	local dielFrame = minimapCluster.DielFrame;
-	dielFrame:SetScale(math.max(1.0, scale));
-
-	if scale >= 1.0 then
-		-- No position change required for >= 1.0 scale
-		dielFrame:SetPoint("CENTER", DielFrameData.AnchorX, DielFrameData.AnchorY);
-	else
-		-- As the scale decreases from zero, the position needs to change to keep the
-		-- diel frame aligned.
-		local scaledX = DielFrameData.AnchorX * scale;
-		local scaledY = DielFrameData.AnchorY * scale;
-		dielFrame:SetPoint("CENTER", scaledX, scaledY);
-	end
-
 	originalSetEditModeScale(minimapCluster, scale);
+	SetDielFrameTransform(minimapCluster.MinimapContainer:GetScale());
 end
 
 do
 	MinimapCluster.SetEditModeScale = SetEditModeScale;
-	
-	CreateDielCycleFrame();
 
+	CreateDielCycleFrame();
 	SetDielCycleIndicator(C_DateAndTime.IsDayTime());
+	SetDielFrameTransform(MinimapCluster.MinimapContainer:GetScale());
 end
