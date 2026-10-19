@@ -1085,10 +1085,12 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 		actor = modelScene.CachedPlayerActor;
 	elseif modelSceneTag ~= nil then
 		actor = modelScene:GetActorByTag(modelSceneTag);
-		for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
-			if actorDisplayDataFromBucket.scriptTag == modelSceneTag then
-				actorDisplayData = actorDisplayDataFromBucket;
-				break;
+		if actorDisplayBucket then
+			for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
+				if actorDisplayDataFromBucket.scriptTag == modelSceneTag then
+					actorDisplayData = actorDisplayDataFromBucket;
+					break;
+				end
 			end
 		end
 	end
