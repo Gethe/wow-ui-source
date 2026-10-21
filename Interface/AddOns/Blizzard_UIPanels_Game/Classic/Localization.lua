@@ -5,7 +5,7 @@ local function LocalizeTradeFrame_zh()
 end
 
 local function LocalizeFriendsFrame_zh()
-	ADDFRIENDFRAME_WOWHEIGHT = 232;
+	ADDFRIENDFRAME_WOWHEIGHT = 250;
 	ADDFRIENDFRAME_BNETHEIGHT = 310;
 	AddFriendNameEditBox:SetPoint("TOP", 0, -144);
 	AddFriendNoteFrame:SetPoint("TOP", -2, -178);

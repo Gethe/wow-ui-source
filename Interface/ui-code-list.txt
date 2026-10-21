@@ -1823,6 +1823,8 @@ Interface\AddOns\Blizzard_Minimap\Classic\MinimapTracking_Simple.lua
 Interface\AddOns\Blizzard_Minimap\Classic\MinimapTracking_Simple.xml
 Interface\AddOns\Blizzard_Minimap\Classic\Minimap_Overrides.lua
 Interface\AddOns\Blizzard_Minimap\Mists\Minimap_Overrides.lua
+Interface\AddOns\Blizzard_Minimap\Shared\ExternalEventURLMinimapButton.lua
+Interface\AddOns\Blizzard_Minimap\Shared\ExternalEventURLMinimapButton.xml
 Interface\AddOns\Blizzard_Minimap\Wrath\GameTime.lua
 Interface\AddOns\Blizzard_Minimap\Wrath\GameTime.xml
 Interface\AddOns\Blizzard_Minimap\Wrath\Minimap_Overrides.lua

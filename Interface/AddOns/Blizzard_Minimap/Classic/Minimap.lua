@@ -17,6 +17,14 @@ local BATTLEFIELD_FRAME_FADE_TIME = 0.15;
 
 local IS_GUILD_GROUP = false;
 
+ExternalEventURLMinimapButtonStyle = {
+	borderAtlas = "bluemenu-Ring",
+	borderWidth = 42,
+	borderHeight = 42,
+	spellEffectWidth = 151,
+	spellEffectHeight = 151,
+};
+
 function Minimap_OnLoad(self)
 	self.fadeOut = nil;
 	self:RegisterEventCallback("MINIMAP_PING", function() PlaySound(SOUNDKIT.MAP_PING); end);

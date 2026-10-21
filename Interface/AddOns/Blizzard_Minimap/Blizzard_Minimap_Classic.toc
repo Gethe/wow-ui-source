@@ -9,6 +9,10 @@ Classic\Minimap_Overrides.lua			[AllowLoadGameType vanilla, tbc]
 Wrath\Minimap_Overrides.lua				[AllowLoadGameType wrath]
 Cata\Minimap_Overrides.lua				[AllowLoadGameType cata]
 Mists\Minimap_Overrides.lua				[AllowLoadGameType mists]
+
+Shared\ExternalEventURLMinimapButton.lua
+Shared\ExternalEventURLMinimapButton.xml
+
 Classic\Minimap.lua
 Classic\Minimap.xml
 

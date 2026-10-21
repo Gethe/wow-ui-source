@@ -42,7 +42,7 @@ FRIENDS_TOOLTIP_MAX_GAME_ACCOUNTS = 5;
 FRIENDS_TOOLTIP_MAX_WIDTH = 200;
 FRIENDS_TOOLTIP_MARGIN_WIDTH = 12;
 
-ADDFRIENDFRAME_WOWHEIGHT = 218;
+ADDFRIENDFRAME_WOWHEIGHT = 232;
 ADDFRIENDFRAME_BNETHEIGHT = 296;
 
 FRIEND_TABS_MAX_WIDTH = 280;
@@ -1870,6 +1870,11 @@ function AddFriendFrame_ShowInfo()
 	AddFriendFrame:SetHeight(AddFriendInfoFrame:GetHeight());
 	AddFriendInfoFrame:Show();
 	AddFriendEntryFrame:Hide();
+
+	local areRealIDFriendsEnabled = C_BattleNet.AreRealIDFriendsEnabled();
+	AddFriendInfoFrameLeftTitle:SetText(areRealIDFriendsEnabled and BATTLENET_FRIEND or BATTLETAG);
+	AddFriendInfoFrameLeftDescription:SetText(areRealIDFriendsEnabled and BATTLENET_FRIEND_INFO or BATTLETAG_DESCRIPTION);
+
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
@@ -1896,7 +1901,7 @@ function AddFriendFrame_ShowEntry()
 		elseif ( battleTag ) then
 			AddFriendEntryFrameLeftTitle:SetText(BATTLETAG);
 			AddFriendEntryFrameLeftDescription:SetText(BATTLETAG_FRIEND_LABEL);
-			AddFriendNameEditBoxFill:SetText(ENTER_NAME_OR_BATTLETAG);
+			AddFriendNameEditBoxFill:SetText(ENTER_CHARACTER_NAME_OR_BATTLETAG);
 		end
 	else
 		AddFriendFrame.BNconnected = nil;
@@ -1912,6 +1917,10 @@ function AddFriendFrame_ShowEntry()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
+local function IsRealIDInviteText(text)
+	return string.find(text, "@") ~= nil;
+end
+
 function AddFriendNameEditBox_OnTextChanged(self, userInput)
 	if ( not AutoCompleteEditBox_OnTextChanged(self, userInput) ) then
 		local text = self:GetText();
@@ -1924,11 +1933,15 @@ function AddFriendNameEditBox_OnTextChanged(self, userInput)
 					AddFriendEntryFrame_Collapse();
 				end
 			end
-			AddFriendEntryFrameAcceptButton:Enable();
+
+			local isBlockedRealIDFriendRequest = IsRealIDInviteText(text) and not C_BattleNet.AreRealIDFriendsEnabled();
+			AddFriendEntryFrameAcceptButton:SetEnabled(not isBlockedRealIDFriendRequest);
+			self.ErrorMessage:SetShown(isBlockedRealIDFriendRequest);
 		else
 			AddFriendEntryFrame_Collapse();
 			AddFriendNameEditBoxFill:Show();
 			AddFriendEntryFrameAcceptButton:Disable();
+			self.ErrorMessage:Hide();
 		end
 	end
 end

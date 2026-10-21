@@ -287,6 +287,11 @@
 										</PushedTexture>
 										<HighlightTexture alphaMode="ADD" file="Interface\Minimap\UI-Minimap-ZoomButton-Highlight"/>
 									</Button>
+									<Button parentKey="ExternalEventURLButton" inherits="ExternalEventURLMinimapButtonTemplate">
+										<Anchors>
+											<Anchor point="TOPRIGHT" x="-141" y="-36"/>
+										</Anchors>
+									</Button>
 									<Button name="MinimapZoomIn">
 										<Size x="32" y="32"/>
 										<Anchors>

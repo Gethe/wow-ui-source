@@ -30,7 +30,7 @@ function GameMenuFrameMixin:OnLoad()
 	self:AddStaticEventMethod(EventRegistry, "UIPanel.FrameHidden", GameMenuFrameMixin.OnUIPanelHidden);
 	self:AddStaticEventMethod(EventRegistry, "Store.FrameHidden", GameMenuFrameMixin.OnStoreFrameClosed);
 	-- This event can occur without the frame being shown.
-	EventRegistry:RegisterFrameEventAndCallback("EXTERNAL_EVENT_LAUNCH_URL_FAILED", GameMenuFrameMixin.OnExternalEventLaunchUrlFailed, self);
+	EventRegistry:RegisterFrameEventAndCallback("EXTERNAL_EVENT_LAUNCH_URL_RESULT", GameMenuFrameMixin.OnExternalEventLaunchUrlResult, self);
 end
 
 function GameMenuFrameMixin:OnShow()
@@ -83,8 +83,10 @@ function GameMenuFrameMixin:ExternalEventClickCallback()
 	end
 end
 
-function GameMenuFrameMixin:OnExternalEventLaunchUrlFailed()
-	StaticPopup_Show("GAMEMENU_EXTERNALEVENT_FAILURE");
+function GameMenuFrameMixin:OnExternalEventLaunchUrlResult(result)
+	if not result then
+		StaticPopup_Show("GAMEMENU_EXTERNALEVENT_FAILURE");
+	end
 end
 
 function GameMenuFrameMixin:InitButtons()
