@@ -17,6 +17,15 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "AreRealIDFriendsEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "areRealIDFriendsEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "BNCheckBattleTagInviteToRecentAlly",
 			Type = "Function",
 

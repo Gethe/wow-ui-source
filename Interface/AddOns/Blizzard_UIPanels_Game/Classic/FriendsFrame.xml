@@ -4209,7 +4209,7 @@ TRAVEL PASS
 								<Anchor point="BOTTOMLEFT" relativeTo="$parentRightFriend" x="-2" y="-6"/>
 							</Anchors>
 						</FontString>
-						<FontString inherits="GameFontHighlightSmall" justifyH="LEFT" text="BATTLENET_FRIEND_INFO">
+						<FontString name="$parentLeftDescription" inherits="GameFontHighlightSmall" justifyH="LEFT" text="BATTLENET_FRIEND_INFO">
 							<Size x="160" y="0"/>
 							<Anchors>
 								<Anchor point="TOPLEFT" relativeTo="$parentLeftTitle" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
@@ -4239,7 +4239,7 @@ TRAVEL PASS
 				</Frames>
 			</Frame>
 			<Frame name="AddFriendEntryFrame" hidden="true">
-				<Size x="384" y="218"/>
+				<Size x="384" y="232"/>
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
 				</Anchors>
@@ -4358,6 +4358,13 @@ TRAVEL PASS
 										<Anchor point="LEFT" x="3" y="0"/>
 									</Anchors>
 									<Color r="0.35" g="0.35" b="0.35"/>
+								</FontString>
+								<FontString parentKey="ErrorMessage" inherits="GameFontNormalSmall" justifyH="CENTER" text="ERR_REAL_ID_FRIEND_REQUESTS_DISABLED" hidden="true" maxLines="2">
+									<Size x="290"/>
+									<Anchors>
+										<Anchor point="TOP" relativePoint="BOTTOM" x="-2" y="-6"/>
+									</Anchors>
+									<Color color="RED_FONT_COLOR"/>
 								</FontString>
 							</Layer>
 						</Layers>
