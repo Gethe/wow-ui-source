@@ -6,6 +6,11 @@ local characterCopyRegions = {
 	[5] = CHINA,
 };
 
+CopyCharacterConstants = {
+	RealmNameLabel = REALM_NAME,
+	CharacterNameFirst = false,
+};
+
 -- COPY CHARACTER
 StaticPopupDialogs["COPY_CHARACTER"] = {
 	text = "",
@@ -35,6 +40,14 @@ StaticPopupDialogs["COPY_KEY_BINDINGS"] = {
 	OnAccept = function(dialog, data)
 		CopyCharacter_KeyBindingsFromLive();
 	end,
+}
+
+StaticPopupDialogs["COPY_IN_PROGRESS"] = {
+	text = COPY_IN_PROGRESS,
+	button1 = nil,
+	button2 = nil,
+	ignoreKeys = true,
+	spinner = true,
 }
 
 function CopyCharacterFromLive()
@@ -175,6 +188,16 @@ function CopyCharacterFrame_OnLoad(self)
 	ScrollUtil.InitScrollBoxListWithScrollBar(CopyCharacterFrame.ScrollBox, CopyCharacterFrame.ScrollBar, view);
 
 	self.RegionID:SetWidth(100);
+
+	self.RealmName.Text:SetText(CopyCharacterConstants.RealmNameLabel);
+	if CopyCharacterConstants.CharacterNameFirst then
+		self.CharacterName:SetSize(200, 16);
+		self.CharacterName:ClearAllPoints();
+		self.CharacterName:SetPoint("LEFT", self.RegionID, "RIGHT", 15, 0);
+		self.RealmName:SetSize(150, 16);
+		self.RealmName:ClearAllPoints();
+		self.RealmName:SetPoint("LEFT", self.CharacterName, "RIGHT", 15, 0);
+	end
 end
 
 function CopyCharacterFrame_OnShow(self)

@@ -152,7 +152,6 @@ local ULTIMATE_FRAME_RING_SCALE = 1.3;
 
 local function SetupUltimateButtonArt(self, parent)
 	local ultimateDecoration = GetUltimateDecoration(self);
-
 	self.SlotArt:SetAtlas("talebound-hud-actionbar-icon-ultimate", true);
 	self.SlotArt:SetDesaturated(false);
 	self.SlotArt:ClearAllPoints();
@@ -362,8 +361,6 @@ function ActionBarActionButtonMixin:UpdateUsable(action, isUsable, notEnoughMana
 end
 
 local actionButtonUpdateCooldown = ActionButton_UpdateCooldown;
-local ACTION_BUTTON_COOLDOWN_ICON_ALPHA = 0.5;
-
 function ActionButton_UpdateCooldown(self)
 	actionButtonUpdateCooldown(self);
 	if IsWoWHackUltimateAction(self.action) then
@@ -371,12 +368,6 @@ function ActionButton_UpdateCooldown(self)
 		if self.lossOfControlCooldown then
 			self.lossOfControlCooldown:SetDrawSwipe(false);
 		end
-
-		local isCooldownActive = self.cooldown:IsShown();
-		if self.lossOfControlCooldown then
-			isCooldownActive = isCooldownActive or self.lossOfControlCooldown:IsShown();
-		end
-		self.icon:SetAlpha(isCooldownActive and ACTION_BUTTON_COOLDOWN_ICON_ALPHA or 1.0);
 	else
 		-- Adjust the anchor for the cooldown frame to be a bit smaller for these new buttons
 		self.chargeCooldown:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -4);

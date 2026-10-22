@@ -23,6 +23,12 @@ local Minimap =
 		{
 			Name = "ClearMinimapInsetInfo",
 			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "id", Type = "cstring", Nilable = false },
+			},
 		},
 		{
 			Name = "GetDefaultTrackingValue",
@@ -225,9 +231,11 @@ local Minimap =
 
 			Arguments =
 			{
+				{ Name = "id", Type = "cstring", Nilable = false },
 				{ Name = "minAngle", Type = "number", Nilable = false },
 				{ Name = "maxAngle", Type = "number", Nilable = false },
 				{ Name = "scalar", Type = "number", Nilable = false },
+				{ Name = "isCircular", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -597,6 +597,10 @@ function PromptedBindingMixin:RequireTriggerBinding()
 	return false;
 end
 
+function PromptedBindingMixin:IsFooterHoldPrompt()
+	return self.footerBinding.holdTime ~= nil;
+end
+
 function PromptedBindingMixin:IsHoldPrompt()
 	if self.footerBinding and self.footerBinding.holdTime then
 		return true;

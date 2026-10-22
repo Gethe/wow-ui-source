@@ -190,9 +190,11 @@ function PrivateAuraMixin:UpdateSizeFromAnchor(anchorInfo, isBuff, isLarge)
 
 	if self.useIconSizeForAuraSize then
 		self:SetSize(width, height);
+		self.Count:SetScale(scale or 1);
 	else
 		-- Use template size for the aura, defined in .../Blizzard_BuffFrame/BuffFrameTemplates.xml
 		self:SetSize(30, 40);
+		self.Count:SetScale(1);
 	end
 
 	if scale then

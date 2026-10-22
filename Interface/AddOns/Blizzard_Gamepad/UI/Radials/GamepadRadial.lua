@@ -543,7 +543,13 @@ function GamepadRadialMixin:OnShow()
 		else
 			HideUIPanel(currentFrame); -- Hide subframes that should close when the main menu is shown.
 		end
-		currentFrame = GamepadMode.FrameControlsManager:GetActiveFrame();
+
+		-- A frame that doesn't release focus when dismissed would otherwise be dismissed forever.
+		local activeFrame = GamepadMode.FrameControlsManager:GetActiveFrame();
+		if activeFrame == currentFrame then
+			break;
+		end
+		currentFrame = activeFrame;
 	end
 	GamepadMode.FrameControlsManager:UnsuspendAllFrames();
 

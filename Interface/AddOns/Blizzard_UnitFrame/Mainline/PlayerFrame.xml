@@ -335,11 +335,6 @@
 									</Anchors>
 								</Texture>
 								<!-- The AttackIcon and PlayerPortraitCornerIcon are in roughly the same position. Currently only one can show at a time. -->
-								<Texture parentKey="AttackIcon" atlas="UI-HUD-UnitFrame-Player-CombatIcon" useAtlasSize="true">
-									<Anchors>
-										<Anchor point="TOPLEFT" x="64" y="-62"/>
-									</Anchors>
-								</Texture>
 								<Texture parentKey="PlayerPortraitCornerIcon" atlas="UI-HUD-UnitFrame-Player-PortraitOn-CornerEmbellishment" useAtlasSize="true">
 									<Anchors>
 										<Anchor point="TOPLEFT" x="58.5" y="-53.5"/>
@@ -361,6 +356,12 @@
 								</Texture>
 							</Layer>
 							<Layer level="OVERLAY" textureSubLevel="3">
+								<!-- The AttackIcon and PlayerPortraitCornerIcon are in roughly the same position. Currently only one can show at a time. -->
+								<Texture parentKey="AttackIcon" atlas="UI-HUD-UnitFrame-Player-CombatIcon" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="64" y="-62"/>
+									</Anchors>
+								</Texture>
 								<Texture parentKey="PrestigeBadge" hidden="true">
 									<Size x="30" y="30"/>
 									<Anchors>

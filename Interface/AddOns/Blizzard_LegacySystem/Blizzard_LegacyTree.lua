@@ -19,6 +19,10 @@ function LegacyTreeUtil.GetEdgeTemplateType(edgeVisualStyle)
 	return "LegacyTreeTraitEdgeArrowTemplate";
 end
 
+function LegacyTreeUtil.GetSpecializedMixin(nodeInfo, talentType)
+	return TalentButtonLegacyMixin;
+end
+
 LegacyTreePageMixin = {};
 
 function LegacyTreePageMixin:OnShow()
@@ -315,4 +319,35 @@ function LegacyTreePointSummaryMixin:RefreshText(currencyInfo)
 	self.AvailablePointsLabel:SetFormattedText(LEGACY_POINTS_AVAILABLE, legacyPointText);
 
 	self.Shield.Points:SetText(currencyInfo.renownCurrency);
+end
+
+TalentButtonLegacyMixin = CreateFromMixins(TalentButtonSpendMixin);
+
+function TalentButtonLegacyMixin:AdjustBaseArt()
+	for i, shadow in ipairs(self.spendTextShadows) do
+		shadow:SetShown(false);
+	end
+
+	self.SpendText:ClearAllPoints();
+	self.SpendText:SetPoint("CENTER", self, "BOTTOMRIGHT", 0, 0);
+end
+
+function TalentButtonLegacyMixin:OnLoad()
+	TalentButtonSpendMixin.OnLoad(self);
+
+	self:AdjustBaseArt();
+end
+
+function TalentButtonLegacyMixin:UpdateSpendText()
+	local nodeInfo = self:GetNodeInfo();
+
+	if nodeInfo then
+		TalentButtonUtil.SetSpendText(self, GENERIC_FRACTION_STRING:format(nodeInfo.currentRank, nodeInfo.maxRanks));
+	end
+end
+
+function TalentButtonLegacyMixin:ApplyVisualState(visualState)
+	TalentButtonArtMixin.ApplyVisualState(self, visualState);
+
+	self.SpendText:SetTextColor(WHITE_FONT_COLOR:GetRGB());
 end

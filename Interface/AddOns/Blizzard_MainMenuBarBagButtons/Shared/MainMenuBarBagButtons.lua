@@ -412,16 +412,12 @@ function MainMenuBarBackpackMixin:UpdateItemContextOverlayTextures(contextMode)
 	if contextMode then
 		self.ItemContextOverlay:SetColorTexture(0, 0, 0, 0.8);
 
-		local mask;
+		-- Only the circle mask also clips the overlay; the square mask clips just the icon and must keep its anchors.
 		if (self.buttonShape == "circle") then
-			mask = self.CircleMask;
-		elseif (self.buttonShape == "square") then
-			mask = self.SquareMask;
+			self.CircleMask:ClearAllPoints();
+			self.CircleMask:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -4);
+			self.CircleMask:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 6);
 		end
-
-		mask:ClearAllPoints();
-		mask:SetPoint("TOPLEFT", self, "TOPLEFT", 4, -4);
-		mask:SetPoint("BOTTOMRIGHT", self, "BOTTOMRIGHT", -6, 6);
 	end
 end
 

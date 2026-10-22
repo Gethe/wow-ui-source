@@ -463,11 +463,12 @@ function LFGBrowseSearchEntry_Update(self)
 		self.DiscordIcon:SetDesaturated(searchResultInfo.isDelisted);
 		if usesDiscord then
 			nameMaxWidth = nameMaxWidth - self.DiscordIcon:GetWidth() - 4;
+			self.Level:SetPoint("BOTTOMLEFT", self.DiscordIcon, "BOTTOMRIGHT", 4, 0);
+		else
+			self.Level:SetPoint("BOTTOMLEFT", self.Name, "BOTTOMRIGHT", 4, 0);
 		end
 	end
-	if ( self.Name:GetWidth() > nameMaxWidth ) then
-		self.Name:SetWidth(nameMaxWidth);
-	end
+
 	self.Level:SetTextColor(levelColor.r, levelColor.g, levelColor.b);
 	self.ClassIcon:SetDesaturated(searchResultInfo.isDelisted);
 	self.ActivityName:SetText(activityText);
@@ -479,10 +480,15 @@ function LFGBrowseSearchEntry_Update(self)
 
 	if ( searchResultInfo.newPlayerFriendly ) then
 		self.NewPlayerFriendlyIcon:Show();
+		nameMaxWidth = nameMaxWidth - self.NewPlayerFriendlyIcon:GetWidth() - 1;
 	else
 		self.NewPlayerFriendlyIcon:Hide();
 	end
 	self.NewPlayerFriendlyIcon:SetDesaturated(searchResultInfo.isDelisted);
+
+	if ( self.Name:GetWidth() > nameMaxWidth ) then
+		self.Name:SetWidth(nameMaxWidth);
+	end
 
 	local displayData = C_LFGList.GetSearchResultMemberCounts(self.resultID);
 	local displayType, maxNumPlayers = LFGBrowseUtil_GetBestDisplayTypeForActivityIDs(searchResultInfo.activityIDs);

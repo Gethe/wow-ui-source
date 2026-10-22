@@ -172,7 +172,7 @@
 					<KeyValue key="backdropBorderBlendMode" value="ADD" type="string"/>
 				</KeyValues>
 			</Frame>
-            <Button name="$parentCloseButton" inherits="UIPanelCloseButtonDefaultAnchors">
+			<Button name="$parentCloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="0" y="-13"/>
 				</Anchors>

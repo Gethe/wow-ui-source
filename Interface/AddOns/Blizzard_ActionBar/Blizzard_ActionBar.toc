@@ -20,6 +20,7 @@ Shared\ActionButtonSpellAlerts.xml
 [Family]\MainMenuBar.xml [AllowLoadGameType classic]
 [Family]\AssistedCombatManager.lua [AllowLoadGameType mainline]
 Shared\ActionButton.lua
+[Game]\ActionButtonOverrides.lua [AllowLoadGameType camelot]
 [Family]\ActionButtonOverrides.lua [AllowLoadGameType mainline]
 WoWHack\UltimateButtonDecoration.xml [AllowLoadGameType wowhack]
 WoWHack\ActionButtonOverrides.lua [AllowLoadGameType wowhack]

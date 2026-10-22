@@ -182,9 +182,8 @@ function LegacySystemFrameMixin:OnChallengeRefresh()
 	SmartNavigation:SelectFirstButton();
 end
 
-function LegacySystemFrameMixin:SetupGamepadRewardTrackFooter(navigateElements, toggleTooltips)
+function LegacySystemFrameMixin:SetupGamepadRewardTrackFooter(navigateElements)
 	local rewardTrackFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "LegacySystemFooter_RewardTrack");
-	rewardTrackFooter:AddPromptedBinding(toggleTooltips);
 	rewardTrackFooter:AddPromptedBinding(navigateElements);
 	rewardTrackFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
 	rewardTrackFooter:Finalize();
@@ -192,7 +191,7 @@ function LegacySystemFrameMixin:SetupGamepadRewardTrackFooter(navigateElements, 
 	return rewardTrackFooter;
 end
 
-function LegacySystemFrameMixin:SetupGamepadChallengeFooter(navigateElements, toggleTooltips)
+function LegacySystemFrameMixin:SetupGamepadChallengeFooter(navigateElements)
 	local function FocusSearchBox()
 		local searchBox = self.ChallengesPage.CategoryList.SearchBox;
 		if searchBox.GamepadFocusIcon:IsShown() then
@@ -245,7 +244,6 @@ function LegacySystemFrameMixin:SetupGamepadChallengeFooter(navigateElements, to
 	local challengeFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "LegacySystemFooter_Challenge");
 	challengeFooter:AddStandardSelectPrompt();
 	challengeFooter:AddPromptedBinding(linkInChat);
-	challengeFooter:AddPromptedBinding(toggleTooltips);
 	challengeFooter:AddPromptedBinding(navigateElements);
 	challengeFooter:AddPromptedBinding(filterDropdown);
 	challengeFooter:AddPromptedBinding(focusSearchBox);
@@ -255,7 +253,7 @@ function LegacySystemFrameMixin:SetupGamepadChallengeFooter(navigateElements, to
 	return challengeFooter;
 end
 
-function LegacySystemFrameMixin:SetupGamepadTreeFooter(navigateElements, toggleTooltips)
+function LegacySystemFrameMixin:SetupGamepadTreeFooter(navigateElements)
 	local function CanAddPoint()
 		local button = SmartNavigation:GetCurrentButton();
 		return button and button:CanPurchaseRank();
@@ -425,7 +423,6 @@ function LegacySystemFrameMixin:SetupGamepadTreeFooter(navigateElements, toggleT
 	treeFooter:AddPromptedBinding(applyChanges);
 	treeFooter:AddPromptedBinding(addPoint);
 	treeFooter:AddPromptedBinding(selectBinding);
-	treeFooter:AddPromptedBinding(toggleTooltips);
 	treeFooter:AddPromptedBinding(navigateElements);
 	treeFooter:AddPromptedBinding(focusSearchBox);
 	treeFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
@@ -435,13 +432,11 @@ function LegacySystemFrameMixin:SetupGamepadTreeFooter(navigateElements, toggleT
 end
 
 function LegacySystemFrameMixin:SetupGamepad()
-	local toggleTooltips = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, nil, PROMPT_TOGGLE_TOOLTIPS);
-
 	local navigateElements = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD, nil, FRAME_ACTION_NAVIGATE);
 
-	local rewardTrackFooter = self:SetupGamepadRewardTrackFooter(navigateElements, toggleTooltips);
-	local challengeFooter = self:SetupGamepadChallengeFooter(navigateElements, toggleTooltips);
-	local treeFooter = self:SetupGamepadTreeFooter(navigateElements, toggleTooltips);
+	local rewardTrackFooter = self:SetupGamepadRewardTrackFooter(navigateElements);
+	local challengeFooter = self:SetupGamepadChallengeFooter(navigateElements);
+	local treeFooter = self:SetupGamepadTreeFooter(navigateElements);
 
 	self.footers = {};
 	table.insert(self.footers, rewardTrackFooter);

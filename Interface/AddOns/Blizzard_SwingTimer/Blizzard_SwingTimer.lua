@@ -312,6 +312,8 @@ function SwingTimerMixin:ClearSwingTimer()
 
 	local timeLabel = self:GetTimeLabel();
 	timeLabel:SetText("0.0");
+
+	self:ApplyRangePresentation();
 end
 
 function SwingTimerMixin:ResetSwingTimerForEquippedWeapon()
@@ -344,6 +346,8 @@ function SwingTimerMixin:ResetSwingTimer(duration)
 
 	local timeLabel = self:GetTimeLabel();
 	timeLabel:SetFormattedText("%.1f", duration);
+
+	self:ApplyRangePresentation();
 end
 
 function SwingTimerMixin:OnUpdate(_elapsed)
@@ -366,6 +370,11 @@ end
 
 function SwingTimerMixin:IsOutOfRange()
 	if self.isInEditMode then
+		return false;
+	end
+
+	-- Out of range visuals wait for an in-progress swing to finish.
+	if self:HasSwingTimer() then
 		return false;
 	end
 

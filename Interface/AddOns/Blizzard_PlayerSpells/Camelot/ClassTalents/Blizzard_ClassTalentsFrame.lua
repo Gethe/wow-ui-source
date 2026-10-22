@@ -1,15 +1,3 @@
---[[
-	Boolean flag that identifies this frame as having updated jump hints, no longer
-	using legacy FrameControlsManager jump hints only displayed on targets.
-	See FrameControlsManager:RefreshJumpHints
-]]
-ClassTalentsFrameMixin.useFooterJumpHints = true;
-
--- Text to display next to jump hints on other frames, if the jump takes them here
-function ClassTalentsFrameMixin:GetJumpHintLabel()
-	return TALENTS;
-end
-
 function ClassTalentsFrameMixin:InitializeTreeHeaders()
 	self.treeHeaderPool = CreateFramePoolCollection();
 	self.treeHeaderPool:CreatePool("FRAME", self, "ClassTalentTreeHeaderTemplate");
@@ -64,6 +52,15 @@ function ClassTalentsFrameMixin:OnHide()
 	self:UnregisterEvent("INSPECT_READY");
 	self:HideSpecChangeElements();
 	self.loadConfigIDOnCreate = nil;
+end
+
+local BaseUpdateInspecting = ClassTalentsFrameMixin.UpdateInspecting;
+function ClassTalentsFrameMixin:UpdateInspecting()
+	BaseUpdateInspecting(self);
+
+	-- Spec switching doesn't apply to another player's talents.
+	self.TabSystem:SetShown(not self:IsInspecting());
+	self:InitializeActiveSpec();
 end
 
 local BaseOnEvent = ClassTalentsFrameMixin.OnEvent;
@@ -176,6 +173,11 @@ function ClassTalentsFrameMixin:UpdateTabs()
 end
 
 function ClassTalentsFrameMixin:SetTab(tabID, forcedOpen)
+	-- Switching tabs loads the player's own config over the inspected one.
+	if self:IsInspecting() then
+		return;
+	end
+
 	TabSystemOwnerMixin.SetTab(self, tabID);
 
 	local configID = C_SpecializationInfo.GetCombatConfigIDForSpecGroup(tabID);
@@ -313,7 +315,7 @@ function ClassTalentsFrameMixin:OnPreviewSearchResultClicked(resultInfo)
 end
 
 function ClassTalentsFrameMixin:InitializeActiveSpec()
-	self.ActiveSpec:SetShown(IsDualSpecUnlocked());
+	self.ActiveSpec:SetShown(IsDualSpecUnlocked() and not self:IsInspecting());
 end
 
 function ClassTalentsFrameMixin:SetSpecSwitchCastBarActive(active)

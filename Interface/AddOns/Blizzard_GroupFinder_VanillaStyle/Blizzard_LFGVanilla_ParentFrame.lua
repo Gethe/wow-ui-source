@@ -10,13 +10,6 @@ LFGPARENT_BROWSING_TAB_INDEX = 2;
 -------------------------------------------------------
 LFGParentFrameMixin = {};
 
---[[
-	Boolean flag that identifies this frame as having updated jump hints, no longer
-	using legacy FrameControlsManager jump hints only displayed on targets.
-	See FrameControlsManager:RefreshJumpHints
-]]
-LFGParentFrameMixin.useFooterJumpHints = true;
-
 local LISTING_TAB_INDEX = 1;
 local BROWSING_TAB_INDEX = 2;
 local WHO_LIST_TAB_INDEX = 3;
@@ -29,11 +22,6 @@ local function LFGParentFrame_SetActiveTab(tabIndex)
 	LFGWhoListFrame:SetShown(tabIndex == WHO_LIST_TAB_INDEX);
 
 	LFGParentFrame:UpdateTabs();
-end
-
--- Text to display next to jump hints on other frames, if the jump takes them here
-function LFGParentFrameMixin:GetJumpHintLabel()
-	return LFG_TITLE;
 end
 
 function LFGParentFrameMixin:OnLoad()

@@ -21,7 +21,8 @@ end
 
 function GamepadReticleMixin:Recenter()
 	self:ClearAllPoints();
-	self:SetPoint("CENTER", UIParent, "BOTTOM", 0, GetScreenHeight() * C_CVar.GetCVar("CursorCenteredYPos"));
+	local _, y = GetCursorCenterPosition();
+	self:SetPoint("CENTER", UIParent, "BOTTOM", 0, y / self:GetEffectiveScale());
 end
 
 function GamepadReticleMixin:InitForGamepad()
@@ -43,6 +44,14 @@ function GamepadReticleMixin:OnSwingTimerHide()
 	UIFrameFadeIn(self.Icons, 0.1);
 end
 
+function GamepadReticleMixin:OnUpdate()
+	local isCursorVis = IsCursorVisible();
+	self.Icons:SetShown(not isCursorVis);
+
+	self.SwingTimer.enabledCursorVis = not isCursorVis;
+	self.SwingTimer:RefreshEnabled();
+end
+
 GamepadReticleSwingTimerMixin = {};
 
 local function HasMeleeOffHandWeapon()
@@ -61,6 +70,8 @@ function GamepadReticleSwingTimerMixin:OnLoad()
 		animGroup:SetScript("OnStop", GenerateClosure(self.OnAnimEnded, self, animGroup));
 	end
 
+	self.enabledCursorVis = not IsCursorVisible();
+
 	CVarCallbackRegistry:RegisterCallback("GamepadEnableReticleSwingTimer", self.OnEnableCVarChanged, self);
 	self:OnEnableCVarChanged(GetCVar("GamepadEnableReticleSwingTimer"));
 end
@@ -71,7 +82,7 @@ function GamepadReticleSwingTimerMixin:OnEnableCVarChanged(newValue)
 end
 
 function GamepadReticleSwingTimerMixin:RefreshEnabled()
-	if InputUtil.IsGamepadUIEnabled() and self.enabled then
+	if InputUtil.IsGamepadUIEnabled() and self.enabled and self.enabledCursorVis then
 		if not self.initialized then
 			self.initialized = true;
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");

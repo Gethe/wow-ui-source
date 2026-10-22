@@ -563,12 +563,12 @@
 					</DropdownButton>
 					<Frame parentKey="LevelRangesCheckbox" inherits="ResizeLayoutFrame">
 						<Anchors>
-							<Anchor point="TOPRIGHT"  x="-42" y="-10"/>
+							<Anchor point="TOPRIGHT"  x="-42" y="-5"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">
-								<FontString parentKey="Text" inherits="GameFontNormalSmall" text="LFG_LIST_IGNORE_SUGGESTED_LEVEL">
-									<Size x="0" y="0"/>
+								<FontString parentKey="Text" inherits="GameFontNormalSmall" text="LFG_LIST_IGNORE_SUGGESTED_LEVEL" justifyH="RIGHT" justifyV="MIDDLE" maxLines="2" wordwrap="true">
+									<Size x="120" y="30"/>
 									<Anchors>
 										<Anchor point="RIGHT"/>
 									</Anchors>

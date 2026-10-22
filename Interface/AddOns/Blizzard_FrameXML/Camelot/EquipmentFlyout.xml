@@ -161,7 +161,7 @@
 							<Anchor point="RIGHT" x="-3" y="1"/>
 						</Anchors>
 					</Button>
-					<Frame parentKey="PrevPagePrompt" inherits="InputIconTextureFrameTemplate">
+					<Frame parentKey="PrevPagePrompt" inherits="InputIconTextureFrameTemplate" hidden="true">
 						<Anchors>
 							<Anchor point="LEFT" relativeKey="$parent.PrevButton" relativePoint="RIGHT" x="0" y="0"/>
 						</Anchors>
@@ -170,7 +170,7 @@
 							<KeyValue key="useDropShadow" value="true" type="boolean"/>
 						</KeyValues>
 					</Frame>
-					<Frame parentKey="NextPagePrompt" inherits="InputIconTextureFrameTemplate">
+					<Frame parentKey="NextPagePrompt" inherits="InputIconTextureFrameTemplate" hidden="true">
 						<Anchors>
 							<Anchor point="RIGHT" relativeKey="$parent.NextButton" relativePoint="LEFT" x="0" y="0"/>
 						</Anchors>

@@ -2,7 +2,7 @@ CreditsFrameMixin = {};
 
 function CreditsFrameMixin:OnLoad()
 	self.creditsInfos = GetCreditsDisplayInfo();
-	if creditsInfos then
+	if self.creditsInfos then
 		for i, info in ipairs(self.creditsInfos) do
 			if info.isDefault then
 				self.selection = i;

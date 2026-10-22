@@ -29,7 +29,7 @@
 				</Anchors>
 			</Frame>
 
-			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors">
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="4" y="6"/>
 				</Anchors>
@@ -180,7 +180,7 @@
 				</Layers>
 			</Frame>
 			
-			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors" frameLevel="750">
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton" frameLevel="750">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="6" y="6"/>
 				</Anchors>
@@ -311,7 +311,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors">
+			<Button name="$parentCloseButton" parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="6" y="6"/>
 				</Anchors>

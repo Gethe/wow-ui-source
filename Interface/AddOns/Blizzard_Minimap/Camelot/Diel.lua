@@ -7,6 +7,27 @@ local DielFrameData =
 	AnchorY = 86,
 };
 
+local DIEL_MINIMAP_INSET_ID = "CamelotDielFrame";
+local DIEL_MINIMAP_INSET_DISTANCE_SCALAR = 0.88;
+
+local function SetDielFrameTransform()
+	local appliedScale = MinimapCluster.MinimapContainer:GetScale();
+	local invScale = 1.0 / appliedScale;
+
+	local dielFrame = MinimapCluster.DielFrame;
+	local isCircularInset = true;
+
+	dielFrame:SetScale(invScale);
+	dielFrame:ClearAllPoints();
+	dielFrame:SetPoint("CENTER", DielFrameData.AnchorX * appliedScale, DielFrameData.AnchorY * appliedScale);
+	MinimapUtil.UpdateInsetForFrame(
+		dielFrame,
+		DIEL_MINIMAP_INSET_ID,
+		DIEL_MINIMAP_INSET_DISTANCE_SCALAR,
+		isCircularInset
+	);
+end
+
 local function SetDielCycleIndicator(isDayTime)
 	local atlas = isDayTime and DielFrameData.DayAtlas or DielFrameData.NightAtlas;
 	local atlasInfo = C_Texture.GetAtlasInfo(atlas);
@@ -44,28 +65,12 @@ local function CreateDielCycleFrame()
 	local border = dielFrame:CreateTexture(nil, "OVERLAY", nil, 1);
 	border:SetAllPoints();
 	border:SetAtlas(DielFrameData.BorderAtlas, TextureKitConstants.UseAtlasSize);
-end
 
-local function SetDielFrameTransform(scale)
-	local appliedScale = (scale and scale > 0) and scale or 1.0;
-	local invScale = 1.0 / appliedScale;
-
-	local dielFrame = MinimapCluster.DielFrame;
-	dielFrame:SetScale(invScale);
-	dielFrame:ClearAllPoints();
-	dielFrame:SetPoint("CENTER", DielFrameData.AnchorX * appliedScale, DielFrameData.AnchorY * appliedScale);
-end
-
-local originalSetEditModeScale = MinimapCluster.SetEditModeScale;
-local function SetEditModeScale(minimapCluster, scale)
-	originalSetEditModeScale(minimapCluster, scale);
-	SetDielFrameTransform(minimapCluster.MinimapContainer:GetScale());
+	EventRegistry:RegisterCallback("Minimap.OnScaleUpdated", SetDielFrameTransform, dielFrame);
 end
 
 do
-	MinimapCluster.SetEditModeScale = SetEditModeScale;
-
 	CreateDielCycleFrame();
 	SetDielCycleIndicator(C_DateAndTime.IsDayTime());
-	SetDielFrameTransform(MinimapCluster.MinimapContainer:GetScale());
+	SetDielFrameTransform();
 end

@@ -105,7 +105,7 @@ function DeathRecapEntryMixin:GetEventInfo(eventData)
 	local spellId = eventData.spellId;
 	local texture;
 	if event == "SWING_DAMAGE" then
-		spellId = 88163;
+		spellId = Constants.DeathRecapConsts.SWING_DAMAGE_SPELL_ID;
 		spellName = ACTION_SWING;
 		
 		nameIsNotSpell = true;

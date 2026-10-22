@@ -168,25 +168,6 @@ function GamepadFrameControlsManagerMixin:ResetVars()
 	self.isUIFocused = false;
 end
 
---[[
-	This is eventually getting moved over to left stick.
-	Making it an externally callback function for now until
-	that change is good to go game-wide.
-]]
-function GamepadFrameControlsManagerMixin:ToggleTooltips()
-	if GetCVarBool("GamepadDisableTooltips") then
-		SetCVar("GamepadDisableTooltips", false);
-		local button = SmartNavigation:GetCurrentButton()
-		if button then
-			SmartNavigation:SelectButton(nil);
-			SmartNavigation:SelectButton(button);
-		end
-	else
-		SetCVar("GamepadDisableTooltips", true);
-		GameTooltip:Hide();
-	end
-end
-
 function GamepadFrameControlsManagerMixin:Init()
 	GamepadPopupHandler:Init();
 
@@ -206,7 +187,6 @@ function GamepadFrameControlsManagerMixin:Init()
 	if (not InGlue()) then
 		self.gamepadBindings:AddFunctionBinding(GAMEPAD_TRIGGER_RIGHT, FocusNextFrameHandler);
 		self.gamepadBindings:AddFunctionBinding(GAMEPAD_TRIGGER_LEFT,  FocusPreviousFrameHandler);
-		self.gamepadBindings:AddFunctionBinding(GAMEPAD_STICK_RIGHT_PRESS, GenerateClosure(self.ToggleTooltips, self));
 	end
 
 	self.gamepadFallthroughCatcherBindings = GamepadMode.CreateBindingGroup("FrameControlsManagerFallthroughCatcherBindings");
@@ -722,7 +702,22 @@ function GamepadFrameControlsManagerMixin:SuspendFrame()
 	if currentFrame then
 		currentFrame.suspendedButton = SmartNavigation:GetCurrentButton();
 		if currentFrame ~= self.topSuspendedFrame then
-			currentFrame.unsuspendToFrame = self.topSuspendedFrame; -- Sets to nil for initial/bottom suspended frame.
+			local chainFrame = self.topSuspendedFrame;
+			while chainFrame and chainFrame ~= currentFrame do
+				chainFrame = chainFrame.unsuspendToFrame;
+			end
+
+			-- A frame already in the chain becomes the top again; unlink the frames above it so the chain truncates instead of forming a cycle.
+			if chainFrame then
+				local aboveFrame = self.topSuspendedFrame;
+				while aboveFrame ~= currentFrame do
+					local nextFrame = aboveFrame.unsuspendToFrame;
+					aboveFrame.unsuspendToFrame = nil;
+					aboveFrame = nextFrame;
+				end
+			else
+				currentFrame.unsuspendToFrame = self.topSuspendedFrame; -- Sets to nil for initial/bottom suspended frame.
+			end
 			self.topSuspendedFrame = currentFrame;
 		end
 		return true;
@@ -932,110 +927,6 @@ local function GetJumpHintFocusedFrame(manager)
 	return focusedFrame;
 end
 
---[[
-	Returns the label of the leftward Jump Hint.
-	Private helper function not intended to be used by external sources.
-
-	Returns nil if there is no JumpHint target.
-]]
-local function GetJumpHintLeftLabel(manager, frame)
-	assert(frame, "Nil frame provided to GetJumpHintLeftLabel");
-	local frameIndex = ArrayIndexOf(manager.shownFrames, frame);
-
-	-- Footers are established when they are not tracked by FrameControlsManager
-	if frameIndex == 0 then
-		return nil;
-	end
-
-	local hasLeftFrame = frameIndex > 1;
-	if not hasLeftFrame then
-		return nil;
-	end
-
-	local prevIndex = frameIndex - 1;
-	local prevFrame = manager.shownFrames[prevIndex];
-	if prevFrame.GetJumpHintLabel then
-		return prevFrame:GetJumpHintLabel();
-	end
-
-	return PREVIOUS;
-end
-
---[[
-	Returns the label of the rightward Jump Hint.
-	Private helper function not intended to be used by external sources.
-
-	Returns nil if there is no JumpHint target.
-]]
-local function GetJumpHintRightLabel(manager, frame)
-	assert(frame, "Nil frame provided to GetJumpHintRightLabel");
-	local frameIndex = ArrayIndexOf(manager.shownFrames, frame);
-
-	-- Footers are established when they are not tracked by FrameControlsManager
-	if frameIndex == 0 then
-		return nil;
-	end
-
-	local hasRightFrame = frameIndex < #manager.shownFrames;
-	if not hasRightFrame then
-		return nil;
-	end
-
-	local nextIndex = frameIndex + 1;
-	local nextFrame = manager.shownFrames[nextIndex];
-	if nextFrame.GetJumpHintLabel then
-		return nextFrame:GetJumpHintLabel();
-	end
-
-	return NEXT;
-end
-
---[[
-	Returns if the provided frame should display a jump hint directing leftward.
-	Private helper function not intended to be used by external sources.
-]]
-local function HasJumpHintLeft(manager, frame)
-	if frame.disableFrameFocusPagingWhenFocused then
-		return false;
-	end
-
-	return GetJumpHintLeftLabel(manager, frame) ~= nil;
-end
-
---[[
-	Returns if the provided frame should display a jump hint directing rightward.
-	Private helper function not intended to be used by external sources.
-]]
-local function HasJumpHintRight(manager, frame)
-	if frame.disableFrameFocusPagingWhenFocused then
-		return false;
-	end
-
-	return GetJumpHintRightLabel(manager, frame) ~= nil;
-end
-
---[[
-	Processes a prompted binding as the "Right" directional jump hint. Called from footers.
-]]
-function GamepadFrameControlsManagerMixin:RegisterJumpHintRightBinding(frame, promptedBinding)
-	promptedBinding:AddFooterBinding({
-		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
-		conditions = GenerateClosure(HasJumpHintRight, self, frame),
-		label = GenerateClosure(GetJumpHintRightLabel, self, frame),
-	})
-end
-
---[[
-	Processes a prompted binding as the "Left" directional jump hint. Called from footers.
-]]
-function GamepadFrameControlsManagerMixin:RegisterJumpHintLeftBinding(frame, promptedBinding)
-	promptedBinding:AddFooterBinding({
-		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
-		conditions = GenerateClosure(HasJumpHintLeft, self, frame),
-		label = GenerateClosure(GetJumpHintLeftLabel, self, frame),
-	})
-end
-
 function GamepadFrameControlsManagerMixin:ClearAllJumpHints()
 	for _, frame in ipairs(self.shownFrames) do
 		ShowLeftJumpHint(frame, false);
@@ -1046,19 +937,6 @@ end
 
 --[[
 	Updates Left, Right, and TargetFocus jump hint prompts on managed frames.
-
-	Current implmentation is for frames to register their footer bindings with
-	this class. See: RegisterJumpHintRightBinding, RegisterJumpHintLeftBinding
-
-	Migration: Navigation jump hints should be handled via frame footers. Frames
-	that have been migrated should set self.useFooterJumpHints = true. When
-	we are confident that no unmigrated frames remain, we can remove this
-	branch / functionality altogether.
-
-	Legacy: Show directional jump hints on the target frames
-	Current: Show directional jump hints on the focused frame's footer
-
-	Cleanup Task: https://t2jira.corp.blizzard.net/browse/CAM-14610
 ]]
 function GamepadFrameControlsManagerMixin:RefreshJumpHints()
 	self:ClearAllJumpHints();
@@ -1086,22 +964,22 @@ function GamepadFrameControlsManagerMixin:RefreshJumpHints()
 		ShowFocusJumpHint(focusedFrame, true);
 	end
 
-	-- Legacy: Show JumpHints on the surrounding frames
+	-- Show JumpHints on the surrounding frames
 	local focusedIndex = ArrayIndexOf(self.shownFrames, focusedFrame);
 	assert(focusedIndex > 0, "Frame is not tracked by FrameControlsManager");
 
-	-- Legacy: Previous frame gets a "LT" image
+	-- Previous frame gets a "LT" image
 	local previousIndex = focusedIndex > 1 and focusedIndex - 1 or nil;
 	local previousFrame = previousIndex and self.shownFrames[previousIndex] or nil;
-	if previousFrame and not focusedFrame.useFooterJumpHints then
-		ShowLeftJumpHint(previousFrame, true);
+	if previousFrame then
+		ShowLeftJumpHint(previousFrame, self.isUIFocused);
 	end
 
-	-- Legacy: Next frame gets a "RT" image
+	-- Next frame gets a "RT" image
 	local nextIndex = focusedIndex < #self.shownFrames and focusedIndex + 1 or nil;
 	local nextFrame = nextIndex and self.shownFrames[nextIndex] or nil;
-	if nextFrame and not focusedFrame.useFooterJumpHints then
-		ShowRightJumpHint(nextFrame, true);
+	if nextFrame then
+		ShowRightJumpHint(nextFrame, self.isUIFocused);
 	end
 end
 

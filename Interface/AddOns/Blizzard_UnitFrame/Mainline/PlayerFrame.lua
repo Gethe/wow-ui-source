@@ -490,14 +490,7 @@ function PlayerFrame_UpdateStatus()
 	local playerPortraitCornerIcon = playerFrameTargetContextual.PlayerPortraitCornerIcon;
 	local statusTexture = PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture;
 
-	if (IsResting()) then
-		statusTexture:SetVertexColor(1.0, 0.88, 0.25, 1.0);
-		statusTexture:Show();
-		attackIcon:Hide();
-		playerPortraitCornerIcon:Show();
-
-		PlayerFrame_UpdatePlayerRestLoop(true);
-	elseif (PlayerFrame.inCombat) then
+	if (PlayerFrame.inCombat) then
 		statusTexture:SetVertexColor(1.0, 0.0, 0.0, 1.0);
 		statusTexture:Show();
 		attackIcon:Show();
@@ -509,6 +502,13 @@ function PlayerFrame_UpdateStatus()
 		playerPortraitCornerIcon:Hide();
 
 		PlayerFrame_UpdatePlayerRestLoop(false);
+	elseif (IsResting()) then
+		statusTexture:SetVertexColor(1.0, 0.88, 0.25, 1.0);
+		statusTexture:Show();
+		attackIcon:Hide();
+		playerPortraitCornerIcon:Show();
+
+		PlayerFrame_UpdatePlayerRestLoop(true);
 	else
 		statusTexture:Hide();
 		attackIcon:Hide();

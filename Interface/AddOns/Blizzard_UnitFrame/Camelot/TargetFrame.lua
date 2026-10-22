@@ -16,10 +16,10 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	nameFrame:SetJustifyH("CENTER");
 	nameFrame:SetWidth(117);
 	nameFrame:ClearAllPoints();
-	nameFrame:SetPoint("TOPLEFT", reputationColor, "TOPRIGHT", -133, -4);
+	nameFrame:SetPoint("TOPLEFT", reputationColor, "TOPRIGHT", -126, -4);
 
 	reputationColor:ClearAllPoints();
-	reputationColor:SetPoint("TOPRIGHT", targetFrameContentMain, "TOPRIGHT", -75, -26);
+	reputationColor:SetPoint("TOPRIGHT", targetFrameContentMain, "TOPRIGHT", -82, -26);
 
 	local manaBar = targetFrameContentMain.ManaBar;
 	manaBar:SetWidth(134);

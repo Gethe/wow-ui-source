@@ -1,5 +1,9 @@
-UIPanelCloseButtonDefaultAnchorsMixin = {};
-
 function UIPanelCloseButtonDefaultAnchorsMixin:OnLoad()
-	self:SetPoint("TOPRIGHT", -2, 1);
+	self:SetSize(28, 28);
+	self:ClearAllPoints();
+	self:SetPoint("TOPRIGHT", 0, 3);
+end
+
+function MaximizeMinimizeButtonFrameMixin:OnLoad()
+	self:SetSize(28, 28);
 end

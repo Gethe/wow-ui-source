@@ -11,12 +11,6 @@ local DEFAULT_CELEBRATE_MODEL_SCENE_ID = 641;
 
 local DefaultInsets = {left=230, right=0, top=100, bottom=0};
 
-local DropShadowSettings = {};
-DropShadowSettings["PET_MAIN"] = {targetX=140, targetY=-370, width=400, height=175};
-DropShadowSettings["PET_PLAYER"] = {targetX=300, targetY=-275, width=275, height=125};
-DropShadowSettings["MOUNT_MAIN"] = {targetX=130, targetY=-330, width=500, height=225};
-DropShadowSettings["TRANSMOG_PLAYER"] = {targetX=140, targetY=-350, width=500, height=225};
-
 function PerksProgram_GetPlayerActorLabelTag(useAlternateForm)
 	local _, raceFilename = UnitRace("player");
 	local playerRaceNameTag = raceFilename:lower();
@@ -199,7 +193,7 @@ local function SetupPlayerModelScene(modelScene, itemModifiedAppearanceID, hasSu
 		end
 		actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 		return actor;
-	end	
+	end
 	return nil
 end
 
@@ -244,7 +238,7 @@ local function UpdateModelSceneWithDisplayData(actor, camera, displayData, perks
 
 		UpdateActorPositionalData(actor, displayData);
 		local isTransmog =  perksVendorCategoryID == Enum.PerksVendorCategoryType.Transmog or perksVendorCategoryID == Enum.PerksVendorCategoryType.Transmogset;
-		if isTransmog then 
+		if isTransmog then
 			local hasAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 			local useNativeForm = PerksProgramFrame:GetUseNativeForm();
 
@@ -297,7 +291,7 @@ end
 function PerksProgramAlteredFormButtonMixin:OnClick()
 	SelectableButtonMixin.OnClick(self);
 	PlaySound(SOUNDKIT.GS_CHARACTER_CREATION_CLASS);
-end		
+end
 
 ----------------------------------------------------------------------------------
 -- PerksProgramModelSceneContainerFrameMixin
@@ -362,7 +356,7 @@ end
 function PerksProgramModelSceneContainerFrameMixin:UpdatePlayerModel(data, forceSceneChange)
 	self.currentData = data;
 	local categoryID = self.currentData.perksVendorCategoryID;
-	
+
 	if categoryID == Enum.PerksVendorCategoryType.Mount then
 		local playerActor = self.MainModelScene:GetPlayerActor("player-rider");
 		local mountActor = self.MainModelScene:GetActorByTag(DEFAULT_MOUNT_ACTOR_TAG);
@@ -397,11 +391,11 @@ function PerksProgramModelSceneContainerFrameMixin:OnProductSelected(data, force
 
 		if categoryID == Enum.PerksVendorCategoryType.Mount then
 			forceSceneChange = forceSceneChange or self.previousMainModelSceneID ~= defaultModelSceneID;
-			self:SetupModelSceneForMounts(self.currentData, defaultModelSceneID, forceSceneChange);		
+			self:SetupModelSceneForMounts(self.currentData, defaultModelSceneID, forceSceneChange);
 			self.previousMainModelSceneID = defaultModelSceneID;
 		elseif categoryID == Enum.PerksVendorCategoryType.Pet then
 			forceSceneChange = forceSceneChange or self.previousMainModelSceneID ~= defaultModelSceneID;
-			self:SetupModelSceneForPets(self.currentData, defaultModelSceneID, forceSceneChange);	
+			self:SetupModelSceneForPets(self.currentData, defaultModelSceneID, forceSceneChange);
 			self.previousMainModelSceneID = defaultModelSceneID;
 		elseif categoryID == Enum.PerksVendorCategoryType.Toy then
 			forceSceneChange = forceSceneChange or self.previousMainModelSceneID ~= defaultModelSceneID;
@@ -431,10 +425,10 @@ end
 
 function PerksProgramModelSceneContainerFrameMixin:UpdateFormButtonVisibility(optionalPerksVendorCategoryID)
 	local showFormButtons = false;
-	if self.hasAlternateForm then		
+	if self.hasAlternateForm then
 		if optionalPerksVendorCategoryID == Enum.PerksVendorCategoryType.Mount or
-			optionalPerksVendorCategoryID == Enum.PerksVendorCategoryType.Transmog or 
-			optionalPerksVendorCategoryID == Enum.PerksVendorCategoryType.Transmogset or 
+			optionalPerksVendorCategoryID == Enum.PerksVendorCategoryType.Transmog or
+			optionalPerksVendorCategoryID == Enum.PerksVendorCategoryType.Transmogset or
 			optionalPerksVendorCategoryID == Enum.PerksVendorCategoryType.Pet then
 			showFormButtons = true;
 		end
@@ -520,7 +514,7 @@ function PerksProgramModelSceneContainerFrameMixin:OnCelebratePurchase(purchased
 end
 
 local function FlagsChanged(data)
-	if (data["autodress"] ~= nil) or (data["sheatheWeapon"] ~= nil) or (data["hideWeapon"] ~= nil) or (data["noCameraSpin"] ~= nil) then 		
+	if (data["autodress"] ~= nil) or (data["sheatheWeapon"] ~= nil) or (data["hideWeapon"] ~= nil) or (data["noCameraSpin"] ~= nil) then
 		return true;
 	end
 	return false;
@@ -546,6 +540,12 @@ function PerksProgramModelSceneContainerFrameMixin:OnDisplayDataChanged(data, da
 	end
 
 	local categoryID = data.perksVendorCategoryID;
+	local _modelScene, actor, camera = self:GetProductModelSceneActorAndCamera(categoryID);
+	local tryUseOverrideAnim = true;
+	UpdateModelSceneWithDisplayData(actor, camera, data.displayData, categoryID, tryUseOverrideAnim);
+end
+
+function PerksProgramModelSceneContainerFrameMixin:GetProductModelSceneActorAndCamera(categoryID)
 	local actor, modelScene;
 	if categoryID == Enum.PerksVendorCategoryType.Transmog or categoryID == Enum.PerksVendorCategoryType.Transmogset then
 		modelScene = self.PlayerModelScene;
@@ -565,17 +565,37 @@ function PerksProgramModelSceneContainerFrameMixin:OnDisplayDataChanged(data, da
 		modelScene = self.MainModelScene;
 		actor = modelScene:GetActorByTag(DEFAULT_TOY_ACTOR_TAG);
 	end
-	local camera = modelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
-	local tryUseOverrideAnim = true;
-	UpdateModelSceneWithDisplayData(actor, camera, data.displayData, categoryID, tryUseOverrideAnim);
+	local camera = modelScene and modelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
+	return modelScene, actor, camera;
 end
 
-local function UpdateDropShadow(texture, dropShadowSettings)
-	if texture then
-		local point, parent, relativePoint, x, y = texture:GetPoint();
-		texture:SetPoint(point, parent, relativePoint, dropShadowSettings.targetX, dropShadowSettings.targetY);
-		texture:SetSize(dropShadowSettings.width, dropShadowSettings.height);
+-- Used by the ModelSceneTool (see ModelSceneTool.SupportedAddons).
+function PerksProgramModelSceneContainerFrameMixin:FetchCurrentModelSceneData()
+	local data = self.currentData;
+	if not data or not data.displayData then
+		return {};
 	end
+
+	local categoryID = data.perksVendorCategoryID;
+	local modelScene, actor, camera = self:GetProductModelSceneActorAndCamera(categoryID);
+	if not modelScene or not modelScene:IsShown() then
+		return {};
+	end
+
+	local isTransmog = categoryID == Enum.PerksVendorCategoryType.Transmog or categoryID == Enum.PerksVendorCategoryType.Transmogset;
+	return
+	{
+		ProductModelScene =
+		{
+			modelScene = modelScene,
+			modelSceneID = PerksProgramFrame:GetDefaultModelSceneID(categoryID),
+			overrideModelSceneID = data.displayData.overrideModelSceneID,
+			actor = actor,
+			camera = camera,
+			appliesOverrideCameraTarget = true,
+			appliesOverrideActorPosition = not isTransmog,
+		},
+	};
 end
 
 function PerksProgramModelSceneContainerFrameMixin:OnItemSetSelectionUpdated(data, perksVendorCategoryID, selectedItems)
@@ -641,8 +661,7 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForMounts(data
 		UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID, tryUseOverrideAnim);
 		self:UpdateMountSpecialAnimPlaying();
 	end
-	
-	UpdateDropShadow(self.MainModelScene.dropShadow, DropShadowSettings["MOUNT_MAIN"]);
+
 	self.MainModelScene:Show();
 	self.ToyOverlayFrame:Hide();
 	self.PlayerModelScene:Hide();
@@ -683,7 +702,7 @@ function PerksProgramModelSceneContainerFrameMixin:CancelMountSpecialTimer()
 end
 
 -- PETS
-function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForPets(data, modelSceneID, forceSceneChange)	
+function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForPets(data, modelSceneID, forceSceneChange)
 	local name, icon, petType, creatureID, sourceText, description, isWild, canBattle, tradable, unique, _, displayID, desiredScale = C_PetJournal.GetPetInfoBySpeciesID(data.speciesID);
 	if not displayID then
 		error("PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForPets : invalid displayID")
@@ -717,14 +736,12 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForPets(data, 
 		data.displayData.animationKitID = PET_DEFAULT_ANIM_ID;
 		data.displayData.desiredScale = desiredScale;
 		actor:SetRequestedScale(desiredScale);
-						
+
 		local camera = self.MainModelScene:GetCameraByTag(DEFAULT_CAMERA_TAG);
 		local tryUseOverrideAnim = true;
 		UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID, tryUseOverrideAnim);
 	end
 
-	UpdateDropShadow(self.MainModelScene.dropShadow, DropShadowSettings["PET_MAIN"]);
-	UpdateDropShadow(self.PlayerModelScene.dropShadow, DropShadowSettings["PET_PLAYER"]);
 	self.ToyOverlayFrame:Hide();
 	self.MainModelScene:Show();
 	self.PlayerModelScene:Show();
@@ -775,13 +792,11 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForToys(data, 
 			UpdateModelSceneWithDisplayData(actor, camera, data.displayData, data.perksVendorCategoryID, tryUseOverrideAnim);
 		end
 
-		UpdateDropShadow(self.MainModelScene.dropShadow, DropShadowSettings["PET_MAIN"]);
-		UpdateDropShadow(self.PlayerModelScene.dropShadow, DropShadowSettings["PET_PLAYER"]);
 		self.ToyOverlayFrame:Hide();
 		self.MainModelScene:Show();
 		self.PlayerModelScene:Show();
 		EventRegistry:TriggerEvent("PerksProgram.OnModelSceneChanged", self.MainModelScene);
-	else -- default Toy Display		
+	else -- default Toy Display
 		local iconTexture = C_Item.GetItemIconByID(data.itemID);
 		self.ToyOverlayFrame.Icon:SetTexture(iconTexture);
 		-- Guarantee the frame data is up to date
@@ -867,7 +882,6 @@ function PerksProgramModelSceneContainerFrameMixin:SetupModelSceneForTransmogs(d
 		UpdateModelSceneWithDisplayData(self.playerActor, camera, displayData, data.perksVendorCategoryID, tryOverrideAttackAnimations);
 	end
 
-	UpdateDropShadow(self.PlayerModelScene.dropShadow, DropShadowSettings["TRANSMOG_PLAYER"]);
 	self.ToyOverlayFrame:Hide();
 	self.MainModelScene:Hide();
 	self.PlayerModelScene:Show();

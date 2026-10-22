@@ -162,7 +162,7 @@
 								</Frames>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge, UserScaledFontStringTemplate" justifyH="CENTER" text="BATTLETAG_OR_REAL_ID_LABEL">
+										<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge, UserScaledFontStringTemplate" justifyH="CENTER">
 											<KeyValues>
 												<KeyValue key="baseWidth" value="240" type="number"/>
 											</KeyValues>
@@ -170,7 +170,7 @@
 												<Anchor point="TOP" relativeKey="$parent.IconHolder" relativePoint="BOTTOM" y="-2"/>
 											</Anchors>
 										</FontString>
-										<FontString parentKey="Description" inherits="UserScaledFontGameHighlight" justifyH="LEFT" text="BATTLETAG_AND_REAL_ID_DESCRIPTION">
+										<FontString parentKey="Description" inherits="UserScaledFontGameHighlight" justifyH="LEFT">
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" y="-2"/>
 												<Anchor point="TOPRIGHT" relativeKey="$parent.Title" relativePoint="BOTTOMRIGHT" y="-2"/>
@@ -311,7 +311,7 @@
 								</Frames>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge, UserScaledFontStringTemplate" justifyH="CENTER" text="BATTLETAG_OR_REAL_ID_LABEL">
+										<FontString parentKey="Title" inherits="UserScaledFontGameNormalLarge, UserScaledFontStringTemplate" justifyH="CENTER" text="BATTLETAG_LABEL">
 											<KeyValues>
 												<KeyValue key="baseWidth" value="150" type="number"/>
 											</KeyValues>
@@ -390,35 +390,32 @@
 								</Anchors>
 								<Layers>
 									<Layer level="BACKGROUND">
-										<Texture name="$parentLeft" parentKey="Left" file="Interface\Common\Common-Input-Border">
+										<Texture name="$parentLeft" parentKey="Left" atlas="common-search-border-left">
 											<Size x="8"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" x="-5" y="0"/>
 												<Anchor point="BOTTOMLEFT" x="-5" y="0"/>
 											</Anchors>
-											<TexCoords left="0" right="0.0625" top="0" bottom="0.625"/>
 										</Texture>
-										<Texture name="$parentRight" parentKey="Right" file="Interface\Common\Common-Input-Border">
+										<Texture name="$parentRight" parentKey="Right" atlas="common-search-border-right">
 											<Size x="8"/>
 											<Anchors>
 												<Anchor point="TOPRIGHT" x="-5" y="0"/>
 												<Anchor point="BOTTOMRIGHT" x="-5" y="0"/>
 											</Anchors>
-											<TexCoords left="0.9375" right="1.0" top="0" bottom="0.625"/>
 										</Texture>
-										<Texture name="$parentMiddle" file="Interface\Common\Common-Input-Border">
+										<Texture name="$parentMiddle" atlas="common-search-border-middle">
 											<Size x="0" y="20"/>
 											<Anchors>
 												<Anchor point="TOPLEFT" relativeKey="$parent.Left" relativePoint="TOPRIGHT"/>
 												<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Right" relativePoint="BOTTOMLEFT"/>
 											</Anchors>
-											<TexCoords left="0.0625" right="0.9375" top="0" bottom="0.625"/>
 										</Texture>
 									</Layer>
 									<Layer level="BORDER">
-										<FontString name="$parentFill" inherits="UserScaledFontGameDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_NAME_OR_EMAIL">
+										<FontString name="$parentFill" inherits="UserScaledFontGameDisableSmall" justifyH="LEFT" justifyV="MIDDLE" text="ENTER_CHARACTER_NAME_OR_BATTLETAG">
 											<Anchors>
-												<Anchor point="LEFT" relativeKey="$parent.Left" x="3" y="0"/>
+												<Anchor point="LEFT" relativeKey="$parent.Left" x="5"/>
 											</Anchors>
 										</FontString>
 									</Layer>
@@ -462,6 +459,17 @@
 						</Frames>
 						<Layers>
 							<Layer level="ARTWORK">
+								<FontString parentKey="ErrorMessage" inherits="UserScaledFontGameHighlight, UserScaledFontStringTemplate" justifyH="CENTER" text="ERR_REAL_ID_FRIEND_REQUESTS_DISABLED" hidden="true">
+									<KeyValues>
+										<KeyValue key="baseWidth" value="374" type="number"/>
+										<KeyValue key="useScaleWeight" value="true" type="boolean"/>
+										<KeyValue key="scaleWeight" value="0.8" type="number"/>
+									</KeyValues>
+									<Anchors>
+										<Anchor point="TOP" relativeKey="$parent.NameEditBox" relativePoint="BOTTOM" x="-5" y="-5"/>
+									</Anchors>
+									<Color color="RED_FONT_COLOR"/>
+								</FontString>
 								<FontString parentKey="RequestInfoText" inherits="UserScaledFontGameHighlight, UserScaledFontStringTemplate" justifyH="CENTER" text="BATTLE_TAG_REQUEST_INFO">
 									<KeyValues>
 										<KeyValue key="baseWidth" value="300" type="number"/>
@@ -469,7 +477,7 @@
 										<KeyValue key="scaleWeight" value="0.8" type="number"/>
 									</KeyValues>
 									<Anchors>
-										<Anchor point="TOP" relativeKey="$parent.NameEditBox" relativePoint="BOTTOM" x="-5" y="-15"/>
+										<Anchor point="TOP" relativeKey="$parent.ErrorMessage" relativePoint="BOTTOM" y="-23"/>
 									</Anchors>
 								</FontString>
 							</Layer>

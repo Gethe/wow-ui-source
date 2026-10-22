@@ -14,6 +14,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad" inherit="prepend"/>
+					<OnEvent method="OnEvent" inherit="prepend"/>
 				</Scripts>
 			</Frame>
 			<Frame parentKey="RightEndCap" useParentLevel="true" inherits="EditModeMainActionBarEndCapRightSystemTemplate" mixin="MainMenuBarEndCapMixin">
@@ -25,6 +26,7 @@
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad" inherit="prepend"/>
+					<OnEvent method="OnEvent" inherit="prepend"/>
 				</Scripts>
 			</Frame>
 		</Frames>

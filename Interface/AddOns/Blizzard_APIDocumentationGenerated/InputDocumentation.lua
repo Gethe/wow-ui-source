@@ -7,6 +7,16 @@ local Input =
 	Functions =
 	{
 		{
+			Name = "GetCursorCenterPosition",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "posX", Type = "number", Nilable = false },
+				{ Name = "posY", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "GetCursorDelta",
 			Type = "Function",
 
@@ -90,6 +100,15 @@ local Input =
 			Returns =
 			{
 				{ Name = "down", Type = "bool", Nilable = false },
+			},
+		},
+		{
+			Name = "IsCursorVisible",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "visible", Type = "bool", Nilable = false },
 			},
 		},
 		{

@@ -24,5 +24,5 @@ UI.xsd">
 	<ModelScene name="NoZoomModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="NoZoomModelSceneMixin" virtual="true"/>
 	<ModelScene name="PanningModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="PanningModelSceneMixin" virtual="true" />
 	<ModelScene name="NoCameraControlModelSceneMixinTemplate" inherits="ModelSceneMixinTemplate" mixin="NoCameraControlModelSceneMixin" virtual="true" />
-	<Texture name="ModelSceneDropShadowTemplate" atlas="scoreboard-charactermodels-shadow" useAtlasSize="true" virtual="true"/>
+	<Texture name="ModelSceneDropShadowTemplate" atlas="shop-drop-shadow" virtual="true"/>
 </Ui>

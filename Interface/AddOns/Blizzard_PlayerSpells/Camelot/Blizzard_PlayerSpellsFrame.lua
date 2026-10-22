@@ -1,24 +1,5 @@
 -- Camelot PlayerSpellsFrameMixin overrides
 
---[[
-	Boolean flag that identifies this frame as having updated jump hints, no longer
-	using legacy FrameControlsManager jump hints only displayed on targets.
-	See FrameControlsManager:RefreshJumpHints
-]]
-PlayerSpellsFrameMixin.useFooterJumpHints = true;
-
--- Text to display next to jump hints on other frames, if the jump takes them here
-function PlayerSpellsFrameMixin:GetJumpHintLabel()
-	local tabID = self:GetTab();
-	if tabID == self.specTabID then
-		return SPECIALIZATION;
-	elseif tabID == self.talentTabID then
-		return TALENTS;
-	else --if tabID == self.spellBookTabID
-		return SPELLBOOK;
-	end
-end
-
 function PlayerSpellsFrameMixin:GetAssociatedMicroButtons()
 	return { SpellbookMicroButton, TalentMicroButton };
 end

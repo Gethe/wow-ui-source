@@ -163,6 +163,7 @@ local UIModelInfo =
 				{ Name = "useCenterForOriginX", Type = "bool", Nilable = false },
 				{ Name = "useCenterForOriginY", Type = "bool", Nilable = false },
 				{ Name = "useCenterForOriginZ", Type = "bool", Nilable = false },
+				{ Name = "addDropShadowAtM2Feet", Type = "bool", Nilable = false },
 				{ Name = "modelActorDisplayID", Type = "number", Nilable = true },
 			},
 		},

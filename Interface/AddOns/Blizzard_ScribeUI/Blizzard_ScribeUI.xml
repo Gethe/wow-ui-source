@@ -1,6 +1,16 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
+	<Frame name="WoWHackScribeCurrencyHighlightTemplate" inherits="WoWHackTutorialHighlightTemplate" virtual="true">
+		<Anchors>
+			<Anchor point="TOPLEFT" x="20" y="-10"/>
+			<Anchor point="BOTTOMRIGHT" x="-5" y="7"/>
+		</Anchors>
+		<KeyValues>
+			<KeyValue key="pulse" value="true" type="boolean"/>
+		</KeyValues>
+	</Frame>
+
 	<Frame name="ScribeFrame" mixin="ScribeFrameMixin" inherits="DefaultPanelTemplate" parent="UIParent" hidden="true" frameStrata="HIGH">
 		<Size x="1112" y="807"/>
 		<Frames>
@@ -34,6 +44,9 @@
 						</FontString>
 					</Layer>
 				</Layers>
+				<Frames>
+					<Frame parentKey="TutorialHighlight" inherits="WoWHackScribeCurrencyHighlightTemplate"/>
+				</Frames>
 				<Scripts>
 					<OnEnter method="OnEnter"/>
 					<OnLeave function="GameTooltip_Hide"/>

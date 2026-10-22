@@ -1,3 +1,9 @@
+local showDebugTooltipInfo = GetCVarBool("debugTargetInfo");
+
+function CharacterSelectUtil.UpdateShowDebugTooltipInfo(state)
+	showDebugTooltipInfo = state;
+end
+
 function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, characterID)
 	if not characterInfo then
 		return false;
@@ -29,6 +35,7 @@ function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, character
 
 	GameTooltip_AddColoredLine(GlueTooltip, name, WHITE_FONT_COLOR);
 	if showDebugTooltipInfo then
+		GameTooltip_AddColoredLine(GlueTooltip, CHARACTER_SELECT_REALM_TOOLTIP:format(realmName), GRAY_FONT_COLOR);
 		GameTooltip_AddColoredLine(GlueTooltip, characterInfo.guid, GRAY_FONT_COLOR);
 	end
 

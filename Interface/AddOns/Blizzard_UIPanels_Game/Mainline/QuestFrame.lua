@@ -738,7 +738,12 @@ local function IsQuestCompleteValid()
 	if not QuestFrameRewardPanel:IsVisible() then
 		return false;
 	end
+
 	local numChoices = GetNumQuestChoices();
+	if ( numChoices == 1 ) then
+		QuestInfoFrame.itemChoice = 1;
+	end
+
 	if numChoices ~= 0 and (QuestInfoFrame.itemChoice <= 0 or QuestInfoFrame.itemChoice > numChoices) then
 		return false;
 	end
@@ -818,8 +823,8 @@ function QuestFrame_SetupGamepad(self)
 			SmartNavigation:SetScrollFrameForFrame(self, QuestRewardScrollFrame);
 			GamepadScrollBarHint:SetOwner(QuestRewardScrollFrame.ScrollBar.Track.Thumb, "CENTER");
 			GamepadScrollBarHint:Show();
-			SmartNavigation:SelectFirstButton();
 			SmartNavigation:SuspendCursor(false);
+			SmartNavigation:SelectFirstButton();
 		elseif QuestProgressScrollFrame:IsVisible() then
 			SmartNavigation:SetScrollFrameForFrame(self, QuestProgressScrollFrame);
 			GamepadScrollBarHint:SetOwner(QuestProgressScrollFrame.ScrollBar.Track.Thumb, "CENTER");
@@ -828,8 +833,8 @@ function QuestFrame_SetupGamepad(self)
 			SmartNavigation:SetScrollFrameForFrame(self, QuestGreetingScrollFrame);
 			GamepadScrollBarHint:SetOwner(QuestGreetingScrollFrame.ScrollBar.Track.Thumb, "CENTER");
 			GamepadScrollBarHint:Show();
-			SmartNavigation:SelectFirstButton();
 			SmartNavigation:SuspendCursor(false);
+			SmartNavigation:SelectFirstButton();
 		end
 	end
 

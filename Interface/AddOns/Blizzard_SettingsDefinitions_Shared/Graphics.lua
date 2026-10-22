@@ -182,12 +182,18 @@ function SettingsAdvancedQualityControlsMixin:Init(settings, raid, cbrHandles)
 		if not C_VideoOptions.IsSecondaryLightingSupported() then
 			local data = AddValidatedSettingOption(container, cvar, raid, 0, WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_DISABLED));
 			data.warning = WARNING_FONT_COLOR:WrapTextInColorCode(VIDEO_OPTIONS_COMBAT_CUES_DISABLED_WARNING);
+			AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_LOW);
+			AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_FAIR);
+			AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_MEDIUM);
+			AddValidatedSettingOption(container, cvar, raid, 4, VIDEO_OPTIONS_HIGH);
+			AddValidatedSettingOption(container, cvar, raid, 5, VIDEO_OPTIONS_ULTRA);
+		else
+			AddValidatedSettingOption(container, cvar, raid, 0, VIDEO_OPTIONS_LOW);
+			AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_FAIR);
+			AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_MEDIUM);
+			AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_HIGH);
+			AddValidatedSettingOption(container, cvar, raid, 4, VIDEO_OPTIONS_ULTRA);
 		end
-		AddValidatedSettingOption(container, cvar, raid, 1, VIDEO_OPTIONS_LOW);
-		AddValidatedSettingOption(container, cvar, raid, 2, VIDEO_OPTIONS_FAIR);
-		AddValidatedSettingOption(container, cvar, raid, 3, VIDEO_OPTIONS_MEDIUM);
-		AddValidatedSettingOption(container, cvar, raid, 4, VIDEO_OPTIONS_HIGH);
-		AddValidatedSettingOption(container, cvar, raid, 5, VIDEO_OPTIONS_ULTRA);
 		AddRecommended(container, cvar);
 		return container:GetData();
 	end

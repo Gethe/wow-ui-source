@@ -113,20 +113,6 @@ function PromptedBindingFooterMixin:AddNonFallbackSelectPrompt(optionalLabel)
 	return promptedBinding;
 end
 
-function PromptedBindingFooterMixin:AddStandardFrameControlManagerBindings(focusedFrame)
-	-- Next handling is managed by FrameControlsManager. Only prompt the user.
-	local nextBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_TRIGGER_RIGHT, "FCMRTPromptedBinding");
-	GamepadMode.FrameControlsManager:RegisterJumpHintRightBinding(focusedFrame, nextBinding);
-	self:AddPromptedBinding(nextBinding);
-
-	-- Previous handling is managed by FrameControlsManager. Only prompt the user.
-	local prevBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_TRIGGER_LEFT, "FCMLTPromptBinding");
-	GamepadMode.FrameControlsManager:RegisterJumpHintLeftBinding(focusedFrame, prevBinding);
-	self:AddPromptedBinding(prevBinding);
-
-	return nextBinding, prevBinding;
-end
-
 function PromptedBindingFooterMixin:AddStandardBackPrompt(optionalLabel)
 	local label = optionalLabel and optionalLabel or FRAME_ACTION_BACK;
 

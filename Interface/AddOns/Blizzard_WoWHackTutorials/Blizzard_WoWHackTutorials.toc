@@ -1,0 +1,8 @@
+## Title: Blizzard_WoWHackTutorials
+## AllowLoadGameType: wowhack
+## Dep: Blizzard_MicroMenu
+
+WoWHackTutorialHighlights.lua
+WoWHackTutorialHighlights.xml
+WoWHackTutorials.lua
+WoWHackTutorials.xml

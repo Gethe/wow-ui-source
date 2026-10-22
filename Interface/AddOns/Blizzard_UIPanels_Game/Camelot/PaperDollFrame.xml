@@ -669,24 +669,28 @@
 								</Anchors>
 								<Layers>
 									<Layer level="ARTWORK">
-										<Texture parentKey="PurpleGlow" atlas="GearEnchantFX_CharUI_DarkGold" useAtlasSize="true">
+										<Texture parentKey="PurpleGlow" atlas="GearEnchantFX_CharUI_DarkGold">
+											<Size x="650" y="650"/>
 											<Anchors>
 												<Anchor point="CENTER"/>
 											</Anchors>
 										</Texture>
-										<Texture parentKey="BlueGlow" atlas="GearEnchantFX_CharUI_Gold" useAtlasSize="true">
+										<Texture parentKey="BlueGlow" atlas="GearEnchantFX_CharUI_Gold">
+											<Size x="650" y="650"/>
 											<Anchors>
 												<Anchor point="CENTER"/>
 											</Anchors>
 										</Texture>
-										<Texture parentKey="Sparkles" hidden="true" alphaMode="ADD" atlas="GearEnchantFX_CharUI_Sparkles" useAtlasSize="true">
+										<Texture parentKey="Sparkles" hidden="true" alphaMode="ADD" atlas="GearEnchantFX_CharUI_Sparkles">
+											<Size x="585" y="585"/>
 											<Anchors>
 												<Anchor point="CENTER"/>
 											</Anchors>
 										</Texture>
-										<MaskTexture parentKey="Mask" atlas="GearEnchantFX_CharUI_Mask" useAtlasSize="true" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+										<MaskTexture parentKey="Mask" atlas="GearEnchantFX_CharUI_Mask" vWrapMode="CLAMPTOBLACKADDITIVE" hWrapMode="CLAMPTOBLACKADDITIVE">
+											<Size x="855" y="670"/>
 											<Anchors>
-												<Anchor point="CENTER"/>
+												<Anchor point="CENTER" x="4" y="0"/>
 											</Anchors>
 											<MaskedTextures>
 												<MaskedTexture childKey="PurpleGlow"/>
@@ -720,9 +724,10 @@
 								</Anchors>
 								<Layers>
 									<Layer level="OVERLAY">
-										<Texture parentKey="Frame" alphaMode="BLEND" atlas="GearEnchantFX_CharUI_Frame" useAtlasSize="true">
+										<Texture parentKey="Frame" alphaMode="BLEND" atlas="GearEnchantFX_CharUI_Frame">
+											<Size x="387" y="420"/>
 											<Anchors>
-												<Anchor point="CENTER"/>
+												<Anchor point="CENTER" x="2" y="3"/>
 											</Anchors>
 										</Texture>
 									</Layer>

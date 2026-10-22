@@ -11,6 +11,7 @@ local ZONE_CHOICE_ZOOM_TIME = 0.6;
 local ZOOM_TIME_SECONDS = 0.25;
 local ROTATION_ADJUST_SECONDS = 0.25;
 local CLASS_ANIM_WAIT_TIME_SECONDS = 3;
+local MIN_CLASS_BUTTON_SCALE = 0.1;
 
 local HIGH_PRIORITY = 1;
 local MEDIUM_PRIORITY = 2;
@@ -89,7 +90,10 @@ function CharacterCreateMixin:OnLoad()
 	ClassDetailsList = self.DetailsListVerticalLayoutFrame.ClassDetailsList;
 
 	CharCustomizeFrame:AttachToParentFrame(self);
-	CharCustomizeFrame:SetOptionsSpacingConfiguration(CharCustomizeFrame.Categories, self.ForwardButton);
+
+	-- The SD/HD checkbox sits above the forward button, so the options must stay clear of it when it's shown.
+	local optionsBottomFrame = SDToggleButton:IsShown() and SDToggleButton or self.ForwardButton;
+	CharCustomizeFrame:SetOptionsSpacingConfiguration(CharCustomizeFrame.Categories, optionsBottomFrame);
 
 	self:ResetNavBlockers();
 
@@ -292,7 +296,7 @@ function CharacterCreateMixin:UpdateTimerunningChoice()
 end
 
 function CharacterCreateMixin:UpdateDetailsLists()
-	local fullHeight = FactionDetailsList:GetHeight() + RaceDetailsList:GetHeight() + ClassDetailsList:GetHeight();
+	local fullHeight = FactionDetailsList.originalHeight + RaceDetailsList.originalHeight + ClassDetailsList.originalHeight;
 	local availableHeight = self.DetailsListVerticalLayoutFrame:GetAvailableSpace();
 
 	if fullHeight > availableHeight then
@@ -1998,6 +2002,8 @@ function CharacterCreateRaceAndClassMixin:UpdateClassButtons(releaseButtons)
 	local ClassButtonWidth = ClassIconSize;
 	local ClassButtonNameSpacing = 50;
 	local ClassButtonHeight = ClassIconSize + ClassButtonNameSpacing;
+	local ClassesFrameVerticalMargin = 28;
+	local ClassesFrameHorizontalMargin = 50;
 
 	if releaseButtons then
 		self.buttonPool:ReleaseAllByTemplate("CharacterCreateClassButtonTemplate");
@@ -2017,8 +2023,6 @@ function CharacterCreateRaceAndClassMixin:UpdateClassButtons(releaseButtons)
 		self.Classes:SetHeight(self.Classes.originalHeight);
 		self.Classes:SetWidth(self.Classes.originalWidth);
 		spaceAvailable = self.Classes:GetWidth();
-	else
-		self.Classes:SetHeight(self.Classes.originalHeight * 2 - 20);
 	end
 
 	if spaceAvailable < self.Classes.originalWidth then
@@ -2028,16 +2032,21 @@ function CharacterCreateRaceAndClassMixin:UpdateClassButtons(releaseButtons)
 		self.Classes:SetWidth(spaceAvailable);
 	end
 
-	-- We never want to allow more than 2 rows even if UI scale is bumped up (generally has to be over 100% to hit this case).
-	-- We'll scale down the class icons instead if necessary.
-	if numRows > 2 then
-		numRows = 2;
+	local function GetRowSize(rows)
+		local buttonsPerRow = math.ceil(numClasses / rows);
+		return (buttonsPerRow * ClassButtonWidth) + ((buttonsPerRow - 1) * ClassButtonSpacing);
+	end
 
-		local buttonsPerRow = math.ceil(numClasses / numRows);
-		local rowSize = (buttonsPerRow * ClassButtonWidth) + ((buttonsPerRow - 1) * ClassButtonSpacing);
-		local extraSpace = rowSize - spaceAvailable;
-		local extraSpacePerButton = extraSpace / buttonsPerRow;
-		scale = 1 / (1 + (extraSpacePerButton / ClassIconSize));
+	-- Prefer 2 rows, falling back to 3 when 2 rows are too wide. If the rows still don't fit, scale down the class icons.
+	if numRows > 1 then
+		local usableWidth = spaceAvailable - ClassesFrameHorizontalMargin;
+		numRows = (GetRowSize(2) <= usableWidth) and 2 or 3;
+
+		-- usableWidth can be <= 0 before the frame is laid out; a non-positive scale breaks SetScale and the offset math.
+		local fittedScale = usableWidth / GetRowSize(numRows);
+		scale = math.max(MIN_CLASS_BUTTON_SCALE, math.min(1, fittedScale));
+
+		self.Classes:SetHeight((numRows * ClassButtonHeight * scale) + ClassesFrameVerticalMargin);
 	end
 
 	local stride = math.ceil(numClasses / numRows);
@@ -2046,9 +2055,10 @@ function CharacterCreateRaceAndClassMixin:UpdateClassButtons(releaseButtons)
 	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, stride, paddingX, paddingY);
 
 	local rowWidth = (((stride * ClassButtonWidth) + ((stride - 1) * ClassButtonSpacing))) * scale;
-	local baseOffsetX = (spaceAvailable - rowWidth) / 2;
+	-- Anchor offsets are in the scaled buttons' coordinate space, so divide by scale to place them in the frame's space.
+	local baseOffsetX = ((spaceAvailable - rowWidth) / 2) / scale;
 	local classesFrameHeight = self.Classes:GetHeight();
-	local baseOffsetY = (classesFrameHeight - ClassButtonHeight) * 0.5;
+	local baseOffsetY = ((classesFrameHeight - (ClassButtonHeight * scale)) * 0.5) / scale;
 	local initialAnchor = CreateAnchor("LEFT", self.Classes, "LEFT", baseOffsetX, baseOffsetY);
 
 	local function FactoryFunction(index)

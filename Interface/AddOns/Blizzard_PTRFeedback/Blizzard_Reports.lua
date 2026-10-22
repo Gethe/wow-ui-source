@@ -94,7 +94,15 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
 	end
 	
 	local IsTimerunningActive = function()
-		if (C_UnitAuras.GetPlayerAuraBySpellID(1213439)) then
+		if (C_UnitAuras.GetPlayerAuraBySpellID(1267115)) then
+			return 1
+		end
+		
+		return 0
+	end
+	
+	local IsTaleboundActive = function()
+		if (C_UnitAuras.GetPlayerAuraBySpellID(1221512)) then
 			return 1
 		end
 		
@@ -148,6 +156,7 @@ function PTR_IssueReporter.AttachDefaultCollectionToSurvey(survey, ignoreTypeQue
 	survey:AddDataCollection(collector.RunFunction, GetActiveChromieTimeID)
 	survey:AddDataCollection(collector.RunFunction, IsTimerunningActive)
 	survey:AddDataCollection(collector.RunFunction, GetUIMapID)
+	survey:AddDataCollection(collector.RunFunction, IsTaleboundActive)
 	
 	if not (ignoreTypeQuestion) then
 		survey:AddDataCollection(collector.SelectOne_MessageKeyUpdater, { { Choice = "Bug", Key = PTR_IssueReporter.Data.Message_Key }, { Choice = "Feedback", Key = PTR_IssueReporter.Data.Feedback_Message_Key }}, nil, true)

@@ -457,6 +457,10 @@ function RenownLevelMixin:Refresh(actualLevel, displayLevel, selected)
 		self.RewardCardBG:SetAtlas(backgroundFrameAtlas, TextureKitConstants.UseAtlasSize);
 	end
 
+	if self.Highlight then
+		self.Highlight:SetAtlas(backgroundFrameAtlas, TextureKitConstants.UseAtlasSize);
+	end
+
 	if earned then
 		self.Icon:SetDesaturated(false);
 		self.Level:SetTextColor((self.earnedLevelColor or NORMAL_FONT_COLOR):GetRGB());
@@ -511,7 +515,19 @@ end
 function RenownLevelMixin:OnEnter()
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -8, -8);
 	self:RefreshTooltip();
+
+	if self.Highlight then
+		self.Highlight:SetShown(true);
+	end
+
 	EventRegistry:TriggerEvent("RenownLevel.OnEnter", self, GameTooltip);
+end
+
+function RenownLevelMixin:OnLeave()
+	if self.Highlight then
+		self.Highlight:SetShown(false);
+	end
+	GameTooltip_Hide();
 end
 
 function RenownLevelMixin:RefreshTooltip()

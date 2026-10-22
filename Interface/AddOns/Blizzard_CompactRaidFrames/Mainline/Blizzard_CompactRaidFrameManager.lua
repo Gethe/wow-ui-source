@@ -457,7 +457,6 @@ function CompactRaidFrameManager_SetupFrameFooter(self)
 
 	self.footer:AddPromptedBinding(moreOptions);
 	self.footer:AddPromptedBinding(back);
-	self.footer:AddStandardFrameControlManagerBindings(self);
 	self.footer:Finalize();
 end
 

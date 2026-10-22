@@ -179,7 +179,15 @@ SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.CHAT_AFK, SLASH_COMMAND_CATE
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.DUNGEONS, SLASH_COMMAND_CATEGORY.DUNGEON, function(msg)
-	ToggleLFDParentFrame();
+	if C_LFGList.GetPremadeGroupFinderStyle() == Enum.PremadeGroupFinderStyle.Vanilla then
+		if not C_AddOns.IsAddOnLoaded("Blizzard_GroupFinder_VanillaStyle") then
+			return;
+		end
+
+		LFGVanilla_ToggleFrame();
+	else
+		ToggleLFDParentFrame();
+	end
 end);
 
 SlashCommandUtil.CheckAddSlashCommand(SLASH_COMMAND.LEAVEVEHICLE, SLASH_COMMAND_CATEGORY.VEHICLE, function(msg)

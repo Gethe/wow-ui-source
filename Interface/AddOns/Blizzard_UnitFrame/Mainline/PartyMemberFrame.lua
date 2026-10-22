@@ -750,7 +750,7 @@ function PartyMemberFrameMixin:UpdateOnlineStatus()
 		-- Handle disconnected state
 		local unitHPMin, unitHPMax = healthBar:GetMinMaxValues();
 
-		healthBar:SetValue(unitHPMax);
+		healthBar:SetValue(UnitIsDead(self:GetUnit()) and 0 or unitHPMax);
 		healthBar:SetStatusBarDesaturated(true);
 		self.Portrait:SetDesaturated(true);
 		self.PartyMemberOverlay.Disconnect:Show();

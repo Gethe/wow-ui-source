@@ -892,8 +892,13 @@ function PaperDollFrame_GetDamage(unit, damageFunc, invType)
 	local displayMaxLarge = BreakUpLargeNumbers(displayMax);
 
 	-- calculate base damage
-	minDamage = (minDamage / percent) - physicalBonusPos - physicalBonusNeg;
-	maxDamage = (maxDamage / percent) - physicalBonusPos - physicalBonusNeg;
+	if (percent == 0) then
+		minDamage = 0;
+		maxDamage = 0;
+	else
+		minDamage = (minDamage / percent) - physicalBonusPos - physicalBonusNeg;
+		maxDamage = (maxDamage / percent) - physicalBonusPos - physicalBonusNeg;
+	end
 
 	local baseDamage = (minDamage + maxDamage) * 0.5;
 	local fullDamage = (baseDamage + physicalBonusPos + physicalBonusNeg) * percent;

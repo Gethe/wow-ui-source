@@ -326,15 +326,15 @@ function Class_ItemUpgradeCheckingService:GetPotentialItemUpgrades()
 		for packedLocation, itemLink in pairs(availableItems) do
 			local itemInfo = {C_Item.GetItemInfo(itemLink)};
 			local ilvl = C_Item.GetDetailedItemLevelInfo(itemLink) or 0;
-
-			if (ilvl ~= nil) and (existingItemQuality ~= Enum.ItemQuality.Heirloom) then
+			local item = Item:CreateFromItemLink(itemLink);
+			local itemID = item:GetItemID();
+			local isExempt = tContains(TutorialData.EQUIPMENT_TUTORIAL_EXEMPT_ITEM_IDS, itemID);
+			if (ilvl ~= nil) and (existingItemQuality ~= Enum.ItemQuality.Heirloom) and not isExempt then
 				if (ilvl > existingItemIlvl) then
 					local match = true;
 
 					-- if it's a main-hand, make sure it matches the current type, if there is one
 					if (i == INVSLOT_MAINHAND) then
-						local item = Item:CreateFromItemLink(itemLink);
-						local itemID = item:GetItemID();
 						local weaponType = self:GetWeaponType(itemID);
 						match = (not existingItemWeaponType) or (existingItemWeaponType == weaponType);
 

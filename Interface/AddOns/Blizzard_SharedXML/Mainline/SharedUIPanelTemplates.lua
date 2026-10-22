@@ -137,6 +137,8 @@ end
 UIPanelCloseButtonDefaultAnchorsMixin = {};
 
 function UIPanelCloseButtonDefaultAnchorsMixin:OnLoad()
+	self:SetSize(24, 24);
+	self:ClearAllPoints();
 	self:SetPoint("TOPRIGHT", 1, 0);
 end
 
@@ -535,6 +537,10 @@ function PanelTemplates_SetDisabledTabState(tab)
 end
 
 MaximizeMinimizeButtonFrameMixin = {};
+
+function MaximizeMinimizeButtonFrameMixin:OnLoad()
+	self:SetSize(24, 24);
+end
 
 function MaximizeMinimizeButtonFrameMixin:OnShow()
 	if self.isAutomaticAction then

@@ -156,8 +156,7 @@ function BankFrameMixin:RefreshBagButtons()
 			
 		local isFirstButton = bagNum == 2;
 		if isFirstButton then
-			local xOffset, yOffset = 10, 5;
-			button:SetPoint("TOPLEFT", self.BagText, "TOPRIGHT", bagNum * xOffset, yOffset);
+			button:SetPoint("LEFT", self, "BOTTOMLEFT", 200, 115);
 		else
 			local xOffset, yOffset = 50, 0;
 			button:SetPoint("TOPLEFT", lastCreatedButton, "TOPLEFT", xOffset, yOffset);

@@ -28,6 +28,19 @@ end
 
 SwapToGlobalEnvironment();
 
+local function WaitForGlobalAddOn(callback)
+	local _, loaded = C_AddOns.IsAddOnLoaded("Blizzard_GamepadSharedUtility");
+	if loaded then
+		-- If the addon is already loaded, ContinueOnAddOnLoaded is synchrononus. The game client
+		-- believes we're still in the secure environment, so calls back into FrameXML will use
+		-- the secure environment instead of the global environment. Deferring the call works
+		-- around that.
+		RunNextFrame(callback);
+	else
+		EventUtil.ContinueOnAddOnLoaded("Blizzard_GamepadSharedUtility", callback);
+	end
+end
+
 GlobalOnLoad = function(self)
 	local function SetupGamepad()
 		self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self);
@@ -48,7 +61,7 @@ GlobalOnLoad = function(self)
 		end
 	end
 
-	EventUtil.ContinueOnAddOnLoaded("Blizzard_GamepadSharedUtility", function()
+	WaitForGlobalAddOn(function()
 		InputUtil.RegisterForInterfaceTransitions(self);
 		InputUtil.RegisterGamepadSetup(self, SetupGamepad);
 		InputUtil.RegisterGamepadInit(self, InitGamepad);
@@ -57,7 +70,7 @@ GlobalOnLoad = function(self)
 end;
 
 GlobalOnShow = function(self)
-	EventUtil.ContinueOnAddOnLoaded("Blizzard_GamepadSharedUtility", function()
+	WaitForGlobalAddOn(function()
 		if InputUtil.IsGamepadUIEnabled() then
 			GamepadMode.FrameControlsManager:FrameShown(self);
 		end
@@ -65,7 +78,7 @@ GlobalOnShow = function(self)
 end;
 
 GlobalOnHide = function(self)
-	EventUtil.ContinueOnAddOnLoaded("Blizzard_GamepadSharedUtility", function()
+	WaitForGlobalAddOn(function()
 		if InputUtil.IsGamepadUIEnabled() then
 			GamepadMode.FrameControlsManager:FrameHidden(self);
 		end

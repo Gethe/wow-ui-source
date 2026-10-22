@@ -176,6 +176,21 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "GetFriendLevelFromInviteText",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "inviteText", Type = "cstring", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "friendLevel", Type = "BattleNetFriendLevel", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFriendNumGameAccounts",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

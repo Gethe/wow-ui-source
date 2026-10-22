@@ -1004,16 +1004,16 @@ do
 	local function SortItems(item1, item2)
 		local bag1, bag2 = item1:GetBagID(), item2:GetBagID();
 		if bag1 ~= bag2 then
-			return bag1 < bag2;
+			return bag1 > bag2;
 		end
 
 		local isBag1, isBag2 = item1.isBag, item2.isBag;
 		if isBag1 ~= isBag2 then
-			return isBag1 ~= nil;
+			return isBag2 ~= nil;
 		end
 
 		local id1, id2 = item1:GetID(), item2:GetID();
-		return id1 < id2;
+		return id1 > id2;
 	end
 
 	local function SortItemsByExtendedState(item1, item2)
@@ -2954,19 +2954,11 @@ function ContainerFrameCombinedBagsMixin:Close()
 end
 
 function ContainerFrameCombinedBagsMixin:GetAnchorLayout()
-	if InputUtil.IsGamepadUIEnabled() then
-		return AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, self:GetColumns(), ITEM_SPACING_X, ITEM_SPACING_Y);
-	else
-		return ContainerFrameMixin.GetAnchorLayout(self);
-	end
+	return ContainerFrameMixin.GetAnchorLayout(self);
 end
 
 function ContainerFrameCombinedBagsMixin:GetInitialItemAnchor()
-	if InputUtil.IsGamepadUIEnabled() then
-		return AnchorUtil.CreateAnchor("TOPLEFT", self, "TOPLEFT", 10, -65);
-	else
-		return AnchorUtil.CreateAnchor("BOTTOMRIGHT", self.MoneyFrame, "TOPRIGHT", 0, 4);
-	end
+	return AnchorUtil.CreateAnchor("BOTTOMRIGHT", self.MoneyFrame, "TOPRIGHT", 0, 4);
 end
 
 function ContainerFrameCombinedBagsMixin:OnTokenWatchChanged()
@@ -3307,7 +3299,6 @@ local function Gamepad_UseItemAction()
 end
 
 function ContainerFrameCombinedBagsMixin:SetUpSearchGamepad()
-	BagItemSearchBox.useFooterJumpHints = true;
 	local function ClearText()
 		BagItemSearchBox:SetText("");
 		BagItemSearchBox:SetFocus();
@@ -3474,7 +3465,6 @@ function ContainerFrameCombinedBagsMixin:SetupGamepad()
 	self.gamepadFooter:AddPromptedBinding(collapseBagAction);
 	self.gamepadFooter:AddPromptedBinding(itemMoreActions);
 	self.gamepadFooter:AddPromptedBinding(enterSearchBox);
-	self.gamepadFooter:AddStandardFrameControlManagerBindings(self);
 	self.gamepadFooter:AddPromptedBinding(backAction);
 	self.gamepadFooter:Finalize();
 end

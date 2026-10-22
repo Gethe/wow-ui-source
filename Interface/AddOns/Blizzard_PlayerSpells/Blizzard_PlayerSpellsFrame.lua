@@ -858,8 +858,6 @@ function PlayerSpellsFrameMixin:SetUpSpellBookGamepad()
 	local nextCategory = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_SHOULDER_RIGHT, GenerateFlatClosure(self.SelectNextSpellBookCategory, self, true), nil);
 	nextCategory:SetCustomPromptFrame(self.SpellBookFrame.NextCategoryIcon);
 
-	local tooltips = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, nil, PROMPT_TOGGLE_TOOLTIPS);
-
 	-- Navigate Section --
 	local SpellBookFrameSectionHandlers = {
 		left = function()
@@ -892,8 +890,6 @@ function PlayerSpellsFrameMixin:SetUpSpellBookGamepad()
 	self.spellsFrameFooter:AddPromptedBinding(enterSearchBox);
 	self.spellsFrameFooter:AddPromptedBinding(previousCategory);
 	self.spellsFrameFooter:AddPromptedBinding(nextCategory);
-	self.spellsFrameFooter:AddPromptedBinding(tooltips);
-	self.spellsFrameFooter:AddStandardFrameControlManagerBindings(self);
 	self.spellsFrameFooter:Finalize();
 end
 
@@ -903,6 +899,10 @@ function PlayerSpellsFrameMixin:SetUpClassTalentsGamepad()
 	-- Tabbing --
 	local function SecondarySpecUnlocked()
 		return GetNumSpecGroups() > 1;
+	end
+
+	local function NotInspecting()
+		return not self:IsInspecting();
 	end
 
 	-- Undo Changes --
@@ -987,7 +987,8 @@ function PlayerSpellsFrameMixin:SetUpClassTalentsGamepad()
 			SmartNavigation:SelectButton(talentFrame:GamepadGetStartingButtonForTree());
 		end
 	end, nil);
-	primarySpecTab:SetCustomPromptFrame(self.TalentsFrame.GamepadPrimaryTabIcon);
+	primarySpecTab:SetCustomPromptFrame(self.TalentsFrame.GamepadPrimaryTabIcon, nil, self.TalentsFrame.GamepadPrimaryTabIcon.Hide);
+	primarySpecTab:AddCondition(NotInspecting);
 
 	local secondarySpecTab = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_SHOULDER_RIGHT, function()
 		talentFrame:SetTab(talentFrame.secondarySpecTabID)
@@ -997,8 +998,16 @@ function PlayerSpellsFrameMixin:SetUpClassTalentsGamepad()
 			SmartNavigation:SelectButton(talentFrame:GamepadGetStartingButtonForTree());
 		end
 	end, nil);
-	secondarySpecTab:SetCustomPromptFrame(talentFrame.GamepadSecondaryTabIcon, talentFrame.GamepadSecondaryTabIcon.SetPressable, talentFrame.GamepadSecondaryTabIcon.SetDisabled);
+	secondarySpecTab:SetCustomPromptFrame(talentFrame.GamepadSecondaryTabIcon, talentFrame.GamepadSecondaryTabIcon.SetPressable, function(icon)
+		if self:IsInspecting() then
+			icon:Hide();
+		else
+			-- Not unlocked yet.
+			icon:SetDisabled();
+		end
+	end);
 	secondarySpecTab:AddCondition(SecondarySpecUnlocked);
+	secondarySpecTab:AddCondition(NotInspecting);
 
 	-- Add point --
 	local addPoint = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, AddPoint, GAMEPAD_TALENT_ADD_POINT);
@@ -1062,9 +1071,6 @@ function PlayerSpellsFrameMixin:SetUpClassTalentsGamepad()
 		end
 	);
 
-	-- Toggle Tooltips --
-	local tooltips = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, nil, PROMPT_TOGGLE_TOOLTIPS);
-
 	-- Navigate Elements --
 	local navigateElements = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD, nil, FRAME_ACTION_NAVIGATE);
 
@@ -1085,11 +1091,9 @@ function PlayerSpellsFrameMixin:SetUpClassTalentsGamepad()
 	self.classTalentsFrameFooter:AddPromptedBinding(removePoint);
 	self.classTalentsFrameFooter:AddPromptedBinding(undoChanges);
 	self.classTalentsFrameFooter:AddPromptedBinding(applyChanges);
-	self.classTalentsFrameFooter:AddPromptedBinding(tooltips);
 	self.classTalentsFrameFooter:AddPromptedBinding(navigateElements);
 	self.classTalentsFrameFooter:AddPromptedBinding(openSettings);
 	self.classTalentsFrameFooter:AddPromptedBinding(enterSearchBox);
-	self.classTalentsFrameFooter:AddStandardFrameControlManagerBindings(self);
 	self.classTalentsFrameFooter:Finalize();
 end
 

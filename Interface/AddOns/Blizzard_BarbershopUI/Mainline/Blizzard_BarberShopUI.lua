@@ -7,7 +7,10 @@ function BarberShopMixin:OnLoad()
 	self:RegisterEvent("BARBER_SHOP_APPEARANCE_APPLIED");
 
 	CharCustomizeFrame:AttachToParentFrame(self);
-	CharCustomizeFrame:SetOptionsSpacingConfiguration(CharCustomizeFrame.Categories, self.AcceptButton);
+
+	-- The SD/HD checkbox sits above the accept button, so the options must stay clear of it when it's shown.
+	local optionsBottomFrame = self.SDToggleButton:IsShown() and self.SDToggleButton or self.AcceptButton;
+	CharCustomizeFrame:SetOptionsSpacingConfiguration(CharCustomizeFrame.Categories, optionsBottomFrame);
 
 	self.sexButtonPool = CreateFramePool("CHECKBUTTON", self.BodyTypes, "CharCustomizeBodyTypeButtonTemplate");
 end

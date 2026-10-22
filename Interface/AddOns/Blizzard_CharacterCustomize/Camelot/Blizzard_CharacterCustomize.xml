@@ -266,12 +266,12 @@
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="Frame" atlas="heavybronze-frame-basic" setAllPoints="true"/>
-						<Texture name="Frame_TR" atlas="heavybronze-vert-cornerbracket-TR"  useAtlasSize="true">
+						<Texture parentKey="FrameTopRight" atlas="heavybronze-vert-cornerbracket-TR" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="TOPRIGHT" x="0" y="0"/>
 							</Anchors>
 						</Texture>
-						<Texture name="Frame_BR" atlas="heavybronze-vert-cornerbracket-BR"  useAtlasSize="true">
+						<Texture parentKey="FrameBottomRight" atlas="heavybronze-vert-cornerbracket-BR" useAtlasSize="true">
 							<Anchors>
 								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
@@ -326,11 +326,29 @@
 						</Anchors>
 					</Button>
 
-					<Frame parentKey="Options" inherits="CharacterCustomizeOptions" >
-						<KeyValues>
-							<KeyValue key="minimumWidth" value="300" type="number"/>
-						</KeyValues>
+					<Frame parentKey="OptionsScrollBox" inherits="WowScrollBox">
+						<Size x="320" y="300"/>
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.Categories" relativePoint="BOTTOMRIGHT" x="30" y="-30"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="Options" inherits="CharacterCustomizeOptions">
+								<KeyValues>
+									<KeyValue key="scrollable" value="true" type="boolean"/>
+									<KeyValue key="leftPadding" value="18" type="number"/>
+									<KeyValue key="topPadding" value="24" type="number"/>
+									<KeyValue key="bottomPadding" value="15" type="number"/>
+								</KeyValues>
+							</Frame>
+						</Frames>
 					</Frame>
+
+					<EventFrame parentKey="OptionsScrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.OptionsScrollBox" relativePoint="TOPRIGHT" x="-8" y="0"/>
+							<Anchor point="BOTTOMRIGHT" relativeKey="$parent.OptionsScrollBox" relativePoint="BOTTOMRIGHT" x="-8" y="0"/>
+						</Anchors>
+					</EventFrame>
 				</Frames>
 			</Frame>
 

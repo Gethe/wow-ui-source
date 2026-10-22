@@ -24,6 +24,9 @@ function TableInspectorAttributeDataProviderMixin:HideAllLines()
 	end
 end
 
+local SECRET_DISPLAY_TEXT = "<secret>";
+local SECRET_TYPE = "secret";
+
 local typeOrder = { childFrame = 10, boolean = 20, number = 30, string = 40, table = 50, region = 60, ["function"] = 70 };
 function TableInspectorAttributeDataProviderMixin:SortAttributes()
 	table.sort(self.attributes, function (lhs, rhs)
@@ -53,7 +56,12 @@ function TableInspectorAttributeDataProviderMixin:RefreshData(focusedTable)
 	
 	local childFrameIsDisplayed = {};
 	for key, value in pairs(focusedTable) do
-		if ShouldShowObject(key) and ShouldShowObject(value) then
+		local isKeySecret = issecretvalue(key);
+		if isKeySecret or issecretvalue(value) then
+			-- Secret text in a line would make the lines scroll range secret, which breaks the scroll bar.
+			local displayKey = isKeySecret and SECRET_DISPLAY_TEXT or key;
+			table.insert(self.attributes, { key = displayKey, type = SECRET_TYPE, displayValue = SECRET_DISPLAY_TEXT });
+		elseif ShouldShowObject(key) and ShouldShowObject(value) then
 			local displayValue;
 			local valueType = type(value);
 			if valueType == "number" or valueType == "string" or valueType == "boolean" then

@@ -1118,12 +1118,12 @@ function SmartNavigationMixin:IsButtonValid(inButton, inScrollFrame)
 
 		local inView = true;
 		if inScrollFrame then
-			local scrollTop = inScrollFrame:GetTop();
-			local scrollBottom = inScrollFrame:GetBottom();
-			local scrollLeft = inScrollFrame:GetLeft();
-			local scrollRight = inScrollFrame:GetRight();
+			-- Compare in scaled space; a custom cursor anchor's relativeTo can have its own scale, which makes GetRect disagree with the scroll frame's coordinates.
+			local scrollLeft, scrollBottom, scrollWidth, scrollHeight = inScrollFrame:GetScaledRect();
+			local scrollRight = scrollLeft + scrollWidth;
+			local scrollTop = scrollBottom + scrollHeight;
 
-			inView = buttonX > scrollLeft and buttonX < scrollRight and buttonY < scrollTop and buttonY > scrollBottom;
+			inView = sCenterX > scrollLeft and sCenterX < scrollRight and sCenterY < scrollTop and sCenterY > scrollBottom;
 		end
 
 		valid = width and height and buttonX and buttonY and inView;

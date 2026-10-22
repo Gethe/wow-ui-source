@@ -76,6 +76,8 @@ function InputPromptLegends.CreateInputLegend(parentFrame, parentKey, useWideBac
 		promptContainerFrame:SetFrameLevel(PROMPT_CONTAINER_NEUTRAL_FRAME_LEVEL);
 	end
 
+	inputPromptLegend:SetClampedToScreen(true);
+
 	return inputPromptLegend;
 end
 
@@ -115,7 +117,7 @@ function InputPromptLegendMixin:RefreshWithPromptedBindings(promptedBindings)
 		local promptFrame = self:GetOrCreatePromptFrameUsingTemplateAndInputs(template.name, keys, divider);
 		promptedBinding.promptFrame = promptFrame;
 		promptFrame:SetPromptText(label);
-		promptFrame:SetIsHoldAction(promptedBinding:IsHoldPrompt());
+		promptFrame:SetIsHoldAction(promptedBinding:IsFooterHoldPrompt());
 
 		if showEnabled then
 			promptFrame:EnablePrompt();

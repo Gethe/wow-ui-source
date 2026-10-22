@@ -325,6 +325,7 @@ StaticPopupDialogs["DEATH"] = {
 	hideOnEscape = false,
 	noCloseOnAlt = true,
 	cancels = "RECOVER_CORPSE",
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
@@ -402,6 +403,7 @@ StaticPopupDialogs["GROUP_INVITE_CONFIRMATION"] = {
 	end,
 	timeout = StaticPopupTimeoutSec,
 	whileDead = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["PLUNDERSTORM_LEAVE"] = {
@@ -1180,6 +1182,9 @@ StaticPopupDialogs["XP_LOSS"] = {
 			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 		end
 	end,
+	OnCancel = function(dialog, data)
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+	end,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
@@ -1328,6 +1333,7 @@ StaticPopupDialogs["LEAVING_TUTORIAL_AREA"] = {
 		end
 	end,
 	selectCallbackByIndex = true,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["CLUB_FINDER_ENABLED_DISABLED"] = {
@@ -1576,4 +1582,5 @@ StaticPopupDialogs["VOICE_CHAT_JOIN_GROUP"] = {
 	showAlert = 1,
 	hideOnEscape = 1,
 	whileDead = 1,
+	skipGamepadAutoFocus = 1,
 };

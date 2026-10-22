@@ -176,12 +176,17 @@ function QueueStatusButtonMixin:CheckTutorials()
 	if not self:IsShown() or EditModeManagerFrame:IsEditModeActive() then
 		return;
 	end
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES) then
+	local isWoWHack = C_GameRules.IsWoWHack();
+	local bitfieldFlag = isWoWHack and LE_FRAME_TUTORIAL_WOWHACK_TALE_SAVE or LE_FRAME_TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES;
+
+	if not GetCVarBitfield("closedInfoFrames", bitfieldFlag) then
+		local helpTipInfoText = isWoWHack and WOWHACK_TALE_SAVE_TUTORIAL or TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES;
+
 		local helpTipInfo = {
-			text = TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES,
+			text = helpTipInfoText,
 			buttonStyle = HelpTip.ButtonStyle.Close,
 			cvarBitfield = "closedInfoFrames",
-			bitfieldFlag = LE_FRAME_TUTORIAL_HUD_REVAMP_LFG_QUEUE_CHANGES,
+			bitfieldFlag = bitfieldFlag,
 			targetPoint = HelpTip.Point.TopEdgeCenter,
 			offsetX = 0,
 			alignment = HelpTip.Alignment.Center,

@@ -25,6 +25,7 @@
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="RewardCardBG" setAllPoints="true" parentArray="Textures"/>
+				<Texture parentKey="Highlight" alphaMode="ADD" setAllPoints="true" hidden="true" parentArray="Textures"/>
 			</Layer>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" parentArray="Textures">
@@ -67,7 +68,7 @@
 		<Scripts>
 			<OnMouseUp method="OnMouseUp"/>
 			<OnEnter method="OnEnter"/>
-			<OnLeave function="GameTooltip_Hide"/>
+			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</Frame>
 	

@@ -1,7 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
 
-	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="KeyBindingButtonMixin" virtual="true">
+	<Button name="KeyBindingFrameBindingButtonTemplate" inherits="UIMenuButtonStretchTemplate" mixin="KeyBindingButtonMixin" propagateMouseInput="Motion" virtual="true">
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="SelectedHighlight" file="Interface\Buttons\UI-Silver-Button-Select" alphaMode="ADD" hidden="true">
@@ -42,7 +42,7 @@
 		<Size x="560" y="25"/>
 		<Layers>
 			<Layer level="BACKGROUND">
-				<FontString parentKey="Label" inherits="GameFontNormal" enableMouse="true" wordwrap="false" justifyH="LEFT">
+				<FontString parentKey="Label" inherits="GameFontNormal" enableMouse="true" propagateMouseInput="Motion" wordwrap="false" justifyH="LEFT">
 					<Size x="170" y="24"/>
 				</FontString>
 				<Texture parentKey="ModifierWarning" atlas="perks-warning-small" useAtlasSize="true" hidden="true" enableMouse="true">

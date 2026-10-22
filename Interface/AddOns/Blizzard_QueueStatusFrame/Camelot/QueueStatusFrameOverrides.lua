@@ -1,5 +1,8 @@
 -- Camelot QueueStatusFrame Overrides
 
+local QUEUE_STATUS_MINIMAP_INSET_ID = "CamelotQueueStatusButton";
+local QUEUE_STATUS_MINIMAP_INSET_DISTANCE_SCALAR = 0.8;
+
 -- Camelot uses the Vanilla-style group finder instead of the Mainline PVEFrame-based system.
 -- LFGListUtil_OpenBestWindow (called by the base implementation) is not available here.
 function QueueStatusButtonMixin:ShowLFGFrame(toggle)
@@ -11,6 +14,8 @@ function QueueStatusButtonMixin:ShowLFGFrame(toggle)
 end
 
 function QueueStatusButtonMixin:UpdateDefaultAnchor()
+	local isCircularInset = true;
+
 	-- In Camelot, the QueueStatusButton is anchored to the edge of the Minimap.
 	-- If the Minimap scale changes, calculate where the default position should
 	-- be based on the scale.
@@ -33,6 +38,40 @@ function QueueStatusButtonMixin:UpdateDefaultAnchor()
 		local position = FrameUtil.GetScreenQuadrant(self);
 		QueueStatusFrame:UpdatePosition(position, true);
 	end
+
+	if self:IsInDefaultPosition() then
+		MinimapUtil.UpdateInsetForFrame(
+			self,
+			QUEUE_STATUS_MINIMAP_INSET_ID,
+			QUEUE_STATUS_MINIMAP_INSET_DISTANCE_SCALAR,
+			isCircularInset
+		);
+	else
+		C_Minimap.ClearMinimapInsetInfo(QUEUE_STATUS_MINIMAP_INSET_ID);
+	end
+end
+
+local QueueStatusButtonMixin_OnShow = QueueStatusButtonMixin.OnShow;
+function QueueStatusButtonMixin:OnShow()
+	local isCircularInset = true;
+
+	QueueStatusButtonMixin_OnShow(self);
+	if self:IsInDefaultPosition() then
+		MinimapUtil.UpdateInsetForFrame(
+			self,
+			QUEUE_STATUS_MINIMAP_INSET_ID,
+			QUEUE_STATUS_MINIMAP_INSET_DISTANCE_SCALAR,
+			isCircularInset
+		);
+	else
+		C_Minimap.ClearMinimapInsetInfo(QUEUE_STATUS_MINIMAP_INSET_ID);
+	end
+end
+
+local QueueStatusButtonMixin_OnHide = QueueStatusButtonMixin.OnHide;
+function QueueStatusButtonMixin:OnHide()
+	QueueStatusButtonMixin_OnHide(self);
+	C_Minimap.ClearMinimapInsetInfo(QUEUE_STATUS_MINIMAP_INSET_ID);
 end
 
 function QueueStatusDropdown_AddLFGListButtons(description, queueStatusButton)

@@ -269,7 +269,13 @@ function StableFrameMixin:SelectPet(index)
 
 	if petInfo then
 		self.selectedPet = index;
-		self.diet.stabledPetID = index;
+		-- Nil is the mixin's switch for "current active pet": it uses C_PetInfo.GetPetHappiness() live data.
+		-- Non-nil stabledPetID means "read this stable slot" via C_StableInfo snapshot data.
+		if index == CURRENT_PET_SLOT then
+			self.diet.stabledPetID = nil;
+		else
+			self.diet.stabledPetID = index;
+		end
 		self.diet:UpdateHappiness();
 
 		if petInfo.name == petInfo.familyName then

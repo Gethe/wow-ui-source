@@ -52,24 +52,12 @@ StaticPopupDialogs["CONFIRM_PROFESSION"] = {
 
 ClassTrainerFrameMixin = {};
 
---[[
-	Boolean flag that identifies this frame as having updated jump hints, no longer
-	using legacy FrameControlsManager jump hints only displayed on targets.
-	See FrameControlsManager:RefreshJumpHints
-]]
-ClassTrainerFrameMixin.useFooterJumpHints = true;
-
 local function IsSkillButton(button)
 	return button and button.buttonContext == "ButtonContext_TrainerUISkill";
 end
 
 local function IsCategoryButton(button)
 	return button and button.buttonContext == "ButtonContext_TrainerUICategory";
-end
-
--- Text to display next to jump hints on other frames, if the jump takes them here
-function ClassTrainerFrameMixin:GetJumpHintLabel()
-	return SKILLS;
 end
 
 function ClassTrainerFrameMixin:SetUpGamepad()
@@ -116,7 +104,6 @@ function ClassTrainerFrameMixin:SetUpGamepad()
 	self.footer:AddPromptedBinding(selectBinding);
 	self.footer:AddPromptedBinding(filterBinding);
 	self.footer:AddPromptedBinding(openSpellBook);
-	self.footer:AddStandardFrameControlManagerBindings(self);
 	self.footer:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
 	self.footer:Finalize();
 

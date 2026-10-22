@@ -4,6 +4,9 @@ local Mode =
 	Rotated = 2,
 };
 
+local EXTERNAL_EVENT_URL_BUTTON_ANCHOR_X = 9;
+local EXTERNAL_EVENT_URL_BUTTON_ANCHOR_Y = -110;
+
 local ModeData =
 {
 	[Mode.Fixed] = {
@@ -60,9 +63,13 @@ function MinimapClusterMixin:UpdateMinimapConfig()
 end
 
 function MinimapClusterMixin:ApplyExternalEventURLButtonAnchor()
+	local appliedScale = self.MinimapContainer:GetScale();
+	local invScale = 1.0 / appliedScale;
+
 	local externalEventURLButton = MinimapBackdrop.ExternalEventURLButton;
+	externalEventURLButton:SetScale(invScale);
 	externalEventURLButton:ClearAllPoints();
-	externalEventURLButton:SetPoint("TOPLEFT", 9, -110);
+	externalEventURLButton:SetPoint("TOPLEFT", EXTERNAL_EVENT_URL_BUTTON_ANCHOR_X * appliedScale, EXTERNAL_EVENT_URL_BUTTON_ANCHOR_Y * appliedScale);
 end
 
 function MinimapClusterMixin:SetHeaderUnderneath(headerUnderneath)

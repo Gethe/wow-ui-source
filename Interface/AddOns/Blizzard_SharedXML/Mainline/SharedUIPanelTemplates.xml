@@ -1006,7 +1006,6 @@
 	<Button name="PanelTopTabButtonTemplate" inherits="PanelTabButtonTemplate" mixin="PanelTopTabButtonMixin" virtual="true"/>
 
 	<Frame name="MaximizeMinimizeButtonFrameTemplate" parentKey="MaxMinButtonFrame" mixin="MaximizeMinimizeButtonFrameMixin" frameLevel="510" virtual="true">
-		<Size x="24" y="24"/>
 		<Frames>
 			<Button parentKey="MaximizeButton" setAllPoints="true" hidden="true">
 				<Scripts>
@@ -1034,6 +1033,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 		</Scripts>
 	</Frame>

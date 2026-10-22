@@ -65,11 +65,12 @@
 						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMLEFT" x="101" y="45"/>
 					</Anchors>
 				</FontString>
-				<FontString parentKey="BagText" inherits="GameFontNormalLarge2" text="BAGSLOTTEXT_COLON">
+				<FontString parentKey="BagText" inherits="GameFontNormalLarge" text="BAGSLOTTEXT_COLON" justifyH="RIGHT" justifyV="MIDDLE" maxLines="2" wordwrap="true">
+					<Size x="120" y="40"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT">
 							<Offset>
-								<AbsDimension x="43" y="80"/>
+								<AbsDimension x="15" y="67"/>
 							</Offset>
 						</Anchor>
 					</Anchors>

@@ -225,6 +225,16 @@ function UpdateMicroButtons()
 	LegacyMicroButton:UpdateMicroButton();
 	EJMicroButton:UpdateMicroButton();
 	CollectionsMicroButton:UpdateMicroButton();
+
+	local pushedButton;
+	for _, button in ipairs(MicroMenu.addedButtons) do
+		if button:IsVisible() and button:GetButtonState() == "PUSHED" then
+			pushedButton = button;
+			break;
+		end
+	end
+
+	EventRegistry:TriggerEvent("MicroMenu.Updated", pushedButton);
 end
 
 function MicroButtonPulse(self, duration)

@@ -144,15 +144,11 @@
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>
-						<Frames>
-							<Frame parentKey="ModelFrame" inherits="ModelSceneFrameTemplate" setAllPoints="true" />
-						</Frames>
 					</ModelScene>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad" />
 					<OnShow method="OnShow" />
-					<OnUpdate method="OnUpdate" />
 				</Scripts>
 			</Frame>
 

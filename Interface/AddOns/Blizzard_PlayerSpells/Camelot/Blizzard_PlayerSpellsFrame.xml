@@ -8,6 +8,7 @@
 			<KeyValue key="spellBookHeight" value="720"/>
 			<KeyValue key="talentsWidth" value="1218"/>
 			<KeyValue key="talentsHeight" value="708"/>
+			<KeyValue key="uiPanelYOffset" value="0" type="number"/>
 		</KeyValues>
 		<Size x="1618" y="883"/>
 		<Anchors>

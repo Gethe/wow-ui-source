@@ -2,7 +2,7 @@
 ## AllowLoad: Game
 ## LoadOnDemand: 1
 ## AllowLoadGameType: wowhack
-## Dependencies: Blizzard_FrameVisibilityUtils, Blizzard_FrameXMLUtil
+## Dependencies: Blizzard_FrameVisibilityUtils, Blizzard_FrameXMLUtil, Blizzard_MicroMenu, Blizzard_WoWHackTutorials
 
 Blizzard_ScribeUI_Bootstrap.lua [Bootstrap]
 

@@ -104,6 +104,7 @@ function ScribeFrameMixin:OnShow()
 	end
 
 	UpdateMicroButtons();
+	EventRegistry:TriggerEvent("ScribeFrame.Opened", self);
 end
 
 function ScribeFrameMixin:OnHide()
@@ -115,6 +116,7 @@ function ScribeFrameMixin:OnHide()
 	end
 
 	UpdateMicroButtons();
+	EventRegistry:TriggerEvent("ScribeFrame.Closed", self);
 end
 
 function ScribeFrameMixin:OnEvent(event, ...)

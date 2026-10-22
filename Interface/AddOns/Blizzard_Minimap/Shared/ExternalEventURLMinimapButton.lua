@@ -1,5 +1,15 @@
 local SPELL_EFFECT_MODEL_SCENE_ID = 1695;
 local SPELL_EFFECT_MODEL_FILE_ID = 166337;
+local EXTERNAL_EVENT_URL_MINIMAP_INSET_ID = "ExternalEventURLMinimapButton";
+local EXTERNAL_EVENT_URL_MINIMAP_INSET_DISTANCE_SCALAR = 0.83;
+
+local function IsMinimapInsetSupported()
+	return C_Minimap
+		and C_Minimap.SetMinimapInsetInfo
+		and C_Minimap.ClearMinimapInsetInfo
+		and MinimapUtil
+		and MinimapUtil.UpdateInsetForFrame;
+end
 
 ExternalEventURLMinimapButtonMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 
@@ -39,6 +49,7 @@ function ExternalEventURLMinimapButtonMixin:OnLoad()
 	self:Refresh();
 
 	self:RegisterEvent("EXTERNAL_EVENT_URL_CHANGED");
+	EventRegistry:RegisterCallback("Minimap.OnScaleUpdated", self.UpdateTransform, self);
 end
 
 function ExternalEventURLMinimapButtonMixin:OnShow()
@@ -46,7 +57,34 @@ function ExternalEventURLMinimapButtonMixin:OnShow()
 end
 
 function ExternalEventURLMinimapButtonMixin:OnHide()
+	if IsMinimapInsetSupported() then
+		C_Minimap.ClearMinimapInsetInfo(EXTERNAL_EVENT_URL_MINIMAP_INSET_ID);
+	end
+
 	self:SetEffectShown(false);
+end
+
+function ExternalEventURLMinimapButtonMixin:UpdateMinimapInset()
+	if not IsMinimapInsetSupported() then
+		return;
+	end
+
+	local isCircularInset = true;
+
+	MinimapUtil.UpdateInsetForFrame(
+		self,
+		EXTERNAL_EVENT_URL_MINIMAP_INSET_ID,
+		EXTERNAL_EVENT_URL_MINIMAP_INSET_DISTANCE_SCALAR,
+		isCircularInset
+	);
+end
+
+function ExternalEventURLMinimapButtonMixin:UpdateTransform()
+	MinimapCluster:ApplyExternalEventURLButtonAnchor();
+
+	if self:IsShown() then
+		self:UpdateMinimapInset();
+	end
 end
 
 function ExternalEventURLMinimapButtonMixin:OnButtonStateChanged()
@@ -80,6 +118,10 @@ function ExternalEventURLMinimapButtonMixin:Refresh()
 
 	local isNew = hasURL and C_ExternalEventURL.IsNew();
 	self:SetEffectShown(canShow and hasURL and isNew);
+
+	if self:IsShown() then
+		self:UpdateTransform();
+	end
 end
 
 function ExternalEventURLMinimapButtonMixin:OnClick()

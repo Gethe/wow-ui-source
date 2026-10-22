@@ -77,7 +77,7 @@ function GamepadMainActionBarFrameMixin:InitializeGamepad()
 	self:RegisterEvent("PLAYER_LEAVE_COMBAT");
 	self:RegisterEvent("START_AUTOREPEAT_SPELL");
 	self:RegisterEvent("STOP_AUTOREPEAT_SPELL");
-
+	self:RegisterEvent("PET_ORDER_MOVE_TO_PENDING_CHANGED");
 	self:ResyncAttackState();
 end
 
@@ -87,6 +87,7 @@ function GamepadMainActionBarFrameMixin:UninitializeGamepad()
 	self:UnregisterEvent("PLAYER_LEAVE_COMBAT");
 	self:UnregisterEvent("START_AUTOREPEAT_SPELL");
 	self:UnregisterEvent("STOP_AUTOREPEAT_SPELL");
+	self:UnregisterEvent("PET_ORDER_MOVE_TO_PENDING_CHANGED");
 end
 
 function GamepadMainActionBarFrameMixin:OnAutoLootCVarChanged()
@@ -142,6 +143,7 @@ function GamepadMainActionBarFrameMixin:OnLoad()
 	self.showButtonIcons = false;
 	self.showHighlight = true;
 	self.shouldExpand = true;
+	self.buttonOwners = {};
 
 	EditModeSystemMixin.OnSystemLoad(self);
 
@@ -222,7 +224,21 @@ local function GetAttackIcon()
 	return C_Spell.GetSpellTexture(icon);
 end
 
+local function SimulateScreenClick()
+	CameraOrSelectOrMoveStart();
+	CameraOrSelectOrMoveStop(false);
+end
+
 local interactActions = {
+	-- Pet move-to command (awaiting a confirmation press)
+	-- These handled outside the spell / targeting system, but match the spellcast UX
+	{
+		condition = function(vars) return C_PetInfo.IsPetOrderMoveToPending(); end,
+		action = SimulateScreenClick,
+		icon = PET_MOVE_TO_TEXTURE, -- See: PetActionBar.lua
+		overheadTarget = nil,
+	},
+
 	-- Lootable soft interact (in interact range)
 	{
 		condition = function(vars) return vars.softInteractExists and vars.softInteractIsInInteractRange and vars.softInteractHasLoot; end,
@@ -261,6 +277,13 @@ local interactActions = {
 	{
 		condition = function(vars) return vars.targetExists and UnitCanAttack("player", "target"); end,
 		action = function() AttackTarget(); end,
+		icon = GetAttackIcon,
+	},
+
+	-- Attackable mouseover (reticle) enemy
+	{
+		condition = function() return UnitExists("mouseover") and UnitCanAttack("player", "mouseover"); end,
+		action = function() TargetUnit("mouseover"); AttackTarget(); end,
 		icon = GetAttackIcon,
 	},
 
@@ -328,6 +351,8 @@ end
 function GamepadMainActionBarFrameMixin:OnEvent(event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		self.PageUnit:RefreshActionBarVisibilities();
+		self:UpdateInteractIcons();
+	elseif (event == "PET_ORDER_MOVE_TO_PENDING_CHANGED") then
 		self:UpdateInteractIcons();
 	else
 		if (event == "PLAYER_ENTER_COMBAT") then
@@ -600,15 +625,42 @@ function GamepadMainActionBarFrameMixin:OnInputModifierStateChange(modifierDown)
 end
 
 function GamepadMainActionBarFrameMixin:PressActionButton(inIndex, button, down)
-	local actionBar = self.PageUnit:GetActiveBar();
-	local actionButton = actionBar:GetActionButtonByIndex(inIndex);
+	if button == nil then
+		button = "LeftButton";
+	end
 
-	if actionButton:IsEnabled() then
-		actionButton:Click(button, down);
-		if down then
+	-- On a down we record the owner button of that index so we can ensure the release is sent to
+	-- the same button, even if another action bar becomes active between the down and up.
+	local ownersPerButton = self.buttonOwners[inIndex];
+	if not ownersPerButton then
+		ownersPerButton = {};
+		self.buttonOwners[inIndex] = ownersPerButton;
+	end
+
+	local currOwner = ownersPerButton[button];
+
+	if down then
+		local actionBar = self.PageUnit:GetActiveBar();
+		local actionButton = actionBar:GetActionButtonByIndex(inIndex);
+
+		if actionButton:IsEnabled() then
+			-- Force-release the previous owner
+			if currOwner then
+				self:PressActionButton(inIndex, button, false);
+			end
+
+
+			ownersPerButton[button] = actionButton;
 			actionButton:SetButtonState("PUSHED");
-		else
-			actionButton:SetButtonState("NORMAL");
+			actionButton:Click(button, down);
 		end
+	elseif currOwner then
+		-- Always release the owner rather than the button on the currently active bar. This is
+		-- allowed even if the button is disabled (but it should remain disabled)
+		ownersPerButton[button] = nil;
+		if currOwner:IsEnabled() then
+			currOwner:SetButtonState("NORMAL");
+		end
+		currOwner:Click(button, down);
 	end
 end

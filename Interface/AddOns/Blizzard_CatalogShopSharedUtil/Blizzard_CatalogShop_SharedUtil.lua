@@ -394,23 +394,25 @@ function CatalogShopUtil.TranslateProductInfoToProductDisplayData(productInfo, d
 	if overrideActorIDs and #overrideActorIDs > 0 then
 		local currentFlags = newDisplayData.overrideFlagsData.flags;
 		newDisplayData.overrideActorDisplayBucket = {};
-		local actorInfo = C_ModelInfo.GetModelSceneActorInfoByID(overrideActorIDs[1]); -- only one override actor
-		if actorInfo then
-			local actorDisplayData = ConvertActorInfoToDisplayData(actorInfo, currentFlags);
+		for _, overrideActorID in ipairs(overrideActorIDs) do
+			local actorInfo = C_ModelInfo.GetModelSceneActorInfoByID(overrideActorID);
+			if actorInfo then
+				local actorDisplayData = ConvertActorInfoToDisplayData(actorInfo, currentFlags);
 
-			if not C_Glue.IsOnGlueScreen() then
-				local hasAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
-				local cardType = productInfo.productType;
-				if hasAlternateForm and cardType == "Transmog" then
-					local useAlternateForm = true;
-					local playerRaceName, playerRaceNameActorTag = CatalogShopUtil.GetPlayerActorLabelTag(useAlternateForm);
-					local alternateFormActorInfo = GetDefaultActorInfo(productInfo.defaultPreviewModelSceneID, playerRaceName, playerRaceNameActorTag);
-					if alternateFormActorInfo then
-						actorDisplayData.alternateFormDisplayData = ConvertActorInfoToDisplayData(alternateFormActorInfo, currentFlags);
+				if not C_Glue.IsOnGlueScreen() then
+					local hasAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
+					local cardType = productInfo.productType;
+					if hasAlternateForm and cardType == "Transmog" then
+						local useAlternateForm = true;
+						local playerRaceName, playerRaceNameActorTag = CatalogShopUtil.GetPlayerActorLabelTag(useAlternateForm);
+						local alternateFormActorInfo = GetDefaultActorInfo(productInfo.defaultPreviewModelSceneID, playerRaceName, playerRaceNameActorTag);
+						if alternateFormActorInfo then
+							actorDisplayData.alternateFormDisplayData = ConvertActorInfoToDisplayData(alternateFormActorInfo, currentFlags);
+						end
 					end
 				end
+				table.insert(newDisplayData.overrideActorDisplayBucket, actorDisplayData);
 			end
-			table.insert(newDisplayData.overrideActorDisplayBucket, actorDisplayData);
 		end
 	end
 
@@ -1014,8 +1016,11 @@ function CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, pro
 		actor:SetPosition(x, y, z);
 
 		local actorDisplayInfoData = actorDisplayData.actorDisplayInfoData;
-		local spellVisualKitID = actorDisplayData.spellVisualID; -- can be nil;
-		actor:SetSpellVisualKit(spellVisualKitID);
+		local spellVisualKitID = actorDisplayInfoData.spellVisualKitID or actorDisplayData.spellVisualID; -- can be nil;
+		-- An override without a kit must not clear the kit applied by the default actor data.
+		if spellVisualKitID or not isOverrideData then
+			actor:SetSpellVisualKit(spellVisualKitID);
+		end
 		actor:StopAnimationKit();
 		actor:SetAnimation(0, 0, 1.0);
 		SetAnimations(actor, actorDisplayInfoData);
@@ -1048,6 +1053,47 @@ function CatalogShopUtil.UpdateModelSceneCameraOnlyWithDisplayData(modelScene, d
 			UpdateCamera(camera, overrideCameraDisplayData);
 		end
 	end
+end
+
+-- Mirrors the actor that UpdateModelSceneWithDisplayData applies override data to; the Model Scene Tool edits this actor.
+function CatalogShopUtil.GetOverrideTargetActor(modelScene, displayData)
+	if not modelScene or not displayData then
+		return nil;
+	end
+
+	local productType = displayData.productType;
+	if productType == CatalogShopConstants.ProductType.Transmog then
+		return modelScene.CachedPlayerActor;
+	end
+
+	local modelSceneTag = displayData.modelSceneTag;
+	if modelSceneTag == nil then
+		if productType == CatalogShopConstants.ProductType.Mount then
+			modelSceneTag = CatalogShopConstants.DefaultActorTag.Mount;
+		elseif productType == CatalogShopConstants.ProductType.Pet then
+			modelSceneTag = CatalogShopConstants.DefaultActorTag.Pet;
+		elseif productType == CatalogShopConstants.ProductType.Decor then
+			modelSceneTag = CatalogShopConstants.DefaultActorTag.Decor;
+		end
+	end
+	return modelSceneTag and modelScene:GetActorByTag(modelSceneTag) or nil;
+end
+
+-- Falls back to the first override actor when none shares the tag.
+local function FindOverrideActorDisplayData(displayData, scriptTag)
+	local overrideBucket = displayData.overrideActorDisplayBucket;
+	if not overrideBucket then
+		return nil;
+	end
+
+	if scriptTag then
+		for _, overrideActorDisplayData in ipairs(overrideBucket) do
+			if overrideActorDisplayData.scriptTag == scriptTag then
+				return overrideActorDisplayData;
+			end
+		end
+	end
+	return overrideBucket[1];
 end
 
 function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData, tryUseOverrideAnim)
@@ -1094,17 +1140,19 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 		actorDisplayData = actorDisplayBucket[1];
 	elseif modelSceneTag ~= nil then
 		actor = modelScene:GetActorByTag(modelSceneTag);
-		for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
-			if actorDisplayDataFromBucket.scriptTag == modelSceneTag then
-				actorDisplayData = actorDisplayDataFromBucket;
-				break;
+		if actorDisplayBucket then
+			for i, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
+				if actorDisplayDataFromBucket.scriptTag == modelSceneTag then
+					actorDisplayData = actorDisplayDataFromBucket;
+					break;
+				end
 			end
 		end
 	end
 
-	local overrideActorDiplayData = displayData.overrideActorDisplayBucket and displayData.overrideActorDisplayBucket[1] or nil;
 	if actor then
 		CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayData, productType, tryUseOverrideAnim)
+		local overrideActorDiplayData = FindOverrideActorDisplayData(displayData, actorDisplayData and actorDisplayData.scriptTag or modelSceneTag);
 		if overrideActorDiplayData then
 			local isOverrideData = true;
 			CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, productType, tryUseOverrideAnim, isOverrideData)
@@ -1117,6 +1165,7 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 			actor = modelScene:GetActorByTag(actorDisplayDataFromBucket.scriptTag);
 			if actor then
 				CatalogShopUtil.UpdateActorWithDisplayData(actor, actorDisplayDataFromBucket, productType, tryUseOverrideAnim)
+				local overrideActorDiplayData = FindOverrideActorDisplayData(displayData, actorDisplayDataFromBucket.scriptTag);
 				if overrideActorDiplayData then
 					local isOverrideData = true;
 					CatalogShopUtil.UpdateActorWithDisplayData(actor, overrideActorDiplayData, productType, tryUseOverrideAnim, isOverrideData)

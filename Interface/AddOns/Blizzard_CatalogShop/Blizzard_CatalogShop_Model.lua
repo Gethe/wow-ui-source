@@ -31,7 +31,7 @@ function CatalogShopAlteredFormButtonMixin:OnClick()
 	SelectableButtonMixin.SetSelected(self, true);
 
 	PlaySound(SOUNDKIT.CATALOG_SHOP_SELECT_GENERIC_UI_BUTTON);
-end	
+end
 
 
 ----------------------------------------------------------------------------------
@@ -48,7 +48,7 @@ function CatalogShopModelSceneContainerFrameMixin:OnShow()
 	else
 		self.hasAlternateForm = C_PlayerInfo.GetAlternateFormInfo();
 	end
-	
+
 	if self.hasAlternateForm and not self.formButtonsInitialized then
 		local characterInfo = C_PlayerInfo.GetPlayerCharacterData();
 		if characterInfo then
@@ -66,18 +66,6 @@ function CatalogShopModelSceneContainerFrameMixin:OnShow()
 		end
 	end
 	local forceSceneChange = true;
-end
-
-
-function CatalogShopModelSceneContainerFrameMixin:OnUpdate()
-	local modelSceneData = CatalogShopFrame:GetCurrentModelSceneData();
-	if self.currentData and self.currentData.isBundle then
-		local displayData = self.currentData.sceneDisplayData;
-		self.UpdateBundleVisuals(modelSceneData.modelScene, displayData);
-	else
-		local actor = CatalogShopFrame:GetCurrentActor();
-		self.UpdateActorVisuals(modelSceneData.modelScene, actor);
-	end
 end
 
 function CatalogShopModelSceneContainerFrameMixin:UpdateFormButtonVisibility(forceHideFormButtons)
@@ -265,7 +253,8 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 		if CatalogShopUtil.HasSpecialActors(displayData) then
 			CatalogShopUtil.SetupSpecialActors(displayData, modelScene);
 		end
-		CatalogShopFrame:SetCurrentModelSceneData(modelScene, defaultModelSceneID, displayInfo.overridePreviewModelSceneID);
+		local appliesOverrideActorPosition = productType ~= CatalogShopConstants.ProductType.Transmog;
+		CatalogShopFrame:SetCurrentModelSceneData(modelScene, defaultModelSceneID, displayInfo.overridePreviewModelSceneID, appliesOverrideActorPosition, currentActor);
 	end
 	self:UpdateFormButtonVisibility(forceHideFormButtons);
 	EventRegistry:TriggerEvent("CatalogShopModel.OnProductSelectedAfterModel", self.currentData);
@@ -280,219 +269,8 @@ end
 
 function CatalogShopModelSceneContainerFrameMixin.AfterTransmogActorLoadedCheckCarousel(modelScene, actor, data)
 	EventRegistry:TriggerEvent("CatalogShopModel.TransmogLoaded.CheckCarousel", modelScene, actor, data);
-	CatalogShopModelSceneContainerFrameMixin.UpdateDropShadowForSingleActor(modelScene, actor);
 end
 
 function CatalogShopModelSceneContainerFrameMixin.AfterTransmogActorLoaded(modelScene, actor, data)
 	EventRegistry:TriggerEvent("CatalogShopModel.TransmogLoaded.HideCarousel");
-	CatalogShopModelSceneContainerFrameMixin.UpdateActorVisuals(modelScene, actor);
-end
-
-function CatalogShopModelSceneContainerFrameMixin.UpdateActorVisuals(modelScene, actor)
-	CatalogShopModelSceneContainerFrameMixin.UpdateDropShadowForSingleActor(modelScene, actor);
-end
-
-function CatalogShopModelSceneContainerFrameMixin.UpdateDropShadowForSingleActor(modelScene, actor)
-	local modelFrame = modelScene and modelScene.ModelFrame;
-	local dropShadow = modelFrame and modelFrame.dropShadow;
-	if actor and modelFrame and dropShadow then
-		local bottomX, bottomY, bottomZ, topX, topY, topZ = actor:GetActiveBoundingBox();
-
-		if not topX then
-			dropShadow:Hide();
-			return;
-		end
-		dropShadow:Show();
-
-		local camera = modelScene:GetActiveCamera();
-		local targetX, targetY, targetZ = camera:GetDerivedTarget();
-		local camZoomPct = camera:GetZoomPercent();
-
-		local actorScale = actor:GetScale();
-		
-		-- The center of the bounding box is important for making a reference to move points in bounding box space into model frame space
-		local boundBoxCenterX = (topX + bottomX) * 0.5
-		local boundBoxCenterY = (topY + bottomY) * 0.5
-		local boundBoxCenterZ = (topZ + bottomZ) * 0.5
-
-		-- We want the 4 points that make up the bottom of the bounding box (this is the rectangle around the feet of the model)
-		-- These are then put in to screen space
-		local point1x, point1y, _ = modelScene:Transform3DPointTo2D(topX*actorScale,		topY*actorScale,		bottomZ*actorScale);
-		local point2x, point2y, _ = modelScene:Transform3DPointTo2D(topX*actorScale,		bottomY*actorScale,		bottomZ*actorScale);
-		local point3x, point3y, _ = modelScene:Transform3DPointTo2D(bottomX*actorScale,		topY*actorScale,		bottomZ*actorScale);
-		local point4x, point4y, _ = modelScene:Transform3DPointTo2D(bottomX*actorScale,		bottomY*actorScale,		bottomZ*actorScale);
-
-		local modelSceneOffsetX = modelScene.frameOffsetX or 0;
-		local modelSceneOffsetY = modelScene.frameOffsetY or 0;
-
-		local actorPos = CreateVector3D(actor:GetPosition());
-		-- Through experimentation it was found that ScaleBy doesn't work as expected.
-		--actorPos:ScaleBy(actor:GetScale());
-		local actorPosX, actorPosY, actorPosZ = actorPos:GetXYZ();
-		actorPosX = actorPosX * actorScale;
-		actorPosY = actorPosY * actorScale;
-		actorPosZ = actorPosZ * actorScale;
-
-		local actorDerivedPosX = actorPosX;
-		local actorDerivedPosY = actorPosY;
-		local actorDerivedPosZ = actorPosZ;
-		local targetCamSpline = camera:GetTargetSpline();
-		if targetCamSpline then
-			actorDerivedPosX, actorDerivedPosY, actorDerivedPosZ = Vector3D_Add(actorPosX, actorPosY, actorPosZ, targetCamSpline:CalculatePointOnGlobalCurve(1.0 - camera:GetZoomPercent()));
-		end
-
-		local actorPosScreenSpaceX, actorPosScreenSpaceY, _ = modelScene:Transform3DPointTo2D(actorDerivedPosX, actorDerivedPosY, actorDerivedPosZ);
-		
-		local camTargetX, camTargetY, _ = modelScene:Transform3DPointTo2D(targetX, targetY, targetZ);
-		local yShift = camTargetY - actorPosScreenSpaceY;
-
-		-- Build an offset from the actor's position (in screen space) to the center of the frame to compensate for centering
-		local iLeft, iRight, iTop, iBottom = modelScene:GetViewInsets();
-		local frameWidth = modelFrame:GetWidth();
-		local frameHeight = modelFrame:GetHeight();
-
-		frameWidth = (frameWidth - iLeft) - iRight;
-		frameHeight = (frameHeight - iBottom) - iTop;
-
-		local frameOffsetX = (frameWidth * 0.5) - actorPosScreenSpaceX;
-		local frameOffsetY = (frameHeight * 0.5) - actorPosScreenSpaceY;
-
-		-- Circumscribe a rectangle around the parallelogram made when we projected the ground plane of the bounding box in to screen space
-		local left		= math.min( math.min(point1x, point2x), math.min(point3x, point4x) );
-		local right		= math.max( math.max(point1x, point2x), math.max(point3x, point4x) );
-		local top		= math.max( math.max(point1y, point2y), math.max(point3y, point4y) );
-		local bottom	= math.min( math.min(point1y, point2y), math.min(point3y, point4y) );
-		
-		-- An absolute vertical fudge value to make the shadow fit more correctly under the actor (versus just using the actor's origin)
-		local yFudgeAmount = -50;
-
-		-- Fudge values for adjusting the overall size of the shadow (value is applied in both directions, doubling its effect)
-		local shadowSizeYFudge = 75;
-		local shadowSizeXFudge = 225;
-
-		yShift = (frameOffsetY - yShift) + yFudgeAmount;
-
-		local screenSpaceOffsetsX = 100 + iLeft;	-- RNM : This is fixed, but may want to eventually be affected by camZoomPct
-		local screenSpaceOffsetsY = yShift;
-
-		left	= left		+	screenSpaceOffsetsX		-	shadowSizeXFudge;
-		right	= right		+	screenSpaceOffsetsX		+	shadowSizeXFudge;
-		top		= top		+	screenSpaceOffsetsY		+	shadowSizeYFudge;
-		bottom	= bottom	+	screenSpaceOffsetsY		-	shadowSizeYFudge;
-
-		dropShadow:ClearAllPoints();
-		dropShadow:SetPoint("BOTTOMLEFT", modelFrame, "BOTTOMLEFT", left, bottom);
-		dropShadow:SetPoint("TOPRIGHT", modelFrame, "BOTTOMLEFT", right, top);
-	end
-end
-
-function CatalogShopModelSceneContainerFrameMixin.UpdateBundleVisuals(modelScene, displayData)
-	CatalogShopModelSceneContainerFrameMixin.UpdateDropShadowForBundle(modelScene, displayData);
-end
-
-
-function CatalogShopModelSceneContainerFrameMixin.UpdateDropShadowForBundle(modelScene, displayData)
-	local modelFrame = modelScene and modelScene.ModelFrame;
-	local dropShadow = modelFrame and modelFrame.dropShadow;
-	if displayData and modelFrame and dropShadow then
-		if not displayData.actorDisplayBucket or #displayData.actorDisplayBucket <= 0 then
-			dropShadow:Hide();
-			return;
-		end
-		dropShadow:Show();
-
-		local minX = 999;
-		local minY = 999;
-		local minZ = 999;
-		local sumX = 0;
-		local sumY = 0;
-		local sumZ = 0;
-		local maxX = -999;
-		local maxY = -999;
-		local maxZ = -999;
-
-		for _, actorDisplay in ipairs(displayData.actorDisplayBucket) do
-			minX = min(minX, actorDisplay.actorX);
-			minY = min(minY, actorDisplay.actorY);
-			minZ = min(minZ, actorDisplay.actorZ);
-
-			sumX = sumX + actorDisplay.actorX;
-			sumY = sumY + actorDisplay.actorY;
-			sumZ = sumZ + actorDisplay.actorZ;
-
-			maxX = max(maxX, actorDisplay.actorX);
-			maxY = max(maxY, actorDisplay.actorY);
-			maxZ = max(maxZ, actorDisplay.actorZ);
-		end
-
-		local avgX = sumX / #displayData.actorDisplayBucket;
-		local avgY = sumY / #displayData.actorDisplayBucket;
-		local avgZ = sumZ / #displayData.actorDisplayBucket;
-
-		local camera = modelScene:GetActiveCamera();
-		if not camera then
-			return;
-		end
-		local targetX, targetY, targetZ = camera:GetDerivedTarget();
-		local camZoomPct = camera:GetZoomPercent();
-
-		-- We want the 4 points that make up the bottom of the bounding box (this is the rectangle around the feet of the model)
-		-- These are then put in to screen space
-		local point1x, point1y, _ = modelScene:Transform3DPointTo2D(maxX,		maxY,		minZ);
-		local point2x, point2y, _ = modelScene:Transform3DPointTo2D(maxX,		minY,		minZ);
-		local point3x, point3y, _ = modelScene:Transform3DPointTo2D(minX,		maxY,		minZ);
-		local point4x, point4y, _ = modelScene:Transform3DPointTo2D(minX,		minY,		minZ);
-
-		local modelSceneOffsetX = modelScene.frameOffsetX or 0;
-		local modelSceneOffsetY = modelScene.frameOffsetY or 0;
-
-		local actorDerivedPosX = avgX;
-		local actorDerivedPosY = avgY;
-		local actorDerivedPosZ = avgZ;
-		local targetCamSpline = camera:GetTargetSpline();
-		if targetCamSpline then
-			actorDerivedPosX, actorDerivedPosY, actorDerivedPosZ = Vector3D_Add(avgX, avgY, avgZ, targetCamSpline:CalculatePointOnGlobalCurve(1.0 - camera:GetZoomPercent()));
-		end
-
-		local actorPosScreenSpaceX, actorPosScreenSpaceY, _ = modelScene:Transform3DPointTo2D(actorDerivedPosX, actorDerivedPosY, actorDerivedPosZ);
-		local camTargetX, camTargetY, _ = modelScene:Transform3DPointTo2D(targetX, targetY, targetZ);
-		local yShift = camTargetY - actorPosScreenSpaceY;
-
-		-- Build an offset from the actor's position (in screen space) to the center of the frame to compensate for centering
-		local iLeft, iRight, iTop, iBottom = modelScene:GetViewInsets();
-		local frameWidth = modelFrame:GetWidth();
-		local frameHeight = modelFrame:GetHeight();
-
-		frameWidth = (frameWidth - iLeft) - iRight;
-		frameHeight = (frameHeight - iBottom) - iTop;
-
-		local frameOffsetY = (frameHeight * 0.5) - actorPosScreenSpaceY;
-
-		-- Circumscribe a rectangle around the parallelogram made when we projected the ground plane of the bounding box in to screen space
-		local left		= math.min( math.min(point1x, point2x), math.min(point3x, point4x) );
-		local right		= math.max( math.max(point1x, point2x), math.max(point3x, point4x) );
-		local top		= math.max( math.max(point1y, point2y), math.max(point3y, point4y) );
-		local bottom	= math.min( math.min(point1y, point2y), math.min(point3y, point4y) );
-		
-		-- An absolute vertical fudge value to make the shadow fit more correctly under the actor (versus just using the actor's origin)
-		local yFudgeAmount = 50;
-
-		-- Fudge values for adjusting the overall size of the shadow (value is applied in both directions, doubling its effect)
-		local shadowSizeYFudge = 75;
-		local shadowSizeXFudge = 225;
-
-		yShift = (frameOffsetY - yShift) + yFudgeAmount;
-
-		local screenSpaceOffsetsX = 100 + iLeft;	-- RNM : This is fixed, but may want to eventually be affected by camZoomPct
-		local screenSpaceOffsetsY = yShift;
-
-		left	= left		+	screenSpaceOffsetsX		-	shadowSizeXFudge;
-		right	= right		+	screenSpaceOffsetsX		+	shadowSizeXFudge;
-		top		= top		+	screenSpaceOffsetsY		+	shadowSizeYFudge;
-		bottom	= bottom	+	screenSpaceOffsetsY		-	shadowSizeYFudge;
-
-		dropShadow:ClearAllPoints();
-		dropShadow:SetPoint("BOTTOMLEFT", modelFrame, "BOTTOMLEFT", left, bottom);
-		dropShadow:SetPoint("TOPRIGHT", modelFrame, "BOTTOMLEFT", right, top);
-	end
 end

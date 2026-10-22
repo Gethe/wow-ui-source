@@ -20,7 +20,8 @@ TutorialData.MAX_CHANGE_EQUIPMENT_LEVEL = 0; -- 0 means it will never stop.
 TutorialData.CHANGE_EQUIPMENT_LIMIT = 0; -- 0 means it will never stop.
 TutorialData.PICK_REWARD_LEVEL = 0; -- 0 means it will never stop.
 
-TutorialData.AUTO_ATTACK_SPELL_ID = 6603; 
+TutorialData.AUTO_ATTACK_SPELL_ID = 6603;
+TutorialData.EQUIPMENT_TUTORIAL_EXEMPT_ITEM_IDS = {};
 
 TutorialData.UI_Elements = {};
 TutorialData.UI_Elements.BACKPACK =	{MainMenuBarBackpackButton};

@@ -164,9 +164,10 @@ function CatalogShopDefaultProductCardMixin:SetSelected(selected)
 	-- This is only for integration with the model scene tool which will only happen inside the catalog shop for now.
 	if selected and CatalogShopFrame then
 		if self.ModelScene:IsShown() then
-			CatalogShopFrame:SetCurrentCardModelSceneData(self.ModelScene, self.defaultCardModelSceneID, self.overrideCardModelSceneID);
+			local actor = CatalogShopUtil.GetOverrideTargetActor(self.ModelScene, self.cardDisplayData);
+			CatalogShopFrame:SetCurrentCardModelSceneData(self.ModelScene, self.defaultCardModelSceneID, self.overrideCardModelSceneID, self.appliesOverrideActorPosition, actor);
 		else
-			CatalogShopFrame:SetCurrentCardModelSceneData(nil, nil, nil);
+			CatalogShopFrame:SetCurrentCardModelSceneData(nil, nil, nil, nil);
 		end
 	end
 end
@@ -183,6 +184,8 @@ function CatalogShopDefaultProductCardMixin:SetModelScene(productInfo, forceScen
 	local modelLoadedCB = nil;
 
 	self.defaultCardModelSceneID = defaultCardModelSceneID;
+	self.cardDisplayData = displayData;
+	self.appliesOverrideActorPosition = productType ~= CatalogShopConstants.ProductType.Transmog;
 	self.overrideCardModelSceneID = useWideCardSettings and displayInfo.overrideWideCardModelSceneID or displayInfo.overrideCardModelSceneID;
 	CatalogShopUtil.ClearSpecialActors(self.ModelScene);
 
@@ -210,7 +213,6 @@ function CatalogShopDefaultProductCardMixin:SetModelScene(productInfo, forceScen
 
 	if mainActor then
 		mainActor:StopAnimationKit();
-		mainActor:SetSpellVisualKit(nil);
 		mainActor:SetAnimation(0, 0, 1.0);
 	end
 end

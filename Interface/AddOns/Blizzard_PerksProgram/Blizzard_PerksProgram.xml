@@ -16,7 +16,7 @@
 					<OnUpdate function="GameTooltip_OnUpdate"/>
 				</Scripts>
 			</GameTooltip>
-			
+
 			<Frame parentKey="ProductsFrame" mixin="PerksProgramProductsFrameMixin"  frameLevel="500" movable="false" resizable="false" enableMouse="false" clampedToScreen="true">
 				<Anchors>
 					<Anchor point="TOPLEFT" />
@@ -285,9 +285,9 @@
 										<Alpha fromAlpha="1" toAlpha="0" duration="1.5" order="1"/>
 									</AnimationGroup>
 								</Animations>
-							</Frame>							
+							</Frame>
 						</Frames>
-						
+
 						<Scripts>
 							<OnLoad method="OnLoad" />
 							<OnEvent method="OnEvent"/>
@@ -320,7 +320,7 @@
 									<KeyValue key="bottomPadding" value="36" type="number"/>
 									<KeyValue key="timeTextColor" value="WHITE_FONT_COLOR" type="global"/>
 									<KeyValue key="timeValueColor" value="WHITE_FONT_COLOR" type="global"/>
-								</KeyValues>								
+								</KeyValues>
 							</Frame>
 							<Frame parentKey="DividerFrame" mixin="PerksProgramDividerFrameMixin">
 								<Size x="340" y="3"/>
@@ -552,10 +552,10 @@
 							<KeyValue key="tooltipMinWidth" value="nil" type="global"/>
 							<KeyValue key="flipTextures" value="true" type="boolean"/>
 							<KeyValue key="tooltipAnchor" value="ANCHOR_BOTTOM" type="string"/>
-						</KeyValues>						
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOP" x="149" y="-56"/>
-						</Anchors>						
+						</Anchors>
 					</CheckButton>
 					<CheckButton parentKey="NormalFormButton" inherits="RingedMaskedButtonTemplate" mixin="PerksProgramAlteredFormButtonMixin" frameLevel="1000">
 						<Size x="79" y="79"/>
@@ -574,7 +574,7 @@
 							<Anchor point="RIGHT" relativeKey="$parent.AlteredFormButton" relativePoint="LEFT" x="-16" y="0" />
 						</Anchors>
 					</CheckButton>
-					
+
 					<Frame parentKey="ToyOverlayFrame" frameLevel="1000" setAllPoints="true" hidden="true" >
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -619,32 +619,12 @@
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="dropShadow" atlas="perks-char-shadow" alpha="0.6">
-									<Size x="280" y="74"/>
-									<Anchors>
-										<Anchor point="CENTER" />
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
 					</ModelScene>
 					<ModelScene parentKey="PlayerModelScene" inherits="NoZoomModelSceneMixinTemplate" frameLevel="100" >
 						<Anchors>
 							<Anchor point="TOPLEFT" x="0" y="0"/>
 							<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<Texture parentKey="dropShadow" atlas="perks-char-shadow" alpha="0.6">
-									<Size x="280" y="74"/>
-									<Anchors>
-										<Anchor point="CENTER" />
-									</Anchors>
-								</Texture>
-							</Layer>
-						</Layers>
 					</ModelScene>
 					<ModelScene parentKey="CelebrateModelScene" inherits="NoZoomModelSceneMixinTemplate" frameLevel="10" >
 						<Anchors>
@@ -845,7 +825,7 @@
 							<Anchor point="LEFT" relativeKey="$parent.TogglePlayerPreview.Text" relativePoint="RIGHT" x="18"/>
 						</Anchors>
 					</CheckButton>
-					
+
 					<CheckButton parentKey="ToggleHideArmor" inherits="PerksProgramCheckboxTemplate" frameLevel="1000" hidden="true">
 						<KeyValues>
 							<KeyValue key="textString" value="PERKS_PROGRAM_HIDE_ARMOR" type="global"/>
@@ -872,7 +852,7 @@
 						<Size x="158" y="39"/>
 						<Anchors>
 							<Anchor point="RIGHT" x="-50"/>
-							<Anchor point="BOTTOM" relativeKey="$parent.LeaveButton" relativePoint="BOTTOM" y="16"/>						
+							<Anchor point="BOTTOM" relativeKey="$parent.LeaveButton" relativePoint="BOTTOM" y="16"/>
 						</Anchors>
 						<Layers>
 							<Layer level="ARTWORK">

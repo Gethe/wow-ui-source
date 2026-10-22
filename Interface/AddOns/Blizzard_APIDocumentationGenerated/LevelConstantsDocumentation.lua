@@ -3,7 +3,7 @@ local LevelConstants =
 	Tables =
 	{
 		{
-			Name = "LevelConstsExposed",
+			Name = "LevelConstsExposed_RetailAndClassic",
 			Type = "Constants",
 			Values =
 			{

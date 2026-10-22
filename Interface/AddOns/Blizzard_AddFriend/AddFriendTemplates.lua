@@ -116,8 +116,15 @@ function AddFriendFrameMixin:OnLoad()
 end
 
 function AddFriendFrameMixin:OnShow()
+	local infoContainer = self.InfoFrame.InfoContainer;
+
+	local areRealIDFriendsEnabled = C_BattleNet.AreRealIDFriendsEnabled();
+	local leftTextContainer = infoContainer.LeftTextContainer;
+	leftTextContainer.Title:SetText(areRealIDFriendsEnabled and BATTLETAG_OR_REAL_ID_LABEL or BATTLETAG_LABEL);
+	leftTextContainer.Description:SetText(areRealIDFriendsEnabled and BATTLETAG_AND_REAL_ID_DESCRIPTION or BATTLETAG_DESCRIPTION);
+
 	local areTitleFriendsEnabled = C_BattleNet.AreTitleFriendsEnabled();
-	AddFriendInfoFrame.InfoContainer.RightTextContainer.Description:SetText(areTitleFriendsEnabled and WOW_FRIEND_DESCRIPTION or CHARACTER_FRIEND_INFO);
+	infoContainer.RightTextContainer.Description:SetText(areTitleFriendsEnabled and WOW_FRIEND_DESCRIPTION or CHARACTER_FRIEND_INFO);
 end
 
 function AddFriendFrameMixin:OnHide()
@@ -154,9 +161,9 @@ function AddFriendFrameMixin:ShowEntry()
 			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetText(REALID_FRIEND_LABEL);
 			AddFriendNameEditBoxFill:SetText(ENTER_NAME_OR_EMAIL);
 		elseif ( battleTag ) then
-			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetText(BATTLETAG);
+			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Title:SetText(BATTLETAG_LABEL);
 			AddFriendEntryFrame.OptionsContainer.LeftTextContainer.Description:SetText(BATTLETAG_FRIEND_LABEL);
-			AddFriendNameEditBoxFill:SetText(ENTER_NAME_OR_BATTLETAG);
+			AddFriendNameEditBoxFill:SetText(ENTER_CHARACTER_NAME_OR_BATTLETAG);
 		end
 	else
 		self.BNconnected = nil;
@@ -174,6 +181,10 @@ function AddFriendFrameMixin:ShowEntry()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
+function AddFriendFrameMixin:SetErrorMessageShown(shown)
+	self.EntryFrame.EditBoxContainer.ErrorMessage:SetShown(shown);
+end
+
 function AddFriendNameEditBox_OnTextChanged(self, userInput)
 	if ( not AutoCompleteEditBox_OnTextChanged(self, userInput) ) then
 		local text = self:GetText();
@@ -182,11 +193,15 @@ function AddFriendNameEditBox_OnTextChanged(self, userInput)
 			if ( AddFriendFrame.BNconnected ) then
 				AddFriendEntryFrame_Init();
 			end
-			AddFriendEntryFrameAcceptButton:Enable();
+			local isRealIDFriendRequest = C_BattleNet.GetFriendLevelFromInviteText(text) == Enum.BattleNetFriendLevel.RealID;
+			local isBlockedRealIDFriendRequest = isRealIDFriendRequest and not C_BattleNet.AreRealIDFriendsEnabled();
+			AddFriendEntryFrameAcceptButton:SetEnabled(not isBlockedRealIDFriendRequest);
+			AddFriendFrame:SetErrorMessageShown(isBlockedRealIDFriendRequest);
 		else
 			AddFriendEntryFrame_Init();
 			AddFriendNameEditBoxFill:Show();
 			AddFriendEntryFrameAcceptButton:Disable();
+			AddFriendFrame:SetErrorMessageShown(false);
 		end
 	end
 end

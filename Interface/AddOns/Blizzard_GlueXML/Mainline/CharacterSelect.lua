@@ -1360,9 +1360,34 @@ CharacterSelectRewardsButtonMixin = {};
 
 CharacterSelect_ToggleStoreUI = ToggleStoreUI;
 
+local REWARDS_GLOW_PADDING_X, REWARDS_GLOW_PADDING_Y = 48, 48;
+
 function CharacterSelectRewardsButtonMixin:OnClick()
+	SetCVar("hasClickedGlueRewardsButton", true);
+	self:UpdateGlow();
+
 	CatalogShopFrame.shoppingSessionUUIDStr = C_CatalogShop.OpenCatalogShopInteractionFromRewards();
 	CharacterSelect_ToggleStoreUI();
+end
+
+function CharacterSelectRewardsButtonMixin:OnEnter()
+	if not self:IsEnabled() then
+		GlueTooltip:SetOwner(self, "ANCHOR_TOP");
+		GlueTooltip:SetText(WOWHACK_REWARDS_DISABLED_TOOLTIP);
+		GlueTooltip:Show();
+	end
+end
+
+function CharacterSelectRewardsButtonMixin:OnLeave()
+	if GlueTooltip:GetOwner() == self then
+		GlueTooltip:Hide();
+	end
+end
+
+function CharacterSelectRewardsButtonMixin:UpdateGlow()
+	local showGlow = self:IsShown() and self:IsEnabled() and not GetCVarBool("hasClickedGlueRewardsButton");
+	local glowWidth, glowHeight = self:GetWidth() + REWARDS_GLOW_PADDING_X, self:GetHeight() + REWARDS_GLOW_PADDING_Y;
+	GlowEmitterFactory:SetShown(showGlow, self, GlowEmitterMixin.Anims.GreenGlow, 0, 0, glowWidth, glowHeight);
 end
 
 CharSelectEnterWorldButtonMixin = {};
@@ -1494,6 +1519,7 @@ function CharacterSelect_UpdateButtonState()
 	if visibilityFramesContainer.RewardsButton:IsShown() then
 		visibilityFramesContainer.RewardsButton:SetEnabled(hasCharacters);
 	end
+	visibilityFramesContainer.RewardsButton:UpdateGlow();
 
 	if (CharSelectReincarnateCharacterButton) then
 		-- Disable reincarnation for now. Potentially turn it on in the future? CAM-6168
@@ -3166,6 +3192,11 @@ function CharacterSelectFrameMixin:SetUpGamepad()
 	self.SmartNavigationOnSelect = self.OnSmartNavButtonSelected;
 end
 
+function CharacterSelectFrameMixin:ConfigureCharacterListSearchBoxGamepad()
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox:SetPoint("TOPLEFT", 40, -25);
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox:SetWidth(297);
+end
+
 function CharacterSelectFrameMixin:InitializeGamepad()
 	--Set up navigation overrides.
 	local navBar = self.CharacterSelectUI.VisibilityFramesContainer.NavBar;
@@ -3186,7 +3217,8 @@ function CharacterSelectFrameMixin:InitializeGamepad()
 	CharacterSelectCharacterFrame.DeleteCharacterButton:Hide();
 
 	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox.FocusIcon:Show();
-	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox:SetPoint("TOPLEFT", 40, -25);
+	self:ConfigureCharacterListSearchBoxGamepad();
+
 	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetPoint("RIGHT", CharSelectEnterWorldButton, "BOTTOMLEFT", -200, 0);
 	CharSelectCharacterName:SetPoint("BOTTOM", self.frameFooter.inputLegend, "TOP", 0, 15);
 

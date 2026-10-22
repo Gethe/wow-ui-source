@@ -158,6 +158,9 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
 			dialog:Hide();
 		end
 	end,
+	OnCancel = function(dialog, data)
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+	end,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
@@ -708,7 +711,8 @@ StaticPopupDialogs["MACRO_ACTION_FORBIDDEN"] = {
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["ADDON_ACTION_FORBIDDEN"] = {
@@ -722,7 +726,8 @@ StaticPopupDialogs["ADDON_ACTION_FORBIDDEN"] = {
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["CONFIRM_LOOT_DISTRIBUTION"] = {
@@ -1186,6 +1191,7 @@ StaticPopupDialogs["RESURRECT"] = {
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
 	noCancelOnReuse = 1,
+	skipGamepadAutoFocus = 1,
 };
 StaticPopupDialogs["RESURRECT_NO_SICKNESS"] = {
 	StartDelay = GetCorpseRecoveryDelay,
@@ -2034,13 +2040,15 @@ StaticPopupDialogs["DUEL_REQUESTED"] = {
 		CancelDuel();
 	end,
 	timeout = StaticPopupTimeoutSec,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["DUEL_OUTOFBOUNDS"] = {
 	text = DUEL_OUTOFBOUNDS_TIMER,
 	GetExpirationText = GameDialogDefsUtil.GetDefaultExpirationText,
 	timeout = 10,
+	skipGamepadAutoFocus = 1,
 };
 StaticPopupDialogs["PET_BATTLE_PVP_DUEL_REQUESTED"] = {
 	text = PET_BATTLE_PVP_DUEL_REQUESTED,
@@ -2054,7 +2062,8 @@ StaticPopupDialogs["PET_BATTLE_PVP_DUEL_REQUESTED"] = {
 		C_PetBattles.CancelPVPDuel();
 	end,
 	timeout = StaticPopupTimeoutSec,
-	hideOnEscape = 1
+	hideOnEscape = 1,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["RECOVER_CORPSE"] = {
@@ -2076,6 +2085,7 @@ StaticPopupDialogs["RECOVER_CORPSE"] = {
 	whileDead = 1,
 	interruptCinematic = 1,
 	notClosableByLogout = 1,
+	skipGamepadAutoFocus = 1,
 };
 StaticPopupDialogs["RECOVER_CORPSE_INSTANCE"] = {
 	text = RECOVER_CORPSE_INSTANCE,
@@ -2534,6 +2544,7 @@ StaticPopupDialogs["DOWNLOAD_HIGH_RES_TEXTURES"] = {
 	OnAccept = function(dialog, data)
 		C_BattleNet.InstallHighResTextures();
 	end,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["BILLING_NAG"] = {
@@ -2745,6 +2756,7 @@ StaticPopupDialogs["VOTE_BOOT_PLAYER"] = {
 	whileDead = 1,
 	interruptCinematic = 1,
 	timeout = 0,
+	skipGamepadAutoFocus = 1,
 };
 
 StaticPopupDialogs["VOTE_BOOT_REASON_REQUIRED"] = {
@@ -3553,6 +3565,7 @@ if (C_GameRules.IsHardcoreActive()) then
 		noCloseOnAlt = true,
 		cancels = "HARDCORE_RECOVER_CORPSE",
 		timeoutInformationalOnly = 1,
+		skipGamepadAutoFocus = 1,
 	};
 	StaticPopupDialogs["HARDCORE_RECOVER_CORPSE"] = {
 		text = HARDCORE_RECOVER_CORPSE,
@@ -3563,7 +3576,8 @@ if (C_GameRules.IsHardcoreActive()) then
 		end,
 		whileDead = 1,
 		interruptCinematic = 1,
-		notClosableByLogout = 1
+		notClosableByLogout = 1,
+		skipGamepadAutoFocus = 1,
 	};
 	StaticPopupDialogs["HARDCORE_RECOVER_CORPSE_INSTANCE"] = {
 		text = HARDCORE_RECOVER_CORPSE_INSTANCE,
@@ -3637,7 +3651,8 @@ if (C_GameRules.IsHardcoreActive()) then
 			GameTooltip:Hide();
 		end,
 		timeout = StaticPopupTimeoutSec,
-		hideOnEscape = 1
+		hideOnEscape = 1,
+		skipGamepadAutoFocus = 1,
 	};
 	StaticPopupDialogs["DUEL_TO_THE_DEATH_REQUESTED_CONFIRM"] = {
 		text = DUEL_TO_THE_DEATH_REQUEST_CONFIRM,

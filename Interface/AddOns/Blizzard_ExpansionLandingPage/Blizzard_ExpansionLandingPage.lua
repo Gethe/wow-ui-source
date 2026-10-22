@@ -4,6 +4,8 @@ local landingPageOverlay = {
 	[LE_EXPANSION_MIDNIGHT] = CreateFromMixins(MidnightLandingOverlayMixin),
 };
 
+local EXPANSION_LANDING_PAGE_MINIMAP_INSET_ID = "ExpansionLandingPageOverlay";
+
 ExpansionLandingPageMixin = {};
 
 ExpansionLandingPageEvents = {
@@ -60,7 +62,7 @@ function ExpansionLandingPageMixin:RefreshExpansionOverlay()
 		end
 
 		if self.overlay then
-			C_Minimap.ClearMinimapInsetInfo();
+			C_Minimap.ClearMinimapInsetInfo(EXPANSION_LANDING_PAGE_MINIMAP_INSET_ID);
 			local minimapAnimationEvents = self.overlay.GetMinimapAnimationEvents();
 			if minimapAnimationEvents then
 				FrameUtil.UnregisterFrameForEvents(self, minimapAnimationEvents);
@@ -71,7 +73,16 @@ function ExpansionLandingPageMixin:RefreshExpansionOverlay()
 
 		if self.overlay then
 			if self.overlay.GetMinimapInsetInfo then
-				C_Minimap.SetMinimapInsetInfo(self.overlay.GetMinimapInsetInfo());
+				local minInsetAngle, maxInsetAngle, insetDistanceScalar = self.overlay.GetMinimapInsetInfo();
+				local isCircularInset = true;
+
+				C_Minimap.SetMinimapInsetInfo(
+					EXPANSION_LANDING_PAGE_MINIMAP_INSET_ID,
+					minInsetAngle,
+					maxInsetAngle,
+					insetDistanceScalar,
+					isCircularInset
+				);
 			end
 			self.overlayFrame = newestOverlay.CreateOverlay(self.Overlay);
 			self.overlayFrame:Show();

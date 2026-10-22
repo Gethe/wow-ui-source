@@ -931,15 +931,6 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ModelSceneFrameTemplate" frameLevel="0" virtual="true">
-		<Size x="10" y="10"/>
-		<Layers>
-			<Layer level="ARTWORK">
-				<Texture parentKey="dropShadow" atlas="shop-drop-shadow" alpha="0.8" useAtlasSize="true" />
-			</Layer>
-		</Layers>
-	</Frame>
-
 	<Frame name="CatalogShopErrorFrameTemplate" mixin="CatalogShopErrorFrameMixin" enableMouse="false" hidden="true" virtual="true">
 		<Size x="320" y="250" />
 		<Anchors>

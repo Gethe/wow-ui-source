@@ -5,7 +5,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" text="" font="GameFontNormalLarge" justifyH="LEFT">
-					<Size x="310" y="0"/>
+					<Size x="280" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
@@ -19,7 +19,7 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<FontString parentKey="Label" text="" font="GameFontNormalLarge2" justifyH="LEFT">
-					<Size x="310" y="0"/>
+					<Size x="280" y="0"/>
 					<Anchors>
 						<Anchor point="TOPLEFT"/>
 					</Anchors>
@@ -30,7 +30,7 @@
 	</Frame>
 
 	<Frame name="CharacterCreateSpaceFrameTemplate" virtual="true">
-		<Size x="310" y="14"/>
+		<Size x="280" y="14"/>
 	</Frame>
 
 	<Frame name="CharCreateBodyTypeButtonTemplate" inherits="CharCustomizeBodyTypeButtonTemplate" virtual="true">
@@ -50,7 +50,7 @@
 	</Frame>
 
 	<Frame name="CharacterCreateDetaislListTemplate" inherits="CallbackRegistrantTemplate" mixin="CharacterCreateDetaislListFrameMixin, PortraitFrameMixin" enableMouse="true" frameLevel="4" virtual="true">
-		<Size x="390" y="1"/>		
+		<Size x="360" y="1"/>		
 		<Layers>
 			<Layer level="BORDER">
 				<Texture parentKey="Frame" atlas="heavybronze-frame-basic" setAllPoints="true"/>
