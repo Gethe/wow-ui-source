@@ -218,7 +218,6 @@ function PlayerChoice_WidgetsLayout(widgetContainer, sortedWidgets, consolidateW
 		DefaultWidgetLayout(widgetContainer, topWidgets, skipContainerLayout);
 	end
 
-	local skipHorizontalRowPoolClear = true;
 	if hasBottomWidgets then
 		-- We want the bottom widgets to be anchored to the bottom of the container but we still want them to be layed out top to bottom among themselves (by orderIndex)
 		-- In order to achieve that, we reserve-sort the bottom widgets and then lay them out bottom to top and right to left
@@ -231,6 +230,7 @@ function PlayerChoice_WidgetsLayout(widgetContainer, sortedWidgets, consolidateW
 		widgetContainer.verticalRelativePoint = "TOP";
 		widgetContainer.horizontalAnchorPoint = "RIGHT";
 		widgetContainer.horizontalRelativePoint = "LEFT";
+		local skipHorizontalRowPoolClear = hasTopWidgets;
 		DefaultWidgetLayout(widgetContainer, bottomWidgets, skipContainerLayout, skipHorizontalRowPoolClear);
 	end
 
