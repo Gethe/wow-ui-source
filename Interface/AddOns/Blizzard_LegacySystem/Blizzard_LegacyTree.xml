@@ -70,6 +70,16 @@
 			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.LegacySquare" type="global"/>
 			<KeyValue key="sizingAdjustment" value="TalentButtonUtil.SizingAdjustment.LegacySquare" type="global"/>
 		</KeyValues>
+		<Layers>
+			<Layer level="ARTWORK" textureSubLevel="1">
+				<Texture atlas="Talents-Square-Box-c60">
+					<Size x="79" y="34"/>
+					<Anchors>
+						<Anchor point="CENTER" relativeKey="$parent.SpendText" relativePoint="LEFT" x="-9" y="0"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 	</Button>
 
 	<Frame name="LegacyTreeTraitEdgeArrowTemplate" inherits="TalentEdgeArrowTemplate" virtual="true" scale="1.25">
@@ -83,6 +93,7 @@
 		<KeyValues>
 			<KeyValue key="getTemplateType" value="LegacyTreeUtil.GetTemplateForTalentType" type="global"/>
 			<KeyValue key="getEdgeTemplateType" value="LegacyTreeUtil.GetEdgeTemplateType" type="global"/>
+			<KeyValue key="getSpecializedMixin" value="LegacyTreeUtil.GetSpecializedMixin" type="global"/>
 			<KeyValue key="topPadding" value="54" type="number"/>
 			<KeyValue key="bottomPadding" value="54" type="number"/>
 			<KeyValue key="missingFromActionBarSuggested" value="false" type="boolean"/>

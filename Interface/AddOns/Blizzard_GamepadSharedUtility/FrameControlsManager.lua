@@ -168,25 +168,6 @@ function GamepadFrameControlsManagerMixin:ResetVars()
 	self.isUIFocused = false;
 end
 
---[[
-	This is eventually getting moved over to left stick.
-	Making it an externally callback function for now until
-	that change is good to go game-wide.
-]]
-function GamepadFrameControlsManagerMixin:ToggleTooltips()
-	if GetCVarBool("GamepadDisableTooltips") then
-		SetCVar("GamepadDisableTooltips", false);
-		local button = SmartNavigation:GetCurrentButton()
-		if button then
-			SmartNavigation:SelectButton(nil);
-			SmartNavigation:SelectButton(button);
-		end
-	else
-		SetCVar("GamepadDisableTooltips", true);
-		GameTooltip:Hide();
-	end
-end
-
 function GamepadFrameControlsManagerMixin:Init()
 	GamepadPopupHandler:Init();
 
@@ -206,7 +187,6 @@ function GamepadFrameControlsManagerMixin:Init()
 	if (not InGlue()) then
 		self.gamepadBindings:AddFunctionBinding(GAMEPAD_TRIGGER_RIGHT, FocusNextFrameHandler);
 		self.gamepadBindings:AddFunctionBinding(GAMEPAD_TRIGGER_LEFT,  FocusPreviousFrameHandler);
-		self.gamepadBindings:AddFunctionBinding(GAMEPAD_STICK_RIGHT_PRESS, GenerateClosure(self.ToggleTooltips, self));
 	end
 
 	self.gamepadFallthroughCatcherBindings = GamepadMode.CreateBindingGroup("FrameControlsManagerFallthroughCatcherBindings");

@@ -416,11 +416,10 @@ function GamepadPersistentInputLegendMixin:PostVariableSetUp()
 
 	-- Create Menu entries that show while UI Frames are active.
 	self:SetGroupColumns(MENU_GROUP, ONE_WIDE_COLUMN);
-	self:CreateBackground(MENU_GROUP, GetBackgroundHeightForRows(4));
+	self:CreateBackground(MENU_GROUP, GetBackgroundHeightForRows(3));
 	self:CreateEntry(MENU_GROUP, 0, 0, GAMEPAD_MENU_LEFT, PROMPT_FOCUS_UI);
 	self:CreateEntry(MENU_GROUP, 0, 1, GAMEPAD_TRIGGER_LEFT, PROMPT_PREVIOUS_FRAME);
 	self:CreateEntry(MENU_GROUP, 0, 2, GAMEPAD_TRIGGER_RIGHT, PROMPT_NEXT_FRAME);
-	self:CreateEntry(MENU_GROUP, 0, 3, GAMEPAD_STICK_RIGHT_PRESS, PROMPT_TOGGLE_TOOLTIPS);
 
 	-- Create HUD Mode entries to show while inspecting the HUD.
 	self:SetGroupColumns(HUD_GROUP, ONE_WIDE_COLUMN);

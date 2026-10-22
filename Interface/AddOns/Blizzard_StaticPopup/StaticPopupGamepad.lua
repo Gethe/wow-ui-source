@@ -37,8 +37,8 @@ function GamepadPopupHandler:InitializeBindings()
 												GenerateClosure(self.TryClickOrHoldButton, self, GAMEPAD_FACE_TOP),
 												GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
 
-		self.gamepadBindings:AddFunctionBinding(GAMEPAD_STICK_RIGHT_PRESS,
-												GenerateClosure(self.TryClickOrHoldButton, self, GAMEPAD_STICK_RIGHT_PRESS),
+		self.gamepadBindings:AddFunctionBinding(GAMEPAD_DPAD_BOTTOM,
+												GenerateClosure(self.TryClickOrHoldButton, self, GAMEPAD_DPAD_BOTTOM),
 												GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
 	end
 end
@@ -72,10 +72,10 @@ local function AddGamepadIcons(dialog)
 			dialog.gamepadIcons[GAMEPAD_FACE_TOP] = icon4;
 		end
 
-		if not dialog.gamepadIcons[GAMEPAD_STICK_RIGHT_PRESS] then
+		if not dialog.gamepadIcons[GAMEPAD_DPAD_BOTTOM] then
 			local button5 = dialog.ExtraButton;
-			local icon5 = GamepadMode.AddGamepadIconToButton(button5, GAMEPAD_STICK_RIGHT_PRESS);
-			dialog.gamepadIcons[GAMEPAD_STICK_RIGHT_PRESS] = icon5;
+			local icon5 = GamepadMode.AddGamepadIconToButton(button5, GAMEPAD_DPAD_BOTTOM);
+			dialog.gamepadIcons[GAMEPAD_DPAD_BOTTOM] = icon5;
 		end
 	end
 end
@@ -128,7 +128,7 @@ local function GamepadButtonToGetter(button)
 		[GAMEPAD_FACE_RIGHT] = "GetButton2",
 		[GAMEPAD_FACE_LEFT] = "GetButton3",
 		[GAMEPAD_FACE_TOP] = "GetButton4",
-		[GAMEPAD_STICK_RIGHT_PRESS] = "GetExtraButton",
+		[GAMEPAD_DPAD_BOTTOM] = "GetExtraButton",
 	};
 	return map[button];
 end
@@ -269,33 +269,6 @@ function GamepadPopupHandler:TrackPopupFrames()
 		PopupEventManager:UnregisterCallback("PopupOpened", self);
 		PopupEventManager:UnregisterCallback("PopupClosed", self);
 	end);
-
-	EventRegistry:RegisterCallback("Gamepad.RefreshFrameFocus", self.RefreshFrameFocus, self);
-end
-
-function GamepadPopupHandler:RefreshFrameFocus()
-	if not InputUtil.IsGamepadUIEnabled() then
-		return;
-	end
-
-	-- FrameControlsManager may not have been set yet
-	local FrameControlsManager = GamepadMode and GamepadMode.FrameControlsManager;
-	if not FrameControlsManager then
-		return;
-	end
-
-	-- FrameControlsManager takes over some of our bindings, since its binding group gets bound
-	-- after ours. Ensure we have ours bound when one of our popups are active.
-	local focusedFrame = FrameControlsManager:GetActiveFrame();
-
-	for _, popup in ipairs(self.visiblePopups) do
-		if focusedFrame == popup then
-			self:EnableBindings();
-			return;
-		end
-	end
-
-	self:DisablePopupBindings();
 end
 
 function GamepadPopupHandler:TryClickOrHoldButton(button, down)
@@ -360,7 +333,7 @@ function GamepadPopupHandler:ClearFocus()
 end
 
 function GamepadPopupHandler:EnableBindings()
-	GamepadMode.ActivateBindingGroup(self.gamepadBindings, true);
+	GamepadMode.ActivateBindingGroup(self.gamepadBindings);
 end
 
 function GamepadPopupHandler:DisablePopupBindings()

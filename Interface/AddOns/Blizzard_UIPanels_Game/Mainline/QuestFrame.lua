@@ -739,7 +739,12 @@ local function IsQuestCompleteValid()
 	if not QuestFrameRewardPanel:IsVisible() then
 		return false;
 	end
+
 	local numChoices = GetNumQuestChoices();
+	if ( numChoices == 1 ) then
+		QuestInfoFrame.itemChoice = 1;
+	end
+
 	if numChoices ~= 0 and (QuestInfoFrame.itemChoice <= 0 or QuestInfoFrame.itemChoice > numChoices) then
 		return false;
 	end

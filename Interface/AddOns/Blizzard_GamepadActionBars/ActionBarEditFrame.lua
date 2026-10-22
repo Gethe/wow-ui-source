@@ -52,12 +52,6 @@ function GamepadActionBarEditFrameMixin:OnLoad()
 	self:UpdateButtonToListenFor();
 
 	GamepadMode.FrameControlsManager:DisableFrameFocusPagingWhenFocused(self);
-
-	-- Make tooltip invisible rather than making it Show/Hide so it does not need to be re-initialized every toggle
-	self:GetTooltip():HookScript("OnShow", function(tooltip)
-		tooltip:SetAlpha(GetCVarBool("GamepadDisableTooltips") and 0 or 1);
-	end);
-
 	InputUtil.RegisterForInterfaceTransitions(self);
 	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
 end
@@ -154,13 +148,6 @@ function GamepadActionBarEditFrameMixin:SetUpInfoFrameFooters()
 		return self.activeMode ~= EDIT_FRAME_MODES.SELECT_ACTION_TO_PICKUP;
 	end
 
-	local function ToggleTooltips(self)
-		-- Make tooltip invisible rather than making it Show/Hide so it does not need to be re-initialized every toggle
-		local shouldDisable = not GetCVarBool("GamepadDisableTooltips");
-		SetCVar("GamepadDisableTooltips", shouldDisable);
-		self:GetTooltip():SetAlpha(shouldDisable and 0 or 1);
-	end
-
 	-- EditActionBarsInfoFrame Footers --
 	local cancel = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.ExitActiveMode, self), FRAME_ACTION_CANCEL);
 	self.editModeFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self.EditActionBarsInfoFrame, "EditModeFooter");
@@ -168,10 +155,6 @@ function GamepadActionBarEditFrameMixin:SetUpInfoFrameFooters()
 	self.editModeFooter:Finalize();
 
 	-- BindingInfoFrame Footers --
-	local tooltips = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS,  GenerateClosure(ToggleTooltips, self), PROMPT_TOGGLE_TOOLTIPS);
-	tooltips:AddCondition(GenerateClosure(IsNotSelectingAction, self));
-	tooltips:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
-
 	local back = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.ExitActiveMode, self), FRAME_ACTION_BACK);
 	back:AddCondition(GenerateClosure(IsBindingAction, self));
 	back:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
@@ -191,7 +174,6 @@ function GamepadActionBarEditFrameMixin:SetUpInfoFrameFooters()
 	self.bindingModeFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self.BindingInfoFrame, "BindingModeFooter");
 	self.bindingModeFooter:AddPromptedBinding(enterEditMode);
 	self.bindingModeFooter:AddPromptedBinding(clearAction);
-	self.bindingModeFooter:AddPromptedBinding(tooltips);
 	self.bindingModeFooter:AddPromptedBinding(back);
 	self.bindingModeFooter:AddPromptedBinding(undoEdit);
 	self.bindingModeFooter:Finalize();

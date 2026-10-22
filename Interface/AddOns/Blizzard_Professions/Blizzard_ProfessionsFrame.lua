@@ -761,7 +761,7 @@ local function FocusChatAndInsertLink(link)
 	ChatFrameUtil.InsertLink(link);
 end
 
-function ProfessionsMixin:SetUpGamepadBookPageFooter(toggleTooltips)
+function ProfessionsMixin:SetUpGamepadBookPageFooter()
 	local function UnlearnProfession()
 		local button = SmartNavigation:GetCurrentButton();
 		local primaryProfessionFrame = button:GetParent();
@@ -819,7 +819,6 @@ function ProfessionsMixin:SetUpGamepadBookPageFooter(toggleTooltips)
 	moreOptions:AddMoreActionsEntry(SOCIAL_SHARE_TEXT, LinkInChat, CanLinkInChat);
 
 	self.bookPageFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ProfessionsBookPageFooter");
-	self.bookPageFooter:AddPromptedBinding(toggleTooltips);
 	self.bookPageFooter:AddPromptedBinding(unlearnProfession);
 	self.bookPageFooter:AddPromptedBinding(moreOptions);
 	self.bookPageFooter:AddStandardBackPrompt();
@@ -973,7 +972,7 @@ function ProfessionsMixin:GetReagentMoreOptions()
 	return reagentMoreOptions;
 end
 
-function ProfessionsMixin:SetUpGamepadCraftingPageFooter(toggleTooltips)
+function ProfessionsMixin:SetUpGamepadCraftingPageFooter()
 	local function OpenFilter()
 		local filter = self.CraftingPage.RecipeList.FilterDropdown;
 		filter:MouseDown();
@@ -1064,7 +1063,6 @@ function ProfessionsMixin:SetUpGamepadCraftingPageFooter(toggleTooltips)
 	local reagentMoreOptions = self:GetReagentMoreOptions();
 
 	self.craftingPageFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ProfessionsCraftingPageFooter");
-	self.craftingPageFooter:AddPromptedBinding(toggleTooltips);
 	self.craftingPageFooter:AddPromptedBinding(filterDropdown);
 	self.craftingPageFooter:AddPromptedBinding(focusSearchBox);
 	self.craftingPageFooter:AddPromptedBinding(create);
@@ -1077,10 +1075,8 @@ function ProfessionsMixin:SetUpGamepadCraftingPageFooter(toggleTooltips)
 end
 
 function ProfessionsMixin:SetUpGamepad()
-	local toggleTooltips = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_LEFT_PRESS, nil, PROMPT_TOGGLE_TOOLTIPS);
-
-	self:SetUpGamepadBookPageFooter(toggleTooltips);
-	self:SetUpGamepadCraftingPageFooter(toggleTooltips);
+	self:SetUpGamepadBookPageFooter();
+	self:SetUpGamepadCraftingPageFooter();
 
 	EventRegistry:RegisterCallback(
 		"SKILL_LINES_CHANGED",

@@ -1,6 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\Blizzard_SharedXML\UI.xsd">
-	<Frame name="GuildInviteFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate">
+	<Frame name="GuildInviteFrame" toplevel="true" frameStrata="DIALOG" hidden="true" parent="UIParent" inherits="TranslucentFrameTemplate" mixin="FocusFramesInterfaceMixin">
+		<KeyValues>
+			<KeyValue key="layoutType" value="DialogFrameTemplate" type="string"/>
+		</KeyValues>
 		<Size x="310" y="188"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -133,33 +136,18 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+			<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameStrata="DIALOG" frameLevel="505"/>
+			<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
+			<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
+			<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
 		</Frames>
 		<Scripts>
-			<OnLoad>
-				self.hideOnEscape = true;
-				self:RegisterEvent("GUILD_INVITE_REQUEST");
-				self:RegisterEvent("GUILD_INVITE_CANCEL");
-			</OnLoad>
+			<OnLoad function="GuildInviteFrame_OnLoad"/>
 			<OnEvent function="GuildInviteFrame_OnEvent"/>
-			<OnUpdate>
-				self.elapsed = self.elapsed + elapsed;
-				if ( self.elapsed > 60 ) then
-					self:Hide();
-				end
-			</OnUpdate>
-			<OnHide>
-				if ( not self.accepted ) then
-					DeclineGuild();
-				end
-				PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
-				StaticPopupSpecial_Hide(GuildInviteFrame);
-			</OnHide>
-			<OnEnter>
-				GuildInviteFrame_OnEnter();
-			</OnEnter>
-			<OnLeave>
-				GuildInviteFrame_OnLeave();
-			</OnLeave>
+			<OnUpdate function="GuildInviteFrame_OnUpdate"/>
+			<OnHide function="GuildInviteFrame_OnHide"/>
+			<OnEnter function="GuildInviteFrame_OnEnter"/>
+			<OnLeave function="GuildInviteFrame_OnLeave"/>
 		</Scripts>
 	</Frame>
 </Ui>
