@@ -219,10 +219,14 @@ function CatalogShopModelSceneContainerFrameMixin:OnProductSelected(data, forceS
 		displayData.modelSceneContext = CatalogShopConstants.ModelSceneContext.PreviewScene;
 		if productType == CatalogShopConstants.ProductType.Bundle then
 			forceHideFormButtons = true;
-			local forceHidePlayer = false;
-			local bestActorTag = CatalogShopUtil.SetupModelSceneForBundle(modelScene, defaultModelSceneID, displayData, modelLoadedCB, forceHidePlayer);
-			modelScene:Show();
-			currentActor = modelScene:GetActorByTag(bestActorTag);
+			if defaultModelSceneID > 0 then
+				local forceHidePlayer = false;
+				local bestActorTag = CatalogShopUtil.SetupModelSceneForBundle(modelScene, defaultModelSceneID, displayData, modelLoadedCB, forceHidePlayer);
+				modelScene:Show();
+				currentActor = modelScene:GetActorByTag(bestActorTag);
+			else
+				modelScene:Hide();
+			end
 		else
 			if productType == CatalogShopConstants.ProductType.Mount then
 				forceSceneChange = true;--forceSceneChange or self.previousMainModelSceneID ~= defaultModelSceneID;
