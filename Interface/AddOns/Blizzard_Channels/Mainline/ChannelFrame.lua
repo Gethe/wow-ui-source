@@ -542,6 +542,11 @@ function ChannelFrameMixin:CreateVoiceChannel(channelName)
 end
 
 function ChannelFrameMixin:OnVoiceChatLogin(loginStatusCode)
+	-- Discord reports a pending login before the final result.
+	if loginStatusCode == Enum.VoiceChatStatusCode.OperationPending then
+		return;
+	end
+
 	local queuedCommands = self.queuedVoiceChannelCommands;
 	self.queuedVoiceChannelCommands = nil;
 

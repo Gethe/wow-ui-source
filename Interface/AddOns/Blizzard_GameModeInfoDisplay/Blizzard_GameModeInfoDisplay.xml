@@ -7,22 +7,22 @@
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
-				<Size x="575" y="370"/>
+				<Size x="610" y="435"/>
 				<Layers>
 					<Layer level="BORDER">
 						<Texture parentKey="Border" atlas="ui-frame-chamfered" setAllPoints="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-17" y="14"/>
-								<Anchor point="BOTTOMRIGHT" x="17" y="-31"/>
+								<Anchor point="TOPLEFT" x="-28" y="-16"/>
+								<Anchor point="BOTTOMRIGHT" x="29" y="1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
 					<Layer level="BORDER" textureSubLevel="1">
 						<Texture parentKey="Background" atlas="timerunning-infographic-background">
 							<Anchors>
-								<Anchor point="CENTER" y="-8"/>
+								<Anchor point="CENTER" x="1" y="-7"/>
 							</Anchors>
-							<Size x="576" y="382"/>
+							<Size x="633" y="383"/>
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
@@ -87,7 +87,7 @@
 						</FontString>
 						<Texture parentKey="RewardsBird" atlas="timerunning-infographic-rewards" useAtlasSize="true" scale="0.7">
 							<Anchors>
-								<Anchor point="CENTER" x="193" y="-53"/>
+								<Anchor point="CENTER" x="222" y="-48"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -95,14 +95,14 @@
 				<Frames>
 					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="3" y="3"/>
+							<Anchor point="TOPRIGHT" x="2" y="-42"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="PlayNowButton" inherits="GlueButtonSmallTemplate">
 						<Anchors>
-							<Anchor point="BOTTOM" x="0" y="5"/>
+							<Anchor point="BOTTOM" x="0" y="25"/>
 						</Anchors>
-						<Size x="300" y="56"/>
+						<Size x="260" y="35"/>
 					</Button>
 				</Frames>
 			</Frame>

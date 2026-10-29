@@ -3,6 +3,7 @@
 function EditModeAccountSettingsMixin:PrepareSettingCheckButtonVisibilityForCamelotFlavor()
 	self.settingsCheckButtons.ArchaeologyBar.shouldHide = true;
 	self.settingsCheckButtons.ArenaFrames.shouldHide = true;
+	self.settingsCheckButtons.EncounterBar.shouldHide = true;
 	self.settingsCheckButtons.EncounterEvents.shouldHide = true;
 	self.settingsCheckButtons.ExtraAbilities.shouldHide = true;
 	self.settingsCheckButtons.TalkingHeadFrame.shouldHide = true;

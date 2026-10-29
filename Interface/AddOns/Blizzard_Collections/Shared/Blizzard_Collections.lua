@@ -97,7 +97,7 @@ function CollectionsJournal_UpdateSelectedTab(self)
 		-- find first valid tab to display
 		for i, tab in ipairs(CollectionsJournal.TabContainer.Tabs) do
 			if CollectionsJournal_ValidateTab(tab:GetID()) then
-				CollectionsJournal_SetTab_Internal(self, i);
+				CollectionsJournal_SetTab_Internal(self.TabContainer, i);
 				selectedID = i;
 				break;
 			end

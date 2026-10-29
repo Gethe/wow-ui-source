@@ -954,6 +954,13 @@ function SmartNavigationMixin:SetWrapping(inFrame, shouldWrap)
 	end
 end
 
+function SmartNavigationMixin:SetGridHeightCompensation(inFrame, shouldCompensate)
+	local panelInfo = self:GetPanelInfo(inFrame, true);
+	if panelInfo then
+		panelInfo.gridHeightCompensate = shouldCompensate;
+	end
+end
+
 -- Changes the navigation to use a logical grid to allow for more specific wrapping behaviors.
 -- This assumes all the frames exist in a strict grid where all frames share an X or Y coord with their neighbors.
 -- The frames are sorted into columns and rows to be used for navigation instead of using directional raycasts.
@@ -1239,7 +1246,7 @@ function SmartNavigationMixin:UpdateGrid(inPanelInfo)
 
 	if activeGroup then
 		for _, button in ipairs(activeGroup.buttons) do
-			local validButton = self:IsButtonValid(button);
+			local validButton = self:IsButtonValid(button) and not button.smartNavigationIgnoreGrid;
 			if validButton then
 				table.insert(sortedButtons, button);
 			end
@@ -1305,19 +1312,23 @@ function SmartNavigationMixin:GetButtonInDirectionGrid(inButton, inDirection)
 				foundButton = true;
 				break;
 			end
-			if foundButton then
-				break;
-			end
+		end
+		if foundButton then
+			break;
 		end
 	end
 
 	local nextX = currentX + inDirection.x;
 	local nextY = currentY - inDirection.y;
+	if panelInfo.gridHeightCompensate then
+		local testX = math.clamp(nextX, 1, #grid);
+		nextY = nextY + (#grid[testX] - #grid[currentX]);
+	end
 
 	nextButton = self:GetButtonAtGridIndex(nextX, nextY);
 
 	if panelInfo.isWrapping then
-		if not nextButton then
+		if not nextButton and #grid > 0 then
 			local maxGridX = #grid;
 
 			if inDirection:IsEqualTo(SMART_NAV_INPUT_DIRECTION.UP) then
@@ -1333,15 +1344,19 @@ function SmartNavigationMixin:GetButtonInDirectionGrid(inButton, inDirection)
 					nextX = 1;
 				end
 				local newColumn = grid[nextX];
-				nextY = Clamp(nextY, 1, #newColumn);
 			elseif inDirection:IsEqualTo(SMART_NAV_INPUT_DIRECTION.LEFT) then
 				nextX = currentX - 1;
 				if nextX < 1 then
 					nextX = maxGridX;
 				end
 				local newColumn = grid[nextX];
-				nextY = Clamp(nextY, 1, #newColumn);
 			end
+
+			nextX = math.clamp(nextX, 1, #grid);
+			if (inDirection:IsEqualTo(SMART_NAV_INPUT_DIRECTION.RIGHT) or inDirection:IsEqualTo(SMART_NAV_INPUT_DIRECTION.LEFT)) and panelInfo.gridHeightCompensate then
+				nextY = nextY + (#grid[nextX] - #grid[currentX]);
+			end
+			nextY = math.clamp(nextY, 1, #grid[nextX]);
 
 			nextButton = self:GetButtonAtGridIndex(nextX, nextY);
 		end

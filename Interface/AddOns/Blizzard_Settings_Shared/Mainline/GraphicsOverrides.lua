@@ -74,49 +74,57 @@ function GraphicsOverrides.GetTextureResolutionOptions(settingTextureResolution,
 		return container:GetData();
 end
 
-function GraphicsOverrides.CreateHDSDToggleOptions(category, layout)
-	if (not C_GameRules.IsSDHDToggleEnabled()) then 
+function GraphicsOverrides.CreateHiResOptions(category, layout)
+	if (not C_VideoOptions.AreHighResTexturesAvailable()) then 
 		return;
 	end
 
 	local function GetOptions()
 		local container = Settings.CreateControlTextContainer();
-		container:Add(true, STANDARD_DEFINITION, STANDARD_DEFINITION_TOOLTIP);
-		container:Add(false, HIGH_DEFINITION, HIGH_DEFINITION_TOOLTIP);
+		container:Add(false, VIDEO_OPTIONS_DISABLED);
+		container:Add(true, VIDEO_OPTIONS_ENABLED);
 		return container:GetData();
 	end
 
 	local function GetValue()
-		if C_GameRules.IsSDHDToggleEnabled() then
-			return C_GameRules.AccountHasSDEnabled();
+		if C_BattleNet.AreHighResTexturesInstalled() then
+			return GetCVarBool("useHighResTextures");
 		end
 		return false;
 	end
 
 	local function SetValue(value)
-		if C_GameRules.IsSDHDToggleEnabled() then
-			C_GameRules.SetSDHDToggleValue(value, Enum.SdToggleUsageLocationUI.OptionsMenu);
+		if C_BattleNet.AreHighResTexturesInstalled() then
+			SetCVar("useHighResTextures", value);
 		end
 	end
 
-	local function GetDefaultValue()
-		-- If we want Classic as the default, then we should return true.
-		-- If we want Modern as the default, return false.
-		return C_GameRules.GetForeverExperiencePreset() == Enum.ForeverExperiencePreset.Classic;
+	local setting = Settings.RegisterProxySetting(category, "PROXY_HIGH_RES_TEXTURES", 
+	Settings.VarType.Boolean, OPTION_HD_TEXTURES, Settings.Default.True, GetValue, SetValue);
+	if (C_BattleNet.CanToggleHighResTexturesWithoutClientReload()) then
+		setting:SetCommitFlags(Settings.CommitFlag.Apply);
+	else
+		setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.ClientRestart);
 	end
 
-	local setting = Settings.RegisterProxySetting(category, "PROXY_CHARACTER_MODELS_TOGGLE", 
-		Settings.VarType.Boolean, CHARACTER_MODELS, GetDefaultValue, GetValue, SetValue);
+	local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_HD_TEXTURES);
+	initializer:AddShownPredicate(BNConnected);
+	initializer:AddModifyPredicate(C_BattleNet.AreHighResTexturesInstalled);
 
-	setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.UIReload);
+	if not C_BattleNet.AreHighResTexturesInstalled() then
+		local function OnClick()
+			StaticPopup_Show("DOWNLOAD_HIGH_RES_TEXTURES");
+		end
 
-	local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_CHARACTER_MODELS);
-	initializer:AddShownPredicate(C_GameRules.IsSDHDToggleEnabled);
-	initializer:AddModifyPredicate(C_GameRules.IsSDHDToggleEnabled);
-	initializer:AddSearchTags(SD_SEARCH_TAG);
-	initializer:AddSearchTags(HD_SEARCH_TAG);
-	initializer:AddSearchTags(STANDARD_DEFINITION);
-	initializer:AddSearchTags(HIGH_DEFINITION);
+		local addSearchTags = true;
+		local hdTexturesInitializer = CreateSettingsButtonInitializer(OPTION_HD_TEXTURES, HD_TEXTURES_BUTTON, OnClick, OPTION_TOOLTIP_HD_TEXTURES, addSearchTags);
+		hdTexturesInitializer.hideText = true;
+
+		local version = GetBuildInfo();
+		hdTexturesInitializer.showNew = version == "4.4.1";
+		hdTexturesInitializer:AddShownPredicate(BNConnected);
+		layout:AddInitializer(hdTexturesInitializer);
+	end
 end
 
 function GraphicsOverrides.RunSettingsCallback(callback)

@@ -124,7 +124,7 @@ end
 function InspectFrameMixin:UnitChanged()
 	local unit = self.unit;
 	NotifyInspect(unit);
-	InspectPaperDollFrame_OnShow();
+	InspectPaperDollFrame:OnShow();
 	self:UpdateInspectHeaderForUnit(unit);
 	self:UpdateTabs();
 	if InspectPVPFrame:IsShown() then

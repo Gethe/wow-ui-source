@@ -73,3 +73,7 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 	Settings.SetupCVarCheckbox(category, "displayFreeBagSlots", DISPLAY_FREE_BAG_SLOTS, OPTION_TOOLTIP_DISPLAY_FREE_BAG_SLOTS);
 
 end
+
+function InterfaceOverrides.CreateToastSettings(category, layout)
+	-- We don't have this in interface anymore; it's in Preset
+end

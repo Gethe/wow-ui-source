@@ -30,6 +30,7 @@
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 
@@ -121,6 +122,7 @@
 		<Size x="280" y="26"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Frame>
 

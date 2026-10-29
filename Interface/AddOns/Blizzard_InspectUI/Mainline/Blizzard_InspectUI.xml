@@ -1,30 +1,30 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-    <Frame name="InspectFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate">
-        <Frames>
+	<Frame name="InspectFrame" toplevel="true" movable="true" enableMouse="true" hidden="true" parent="UIParent" inherits="ButtonFrameTemplate" mixin="InspectFrameMixin">
+		<Frames>
 			<Button name="InspectFrameTab1" inherits="PanelTabButtonTemplate" id="1" text="CHARACTER">
-                <Anchors>
+				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="11" y="2"/>
-                </Anchors>
-                <Scripts>
+				</Anchors>
+				<Scripts>
 					<OnClick function="InspectFrameTab_OnClick"/>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(CHARACTER_INFO, 1.0,1.0,1.0 );
 					</OnEnter>
-                </Scripts>
+				</Scripts>
 			</Button>
 			<Button name="InspectFrameTab2" inherits="PanelTabButtonTemplate" id="2" text="PVP">
-                <Anchors>
-                   <Anchor point="LEFT" relativeTo="InspectFrameTab1" relativePoint="RIGHT" x="-16" y="0"/>
-                </Anchors>
-                <Scripts>
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="InspectFrameTab1" relativePoint="RIGHT" x="-16" y="0"/>
+				</Anchors>
+				<Scripts>
 					<OnClick function="InspectFrameTab_OnClick"/>
 					<OnEnter>
 						GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 						GameTooltip:SetText(PLAYER_V_PLAYER, 1.0,1.0,1.0 );
 					</OnEnter>
-                </Scripts>
+				</Scripts>
 			</Button>
 			<Button name="InspectFrameTab3" inherits="PanelTabButtonTemplate" id="3" text="GUILD">
 				<Anchors>
@@ -39,12 +39,12 @@
 				</Scripts>
 			</Button>
 		</Frames>
-        <Scripts>
-			<OnLoad function="InspectFrame_OnLoad"/>
-            <OnEvent function="InspectFrame_OnEvent"/>
-            <OnShow function="InspectFrame_OnShow"/>
-			<OnHide function="InspectFrame_OnHide"/>
-			<OnUpdate function="InspectFrame_OnUpdate"/>
-        </Scripts>
-    </Frame>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
 </Ui>

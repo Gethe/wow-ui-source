@@ -533,18 +533,13 @@ end
 
 function WorldMapMixin:OnOpenQuestDetails()
 	if InputUtil.IsGamepadUIEnabled() then
-		self.refocusQuestButton = SmartNavigation:GetCurrentButton();
 		self:FocusDetails();
 	end
 end
 
 function WorldMapMixin:SelectQuestButton()
 	if InputUtil.IsGamepadUIEnabled() then
-		if self.refocusQuestButton then
-			SmartNavigation:SelectButton(self.refocusQuestButton);
-		else
-			SmartNavigation:SelectFirstButton();
-		end
+		SmartNavigation:SelectFirstButton();
 	end
 end
 
@@ -1045,13 +1040,11 @@ end
 function WorldMapMixin:FocusSearchBox()
 	local searchBox = QuestScrollFrame.SearchBox;
 	if not searchBox:HasFocus() then
-		self.refocusQuestButton = SmartNavigation:GetCurrentButton();
 		SmartNavigation:SelectButton(searchBox);
 		searchBox:SetFocus();
 	else
 		searchBox:ClearFocus();
 		self:SelectQuestButton();
-		self.refocusQuestButton = nil;
 	end
 end
 

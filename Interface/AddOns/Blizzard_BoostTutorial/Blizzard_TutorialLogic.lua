@@ -1854,7 +1854,7 @@ function Class_SelectQuestDifferentZone:OnBegin(questData)
 	self.QuestData = questData;
 
 	-- Have to delay by one frame because the quest log doesn't update before this code runs which causes the frame pool to be out of sync
-	C_Timer.After(0, function() self:Display(); end);
+	RunNextFrame(function() self:Display(); end);
 end
 
 function Class_SelectQuestDifferentZone:Display()

@@ -2,7 +2,6 @@
 ----------Constants
 -------------------------------------------------------
 local LFGBROWSE_TOOLTIP_MIN_WIDTH = 200;
-local LFGVoiceChat = import(".Blizzard_LFGVanilla_VoiceChat");
 local LFGBROWSE_DELISTED_FONT_COLOR = {r=0.3, g=0.3, b=0.3};
 local LFGBROWSE_ACTIVITY_NOMATCH_FONT_COLOR = GRAY_FONT_COLOR;
 local LFGBROWSE_ACTIVITY_MATCH_FONT_COLOR = BRIGHTBLUE_FONT_COLOR;
@@ -700,7 +699,7 @@ function LFGBrowseSearchEntryTooltip_UpdateAndShow(self, resultID)
 
 	local activityAnchor = self.VoiceChat or self.MemberCount;
 	if self.VoiceChat then
-		local voiceModeLabel = LFGVoiceChat.VoiceModeLabels[searchResultInfo.voiceMode or Enum.LFGEntryVoiceMode.None];
+		local voiceModeLabel = LFGVoiceChatUtil.GetVoiceModeLabel(searchResultInfo.voiceMode or Enum.LFGEntryVoiceMode.None);
 		self.VoiceChat:SetShown(voiceModeLabel ~= nil);
 		if voiceModeLabel then
 			self.VoiceChat:SetText(string.format(VOICE_CHAT_MODE_FORMAT, voiceModeLabel));

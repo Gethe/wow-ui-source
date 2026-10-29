@@ -314,12 +314,23 @@ function CatalogShopMixin:OnEvent_CatalogShop(event, ...)
 		end
 
 		local productID = ...;
+
+		if self.ProductBYOBContainerFrame:IsShown() then
+			local selectedProductInfo = self:GetSelectedProductInfo();
+			local productInfo = selectedProductInfo and CatalogShopUtil.GetProductInfo(selectedProductInfo.catalogShopProductID);
+			if productInfo then
+				if productInfo.purchaseEligibility ~= Enum.CatalogShopPurchaseEligibility.Eligible then
+					self:HideProductBYOB();
+				else
+					self.ProductBYOBContainerFrame:UpdateProductInfo(productInfo);
+				end
+			end
+		end
+
 		if self.ProductContainerFrame:IsShown() then
 			self.ProductContainerFrame:UpdateSpecificProduct(productID);
 		elseif self.ProductDetailsContainerFrame:IsShown() then
 			self.ProductDetailsContainerFrame:UpdateSpecificProduct(productID);
-		elseif self.ProductBYOBContainerFrame:IsShown() then
-			self.ProductBYOBContainerFrame:UpdateProductInfo(self:GetSelectedProductInfo());
 		end
 	elseif event == "CATALOG_SHOP_OPEN_SIMPLE_CHECKOUT" then
 		--... handle it
@@ -1192,6 +1203,20 @@ function CatalogShopProductDetailsFrameMixin:GetDetailsFrameProductInfo()
 	return self.currentProductInfo;
 end
 
+function CatalogShopProductDetailsFrameMixin:NarrationGetName()
+	local name = self.ProductName:GetText();
+	if name == "" then
+		return nil;
+	end
+
+	return name;
+end
+
+function CatalogShopProductDetailsFrameMixin:NarrationGetDescription()
+	local productType = self.ProductType:IsShown() and self.ProductType:GetText() or nil;
+	local description = self.ProductDescription:IsShown() and self.ProductDescription:GetText() or nil;
+	return NarrationUtil.MakeNarrationString(productType, description);
+end
 
 function CatalogShopProductDetailsFrameMixin:UpdateState()
 	CatalogShopFrame:HideLoadingScreen();

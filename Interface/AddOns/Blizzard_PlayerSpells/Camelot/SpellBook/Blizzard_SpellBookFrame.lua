@@ -1,9 +1,79 @@
+-- Keep these in sync with spellbook page template widths.
+-- If changed, update XML on:
+--   - PagedSpellsView1Template Size x
+--   - PagedSpellsView2Template Size x
+local MKB_VIEW_WIDTH = 448;
+local GAMEPAD_VIEW_WIDTH = 490;
+local MKB_COLUMNS_PER_ROW = 2;
+local GAMEPAD_COLUMNS_PER_ROW = 2;
+
+-- Keep these in sync with spellbook frame and top bar XML key values.
+-- If changed, update XML on:
+--   - SpellBookFrame KeyValue minimizedWidth
+--   - SpellBookFrame KeyValue maximizedWidth
+--   - SpellBookFrame Size x
+--   - SpellBookTopBarTemplate Size x
+--   - SpellBookFrameTemplate KeyValue topBarFullWidth
+local MKB_SPELLBOOK_MIN_WIDTH = 574;
+local MKB_SPELLBOOK_MAX_WIDTH = 1148;
+local MKB_TOPBAR_FULL_WIDTH = 1150;
+
+local GAMEPAD_SPELLBOOK_MIN_WIDTH = 706;
+local GAMEPAD_SPELLBOOK_MAX_WIDTH = 1512;
+local GAMEPAD_TOPBAR_FULL_WIDTH = 1514;
+
+function SpellBookFrameMixin:ApplyInputModeSizing()
+	local useGamepadSizing = InputUtil.IsGamepadUIEnabled();
+	self.PagedSpellsFrame.columnsPerRow = useGamepadSizing and GAMEPAD_COLUMNS_PER_ROW or MKB_COLUMNS_PER_ROW;
+
+	local viewWidth = useGamepadSizing and GAMEPAD_VIEW_WIDTH or MKB_VIEW_WIDTH;
+	for _, viewFrame in ipairs(self.PagedSpellsFrame.ViewFrames) do
+		viewFrame:SetWidth(viewWidth);
+	end
+
+	self.minimizedWidth = useGamepadSizing and GAMEPAD_SPELLBOOK_MIN_WIDTH or MKB_SPELLBOOK_MIN_WIDTH;
+	self.maximizedWidth = useGamepadSizing and GAMEPAD_SPELLBOOK_MAX_WIDTH or MKB_SPELLBOOK_MAX_WIDTH;
+	self.topBarFullWidth = useGamepadSizing and GAMEPAD_TOPBAR_FULL_WIDTH or MKB_TOPBAR_FULL_WIDTH;
+
+	local currentWidth = self.isMinimized and self.minimizedWidth or self.maximizedWidth;
+	self.TopBar:SetWidth(currentWidth);
+	self.TopBar:SetTexCoord(0, currentWidth / self.topBarFullWidth, 0, 1);
+end
+
+local BaseOnLoad = SpellBookFrameMixin.OnLoad;
+function SpellBookFrameMixin:OnLoad()
+	BaseOnLoad(self);
+	self:ApplyInputModeSizing();
+end
+
 function SpellBookFrameMixin:OnShow()
+	self:ApplyInputModeSizing();
 	self:OnShowBase();
 
 	PlayerSpellsFrame:UpdateSize();
 
 	self.BookCornerFlipbook:Hide();
+end
+
+local BaseUpdateAttic = SpellBookFrameMixin.UpdateAttic;
+function SpellBookFrameMixin:UpdateAttic()
+	BaseUpdateAttic(self);
+
+	if not AssistedCombatManager:HasActionSpell() then
+		self.SettingsDropdown:ClearAllPoints();
+		self.SettingsDropdown:SetPoint("TOPRIGHT", -20, self.SettingsDropdown.yOffset);
+		self:ResizeSearchBox();
+	end
+end
+
+local SEARCH_BOX_WIDTH_OFFSET = 10;
+local GAMEPAD_SEARCH_BOX_WIDTH_OFFSET = 60;
+local BaseResizeSearchBox = SpellBookFrameMixin.ResizeSearchBox;
+function SpellBookFrameMixin:ResizeSearchBox()
+	BaseResizeSearchBox(self);
+
+	local widthOffset = InputUtil.IsGamepadUIEnabled() and SEARCH_BOX_WIDTH_OFFSET or GAMEPAD_SEARCH_BOX_WIDTH_OFFSET;
+	self.SearchBox:SetWidth(math.max(1, self.SearchBox:GetWidth() - widthOffset));
 end
 
 function SpellBookFrameMixin:SetupSettingsDropdown()
@@ -83,4 +153,8 @@ end
 
 function SpellBookFrameMixin:OnPagingButtonLeave()
 	-- no-op in Camelot
+end
+
+function SpellBookItemMixin:CanPickupSpellBookItem()
+	return self:HasValidData() and not self.spellBookItemInfo.isPassive;
 end

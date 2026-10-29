@@ -862,7 +862,7 @@ function CatalogShopUtil.SetupModelSceneForTransmogsInternal(modelScene, modelSc
 	end
 
 	if displayData and not preserveCurrentView then
-		local tryOverrideAttackAnimations = false;
+		local tryOverrideAttackAnimations = isBundleChildProduct;
 		CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData, tryOverrideAttackAnimations);
 	end
 	EventRegistry:TriggerEvent("CatalogShop.OnModelSceneChanged", modelScene);
@@ -1136,8 +1136,16 @@ function CatalogShopUtil.UpdateModelSceneWithDisplayData(modelScene, displayData
 
 	if productType == CatalogShopConstants.ProductType.Transmog then
 		actor = modelScene.CachedPlayerActor;
-		-- Defaulting to 1. Otherwise, we don't have actorDisplayData. Which causes it to early out during UpdateActorWithDisplayData
-		actorDisplayData = actorDisplayBucket[1];
+		if modelSceneTag then
+			for _, actorDisplayDataFromBucket in ipairs(actorDisplayBucket) do
+				if actorDisplayDataFromBucket.scriptTag == modelSceneTag then
+					actorDisplayData = actorDisplayDataFromBucket;
+					break;
+				end
+			end
+		end
+		-- Fall back to 1. Otherwise, we don't have actorDisplayData. Which causes it to early out during UpdateActorWithDisplayData
+		actorDisplayData = actorDisplayData or actorDisplayBucket[1];
 	elseif modelSceneTag ~= nil then
 		actor = modelScene:GetActorByTag(modelSceneTag);
 		if actorDisplayBucket then
@@ -1448,7 +1456,7 @@ function CatalogShopUtil.GetCardTemplate(useWideCard, productType)
 		return CatalogShopConstants.CardTemplate.SmallAccess;
 	elseif productType == CatalogShopConstants.ProductType.Room then
 		return CatalogShopConstants.CardTemplate.SmallRoom;
-	elseif productType == CatalogShopConstants.ProductType.ExteriorRoom then
+	elseif productType == CatalogShopConstants.ProductType.HousingExteriorType then
 		return CatalogShopConstants.CardTemplate.SmallExteriorType;
 	end
 

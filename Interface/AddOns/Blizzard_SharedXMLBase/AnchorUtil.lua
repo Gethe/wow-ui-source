@@ -98,6 +98,11 @@ function GridLayoutMixin:SetCustomOffsetFunction(func)
 	self.customOffsetFunction = func;
 end
 
+-- Horizontally centers each row within the given width, measured from the initial anchor. Not supported for vertical directions.
+function GridLayoutMixin:SetCenteredInWidth(width)
+	self.centeredWidth = width;
+end
+
 function GridLayoutMixin:GetCustomOffset(row, col)
 	if self.customOffsetFunction then
 		return self.customOffsetFunction(row, col);
@@ -130,9 +135,16 @@ function AnchorUtil.GridLayout(frames, initialAnchor, layout)
 	local paddingX = layout.paddingX;
 	local paddingY = layout.paddingY;
 	local direction = layout.direction;
+	local centeredWidth = layout.centeredWidth;
 	for i, frame in ipairs(frames) do
 		local row = math.floor((i - 1) / stride) + 1;
 		local col = (i - 1) % stride + 1;
+		local centerOffsetX = 0;
+		if centeredWidth and not direction.isVertical then
+			local itemsInRow = math.min(stride, #frames - (row - 1) * stride);
+			local rowWidth = itemsInRow * width + (itemsInRow - 1) * paddingX;
+			centerOffsetX = (centeredWidth - rowWidth) / 2 * direction.x;
+		end
 		if direction.isVertical then
 			local tempRow = row;
 			row = col;
@@ -140,6 +152,7 @@ function AnchorUtil.GridLayout(frames, initialAnchor, layout)
 		end
 		local clearAllPoints = true;
 		local customOffsetX, customOffsetY = layout:GetCustomOffset(row, col);
+		customOffsetX = customOffsetX + centerOffsetX;
 		local extraOffsetX = (col - 1) * (width + paddingX) * direction.x + customOffsetX;
 		local extraOffsetY = (row - 1) * (height + paddingY) * direction.y + customOffsetY;
 		initialAnchor:SetPointWithExtraOffset(frame, clearAllPoints, extraOffsetX, extraOffsetY);

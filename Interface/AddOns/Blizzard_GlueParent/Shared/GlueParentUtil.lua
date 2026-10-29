@@ -122,3 +122,7 @@ function SetExpansionLogo(texture, expansionLevel, releaseType)
 		texture:Hide();
 	end
 end
+
+setprinthandler(function(...)
+	C_Log.LogMessage(string.join(" ", tostringall(...)));
+end);

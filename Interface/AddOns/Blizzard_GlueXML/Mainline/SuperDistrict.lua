@@ -5,18 +5,6 @@ function SuperDistrictMixin:OnLoad()
 
 	self.selectedSuperDistrictID = nil;
 
-	EventRegistry:RegisterCallback("SuperDistrict.SelectSuperDistrict", function(_, superDistrictID)
-		self:UpdateSelection(superDistrictID);
-	end, self);
-
-	EventRegistry:RegisterCallback("SuperDistrict.ConfirmSuperDistrict", function(_, idx)
-		self:ConfirmSuperDistrict();
-	end, self);
-
-	EventRegistry:RegisterCallback("SuperDistrict.CancelSelection", function(_, idx)
-		self:OnCancel();
-	end, self);
-
 	self:RegisterEvent("SUPER_DISTRICT_LIST_UPDATED");
 
 	self.districtButtonPool = CreateFramePoolCollection();
@@ -41,8 +29,18 @@ function SuperDistrictMixin:OnLoad()
 		end
 	end);
 
+	self.SelectButton:SetScript("OnClick", function(...)
+		self:ConfirmSuperDistrict();
+	end);
+
+	self.CancelButton:SetScript("OnClick", function(...)
+		self:OnCancel();
+	end);
+
 	self:RefreshSuperDistrictButtons();
 	self:UpdateSelection(self.selectedSuperDistrictID);
+
+	self:RegisterForTransitions();
 end
 
 function SuperDistrictMixin:OnShow()
@@ -77,15 +75,23 @@ function SuperDistrictMixin:RefreshSuperDistrictButtons()
 	self.districtButtonPool:ReleaseAll();
 	self.districtButtons = {};
 
-	local superDistrictInfos = C_DistrictUtils.GetAvailableSuperDistricts();
+	local function UpdateSelection(button, ...)
+		button:OnClick(...);
 
+		self:UpdateSelection(button.superDistrictID);
+	end
+
+	local superDistrictInfos = C_DistrictUtils.GetAvailableSuperDistricts();
 	for i, superDistrictInfo in ipairs(superDistrictInfos) do
 		local button = self.districtButtonPool:Acquire("SuperDistrictButtonTemplate");
-		button.superDistrictID = superDistrictInfo.superDistrictID;
+		local superDistrictID = superDistrictInfo.superDistrictID;
+		button.superDistrictID = superDistrictID;
 		button.layoutIndex = i;
-		button:SetupSuperDistrictButton(superDistrictInfo.superDistrictID);
+		button:SetupSuperDistrictButton(superDistrictID);
 		button:Show();
 		table.insert(self.districtButtons, button);
+
+		button:SetScript("OnClick", UpdateSelection);
 	end
 
 	self.ButtonLayout:Layout();
@@ -116,6 +122,55 @@ function SuperDistrictMixin:OnCancel()
 	else
 		ExitSuperDistrictSelection();
 	end
+end
+
+function SuperDistrictMixin:FocusGamepad()
+	self.frameFooter:ShowAndActivateBindings();
+
+	for button in self.districtButtonPool:EnumerateActive() do
+		if button.layoutIndex == 1 then
+			SmartNavigation:SetTargetButtonForFrame(self, button);
+			break;
+		end
+	end
+end
+
+function SuperDistrictMixin:UnfocusGamepad()
+	self.frameFooter:HideAndDeactivateBindings();
+end
+
+function SuperDistrictMixin:SetupGamepad()
+	local select = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, function()
+		EventRegistry:TriggerEvent("SuperDistrict.ConfirmSuperDistrict");
+	end, ACTION_LABEL_SELECT);
+
+	local back = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, function()
+		EventRegistry:TriggerEvent("SuperDistrict.CancelSelection");
+	end, FRAME_ACTION_BACK);
+
+	self.frameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "SuperDistrictFooter");
+	self.frameFooter:AddPromptedBinding(select);
+	self.frameFooter:AddPromptedBinding(back);
+	self.frameFooter:Finalize();
+	self.frameFooter.inputLegend:ClearAllPoints();
+	self.frameFooter.inputLegend:SetPoint("BOTTOM", self, "BOTTOM", 0, 10);
+end
+
+function SuperDistrictMixin:InitializeGamepad()
+	self.SelectButton:Hide();
+	self.CancelButton:Hide();
+end
+
+function SuperDistrictMixin:UninitializeGamepad()
+	self.SelectButton:Show();
+	self.CancelButton:Show();
+end
+
+function SuperDistrictMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
 end
 
 SuperDistrictButtonMixin = CreateFromMixins(SelectableButtonMixin, DisabledTooltipButtonMixin);
@@ -155,8 +210,6 @@ end
 function SuperDistrictButtonMixin:OnClick()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 	self:SetChecked(true);
-
-	EventRegistry:TriggerEvent("SuperDistrict.SelectSuperDistrict", self.superDistrictID);
 end
 
 function SuperDistrictButtonMixin:NarrationGetName()
@@ -177,4 +230,8 @@ end
 
 function SuperDistrictButtonMixin:NarrationGetDescription()
 	return self.Description:GetText();
+end
+
+function SuperDistrictButtonMixin:OnSmartNavSelect()
+	self:OnClick();
 end

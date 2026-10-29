@@ -645,8 +645,11 @@
 							<TexCoords left="0" right="0.296875" top="0" bottom="0.62"/>
 						</Texture>
 					</Layer>
-					<Layer level="BORDER">
+					<Layer level="BORDER" textureSubLevel="1">
 						<Texture atlas="UI-Character-Info-RaceBG-Overlay" parentKey="BackgroundOverlay"/>
+					</Layer>
+					<Layer level="BORDER" textureSubLevel="2">
+						<Texture parentKey="PetOverlay" atlas="ui-stables-pet-model-bg" hidden="true"/>
 					</Layer>
 				</Layers>
 				<Frames>

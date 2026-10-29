@@ -611,6 +611,10 @@ function SpellBookItemMixin:OnIconClick(button)
 	end
 end
 
+function SpellBookItemMixin:CanPickupSpellBookItem()
+	return true;
+end
+
 function SpellBookItemMixin:OnModifiedIconClick(button)
 	if not self:HasValidData() then
 		return;
@@ -640,7 +644,9 @@ function SpellBookItemMixin:OnModifiedIconClick(button)
 			ChatFrameUtil.InsertLink(chatLink);
 		end
 	elseif IsModifiedClick("PICKUPACTION") then
-		C_SpellBook.PickupSpellBookItem(self.slotIndex, self.spellBank);
+		if self:CanPickupSpellBookItem() then
+			C_SpellBook.PickupSpellBookItem(self.slotIndex, self.spellBank);
+		end
 	elseif IsModifiedClick("SELFCAST") then
 		C_SpellBook.CastSpellBookItem(self.slotIndex, self.spellBank, true);
 	end
@@ -648,6 +654,10 @@ end
 
 function SpellBookItemMixin:OnIconDragStart()
 	if not self:HasValidData() then
+		return;
+	end
+
+	if not self:CanPickupSpellBookItem() then
 		return;
 	end
 

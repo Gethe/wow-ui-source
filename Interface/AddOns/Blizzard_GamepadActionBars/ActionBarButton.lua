@@ -1057,6 +1057,10 @@ function GamepadActionBarStandardButtonMixin:OnLoad()
 	GamepadActionBarButtonMixin.OnLoad(self);
 	ActionBarButtonMixin.ActionBarButtonMixin_OnLoad(self);
 	self:SetAttribute("useOnKeyDown", true); -- Forces gamepad buttons to run action on button click down instead of up.
+	-- Gamepad buttons use custom indexing so `GetID` is already pre-calculated including our gamepad page.
+	-- Avoid `CalculateAction` asking for the current MKB action bar page and instead it will always use page 1
+	-- which effectively removes any computed `(page - 1) * NUM_ACTIONBAR_BUTTONS` offset.
+	self:SetAttribute("actionpage", 1);
 	self.SetButtonArt = function() end;	-- Prevent the ActionButtonOverride.lua defintion from running again.
 end
 

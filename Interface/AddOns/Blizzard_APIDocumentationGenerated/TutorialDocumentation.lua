@@ -93,9 +93,9 @@ local Tutorial =
 		{
 			Name = "FrameTutorialAccount",
 			Type = "Enumeration",
-			NumValues = 51,
+			NumValues = 53,
 			MinValue = 1,
-			MaxValue = 51,
+			MaxValue = 53,
 			Fields =
 			{
 				{ Name = "HudRevampBagChanges", Type = "FrameTutorialAccount", EnumValue = 1 },
@@ -149,6 +149,8 @@ local Tutorial =
 				{ Name = "RunesOfPower", Type = "FrameTutorialAccount", EnumValue = 49 },
 				{ Name = "HousingPetBeds", Type = "FrameTutorialAccount", EnumValue = 50 },
 				{ Name = "Reserved1", Type = "FrameTutorialAccount", EnumValue = 51 },
+				{ Name = "Reserved2", Type = "FrameTutorialAccount", EnumValue = 52 },
+				{ Name = "Reserved3", Type = "FrameTutorialAccount", EnumValue = 53 },
 			},
 		},
 	},

@@ -32,8 +32,11 @@
 					<Anchor point="TOP" x="0" y="-20"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentCloseDialog" parentKey="closeDialog">
+			<Frame name="$parentCloseDialog" parentKey="closeDialog" mixin="CinematicFrameCloseDialogMixin">
 				<Size x="320" y="84"/>
+				<KeyValues>
+					<KeyValue key="useCustomNavigation" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="CENTER"/>
 				</Anchors>
@@ -71,12 +74,8 @@
 					</Button>
 				</Frames>
 				<Scripts>
-					<OnShow>
-						MouseOverrideCinematicDisable(true);
-					</OnShow>
-					<OnHide>
-						MouseOverrideCinematicDisable(false);
-					</OnHide>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
 				</Scripts>
 			</Frame>
 		</Frames>
@@ -88,7 +87,7 @@
 			<OnHide function="CinematicFrame_OnHide"/>
 			<OnEvent function="CinematicFrame_OnEvent"/>
 			<OnKeyDown function="CinematicFrame_OnKeyDown"/>
-			<OnGamePadButtonDown function="CinematicFrame_OnKeyDown"/>
+			<OnGamePadButtonDown function="CinematicFrame_OnGamePadButtonDown"/>
 		</Scripts>
 	</Frame>
 </Ui>

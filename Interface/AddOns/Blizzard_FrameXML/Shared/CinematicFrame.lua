@@ -72,10 +72,46 @@ function CinematicFrame_OnLoad(self)
 	self:RegisterEvent("CINEMATIC_START");
 	self:RegisterEvent("CINEMATIC_STOP");
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
+
+	CinematicFrame_RegisterForTransition(self);
 end
 
 function CinematicFrame_OnHide(self)
 	WorldFrame:SetAllPoints(nil);
+end
+
+function CinematicFrame_RegisterForTransition(self)
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(CinematicFrame_SetupGamepad, self));
+end
+
+function CinematicFrame_SetupGamepad(self)
+	self.binding = GamepadMode.CreateBindingGroup("CinematicFrameBindings");
+	self.binding:BlockEverything();
+	self.binding:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, function()
+		CinematicFrameCloseDialogConfirmButton:Click();
+	end);
+	self.binding:AddFunctionBinding(GAMEPAD_FACE_RIGHT, function()
+		CinematicFrameCloseDialogResumeButton:Click();
+	end);
+
+	self.confirmIcon = GamepadMode.AddGamepadIconToButton(CinematicFrameCloseDialogConfirmButton, GAMEPAD_FACE_BOTTOM);
+	self.resumeIcon = GamepadMode.AddGamepadIconToButton(CinematicFrameCloseDialogResumeButton, GAMEPAD_FACE_RIGHT);
+
+	GamepadMode.SetGamepadIconShown(self.confirmIcon, false);
+	GamepadMode.SetGamepadIconShown(self.resumeIcon, false);
+
+	CinematicFrameCloseDialog.FocusGamepad = function()
+		GamepadMode.SetGamepadIconShown(self.confirmIcon, true);
+		GamepadMode.SetGamepadIconShown(self.resumeIcon, true);
+		GamepadMode.ActivateBindingGroup(self.binding);
+	end
+
+	CinematicFrameCloseDialog.UnfocusGamepad = function()
+		GamepadMode.DeactivateBindingGroup(self.binding);
+		GamepadMode.SetGamepadIconShown(self.confirmIcon, false);
+		GamepadMode.SetGamepadIconShown(self.resumeIcon, false);
+	end
 end
 
 function CinematicFrame_OnEvent(self, event, ...)	
@@ -113,22 +149,44 @@ function CinematicFrame_OnEvent(self, event, ...)
 	end
 end
 
+local function ExitCinematic(self)
+	if ( self.isRealCinematic and IsGMClient() ) then
+		StopCinematic();
+	elseif ( self.isRealCinematic ) then
+		self.closeDialog:Show();
+	elseif ( IsInCinematicScene() ) then
+		if ( CanCancelScene() ) then
+			self.closeDialog:Show();
+		end
+	elseif ( CanExitVehicle() ) then	--If it's not a real cinematic, we can cancel it by leaving the vehicle.
+		self.closeDialog:Show();
+	end
+end
+
 function CinematicFrame_OnKeyDown(self, key)
 	local keybind = GetBindingFromClick(key);
 	if ( keybind == "TOGGLEGAMEMENU" ) then
-		if ( self.isRealCinematic and IsGMClient() ) then
-			StopCinematic();
-		elseif ( self.isRealCinematic ) then
-			self.closeDialog:Show();
-		elseif ( IsInCinematicScene() ) then
-			if ( CanCancelScene() ) then
-				self.closeDialog:Show();
-			end
-		elseif ( CanExitVehicle() ) then	--If it's not a real cinematic, we can cancel it by leaving the vehicle.
-			self.closeDialog:Show();
-		end
+		ExitCinematic(self);
 	elseif ( keybind == "SCREENSHOT" or keybind == "TOGGLEMUSIC" or keybind == "TOGGLESOUND" ) then
 		RunBinding(keybind);
+	end
+end
+
+function CinematicFrame_OnGamePadButtonDown(self, button)
+	if InputUtil.IsGamepadUIEnabled() then
+		if GamepadMode.IsBindingGroupActive(self.binding) then
+			-- Return early and propagate input so the bindings can handle the input instead when the dialog is shown.
+			-- Frames with `OnGamePadButtonDown` handlers take input precedance over override bindings and core bindings.
+			return true;
+		end
+		if (button == GAMEPAD_MENU_RIGHT) or (button == GAMEPAD_FACE_RIGHT) then
+			ExitCinematic(self);
+		end
+	else
+		local keybind = GetBindingFromClick(button);
+		if (keybind == "TOGGLEGAMEMENU") then
+			ExitCinematic(self);
+		end
 	end
 end
 
@@ -139,5 +197,23 @@ function CinematicFrame_CancelCinematic()
 		CancelScene();
 	else
 		VehicleExit();
+	end
+end
+
+CinematicFrameCloseDialogMixin = {};
+
+function CinematicFrameCloseDialogMixin:OnShow()
+	MouseOverrideCinematicDisable(true);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupShown(self);
+	end
+end
+
+function CinematicFrameCloseDialogMixin:OnHide()
+	MouseOverrideCinematicDisable(false);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupHide(self);
 	end
 end

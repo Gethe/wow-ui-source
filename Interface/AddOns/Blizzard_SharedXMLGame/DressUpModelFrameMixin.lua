@@ -185,7 +185,7 @@ function DressUpModelFrameMixin:OnDressModel(itemModifiedAppearanceID, invSlot, 
 	if self.CustomSetDropdown then
 		if not self.gotDressed then
 			self.gotDressed = true;
-			C_Timer.After(0, function()
+			RunNextFrame(function()
 				self.gotDressed = nil;
 				self.CustomSetDropdown:UpdateSaveButton();
 				self.CustomSetDetailsPanel:OnAppearanceChange();

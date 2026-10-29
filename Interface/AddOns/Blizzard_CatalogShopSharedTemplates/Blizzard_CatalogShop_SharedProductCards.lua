@@ -86,6 +86,27 @@ function CatalogShopDefaultProductCardMixin:OnLeave()
 	end
 end
 
+function CatalogShopDefaultProductCardMixin:NarrationGetName()
+	return self.productInfo and self.productInfo.name or nil;
+end
+
+function CatalogShopDefaultProductCardMixin:NarrationGetDescription()
+	-- Only narrate a price the card is actually displaying (e.g. BYOB cards hide it).
+	-- Use the raw price rather than the label text, which can contain currency atlas markup.
+	local container = self.ForegroundContainer;
+	local isPriceShown = container.DiscountPrice:IsShown() or container.Price:IsShown();
+	if isPriceShown and self.productInfo then
+		return self.productInfo.price;
+	end
+
+	return nil;
+end
+
+function CatalogShopDefaultProductCardMixin:NarrationGetIndexInfo()
+	-- Intentionally don't narrate index in the list as it's a misleading value.
+	return nil;
+end
+
 function CatalogShopDefaultProductCardMixin:IsSameProduct(productInfo)
 	return self.productInfo and self.productInfo.catalogShopProductID == productInfo.catalogShopProductID;
 end

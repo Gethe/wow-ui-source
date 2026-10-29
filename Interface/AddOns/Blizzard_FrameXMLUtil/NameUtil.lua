@@ -45,7 +45,9 @@ function NameUtil.GetUnitFirstName(unit)
 	local name, surname = UnitName(unit);
 	if name and  RegionalUniqueNamesEnabled() then
 		local name2, surname2 = strmatch(name, "^([^-]+)"..Constants.CharacterNameSeparatorConsts.CHARACTERNAME_SURNAME_SEPARATOR.."(.*)");
-		return name2;
+		if name2 then
+			return name2;
+		end
 	end
 
 	return name;

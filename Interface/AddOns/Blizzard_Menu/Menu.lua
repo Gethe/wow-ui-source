@@ -1701,6 +1701,14 @@ function MenuMixin:ReinitializeAll()
 	self:PerformLayout();
 end
 
+local function SecureCallResetters(frame)
+	local descriptionProxy = frame:GetElementDescription();
+	local description = Proxies:ToPrivate(descriptionProxy);
+	description:GetResetters():ExecuteRange(function(index, resetter)
+		resetter(frame);
+	end);
+end
+
 function MenuMixin:DiscardChildFrames()
 	--[[
 	Releasing the compositors will cause any keys assigned or changed to be discarded.
@@ -1714,11 +1722,7 @@ function MenuMixin:DiscardChildFrames()
 
 	local isCompositorEnabled = self.menuDescription:IsCompositorEnabled();
 	for index, frame in self.frames:Enumerate() do
-		local descriptionProxy = frame:GetElementDescription();
-		local description = Proxies:ToPrivate(descriptionProxy);
-		description:GetResetters():ExecuteRange(function(index, resetter)
-			resetter(frame);
-		end);
+		securecallfunction(SecureCallResetters, frame);
 
 		-- Compositor check avoids iterating over the secure map if we don't need to.
 		if isCompositorEnabled then
@@ -1784,6 +1788,8 @@ do
 end
 
 function MenuProxyMixin:OnLoad()
+	self.isMenuProxy = true;
+
 	self.ScrollBox = CreateFrame("Frame", nil, self, "WowScrollBoxList");
 
 	self.ScrollBar = CreateFrame("EventFrame", nil, self, "MinimalScrollBar");
@@ -2788,5 +2794,9 @@ do
 
 	function Menu.PrintOpenMenuTags()
 		print(table.concat(Menu.GetOpenMenuTags(), LIST_DELIMITER));
+	end
+
+	function Menu.IsMenuProxy(frame)
+		return frame.isMenuProxy == true;
 	end
 end

@@ -1390,7 +1390,11 @@ StaticPopupDialogs["INVITE_COMMUNITY_MEMBER"] = {
 			dialog:GetEditBox().Instructions:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_EDITBOX_INSTRUCTIONS);
 		else
 			AutoCompleteEditBox_SetAutoCompleteSource(dialog:GetEditBox(), C_AutoComplete.GetAutoCompleteResults, AUTOCOMPLETE_LIST.COMMUNITY.include, AUTOCOMPLETE_LIST.COMMUNITY.exclude);
-			dialog.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_CHARACTER);
+			if not RegionalUniqueNamesEnabled() then
+				dialog.SubText:SetText(INVITE_COMMUNITY_MEMBER_POPUP_INVITE_SUB_TEXT_CHARACTER);
+			else
+				dialog.SubText:SetText(CHARACTER_FRIEND_LABEL); -- "Enter character's name"
+			end
 			dialog:GetEditBox().Instructions:SetText("");
 		end
 		dialog:GetButton1():SetMotionScriptsWhileDisabled(true);

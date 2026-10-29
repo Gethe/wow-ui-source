@@ -136,6 +136,23 @@ end
 
 TaleboundPlayerChoiceToggleButtonMixin = {};
 
+function TaleboundPlayerChoiceToggleButtonMixin:ShouldShow()
+	if ScribeFrame and ScribeFrame:IsShown() then
+		return false;
+	end
+
+	return PlayerChoiceToggleButtonMixin.ShouldShow(self);
+end
+
+function TaleboundPlayerChoiceToggleButtonMixin:OnLoad()
+	EventRegistry:RegisterCallback("ScribeFrame.Opened", self.OnScribeFrameVisibilityChanged, self);
+	EventRegistry:RegisterCallback("ScribeFrame.Closed", self.OnScribeFrameVisibilityChanged, self);
+end
+
+function TaleboundPlayerChoiceToggleButtonMixin:OnScribeFrameVisibilityChanged()
+	PlayerChoiceToggle_TryShow();
+end
+
 function TaleboundPlayerChoiceToggleButtonMixin:OnClick(...)
 	PlayerChoiceToggleButtonMixin.OnClick(self, ...);
 end

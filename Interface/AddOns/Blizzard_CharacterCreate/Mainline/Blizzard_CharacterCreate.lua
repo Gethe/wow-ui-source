@@ -57,6 +57,7 @@ function CharacterCreateMixin:OnLoad()
 	self:RegisterEvent("CUSTOMIZE_CHARACTER_STARTED");
 	self:RegisterEvent("CUSTOMIZE_CHARACTER_RESULT");
 	self:RegisterEvent("CHAR_CREATE_BEGIN_ANIMATIONS");
+	self:RegisterEvent("CHAR_CREATE_BACKGROUND_MODEL_READY");
 	self:RegisterEvent("CHAR_CREATE_ANIM_KIT_FINISHED");
 	self:RegisterEvent("CVAR_UPDATE");
 	self:RegisterEvent("STORE_VAS_PURCHASE_ERROR");
@@ -170,6 +171,9 @@ function CharacterCreateMixin:OnEvent(event, ...)
 		else
 			RaceAndClassFrame:PlayCustomizationAnimation();
 		end
+	elseif event == "CHAR_CREATE_BACKGROUND_MODEL_READY" then
+		self.bgModelID = nil;
+		self:UpdateBackgroundModel();
 	elseif event == "CHAR_CREATE_ANIM_KIT_FINISHED" then
 		local animKitID, spellVisualKitID = ...;
 		RaceAndClassFrame:OnAnimKitFinished(animKitID, spellVisualKitID);

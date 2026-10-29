@@ -121,11 +121,6 @@
 				<NormalFont style="GlueFontNormalLogin"/>
 				<HighlightFont style="GlueFontHighlightLogin"/>
 				<DisabledFont style="GlueFontDisableLogin"/>
-				<Scripts>
-					<OnClick>
-						EventRegistry:TriggerEvent("SuperDistrict.ConfirmSuperDistrict");
-					</OnClick>
-				</Scripts>
 			</Button>
 			<Button parentKey="CancelButton" inherits="GlueButtonBigTemplate" text="CANCEL">
 				<Anchors>
@@ -134,11 +129,6 @@
 				<NormalFont style="GlueFontNormalLogin"/>
 				<HighlightFont style="GlueFontHighlightLogin"/>
 				<DisabledFont style="GlueFontDisableLogin"/>
-				<Scripts>
-					<OnClick>
-						EventRegistry:TriggerEvent("SuperDistrict.CancelSelection");
-					</OnClick>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

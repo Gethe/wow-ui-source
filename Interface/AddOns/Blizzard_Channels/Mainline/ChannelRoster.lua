@@ -149,11 +149,26 @@ function ChannelRosterMixin:Update()
 		else
 			self:UpdateFromVoiceChannelID(channel:GetVoiceChannelID());
 		end
+	else
+		self:ClearRoster();
 	end
 
 	-- As a result of an update, we may have lost our focus target.
 	self:UpdateSmartNavJumps();
 	self:RestorePreviousSelectionData(previousSelectionData);
+end
+
+-- With no selectable channel there is nothing to load, so don't leave the spinner up.
+function ChannelRosterMixin:ClearRoster()
+	self:SetSpinnerShown(false);
+	self.voiceChannelID = nil;
+	self.opaqueChannel = nil;
+	self.count = 0;
+	self.ChannelCount:SetText("");
+	self.ChannelName:SetText("");
+
+	local dataProvider = CreateIndexRangeDataProvider(self.count);
+	self.ScrollBox:SetDataProvider(dataProvider);
 end
 
 function ChannelRosterMixin:ResetScrollPosition()

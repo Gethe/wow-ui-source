@@ -365,7 +365,17 @@ local GameRules =
 			},
 		},
 		{
-			Name = "SetForeverExperiencePreset",
+			Name = "SetForeverExperiencePresetPostLogin",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "preset", Type = "ForeverExperiencePreset", Nilable = false },
+			},
+		},
+		{
+			Name = "SetForeverExperiencePresetPreLogin",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
 
@@ -447,6 +457,12 @@ local GameRules =
 			LiteralName = "GAME_RULES_CHANGED",
 			SynchronousEvent = true,
 		},
+		{
+			Name = "SettingsHeaderTextUpdate",
+			Type = "Event",
+			LiteralName = "SETTINGS_HEADER_TEXT_UPDATE",
+			SynchronousEvent = true,
+		},
 	},
 
 	Tables =
@@ -460,7 +476,7 @@ local GameRules =
 			Fields =
 			{
 				{ Name = "Classic", Type = "ForeverExperiencePreset", EnumValue = 0 },
-				{ Name = "Modern", Type = "ForeverExperiencePreset", EnumValue = 1 },
+				{ Name = "Enhanced", Type = "ForeverExperiencePreset", EnumValue = 1 },
 			},
 		},
 		{

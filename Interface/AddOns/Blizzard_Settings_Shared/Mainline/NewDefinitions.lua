@@ -111,6 +111,18 @@ NewSettings["12.1.5"] = {
 	"raidFramesDispelIndicatorAnimatedBorder",
 };
 
+NewSettings["12.1.7"] = {
+	"voiceProvider",
+	"voiceUseDiscordSettings",
+};
+
+local function IsDiscordVoiceEnabled()
+	return C_Discord.IsVoiceEnabled();
+end
+
+NewSettingsPredicates["voiceProvider"] = IsDiscordVoiceEnabled;
+NewSettingsPredicates["voiceUseDiscordSettings"] = IsDiscordVoiceEnabled;
+
 NewSettingsPredicates["enableConnectToPhotoSharing"] = function()
 	return C_PhotoSharing.IsEnabled();
 end

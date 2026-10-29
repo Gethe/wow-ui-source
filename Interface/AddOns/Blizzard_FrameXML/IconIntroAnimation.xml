@@ -53,7 +53,7 @@
 	</Frame>
 
 
-	<Frame name="IconIntroTemplate" virtual="true" frameStrata="HIGH">
+	<Frame name="IconIntroTemplate" virtual="true" frameStrata="DIALOG">
 		<Size x="40" y="40"/>
 		<Frames>
 			<Frame name="$parentIconTrail3" inherits="IconIntroAnimTemplate" parentKey="trail3" >

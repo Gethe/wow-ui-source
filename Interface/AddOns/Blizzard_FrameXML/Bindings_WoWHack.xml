@@ -421,7 +421,13 @@
 		end
 	</Binding>
 
-	<Binding name="TOGGLEENCOUNTERJOURNAL" ignoreInKioskMode="true" header="BLANK15" category="BINDING_HEADER_INTERFACE">
+	<Binding name="TOGGLECOLLECTIONS" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
+		if not DISALLOW_FRAME_TOGGLING then
+			ToggleCollectionsJournal();
+		end
+	</Binding>
+
+	<Binding name="TOGGLEENCOUNTERJOURNAL" ignoreInKioskMode="true" category="BINDING_HEADER_INTERFACE">
 		if not DISALLOW_FRAME_TOGGLING and CanShowEncounterJournal() then
 			ToggleEncounterJournal();
 		end

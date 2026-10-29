@@ -716,7 +716,7 @@ end
 local function GetTargetAurasFilterString(unit)
 	if UnitExists(unit) then
 		if UnitIsFriend("player", unit) then
-			return "HELPFUL|PLAYER|INCLUDE_NAME_PLATE_ONLY";
+			return "HELPFUL_OR_HARMFUL|PLAYER|INCLUDE_NAME_PLATE_ONLY";
 		end
 	end
 

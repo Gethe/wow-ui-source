@@ -3,6 +3,9 @@
 
 	<Frame name="BulletPointAndStringTemplate" virtual="true">
 		<Size x="15" y="15"/>
+		<KeyValues>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="BulletTexture" file="Interface\QuestFrame\UI-Quest-BulletPoint">
@@ -19,7 +22,7 @@
 	</Frame>
 
 	<CheckButton name="ExperienceButtonTemplate" toplevel="true" mixin="ExperiencePresetButtonMixin" virtual="true">
-		<Size x="450" y="550"/>
+		<Size x="500" y="550"/>
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="Background" atlas="Preset-Selection-Card-Regular" useAtlasSize="true"/>
@@ -45,7 +48,7 @@
 				<FontString parentKey="StartingSettings" inherits="GlueFontHighlight" justifyV="MIDDLE" justifyH="LEFT" text="EXPERIENCE_PRESET_STARTING_SETTINGS">
 					<Size x="180" y="30"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="0" y="-25"/>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Description" relativePoint="BOTTOMLEFT" x="-15" y="-25"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -95,7 +98,7 @@
 			<Layer level="ARTWORK">
 				<FontString parentKey="Title" inherits="GlueFontHighlightHuge" justifyV="MIDDLE" justifyH="CENTER" text="CHOOSE_YOUR_EXPERIENCE_PRESET">
 					<Anchors>
-						<Anchor point="TOP" x="0" y="-130"/>
+						<Anchor point="TOP" x="0" y="-50"/>
 					</Anchors>
 				</FontString>
 				<FontString parentKey="Description" inherits="GlueFontNormalLarge" justifyV="MIDDLE" justifyH="CENTER" text="CHOOSE_YOUR_EXPERIENCE_PRESET_DESCRIPTION">
@@ -139,7 +142,7 @@
 			</Frame>
 			<CheckButton name="ClassicExperienceButton" inherits="ExperienceButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="-225" y="-20"/>
+					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="-225" y="-10"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="isClassicButton" value="true" type="boolean"/>
@@ -147,7 +150,7 @@
 			</CheckButton>
 			<CheckButton name="ModernExperienceButton" inherits="ExperienceButtonTemplate">
 				<Anchors>
-					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="225" y="-20"/>
+					<Anchor point="TOP" relativeKey="$parent.Description" relativePoint="BOTTOM" x="225" y="-10"/>
 				</Anchors>
 				<KeyValues>
 					<KeyValue key="isClassicButton" value="false" type="boolean"/>

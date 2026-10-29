@@ -247,7 +247,6 @@ function ColorPickerFrameMixin:AdjustOpacity(direction, down)
 end
 
 function ColorPickerFrameMixin:OpacityDecrease(down)
-	print(down)
 	self:AdjustOpacity(-1, down);
 end
 

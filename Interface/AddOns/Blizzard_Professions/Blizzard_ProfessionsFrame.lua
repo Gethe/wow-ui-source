@@ -529,12 +529,6 @@ function ProfessionsMixin:OnShow()
 
 	self:RefreshRightTabs();
 	self:RecastSelectedProfession();
-
-	if InputUtil.IsGamepadUIEnabled() then
-		SmartNavigation:RegisterCallback("SelectedButtonUpdated", function()
-			self:UpdateGamepadUnlearnIcons();
-		end, self);
-	end
 end
 
 function ProfessionsMixin:OnHide()
@@ -732,22 +726,6 @@ function ProfessionsMixin:RefreshBookPageSmartNavJumps()
 	UpdateSmartNavJumps_BookPage(professionsFrame);
 end
 
-function ProfessionsMixin:UpdateGamepadUnlearnIcons()
-	local focusedButton = SmartNavigation:GetCurrentButton();
-
-	local function UpdateProfessionFrame(primaryProfessionFrame)
-		local show =
-			focusedButton and
-			focusedButton:GetParent() == primaryProfessionFrame and
-			primaryProfessionFrame.isPrimary;
-
-		primaryProfessionFrame.GamepadUnlearnButton:SetShown(show);
-	end
-
-	UpdateProfessionFrame(self.BookPage.ProfessionsContentFrame.PrimaryProfession1);
-	UpdateProfessionFrame(self.BookPage.ProfessionsContentFrame.PrimaryProfession2);
-end
-
 local function FocusChatAndInsertLink(link)
 	if not link then
 		return;
@@ -763,22 +741,48 @@ end
 
 function ProfessionsMixin:SetUpGamepadBookPageFooter()
 	local function UnlearnProfession()
-		local button = SmartNavigation:GetCurrentButton();
-		local primaryProfessionFrame = button:GetParent();
-		primaryProfessionFrame.UnlearnButton:Click();
+		local focusedButton = SmartNavigation:GetCurrentButton();
+		local primaryProfessionFrame = focusedButton and focusedButton:GetParent();
+
+		if primaryProfessionFrame then
+			primaryProfessionFrame.UnlearnButton:Click();
+		end
 	end
 
 	local function CanUnlearn()
-		local button = SmartNavigation:GetCurrentButton();
-		local primaryProfessionFrame = button:GetParent();
+		local focusedButton = SmartNavigation:GetCurrentButton();
+		local primaryProfessionFrame = focusedButton and focusedButton:GetParent();
 
 		return primaryProfessionFrame.isPrimary;
+	end
+
+	local function ProfessionHasFocus(frame)
+		local focusedButton = SmartNavigation:GetCurrentButton();
+		local primaryProfessionFrame = focusedButton and focusedButton:GetParent();
+
+		return frame == primaryProfessionFrame;
 	end
 
 	local unlearnProfession = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, 0.5, nil, UnlearnProfession, FRAME_ACTION_HOLD_TO_UNLEARN);
 	unlearnProfession:AddButtonContext("ButtonContext_ProfessionsButton");
 	unlearnProfession:AddCondition(CanUnlearn);
 	unlearnProfession:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local prof1 = self.BookPage.ProfessionsContentFrame.PrimaryProfession1;
+	local unlearnFirstProfession = unlearnProfession:AddCustomPromptBinding({
+		frame = prof1.GamepadUnlearnButton,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		conditions = { function() return ProfessionHasFocus(prof1); end, },
+	});
+	unlearnProfession:AddCustomPromptHoldFunction(unlearnFirstProfession, { holdTime = 0.5 });
+
+	local prof2 = self.BookPage.ProfessionsContentFrame.PrimaryProfession2;
+	local unlearnSecondProfession = unlearnProfession:AddCustomPromptBinding({
+		frame = prof2.GamepadUnlearnButton,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		conditions = { function() return ProfessionHasFocus(prof2); end, },
+	});
+	unlearnProfession:AddCustomPromptHoldFunction(unlearnSecondProfession, { holdTime = 0.5 });
 
 	local function BindToActionBar()
 		GamepadMode.FrameControlsManager:UnsuspendAllFrames();

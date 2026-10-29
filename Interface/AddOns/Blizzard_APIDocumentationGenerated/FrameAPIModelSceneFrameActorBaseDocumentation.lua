@@ -275,6 +275,19 @@ local FrameAPIModelSceneFrameActorBase =
 			},
 		},
 		{
+			Name = "IsShowingFloatingProjectedTextures",
+			Type = "Function",
+
+			Arguments =
+			{
+			},
+
+			Returns =
+			{
+				{ Name = "isShowing", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsShown",
 			Type = "Function",
 
@@ -561,6 +574,16 @@ local FrameAPIModelSceneFrameActorBase =
 			Arguments =
 			{
 				{ Name = "scale", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "SetShowFloatingProjectedTextures",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "show", Type = "bool", Nilable = false },
 			},
 		},
 		{

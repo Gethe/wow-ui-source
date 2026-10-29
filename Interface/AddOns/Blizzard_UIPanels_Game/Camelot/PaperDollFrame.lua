@@ -1506,6 +1506,8 @@ end
 
 function PaperDollFrame_SetPlayer()
 	ModelSceneUtil.SetUpCharacterSheetScene(CharacterModelScene);
+
+	CharacterModelScene.PetOverlay:Hide();
 end
 
 function PaperDollFrame_OnShow(self)
@@ -3496,6 +3498,8 @@ function PaperDollFrame_SetPet()
 		actor:SetOnModelLoadedCallback(GenerateClosure(PaperDollFrame_OnModelLoaded, frame, actor));
 		actor:SetModelByUnitCreatureDisplayID("pet");
 	end
+
+	CharacterModelScene.PetOverlay:Show();
 end
 
 function PaperDollFrame_ShowSidebar(frame)

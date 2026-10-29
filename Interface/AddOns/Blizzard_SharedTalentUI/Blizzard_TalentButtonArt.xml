@@ -272,6 +272,7 @@
 		<KeyValues>
 			<KeyValue key="artSet" value="TalentButtonArtMixin.ArtSet.DelveChallengeCircle" type="global"/>
 			<KeyValue key="sizingAdjustment" value="TalentButtonUtil.SizingAdjustment.DelveChallengeCircle" type="global"/>
+			<KeyValue key="hideSelectableIcon" value="true" type="boolean"/>
 		</KeyValues>
 		<Size x="40" y="40"/>
 	</Button>

@@ -11,7 +11,8 @@
 			<Layer level="OVERLAY" textureSubLevel="6">
 				<MaskTexture parentKey="SquareMask" atlas="UI-HUD-ActionBar-IconFrame-Mask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE">
 					<Anchors>
-						<Anchor point="CENTER" relativeKey="$parent.icon"/>
+						<Anchor point="TOPLEFT" x="-8" y="8"/>
+						<Anchor point="BOTTOMRIGHT" x="8" y="-8"/>
 					</Anchors>
 					<MaskedTextures>
 						<MaskedTexture childKey="icon"/>
@@ -21,15 +22,16 @@
 		</Layers>
 	</ItemButton>
 	
-	<ItemButton name="GamepadBagSlotButtonTemplate" virtual="true">
+	<ItemButton name="GamepadBagSlotButtonTemplate" mixin="GamepadBagSlotMixin" virtual="true">
 		<Size x="37" y="37"/>
 		<KeyValues>
 			<KeyValue key="buttonContext" value="ButtonContext_OpenBagDropdownSettings" type="string"/>
 			<KeyValue key="normalAndPushedTextureWidth" value="37" type="number"/>
 			<KeyValue key="normalAndPushedTextureHeight" value="37" type="number"/>
 		</KeyValues>
+		<DisabledTexture atlas="BagSlotFrame_Expanded_Disabled"/>
 		<Frames>
-			<DropdownButton parentKey="BagDropdownButton" enableMouse="false">
+			<DropdownButton parentKey="BagDropdownButton">
 				<Size x="50" y="40"/>
 				<KeyValues>
 					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
@@ -39,6 +41,11 @@
 				</Anchors>
 			</DropdownButton>
 		</Frames>
+		<Scripts>
+			<OnLoad method="UpdateItemCount" inherit="append"/>
+			<OnShow method="UpdateItemCount" inherit="append"/>
+			<OnEvent method="UpdateItemCount" inherit="append"/>
+		</Scripts>
 	</ItemButton>
 	
 	<Frame name="BagsBar" inherits="EditModeBagsSystemTemplate" mixin="BagsBarMixin" parent="UIParent" frameLevel="52" roleset="microMenu">

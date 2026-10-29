@@ -208,13 +208,10 @@ function CharacterSelectListCharacterMixin:OnEnter()
 	self:SetTooltipAndShow();
 	CharSelectAccountUpgradePanel.UpgradeButton.PointerFrame:Show();
 	CharSelectAccountUpgradePanel.UpgradeButton.Glow:Show();
+end
 
-	if InputUtil.IsGamepadUIEnabled() then
-		local currentButton = SmartNavigation:GetCurrentButton();
-		if currentButton == self then
-			CharacterSelectUtil.SelectAtIndex(self:GetCharacterIndex());
-		end
-	end
+function CharacterSelectListCharacterMixin:OnSmartNavSelect()
+	CharacterSelectUtil.SelectAtIndex(self:GetCharacterIndex());
 end
 
 -- Note this method is overwridden by CharacterServicesCharacterSelectorMixin at times.
@@ -808,6 +805,8 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 	local infoText = self.Text.Info;
 	local statusText = self.Text.Status;
 
+	local surnamesEnabled = C_CharacterCreation.AreRegionalUniqueNamesEnabled();
+
 	if not areCharServicesShown then
 		nameText:SetTextColor(1, .82, 0, 1);
 	end
@@ -816,7 +815,7 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 	local formattedName = CharacterSelectUtil.FormatCharacterName(name, timerunningSeasonID);
     if ( CharacterSelect.undeleting ) then
         nameText:SetFormattedText(CHARACTER_SELECT_NAME_DELETED, formattedName);
-    elseif ( characterInfo.isLocked ) then
+	elseif ( characterInfo.isLocked and not surnamesEnabled ) then
         nameText:SetText(formattedName..CHARSELECT_CHAR_INACTIVE_CHAR);
 	else
         nameText:SetText(formattedName);
@@ -922,6 +921,11 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 			mailSenders = characterInfo.mailSenders;
 			local showMailNotification = mailSenders and #mailSenders >= 1;
 			self.NotificationButton:SetHasMail(showMailNotification, mailSenders);
+		end
+
+		if surnamesEnabled and characterInfo.isLocked then
+			statusText:SetText("GlueFontDisableLarge");
+			statusText:SetText(CHARSELECT_CHAR_INACTIVE_CHAR);
 		end
 	end
 end

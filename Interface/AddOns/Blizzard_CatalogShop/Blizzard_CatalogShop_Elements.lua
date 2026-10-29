@@ -1252,6 +1252,24 @@ end
 -- ProductsHeaderMixin
 ----------------------------------------------------------------------------------
 ProductsHeaderMixin = {};
+
+function ProductsHeaderMixin:NarrationGetName()
+	local name = self.headerData and self.headerData.Name;
+	if not name or name == "" then
+		return nil;
+	end
+
+	return name;
+end
+
+function ProductsHeaderMixin:NarrationGetDescription()
+	if not self.headerData then
+		return nil;
+	end
+
+	return NarrationUtil.MakeNarrationString(self.headerData.Type, self.headerData.Description);
+end
+
 function ProductsHeaderMixin:Init(headerData)
 	self.headerData = headerData;
 	-- Set up ProductsHeader
@@ -1280,7 +1298,7 @@ end
 ----------------------------------------------------------------------------------
 -- ProductDescriptionMixin
 ----------------------------------------------------------------------------------
-ProductDescriptionMixin = {};
+ProductDescriptionMixin = CreateFromMixins(NarrationForwardToParentMixin);
 function ProductDescriptionMixin:OnEnter()
 	local parent = self:GetParent();
 	if parent.headerData and self:IsShown() then

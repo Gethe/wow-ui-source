@@ -798,6 +798,19 @@ end
 -------------------------------------------------------
 ----------List Entry Creation
 -------------------------------------------------------
+local function GetDefaultVoiceChatSelection()
+	local voiceMode = LFGVoiceChatUtil.GetDefaultVoiceMode();
+	if voiceMode ~= Enum.LFGEntryVoiceMode.None then
+		return voiceMode;
+	end
+
+	return C_Discord.IsVoiceEnabled() and Enum.LFGEntryVoiceMode.Discord or Enum.LFGEntryVoiceMode.Legacy;
+end
+
+local function OnVoiceChatCheckButtonClick(checkButton)
+	checkButton:GetParent().Dropdown:SetEnabled(checkButton:GetChecked());
+end
+
 function LFGListEntryCreation_OnLoad(self)
 	self.Name.Instructions:SetText(LFG_LIST_ENTER_NAME);
 	self.Description.EditBox:SetScript("OnEnterPressed", nop);
@@ -847,6 +860,21 @@ function LFGListEntryCreation_OnLoad(self)
 	self.ActivityDropdown:SetWidth(138);
 
 	self.PlayStyleDropdown:SetDefaultText(DISABLED_FONT_COLOR:WrapTextInColorCode(GROUP_FINDER_PLAYSTYLE_REQUIRED));
+
+	self.VoiceChat.Dropdown:SetWidth(195);
+	self.VoiceChat.Label:SetPoint("RIGHT", self.VoiceChat.Dropdown, "LEFT", -5, 0);
+
+	local function IsVoiceModeSelected(voiceMode)
+		return self.selectedVoiceMode == voiceMode;
+	end
+
+	local function SetVoiceModeSelected(voiceMode)
+		self.selectedVoiceMode = voiceMode;
+	end
+
+	LFGVoiceChatUtil.SetupVoiceModeDropdown(self.VoiceChat.Dropdown, IsVoiceModeSelected, SetVoiceModeSelected);
+	LFGListEntryCreation_SetVoiceMode(self, Enum.LFGEntryVoiceMode.None);
+	self.VoiceChat.CheckButton:HookScript("OnClick", OnVoiceChatCheckButtonClick);
 
 	LFGListEntryCreation_SetBaseFilters(self, 0);
 end
@@ -1071,8 +1099,7 @@ function LFGListEntryCreation_Clear(self)
 	self.PVPRating.EditBox:SetText("");
 	self.MythicPlusRating.CheckButton:SetChecked(false);
 	self.MythicPlusRating.EditBox:SetText("");
-	self.VoiceChat.CheckButton:SetChecked(false);
-	--self.VoiceChat.EditBox:SetText(""); --Cleared in ClearCreationTextFields
+	LFGListEntryCreation_SetVoiceMode(self, LFGVoiceChatUtil.GetDefaultVoiceMode());
 	self.PrivateGroup.CheckButton:SetChecked(false);
 	self.CrossFactionGroup.CheckButton:SetChecked(false);
 
@@ -1085,8 +1112,19 @@ function LFGListEntryCreation_ClearFocus(self)
 	self.PvpItemLevel.EditBox:ClearFocus();
 	self.MythicPlusRating.EditBox:ClearFocus();
 	self.PVPRating.EditBox:ClearFocus();
-	self.VoiceChat.EditBox:ClearFocus();
 	self.Description.EditBox:ClearFocus();
+end
+
+function LFGListEntryCreation_SetVoiceMode(self, voiceMode)
+	local hasVoiceChat = voiceMode ~= Enum.LFGEntryVoiceMode.None;
+	self.selectedVoiceMode = hasVoiceChat and voiceMode or GetDefaultVoiceChatSelection();
+	self.VoiceChat.CheckButton:SetChecked(hasVoiceChat);
+	self.VoiceChat.Dropdown:SetEnabled(hasVoiceChat);
+	self.VoiceChat.Dropdown:GenerateMenu();
+end
+
+function LFGListEntryCreation_GetVoiceMode(self)
+	return self.VoiceChat.CheckButton:GetChecked() and self.selectedVoiceMode or Enum.LFGEntryVoiceMode.None;
 end
 
 --This function accepts any or all of categoryID, groupId, and activityID
@@ -1192,6 +1230,8 @@ function LFGListEntryCreation_GetSanitizedName(self)
 end
 
 function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, autoAccept, privateGroup, questID, mythicPlusRating, pvpRating, generalPlaystyle, isCrossFaction)
+	local voiceMode = LFGListEntryCreation_GetVoiceMode(self);
+
 	-- Arguments struct.
 	local createData = {
 		activityIDs = { activityID },
@@ -1204,8 +1244,10 @@ function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, aut
 		requiredDungeonScore = mythicPlusRating,
 		requiredItemLevel = itemLevel,
 		requiredPvpRating = pvpRating,
+		voiceMode = voiceMode,
 	};
 
+	local succeeded;
 	if ( LFGListEntryCreation_IsEditMode(self) ) then
 		local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 		-- Pull these values from the active entry.
@@ -1213,18 +1255,23 @@ function LFGListEntryCreation_ListGroupInternal(self, activityID, itemLevel, aut
 		createData.questID = activeEntryInfo.questID;
 
 		if activeEntryInfo.isCrossFactionListing == isCrossFaction then
-			C_LFGList.UpdateListing(createData);
+			succeeded = C_LFGList.UpdateListing(createData);
 		else
 			-- Changing cross faction setting requires re-listing the group due to how listings are bucketed server side.
 			C_LFGList.RemoveListing();
-			C_LFGList.CreateListing(createData);
+			succeeded = C_LFGList.CreateListing(createData);
 		end
 		LFGListFrame_SetActivePanel(self:GetParent(), self:GetParent().ApplicationViewer);
 	else
-		if(C_LFGList.CreateListing(createData)) then
+		succeeded = C_LFGList.CreateListing(createData);
+		if(succeeded) then
 			self.WorkingCover:Show();
 			LFGListEntryCreation_ClearFocus(self);
 		end
+	end
+
+	if succeeded then
+		LFGVoiceChatUtil.UpdateLeaderVoiceProvider(voiceMode);
 	end
 end
 
@@ -1389,7 +1436,6 @@ function LFGListEntryCreation_UpdateAuthenticatedState(self)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	local isQuestListing = activeEntryInfo and activeEntryInfo.questID or nil;
 	self.Name:SetEnabled(isAuthenticated and not isQuestListing);
-	self.VoiceChat.EditBox:SetEnabled(isAuthenticated)
 end
 
 function LFGListEntryCreation_SetBaseFilters(self, baseFilters)
@@ -1426,6 +1472,8 @@ function LFGListEntryCreation_SetEditMode(self, editMode)
 
 		self.GroupDropdown:Disable();
 		self.ActivityDropdown:Disable();
+
+		LFGListEntryCreation_SetVoiceMode(self, activeEntryInfo.voiceMode);
 
 		--Update edit boxes
 		C_LFGList.CopyActiveEntryInfoToCreationFields();
@@ -1663,6 +1711,13 @@ function LFGListApplicationViewer_UpdateGroupData(self)
 	LFGListGroupDataDisplay_Update(self.DataDisplay, activeEntryInfo.activityIDs[1], data, disabled, showClassesByRole);
 end
 
+local function UpdateVoiceChatIcon(iconFrame, voiceMode)
+	local isDiscord = voiceMode == Enum.LFGEntryVoiceMode.Discord;
+	iconFrame:SetShown(isDiscord);
+	iconFrame.tooltip = isDiscord and LFGVoiceChatUtil.GetVoiceModeLabel(voiceMode) or nil;
+	return isDiscord;
+end
+
 function LFGListApplicationViewer_UpdateInfo(self)
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
 	if not activeEntryInfo then
@@ -1736,13 +1791,7 @@ function LFGListApplicationViewer_UpdateInfo(self)
 		self.ItemLevel:SetPoint("TOPLEFT", self.InfoBackground, "TOPLEFT", 12, -52);
 	end
 
-	if ( activeEntryInfo.voiceChat == "" ) then
-		self.VoiceChatFrame.tooltip = nil;
-		self.VoiceChatFrame:Hide();
-	else
-		self.VoiceChatFrame.tooltip = activeEntryInfo.voiceChat;
-		self.VoiceChatFrame:Show();
-	end
+	UpdateVoiceChatIcon(self.VoiceChatFrame, activeEntryInfo.voiceMode);
 
 	if ( self.EntryName:GetWidth() > 290 ) then
 		self.EntryName:SetWidth(290);
@@ -3396,8 +3445,7 @@ function LFGListSearchEntry_Update(self)
 
 	self.ActivityName:SetText(activityName);
 	self.ActivityName:SetTextColor(activityColor.r, activityColor.g, activityColor.b);
-	self.VoiceChat:SetShown(searchResultInfo.voiceChat ~= "");
-	self.VoiceChat.tooltip = searchResultInfo.voiceChat;
+	local showVoiceChat = UpdateVoiceChatIcon(self.VoiceChat, searchResultInfo.voiceMode);
 
 	self.Playstyle:SetText(GetGeneralPlaystyleString(searchResultInfo.generalPlaystyle));
 
@@ -3405,7 +3453,7 @@ function LFGListSearchEntry_Update(self)
 	LFGListGroupDataDisplay_Update(self.DataDisplay, searchResultInfo.activityIDs[1], displayData, searchResultInfo.isDelisted, showClassesByRole);
 
 	local nameWidth = isApplication and 165 or 176;
-	if ( searchResultInfo.voiceChat ~= "" ) then
+	if ( showVoiceChat ) then
 		nameWidth = nameWidth - 22;
 	end
 	if ( self.Name:GetWidth() > nameWidth ) then
@@ -4369,6 +4417,7 @@ function LFGListUtil_SetAutoAccept(autoAccept)
 			requiredDungeonScore = activeEntryInfo.requiredDungeonScore,
 			requiredItemLevel = activeEntryInfo.requiredItemLevel,
 			requiredPvpRating = activeEntryInfo.requiredPvpRating,
+			voiceMode = activeEntryInfo.voiceMode,
 		});
 	end
 end
@@ -4433,12 +4482,13 @@ function LFGListUtil_SetSearchEntryTooltip(tooltip, resultID, autoAcceptOption)
 	if ( activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0 ) then
 		tooltip:AddLine(LFG_LIST_TOOLTIP_HONOR_LEVEL:format(searchResultInfo.requiredHonorLevel));
 	end
-	if ( searchResultInfo.voiceChat ~= "" ) then
-		tooltip:AddLine(string.format(LFG_LIST_TOOLTIP_VOICE_CHAT, searchResultInfo.voiceChat), nil, nil, nil, true);
+	local hasVoiceChat = searchResultInfo.voiceMode ~= Enum.LFGEntryVoiceMode.None;
+	if ( hasVoiceChat ) then
+		tooltip:AddLine(string.format(VOICE_CHAT_MODE_FORMAT, LFGVoiceChatUtil.GetVoiceModeLabel(searchResultInfo.voiceMode)), nil, nil, nil, true);
 	end
 	if ( searchResultInfo.requiredItemLevel > 0 
 		or (activityInfo.useHonorLevel and searchResultInfo.requiredHonorLevel > 0) 
-		or searchResultInfo.voiceChat ~= ""
+		or hasVoiceChat
 		or (searchResultInfo.requiredDungeonScore and searchResultInfo.requiredDungeonScore > 0) 
 		or (searchResultInfo.requiredPvpRating and searchResultInfo.requiredPvpRating > 0) )
 	then

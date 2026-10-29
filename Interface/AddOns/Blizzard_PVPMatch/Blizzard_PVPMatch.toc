@@ -3,7 +3,16 @@
 ## RequiredDep: Blizzard_UIWidgets, Blizzard_LFGUtil
 ## AllowLoadGameType: standard, camelot
 PVPMatchUtil.lua
-PVPMatchTable.xml
+PVPMatchTable.lua
 [Game]\PVPMatchTableOverrides.lua [AllowLoadGameType camelot]
-PVPMatchResults.xml
-PVPMatchScoreboard.xml
+PVPMatchTable.xml
+
+PVPMatchResults.lua [AllowLoadGameType standard]
+PVPMatchResults.xml [AllowLoadGameType standard]
+[Game]\PVPMatchResults.lua [AllowLoadGameType camelot]
+[Game]\PVPMatchResults.xml [AllowLoadGameType camelot]
+
+PVPMatchScoreboard.lua [AllowLoadGameType standard]
+PVPMatchScoreboard.xml [AllowLoadGameType standard]
+[Game]\PVPMatchScoreboard.lua [AllowLoadGameType camelot]
+[Game]\PVPMatchScoreboard.xml [AllowLoadGameType camelot]

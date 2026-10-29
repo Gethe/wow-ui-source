@@ -869,7 +869,7 @@ local Spell =
 		{
 			Name = "IsSpellCrowdControl",
 			Type = "Function",
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns true if the spell causes a crowd control effect when cast on a valid target." },
 
 			Arguments =

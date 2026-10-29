@@ -1043,8 +1043,12 @@ local function Register()
 				local container = Settings.CreateControlTextContainer();
 				container:Add(AA_NONE, VIDEO_OPTIONS_NONE);
 				container:Add(AA_IMAGE, FXAA_CMAA_LABEL);
-				container:Add(AA_MULTISAMPLE, MSAA_LABEL);
-				container:Add(AA_ADVANCED, ADVANCED_LABEL);
+				if MultiSampleAntiAliasingSupported() then
+					container:Add(AA_MULTISAMPLE, MSAA_LABEL);
+				end
+				if MultiSampleAntiAliasingSupported() and AntiAliasingSupported() then
+					container:Add(AA_ADVANCED, ADVANCED_LABEL);
+				end
 				return container:GetData();
 			end
 
@@ -1130,13 +1134,17 @@ local function Register()
 			setting:SetCommitOrder(2);
 			aaSettings.msaa = setting;
 
-			local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ADVANCED_MSAA);
-			local function IsModifiable()
-				local value = aaSetting:GetValue();
-				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
+			if MultiSampleAntiAliasingSupported() then
+				local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_ADVANCED_MSAA);
+
+				local function IsModifiable()
+					local value = aaSetting:GetValue();
+					return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
+				end
+
+				initializer:SetParentInitializer(aaInitializer, IsModifiable);
+				initializer:AddSearchTags(ANTIALIASING);
 			end
-			initializer:SetParentInitializer(aaInitializer, IsModifiable);
-			initializer:AddSearchTags(ANTIALIASING);
 		end
 
 		-- Multisample Alpha Test
@@ -1156,69 +1164,19 @@ local function Register()
 				return container:GetData();
 			end
 
-			local initializer = Settings.CreateCheckboxWithOptions(category, setting, GetOptions, OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST);
-			local function IsModifiable()
-				local value = aaSetting:GetValue();
-				return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
+			if MultiSampleAntiAliasingSupported() then
+				local initializer = Settings.CreateCheckboxWithOptions(category, setting, GetOptions, OPTION_TOOLTIP_MULTISAMPLE_ALPHA_TEST);
+				local function IsModifiable()
+					local value = aaSetting:GetValue();
+					return (value == AA_MULTISAMPLE or value == AA_ADVANCED) and MultiSampleAntiAliasingSupported();
+				end
+				initializer:SetParentInitializer(aaInitializer, IsModifiable);
+				initializer:AddSearchTags(ANTIALIASING);
 			end
-			initializer:SetParentInitializer(aaInitializer, IsModifiable);
-			initializer:AddSearchTags(ANTIALIASING);
 		end
 	end
 
-	GraphicsOverrides.CreateHDSDToggleOptions(category, layout);
-
-	-- High Res Textures (only certain Classic versions)
-	if (C_VideoOptions.AreHighResTexturesAvailable()) then
-		do
-			local function GetOptions()
-				local container = Settings.CreateControlTextContainer();
-				container:Add(false, VIDEO_OPTIONS_DISABLED);
-				container:Add(true, VIDEO_OPTIONS_ENABLED);
-				return container:GetData();
-			end
-
-			local function GetValue()
-				if C_BattleNet.AreHighResTexturesInstalled() then
-					return GetCVarBool("useHighResTextures");
-				end
-				return false;
-			end
-
-			local function SetValue(value)
-				if C_BattleNet.AreHighResTexturesInstalled() then
-					SetCVar("useHighResTextures", value);
-				end
-			end
-
-			local setting = Settings.RegisterProxySetting(category, "PROXY_HIGH_RES_TEXTURES", 
-			Settings.VarType.Boolean, OPTION_HD_TEXTURES, Settings.Default.True, GetValue, SetValue);
-			if (C_BattleNet.CanToggleHighResTexturesWithoutClientReload()) then
-				setting:SetCommitFlags(Settings.CommitFlag.Apply);
-			else
-				setting:SetCommitFlags(Settings.CommitFlag.Apply, Settings.CommitFlag.ClientRestart);
-			end
-
-			local initializer = Settings.CreateDropdown(category, setting, GetOptions, OPTION_TOOLTIP_HD_TEXTURES);
-			initializer:AddShownPredicate(BNConnected);
-			initializer:AddModifyPredicate(C_BattleNet.AreHighResTexturesInstalled);
-
-			if not C_BattleNet.AreHighResTexturesInstalled() then
-				local function OnClick()
-					StaticPopup_Show("DOWNLOAD_HIGH_RES_TEXTURES");
-				end
-
-				local addSearchTags = true;
-				local hdTexturesInitializer = CreateSettingsButtonInitializer(OPTION_HD_TEXTURES, HD_TEXTURES_BUTTON, OnClick, OPTION_TOOLTIP_HD_TEXTURES, addSearchTags);
-				hdTexturesInitializer.hideText = true;
-
-				local version = GetBuildInfo();
-				hdTexturesInitializer.showNew = version == "4.4.1";
-				hdTexturesInitializer:AddShownPredicate(BNConnected);
-				layout:AddInitializer(hdTexturesInitializer);
-			end
-		end
-	end
+	GraphicsOverrides.CreateHiResOptions(category, layout);
 
 	-- Camera FOV
 	if C_CVar.GetCVar("cameraFov") then

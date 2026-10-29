@@ -55,11 +55,12 @@ function SetItemButtonStock(button, numInStock)
 	end
 end
 
+local backgroundTextureIsAtlas = true;
 local function GetItemButtonBackgroundTexture_Base(button)
 	if button.emptyBackgroundTexture then
 		return button.emptyBackgroundTexture;
 	elseif button.emptyBackgroundAtlas then
-		return button.emptyBackgroundAtlas, true;
+		return button.emptyBackgroundAtlas, backgroundTextureIsAtlas;
 	end
 end
 
@@ -68,7 +69,7 @@ function GetItemButtonBackgroundTexture(button)
 		if button.GetItemButtonBackgroundTexture then
 			return button:GetItemButtonBackgroundTexture();
 		else
-			GetItemButtonBackgroundTexture_Base(button);
+			return GetItemButtonBackgroundTexture_Base(button);
 		end
 	end
 end
@@ -83,10 +84,14 @@ local function SetItemButtonTexture_Base(button, texture)
 
 		icon:SetShown(texture ~= nil);
 
+		-- Both SetAtlas and SetTexture carry the previous tex coords forward, so a texture that has
+		-- ever held a degenerate atlas member stays corrupted until the coords are explicitly reset.
 		if isAtlas then
-			icon:SetAtlas(texture);
+			local useAtlasSize, filterMode, resetTexCoords = false, nil, true;
+			icon:SetAtlas(texture, useAtlasSize, filterMode, resetTexCoords);
 		else
 			icon:SetTexture(texture);
+			icon:SetTexCoord(0, 1, 0, 1);
 		end
 	end
 end

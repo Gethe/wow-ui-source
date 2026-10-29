@@ -16,20 +16,20 @@
 	</Frame>
 
 	<Frame name="PagedSpellsView1Template" inherits="StaticGridLayoutFrame" virtual="true">
-		<Size x="680" y="590"/>
+		<Size x="448" y="520"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="85" y="-45" />
 		</Anchors>
 	</Frame>
 	<Frame name="PagedSpellsView2Template" inherits="StaticGridLayoutFrame" virtual="true">
-		<Size x="680" y="590"/>
+		<Size x="448" y="520"/>
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="-50" y="-45" />
 		</Anchors>
 	</Frame>
 
 	<Texture name="SpellBookTopBarTemplate" virtual="true">
-		<Size x="1612" y="0"/>
+		<Size x="1148" y="0"/>
 		<Anchors>
 			<Anchor point="TOPLEFT"/>
 		</Anchors>

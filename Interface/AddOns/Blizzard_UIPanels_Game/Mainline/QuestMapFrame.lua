@@ -1078,7 +1078,11 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	detailsFrame:Show();
 
 	-- save current view; SetMapID below re-enters this function, so keep the first value
-	detailsFrame.returnMapID = detailsFrame.returnMapID or QuestMapFrame:GetParent():GetMapID();
+	local originalFunctionEntry = false;
+	if detailsFrame.returnMapID == nil then
+		detailsFrame.returnMapID = QuestMapFrame:GetParent():GetMapID();
+		originalFunctionEntry = true;
+	end
 
 	-- destination/waypoint
 	local ignoreWaypoints = false;
@@ -1104,7 +1108,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
 
-	if InputUtil.IsGamepadUIEnabled() then
+	if InputUtil.IsGamepadUIEnabled() and originalFunctionEntry then
 		WorldMapFrame:OnOpenQuestDetails();
 	end
 end
@@ -2503,7 +2507,7 @@ function QuestMapLogTitleButton_OnClick(self, button)
 	if IsShiftKeyDown() then
 		self:ToggleTracking();
 	else
-	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(self.questID);
+		local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(self.questID);
 		if not isDisabledQuest and button == "RightButton" then
 			QuestMapLogTitleButton_CreateContextMenu(self);
 		elseif button == "LeftButton" then

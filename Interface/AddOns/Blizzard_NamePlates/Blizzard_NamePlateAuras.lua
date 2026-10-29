@@ -2,6 +2,8 @@
 NamePlateAuraItemMixin = {};
 
 function NamePlateAuraItemMixin:OnLoad()
+	-- Registering OnEnter re-enables clicks, so this has to be set in lua.
+	self:SetMouseClickEnabled(false);
 	self:SetSize(NamePlateConstants.AURA_ITEM_HEIGHT, NamePlateConstants.AURA_ITEM_HEIGHT);
 	self.Cooldown:SetUseAuraDisplayTime(self.useAuraDisplayTime);
 end
@@ -35,7 +37,6 @@ end
 
 function NamePlateAuraItemMixin:SetAura(aura)
 	self.auraInstanceID = aura.auraInstanceID;
-	self.isBuff = aura.isHelpful;
 	self.spellID = aura.spellId;
 
 	self.Icon:SetTexture(aura.icon);

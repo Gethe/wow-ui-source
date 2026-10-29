@@ -22,6 +22,22 @@ local WoWHackCharacterStats =
 				{ Name = "estimatedPoints", Type = "number", Nilable = false },
 			},
 		},
+		{
+			Name = "GetStatPointsChangeBySpellID",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "statSpellID", Type = "number", Nilable = false },
+				{ Name = "increaseSpellID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "estimatedPointsChange", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

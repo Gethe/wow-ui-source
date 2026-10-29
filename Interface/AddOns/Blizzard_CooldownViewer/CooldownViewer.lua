@@ -190,7 +190,7 @@ function CooldownViewerItemMixin:OnUnitAuraAddedEvent(unitAuraUpdateInfo)
 	-- If an aura was added and its spell matches the base, override, or a linked spell then the item needs to be refreshed.
 	for _, aura in ipairs(unitAuraUpdateInfo.addedAuras) do
 		if self:NeedsAddedAuraUpdate(aura) then
-			-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraRemovedEvent");
+			-- CDMDebugGetDebugger():LogCooldownItem(self, "OnUnitAuraAddedEvent");
 			self:RefreshData();
 			break;
 		end

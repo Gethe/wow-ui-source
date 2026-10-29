@@ -1304,7 +1304,7 @@ function GamepadGroupLootFrame_SetupGamepad(self)
 	end
 	
 	local function SimulateGreedOrTransmogClick(down)
-		if not down then
+		if down then
 			return;
 		end
 

@@ -204,7 +204,7 @@ function UIErrorsMixin:SuppressMessagesThisFrame()
 	end
 	
 	self:SetMessagesSuppressed(true);
-	C_Timer.After(0, GenerateClosure(self.SetMessagesSuppressed, self, false));
+	RunNextFrame(GenerateClosure(self.SetMessagesSuppressed, self, false));
 end
 
 function UIErrorsMixin:CheckAddMessage(...)

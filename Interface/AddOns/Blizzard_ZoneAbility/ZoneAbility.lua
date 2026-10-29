@@ -47,7 +47,7 @@ function ZoneAbilityFrameUpdater:AddDirtyFrame(dirtyFrame)
 
 	if not self.isDirty then
 		self.isDirty = true;
-		C_Timer.After(0, function() self:Clean() end);
+		RunNextFrame(function() self:Clean() end);
 	end
 end
 

@@ -295,7 +295,7 @@ function TalentButtonArtMixin:ApplyVisualState(visualState)
 
 	if self.SelectableIcon then
 		local isSelectable = (visualState == TalentButtonUtil.BaseVisualState.Selectable);
-		self.SelectableIcon:SetShown(isSelectable and CVarCallbackRegistry:GetCVarValueBool("colorblindMode"));
+		self.SelectableIcon:SetShown(not self.hideSelectableIcon and isSelectable and CVarCallbackRegistry:GetCVarValueBool("colorblindMode"));
 	end
 
 	self:UpdateStateBorder(visualState);
@@ -423,7 +423,7 @@ end
 function TalentButtonArtMixin:UpdateColorBlindVisuals(isColorBlindModeActive)
 	local visualState = self:GetVisualState();
 	if self.SelectableIcon then
-		self.SelectableIcon:SetShown(visualState == TalentButtonUtil.BaseVisualState.Selectable and isColorBlindModeActive);
+		self.SelectableIcon:SetShown(not self.hideSelectableIcon and visualState == TalentButtonUtil.BaseVisualState.Selectable and isColorBlindModeActive);
 	end
 end
 

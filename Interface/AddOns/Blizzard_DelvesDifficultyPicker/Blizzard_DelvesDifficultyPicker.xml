@@ -277,7 +277,7 @@
 								<FontString parentKey="Label" inherits="GameFontHighlight" text="TIERED_ENTRANCE_PARTY_LEADER_ONLY" justifyH="CENTER" justifyV="MIDDLE" maxLines="2">
 									<Size x="280" y="28"/>
 									<Anchors>
-										<Anchor point="BOTTOM" y="-2"/>
+										<Anchor point="TOP" relativePoint="BOTTOM" y="0"/>
 									</Anchors>
 									<Color color="ERROR_COLOR"/>
 								</FontString>
@@ -304,7 +304,7 @@
 								<FontString parentKey="Label" inherits="GameFontHighlight" text="TIERED_ENTRANCE_PARTY_LEADER_ONLY" justifyH="CENTER" justifyV="MIDDLE" maxLines="2">
 									<Size x="280" y="28"/>
 									<Anchors>
-										<Anchor point="BOTTOM" y="-60"/>
+										<Anchor point="TOP" relativePoint="BOTTOM" y="0"/>
 									</Anchors>
 									<Color color="ERROR_COLOR"/>
 								</FontString>

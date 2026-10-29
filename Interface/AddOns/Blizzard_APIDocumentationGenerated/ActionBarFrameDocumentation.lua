@@ -850,6 +850,21 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "IsHighestSpellRank",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "spellID", Type = "SpellIdentifier", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isHighestRank", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsInterruptAction",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

@@ -282,7 +282,7 @@ function AlertContainerMixin:OnLoad()
 		self:SetEnabledFlag("playerEnteredWorld", true);
 		self:SetEnabledFlag("variablesLoaded", true);
 		-- The first frame immediately after a load can take a long time and miss alert frames, so we enable this flag the frame after
-		C_Timer.After(0, GenerateClosure(self.SetEnabledFlag, self, "firstFrameRendered", true));
+		RunNextFrame(GenerateClosure(self.SetEnabledFlag, self, "firstFrameRendered", true));
 	end
 
 	EventUtil.ContinueAfterAllEvents(Callback, "VARIABLES_LOADED", "PLAYER_ENTERING_WORLD", "FIRST_FRAME_RENDERED");

@@ -190,7 +190,7 @@ function UnitPositionFrameMixin:UpdateUnitTooltips(tooltipFrame)
 	local timeNow = GetTime();
 
 	for unit in pairs(self.currentMouseOverUnits) do
-		local unitName = UnitName(unit);
+		local unitName = NameUtil.FormatUnitNameForDisplay(unit);
 		if not self:IsMouseOverUnitExcluded(unit) then
 			local formattedUnitName = GetIsPVPInactive(unit, timeNow) and format(PLAYER_IS_PVP_AFK, unitName) or unitName;
 			tooltipText = tooltipText .. prefix .. formattedUnitName;

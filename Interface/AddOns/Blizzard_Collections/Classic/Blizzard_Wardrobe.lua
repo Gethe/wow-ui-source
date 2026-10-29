@@ -218,7 +218,7 @@ end
 function WardrobeCollectionFrameMixin:UpdateUsableAppearances()
 	if not self.updateUsableAppearances then
 		self.updateUsableAppearances = true;
-		C_Timer.After(0, function() self.updateUsableAppearances = nil; C_TransmogCollection.UpdateUsableAppearances(); end);
+		RunNextFrame(function() self.updateUsableAppearances = nil; C_TransmogCollection.UpdateUsableAppearances(); end);
 	end
 end
 

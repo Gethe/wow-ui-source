@@ -27,6 +27,7 @@
 			<OnHide function="MovieFrame_OnHide"/>
 			<OnUpdate function="MovieFrame_OnUpdate"/>
 			<OnKeyUp function="MovieFrame_OnKeyUp"/>
+			<OnGamePadButtonUp function="MovieFrame_OnGamePadButtonUp"/>
 			<OnMovieFinished function="MovieFrame_OnMovieFinished"/>
 		</Scripts>
 	</MovieFrame>

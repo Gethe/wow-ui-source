@@ -101,6 +101,7 @@
 			<KeyValue key="skipTextureKitFormatting" value="true" type="boolean"/>
 		</KeyValues>
 		<Scripts>
+			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnClick method="OnClick"/>

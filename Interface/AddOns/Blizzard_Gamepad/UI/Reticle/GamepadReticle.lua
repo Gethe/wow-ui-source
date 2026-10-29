@@ -87,14 +87,14 @@ function GamepadReticleSwingTimerMixin:RefreshEnabled()
 			self.initialized = true;
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			self:RegisterEvent("PLAYER_SWING");
-			self:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", "player");
+			self:RegisterEvent("WEAPON_SLOT_CHANGED");
 			self:RefreshOffHand();
 		end
 	elseif self.initialized then
 		self.initialized = false;
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		self:UnregisterEvent("PLAYER_SWING");
-		self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
+		self:UnregisterEvent("WEAPON_SLOT_CHANGED");
 		self:RefreshVisibility();
 	end
 end
@@ -113,11 +113,8 @@ function GamepadReticleSwingTimerMixin:OnEvent(event, ...)
 		self:PlaySwingAnim(anim, duration);
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:RefreshOffHand();
-	elseif event == "UNIT_INVENTORY_CHANGED" then
-		local unitToken = ...;
-		if unitToken == "player" then
-			self:RefreshOffHand();
-		end
+	elseif event == "WEAPON_SLOT_CHANGED" then
+		self:RefreshOffHand();
 	end
 end
 

@@ -36,6 +36,26 @@ local Build =
 			},
 		},
 		{
+			Name = "GetGameFamily",
+			Type = "Function",
+			Documentation = { "Returns the game family as used by the AllowLoadGameType/ExcludeLoadGameType TOC directives, e.g. mainline or classic" },
+
+			Returns =
+			{
+				{ Name = "gameFamily", Type = "cstring", Nilable = false },
+			},
+		},
+		{
+			Name = "GetGameType",
+			Type = "Function",
+			Documentation = { "Returns the game type as used by the AllowLoadGameType/ExcludeLoadGameType TOC directives" },
+
+			Returns =
+			{
+				{ Name = "gameType", Type = "cstring", Nilable = false },
+			},
+		},
+		{
 			Name = "Is64BitClient",
 			Type = "Function",
 

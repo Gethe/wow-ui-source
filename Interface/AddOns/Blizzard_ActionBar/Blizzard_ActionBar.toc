@@ -14,6 +14,7 @@
 ## Dep: Blizzard_SpellTypeIconOverlay
 Shared\ActionButtonUtil.lua
 [Family]\ActionButtonUtilOverrides.lua
+[Game]\ActionButtonUtilOverrides.lua [AllowLoadGameType camelot]
 Shared\ActionButtonSpellAlerts.lua
 Shared\ActionButtonSpellAlerts.xml
 [Family]\MainMenuBar.lua [AllowLoadGameType classic]

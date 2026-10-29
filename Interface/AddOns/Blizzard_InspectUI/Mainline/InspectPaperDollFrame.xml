@@ -34,7 +34,7 @@
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentFrame" inherits="Char-LeftSlot">	
+				<Texture name="$parentFrame" inherits="Char-LeftSlot">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-4"/>
 					</Anchors>
@@ -52,7 +52,7 @@
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentFrame" inherits="Char-RightSlot">	
+				<Texture name="$parentFrame" inherits="Char-RightSlot">
 					<Anchors>
 						<Anchor point="TOPRIGHT" x="4"/>
 					</Anchors>
@@ -70,7 +70,7 @@
 		</Frames>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="-1">
-				<Texture name="$parentFrame" inherits="Char-BottomSlot">	
+				<Texture name="$parentFrame" inherits="Char-BottomSlot">
 					<Anchors>
 						<Anchor point="TOPLEFT" x="-4" y="8"/>
 					</Anchors>
@@ -328,31 +328,31 @@
 				</Frames>
 			</Frame>
 		</Frames>
-        <Layers>
-            <Layer level="OVERLAY">
-                <FontString name="InspectTitleText" inherits="GameFontNormalSmall" hidden="true">
-                    <Anchors>
-                        <Anchor point="TOP" relativeTo="InspectLevelText" relativePoint="BOTTOM" x="0" y="-1"/>
-                    </Anchors>
-                </FontString>
-                <FontString name="InspectGuildText" inherits="GameFontNormalSmall" hidden="true">
-                    <Anchors>
-                        <Anchor point="TOP" relativeTo="InspectTitleText" relativePoint="BOTTOM" x="0" y="-1"/>
-                    </Anchors>
-                </FontString>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString name="InspectTitleText" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="InspectLevelText" relativePoint="BOTTOM" x="0" y="-1"/>
+					</Anchors>
+				</FontString>
+				<FontString name="InspectGuildText" inherits="GameFontNormalSmall" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="InspectTitleText" relativePoint="BOTTOM" x="0" y="-1"/>
+					</Anchors>
+				</FontString>
 				<Texture name="InspectFaction" file="Interface\Timer\Panda-Logo" hidden="true">
 					<Size x="256" y="256"/>
 					<Anchors>
 						<Anchor point="CENTER" x="0" y="-10"/>
 					</Anchors>
-					<TexCoords left="0" right="1" top="0" bottom="1"/>	
+					<TexCoords left="0" right="1" top="0" bottom="1"/>
 				</Texture>
-            </Layer>
-        </Layers>
+			</Layer>
+		</Layers>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnEvent method="OnEvent"/>
 			<OnShow method="OnShow"/>
 		</Scripts>
-    </Frame>
+	</Frame>
 </Ui>

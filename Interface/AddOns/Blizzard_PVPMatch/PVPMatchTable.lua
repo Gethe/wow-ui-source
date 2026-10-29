@@ -366,6 +366,14 @@ local function ShouldShowRatingColumns()
 	return C_PvP.DoesMatchOutcomeAffectRating();
 end
 
+function GetHonorableKillsHeaderTextID()
+	return SCORE_HONORABLE_KILLS;
+end
+
+function TryAddHonorColumn(_tableBuilder, _textPadding, _useAlternateColor)
+	-- Intentionally left empty for non-overridden game variants.
+end
+
 function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 	local iconPadding = 2;
 	local textPadding = 15;
@@ -428,7 +436,7 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 
 	if C_PvP.CanDisplayHonorableKills() then
 		column = tableBuilder:AddColumn();
-		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HONORABLE_KILLS, "CENTER", "hk", HONORABLE_KILLS_TOOLTIP_TITLE, HONORABLE_KILLS_TOOLTIP);
+		column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", GetHonorableKillsHeaderTextID(), "CENTER", "hk", HONORABLE_KILLS_TOOLTIP_TITLE, HONORABLE_KILLS_TOOLTIP);
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "honorableKills", useAlternateColor);
 	end
@@ -505,6 +513,8 @@ function ConstructPVPMatchTable(tableBuilder, useAlternateColor)
 		column:ConstrainToHeader(textPadding);
 		column:ConstructCells("FRAME", "PVPCellStringTemplate", "ratingChange", useAlternateColor);
 	end
+
+	TryAddHonorColumn(tableBuilder, textPadding, useAlternateColor);
 
 	tableBuilder:Arrange();
 end

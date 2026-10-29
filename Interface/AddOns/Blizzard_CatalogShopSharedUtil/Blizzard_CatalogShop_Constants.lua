@@ -31,7 +31,7 @@ CatalogShopConstants =
 	{
 		Header = "CatalogShopSectionHeaderTemplate",
 		HeaderPersonalized = "CatalogShopSectionHeaderOptOutLinkTemplate",
-		HeaderSectionGroupBYOB = "CatalogShopSectionHeaderTemplate",
+		HeaderSectionGroupBYOB = "CatalogShopBYOBSectionHeaderTemplate",
 		Wide = "WideCatalogShopProductCardTemplate",
 		WideCardToken = "WideWoWTokenCatalogShopCardTemplate",
 		WideCardSubscription = "WideSubscriptionCatalogShopCardTemplate",

@@ -29,74 +29,14 @@ function ScenarioTrackerStatLineMixin:SetValue(value)
 	self.Value:SetText(value);
 end
 
-local function GetHealth()
-	return UnitHealthMax("player");
-end
-
-local function GetMana()
-	return UnitPowerMax("player", Enum.PowerType.Mana);
-end
-
-local function GetEnergy()
-	return UnitPowerMax("player", Enum.PowerType.Energy);
-end
-
-local function GetPower()
-	return UnitAttackPower("player");
-end
-
-local function GetCritRaw()
-	return math.ceil(GetCritChance());
-end
-
-local function GetCrit()
-	return format("%d%%", GetCritRaw());
-end
-
-local function GetMeleeHitAvoidanceRaw()
-	return math.ceil(-GetMeleeHitChanceTakenModifier());
-end
-
-local function GetMeleeHitAvoidance()
-	return format("%d%%", GetMeleeHitAvoidanceRaw());
-end
-
-local function FormatPercent(value)
-	return format("%d%%", value);
-end
-
-local DELTA_SOURCE_HEALTH = "health";
-local DELTA_SOURCE_ATTACK_POWER = "maxStatChange";
-local DELTA_SOURCE_CRIT_PERCENT = "critPercent";
-local DELTA_SOURCE_DODGE_PERCENT = "meleeHitChanceTakenChange";
-
-local function MakeStatLineEntry(statName, valueCallback, deltaSource, rawValueCallback, formatCallback)
-	return {
-		name = statName,
-		valueCallback = valueCallback,
-		deltaSource = deltaSource,
-		rawValueCallback = rawValueCallback,
-		formatCallback = formatCallback,
-	};
-end
-
-local function MakePowerDeltaSource(powerType)
-	return { source = "power", key = powerType };
-end
-
-local STAT_LINE_ENTRIES = {
-	MakeStatLineEntry(WOWHACK_STAT_LINE_HEALTH, GetHealth, DELTA_SOURCE_HEALTH),
-	MakeStatLineEntry(WOWHACK_STAT_LINE_MANA, GetMana, MakePowerDeltaSource(Enum.PowerType.Mana)),
-	MakeStatLineEntry(WOWHACK_STAT_LINE_ENERGY, GetEnergy, MakePowerDeltaSource(Enum.PowerType.Energy)),
-	MakeStatLineEntry(ATTACK_POWER, GetPower, DELTA_SOURCE_ATTACK_POWER),
-	MakeStatLineEntry(CRIT_CHANCE, GetCrit, DELTA_SOURCE_CRIT_PERCENT, GetCritRaw, FormatPercent),
-	-- This is the WoWHack version of melee avoidance
-	MakeStatLineEntry(DODGE, GetMeleeHitAvoidance, DELTA_SOURCE_DODGE_PERCENT, GetMeleeHitAvoidanceRaw, FormatPercent),
-};
-
 ScenarioTrackerCharacterStatsBlockMixin = {};
 
 function ScenarioTrackerCharacterStatsBlockMixin:OnLoad()
+	-- WoWHackCharacterStats is not defined in every game type; the block stays inert without it.
+	if not WoWHackCharacterStats then
+		return;
+	end
+
 	if C_GameRules.IsWoWHack() then 
 		-- Show when the tiered entrance traits is shown.
 		EventRegistry:RegisterCallback("TieredEntranceTraits.TraitsListShown", self.Show, self);
@@ -128,15 +68,17 @@ function ScenarioTrackerCharacterStatsBlockMixin:InitStatLines()
 	local view = CreateScrollBoxListLinearView(STAT_LIST_TOP_PADDING, STAT_LIST_BOTTOM_PADDING, 0, STAT_LIST_RIGHT_PADDING, STAT_LINE_SPACING);
 	view:SetElementInitializer(STAT_LINE_TEMPLATE, function(statLine, elementData)
 		statLine:SetName(elementData.name);
+		self:UpdateStatLine(statLine, elementData);
 	end);
 	ScrollUtil.InitScrollBoxListWithScrollBar(self.ScrollBox, self.ScrollBar, view);
 
+	local statLineEntries = WoWHackCharacterStats.Entries;
 	local dataProvider = CreateDataProvider();
-	dataProvider:Insert(unpack(STAT_LINE_ENTRIES));
+	dataProvider:Insert(unpack(statLineEntries));
 	self.ScrollBox:SetDataProvider(dataProvider);
 
 	local statLineHeight = C_XMLUtil.GetTemplateInfo(STAT_LINE_TEMPLATE).height;
-	local numStatLines = #STAT_LINE_ENTRIES;
+	local numStatLines = #statLineEntries;
 	local contentHeight = ScrollUtil.CalculateScrollBoxElementExtent(numStatLines, statLineHeight, STAT_LINE_SPACING) + self.ScrollBox:GetExtentPadding();
 
 	local chromeHeight = math.abs(SCROLL_BOX_TOP_Y_OFFSET) + math.abs(SCROLL_BOX_BOTTOM_Y_OFFSET);
@@ -160,6 +102,12 @@ function ScenarioTrackerCharacterStatsBlockMixin:SetStatDeltas(spellID)
 		return;
 	end
 
+	local DeltaSource = WoWHackCharacterStats.DeltaSource;
+	local DELTA_SOURCE_HEALTH = DeltaSource.Health;
+	local DELTA_SOURCE_ATTACK_POWER = DeltaSource.AttackPower;
+	local DELTA_SOURCE_CRIT_PERCENT = DeltaSource.CritPercent;
+	local DELTA_SOURCE_DODGE_PERCENT = DeltaSource.DodgePercent;
+
 	local healthChange, powerTypeChanges, statAuraChanges = C_Spell.GetAuraStatChanges(spellID);
 
 	self.statDeltas = {};
@@ -175,6 +123,17 @@ function ScenarioTrackerCharacterStatsBlockMixin:SetStatDeltas(spellID)
 	for _, change in ipairs(powerTypeChanges) do
 		if change.amount ~= 0 then
 			self.statDeltas.power[change.powerType] = change.amount;
+		end
+	end
+
+	self.statDeltas.statPoints = {};
+	for _, entry in ipairs(WoWHackCharacterStats.Entries) do
+		local deltaSource = entry.deltaSource;
+		if type(deltaSource) == "table" and deltaSource.source == "statPoints" then
+			local change = C_WoWHackCharacterStats.GetStatPointsChangeBySpellID(deltaSource.key, spellID);
+			if change ~= 0 then
+				self.statDeltas.statPoints[deltaSource.key] = change;
+			end
 		end
 	end
 
@@ -196,22 +155,30 @@ function ScenarioTrackerCharacterStatsBlockMixin:GetDeltaForEntry(elementData)
 		return self.statDeltas.power and self.statDeltas.power[deltaSource.key];
 	end
 
+	if type(deltaSource) == "table" and deltaSource.source == "statPoints" then
+		return self.statDeltas.statPoints and self.statDeltas.statPoints[deltaSource.key];
+	end
+
 	return self.statDeltas[deltaSource];
+end
+
+function ScenarioTrackerCharacterStatsBlockMixin:UpdateStatLine(statLine, elementData)
+	local currentDisplay = elementData.valueCallback();
+	local delta = self:GetDeltaForEntry(elementData);
+	if delta then
+		local currentRaw = elementData.rawValueCallback and elementData.rawValueCallback() or currentDisplay;
+		local newRaw = currentRaw + delta;
+		local formatFn = elementData.formatCallback or tostring;
+		local newDisplay = formatFn(newRaw);
+		statLine:SetValue(currentDisplay .. " > " .. GREEN_FONT_COLOR:WrapTextInColorCode(newDisplay));
+	else
+		statLine:SetValue(currentDisplay);
+	end
 end
 
 function ScenarioTrackerCharacterStatsBlockMixin:UpdateStats()
 	self.ScrollBox:ForEachFrame(function(statLine, elementData)
-		local currentDisplay = elementData.valueCallback();
-		local delta = self:GetDeltaForEntry(elementData);
-		if delta then
-			local currentRaw = elementData.rawValueCallback and elementData.rawValueCallback() or currentDisplay;
-			local newRaw = currentRaw + delta;
-			local formatFn = elementData.formatCallback or tostring;
-			local newDisplay = formatFn(newRaw);
-			statLine:SetValue(currentDisplay .. " > " .. GREEN_FONT_COLOR:WrapTextInColorCode(newDisplay));
-		else
-			statLine:SetValue(currentDisplay);
-		end
+		self:UpdateStatLine(statLine, elementData);
 	end);
 end
 

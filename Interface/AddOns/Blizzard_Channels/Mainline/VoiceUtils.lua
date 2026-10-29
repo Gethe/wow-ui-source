@@ -64,6 +64,7 @@ local voiceChatStatusToGameError =
 	[Enum.VoiceChatStatusCode.ChannelNameTooLong] = LE_GAME_ERR_VOICE_CHAT_CHANNEL_NAME_TOO_LONG,
 	[Enum.VoiceChatStatusCode.ChannelAlreadyExists] = LE_GAME_ERR_VOICE_CHAT_CHANNEL_ALREADY_EXISTS,
 	[Enum.VoiceChatStatusCode.TargetNotFound] = LE_GAME_ERR_VOICE_CHAT_TARGET_NOT_FOUND,
+	[Enum.VoiceChatStatusCode.ServiceLost] = LE_GAME_ERR_VOICE_CHAT_GENERIC_UNABLE_TO_CONNECT,
 	[Enum.VoiceChatStatusCode.ProxyConnectionTimeOut] = LE_GAME_ERR_VOICE_CHAT_SERVICE_LOST,
 	[Enum.VoiceChatStatusCode.ProxyConnectionUnexpectedDisconnect] = LE_GAME_ERR_VOICE_CHAT_SERVICE_LOST,
 	[Enum.VoiceChatStatusCode.UnableToLaunchProxy] = LE_GAME_ERR_VOICE_CHAT_GENERIC_UNABLE_TO_CONNECT,

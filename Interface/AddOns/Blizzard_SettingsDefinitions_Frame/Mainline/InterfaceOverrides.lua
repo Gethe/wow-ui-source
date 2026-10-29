@@ -329,9 +329,20 @@ end
 function InterfaceOverrides.CreateToastSettings(category, layout)
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(TOAST_SETTINGS_LABEL));
 
-	Settings.SetupCVarCheckbox(category, "enableLootToasts", SHOW_ITEM_TOASTS, OPTION_TOOLTIP_SHOW_ITEM_TOASTS);
-	Settings.SetupCVarCheckbox(category, "enableCollectionToasts", SHOW_COLLECTION_TOASTS, OPTION_TOOLTIP_SHOW_COLLECTION_TOASTS);
-	Settings.SetupCVarCheckbox(category, "enableLearnedRecipeToasts", SHOW_LEARNED_RECIPE_TOASTS, OPTION_TOOLTIP_SHOW_LEARNED_RECIPE_TOASTS);
+	if C_CVar.GetCVar("enableLootToasts") then
+		-- Loot toasts
+		Settings.SetupCVarCheckbox(category, "enableLootToasts", SHOW_ITEM_TOASTS, OPTION_TOOLTIP_SHOW_ITEM_TOASTS);
+	end
+
+	if C_CVar.GetCVar("enableCollectionToasts") then
+		-- Collection toasts
+		Settings.SetupCVarCheckbox(category, "enableCollectionToasts", SHOW_COLLECTION_TOASTS, OPTION_TOOLTIP_SHOW_COLLECTION_TOASTS);
+	end
+
+	if C_CVar.GetCVar("enableLearnedRecipeToasts") then
+		-- Recipe toasts
+		Settings.SetupCVarCheckbox(category, "enableLearnedRecipeToasts", SHOW_LEARNED_RECIPE_TOASTS, OPTION_TOOLTIP_SHOW_LEARNED_RECIPE_TOASTS);
+	end
 end
 
 --This function is overriden in camelot

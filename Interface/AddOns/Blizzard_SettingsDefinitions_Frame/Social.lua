@@ -120,9 +120,6 @@ local function Register()
 	--Offline Friends
 	Settings.SetupCVarCheckbox(category, "showToastOffline", SHOW_TOAST_OFFLINE_TEXT, OPTION_TOOLTIP_SHOW_TOAST_OFFLINE);
 
-	-- Broadcast Updates
-	Settings.SetupCVarCheckbox(category, "showToastBroadcast", SHOW_TOAST_BROADCAST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_BROADCAST);
-
 	-- Location visibility
 	-- Friends and Guildmates can always see your location, so right now this only controls Recent Ally visibility
 	do
@@ -154,7 +151,7 @@ local function Register()
 	Settings.SetupCVarCheckbox(category, "showToastFriendRequest", SHOW_TOAST_FRIEND_REQUEST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_FRIEND_REQUEST);
 
 	-- Show Toast Window
-	Settings.SetupCVarCheckbox(category, "showToastWindow", SHOW_TOAST_WINDOW_TEXT, OPTION_TOOLTIP_SHOW_TOAST_WINDOW);
+	SocialOverrides.SetupToastWindowSetting(category);
 
 	if C_CVar.GetCVar("autoAcceptQuickJoinRequests") then
 		-- Auto Accept Quick Join Requests

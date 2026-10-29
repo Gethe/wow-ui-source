@@ -13,6 +13,13 @@ end
 
 local GM_SPLASH_SCREEN_MAP = {
 	[Enum.GameMode.WoWHack] = {
+		logo = [[Interface\Glues\Common\Glues-WoW-TaleboundLogo.blp]],
+		logoOffsetX = 228,
+		logoOffsetY = -90,
+		contentOffsetX = 50,
+		contentOffsetY = -7,
+		topDescriptionOffsetX = -28,
+		topDescriptionOffsetY = 3,
 		background = "timerunning-infographic-background-talebound",
 		bullet = "timerunning-infographic-bullet",
 		rewards = "timerunning-infographic-rewards-talebound",
@@ -28,7 +35,7 @@ local GM_SPLASH_SCREEN_MAP = {
 };
 
 function GameModeInfoDisplayMixin:OnShow()
-	self.gameModeForSplashScreen = C_GameRules.GetActiveGameModeForSplashScreen() or self.gameModeForSplashScreen;
+	self.gameModeForSplashScreen = C_GameRules.GetActiveGameModeForSplashScreen() or self.gameModeForSplashScreen or C_GameRules.GetActiveGameMode();
 	if not self.gameModeForSplashScreen then
 		self:SetShown(false);
 		return;
@@ -47,18 +54,41 @@ function GameModeInfoDisplayMixin:OnShow()
 		C_GameRules.SetAlreadyShownOnce(true);
 	end
 
-	local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
-	if currentExpansionLevel then
-		SetExpansionLogo(self.InfoPanel.Logo, currentExpansionLevel);
+	local logo = self.InfoPanel.Logo;
+	local logoOffsetX = gameModeAtlasSettings.logoOffsetX or 175;
+	local logoOffsetY = gameModeAtlasSettings.logoOffsetY or -70;
+	logo:ClearAllPoints();
+	logo:SetPoint("CENTER", self.InfoPanel, "TOPLEFT", logoOffsetX, logoOffsetY);
+
+	if gameModeAtlasSettings.logo then
+		logo:SetTexture(gameModeAtlasSettings.logo);
+		logo:Show();
+	else
+		local currentExpansionLevel = AccountUpgradePanel_GetBannerInfo();
+		if currentExpansionLevel then
+			SetExpansionLogo(logo, currentExpansionLevel);
+		end
 	end
 
-	self.InfoPanel.Background:SetAtlas(gameModeAtlasSettings.background);
-	self.InfoPanel.QuestsBullet:SetAtlas(gameModeAtlasSettings.bullet);
-	self.InfoPanel.ItemsBullet:SetAtlas(gameModeAtlasSettings.bullet);
-	self.InfoPanel.RewardsBullet:SetAtlas(gameModeAtlasSettings.bullet);
-	self.InfoPanel.RewardsBird:SetAtlas(gameModeAtlasSettings.rewards);
+	local topDescription = self.InfoPanel.TopDescription;
+	local topDescriptionOffsetX = gameModeAtlasSettings.topDescriptionOffsetX or -40;
+	local topDescriptionOffsetY = gameModeAtlasSettings.topDescriptionOffsetY or 3;
+	topDescription:ClearAllPoints();
+	topDescription:SetPoint("LEFT", logo, "RIGHT", topDescriptionOffsetX, topDescriptionOffsetY);
 
-	self.InfoPanel.TopDescription:SetText(gameModeAtlasSettings.topDescription);
+	local questsHeader = self.InfoPanel.QuestsHeader;
+	local contentOffsetX = gameModeAtlasSettings.contentOffsetX or 80;
+	local contentOffsetY = gameModeAtlasSettings.contentOffsetY or -20;
+	questsHeader:ClearAllPoints();
+	questsHeader:SetPoint("TOPLEFT", logo, "BOTTOMLEFT", contentOffsetX, contentOffsetY);
+
+	self.InfoPanel.Background:SetAtlas(gameModeAtlasSettings.background);
+	self.InfoPanel.QuestsBullet:SetAtlas(gameModeAtlasSettings.bullet, true);
+	self.InfoPanel.ItemsBullet:SetAtlas(gameModeAtlasSettings.bullet, true);
+	self.InfoPanel.RewardsBullet:SetAtlas(gameModeAtlasSettings.bullet, true);
+	self.InfoPanel.RewardsBird:SetAtlas(gameModeAtlasSettings.rewards, true);
+
+	topDescription:SetText(gameModeAtlasSettings.topDescription);
 	self.InfoPanel.QuestsHeader:SetText(gameModeAtlasSettings.questsHeader);
 	self.InfoPanel.QuestsDescription:SetText(gameModeAtlasSettings.questsDescription);
 	self.InfoPanel.ItemsHeader:SetText(gameModeAtlasSettings.itemsHeader);
@@ -66,7 +96,7 @@ function GameModeInfoDisplayMixin:OnShow()
 	self.InfoPanel.RewardsHeader:SetText(gameModeAtlasSettings.rewardsHeader);
 	self.InfoPanel.RewardsDescription:SetText(gameModeAtlasSettings.rewardsDescription);
 
-	self.targetGameModeRecId = C_GameRules.GetActiveGameModeRecIdForSplashScreen() or self.targetGameModeRecId;
+	self.targetGameModeRecId = C_GameRules.GetActiveGameModeRecIdForSplashScreen() or self.targetGameModeRecId or C_GameRules.GetCurrentGameModeRecordID();
 
 	self.InfoPanel.PlayNowButton:SetText(gameModeAtlasSettings.playNowButton);
 	self.InfoPanel.PlayNowButton:SetScript("OnClick", function()

@@ -14,6 +14,7 @@ function ModelSceneActorMixin:ApplyFromModelSceneActorInfo(actorInfo)
 	self:SetUseCenterForOrigin(actorInfo.useCenterForOriginX, actorInfo.useCenterForOriginY, actorInfo.useCenterForOriginZ);
 	self:SetDropShadowEnabled(actorInfo.addDropShadowAtM2Feet);
 	self:SetDropShadowAlpha(nil);
+	self:SetShowFloatingProjectedTextures(actorInfo.showFloatingProjectedTextures);
 
 	self:SetPosition(actorInfo.position:GetXYZ());
 	self:SetYaw(actorInfo.yaw);

@@ -1282,7 +1282,7 @@ function PrivateAuraUnitWatcher:MarkDirty(skipParse)
 			self.CleanClosure = GenerateClosure(self.Clean, self);
 		end
 
-		C_Timer.After(0, self.CleanClosure);
+		RunNextFrame(self.CleanClosure);
 	end
 end
 

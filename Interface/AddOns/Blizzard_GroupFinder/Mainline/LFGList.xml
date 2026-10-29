@@ -507,17 +507,17 @@
 		</ButtonText>
 	</Button>
 	<Frame name="LFGListVoiceChatIcon" virtual="true">
-		<Size x="16" y="14"/>
+		<Size x="16" y="16"/>
 		<Layers>
 			<Layer level="ARTWORK">
-				<Texture parentKey="Icon" atlas="groupfinder-icon-voice" setAllPoints="true"/>
+				<Texture parentKey="Icon" atlas="UI-ChatIcon-Discord" setAllPoints="true"/>
 			</Layer>
 		</Layers>
 		<Scripts>
 			<OnEnter>
 				if ( self.tooltip ) then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
-					GameTooltip:SetText(string.format(VOICE_CHAT_COLON, self.tooltip), 1, 1, 1, 1, true);
+					GameTooltip:SetText(string.format(VOICE_CHAT_MODE_FORMAT, self.tooltip), 1, 1, 1, 1, true);
 					GameTooltip:Show();
 				end
 			</OnEnter>
@@ -1841,21 +1841,6 @@
 							<KeyValue key="validateFunc" value="LFGListUtil_ValidateMythicPlusRatingReq" type="global"/>
 						</KeyValues>
 					</Frame>
-					<Frame parentKey="VoiceChat" inherits="LFGListRequirementTemplate">
-						<KeyValues>
-							<KeyValue key="maxLetters" value="31" type="number"/>
-							<KeyValue key="secureReferenceStr" value="LFGListCreationVoiceChat" type="string"/>
-							<KeyValue key="hideLockButton" value="true" type="boolean"/>
-						</KeyValues>
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.ItemLevel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
-						</Anchors>
-						<KeyValues>
-							<KeyValue key="label" value="LFG_LIST_VOICE_CHAT" type="global"/>
-							<KeyValue key="instructions" value="LFG_LIST_VOICE_CHAT_INSTR" type="global"/>
-							<KeyValue key="tabCategory" value="ENTRY_CREATION" type="string"/>
-						</KeyValues>
-					</Frame>
 					<Frame parentKey="CrossFactionGroup" inherits="LFGListOptionCheckButtonTemplate">
 						<KeyValues>
 							<KeyValue key="label" value="LFG_LIST_CROSS_FACTION" type="global"/>
@@ -1863,7 +1848,7 @@
 							<KeyValue key="disableTooltip" value="LFG_LIST_CROSS_FACTION_DISABLE_TOOLTIP" type="global"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChat" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ItemLevel" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
 						</Anchors>
 					</Frame>
 					<Frame parentKey="PrivateGroup" inherits="LFGListOptionCheckButtonTemplate">
@@ -1872,8 +1857,23 @@
 							<KeyValue key="tooltip" value="LFG_LIST_PRIVATE_TOOLTIP" type="global"/>
 						</KeyValues>
 						<Anchors>
-							<Anchor point="TOPLEFT" relativeKey="$parent.VoiceChat" relativePoint="BOTTOMLEFT" x="220" y="-3"/>
+							<Anchor point="TOPLEFT" relativeKey="$parent.ItemLevel" relativePoint="BOTTOMLEFT" x="220" y="-3"/>
 						</Anchors>
+					</Frame>
+					<Frame parentKey="VoiceChat" inherits="LFGListOptionCheckButtonTemplate">
+						<KeyValues>
+							<KeyValue key="label" value="LFG_LIST_VOICE_CHAT" type="global"/>
+						</KeyValues>
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.CrossFactionGroup" relativePoint="BOTTOMLEFT" x="0" y="-3"/>
+						</Anchors>
+						<Frames>
+							<DropdownButton parentKey="Dropdown" inherits="WowStyle1DropdownTemplate">
+								<Anchors>
+									<Anchor point="RIGHT" x="-5" y="0"/>
+								</Anchors>
+							</DropdownButton>
+						</Frames>
 					</Frame>
 					<Button parentKey="ListGroupButton" inherits="LFGListMagicButtonTemplate" text="LIST_GROUP" motionScriptsWhileDisabled="true">
 						<Size x="135" y="22"/>

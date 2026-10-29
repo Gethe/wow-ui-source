@@ -638,10 +638,11 @@ function ModelSceneMixin:GetOrAcquireDropShadow(actor)
 	local shadow = self.actorDropShadows[actor];
 	if not shadow then
 		if not self.dropShadowPool then
-			-- Regions of the scene itself would draw over the 3D content, so use a frame instead. A lower level than the scene can fall under its parent's background.
+			-- Regions of the scene itself would draw over the 3D content, so use a frame instead.
+			-- One level below the scene: the same level draws over the model, and any lower can fall under a background frame.
 			self.dropShadowFrame = CreateFrame("Frame", nil, self);
 			self.dropShadowFrame:SetAllPoints(self);
-			self.dropShadowFrame:SetFrameLevel(self:GetFrameLevel());
+			self.dropShadowFrame:SetFrameLevel(math.max(self:GetFrameLevel() - 1, 0));
 			self.dropShadowPool = CreateTexturePool(self.dropShadowFrame, "ARTWORK", 0, "ModelSceneDropShadowTemplate");
 		end
 

@@ -79,6 +79,7 @@ function CharacterSelectUIMixin:OnLoad()
 	self:RegisterEvent("ACCOUNT_CVARS_LOADED");
 	self:RegisterEvent("MAP_SCENE_CHARACTER_UPDATE_OVERLAY_FRAME");
 	self:RegisterEvent("GAME_RULES_CHANGED");
+	self:RegisterEvent("CHAR_SELECT_BACKGROUND_MODEL_READY");
 
 	local function OnCollectionsShow()
 		if self.ModelFFX:IsShown() then
@@ -190,6 +191,12 @@ function CharacterSelectUIMixin:OnEvent(event, ...)
 		end
 	elseif event == "GAME_RULES_CHANGED" then
 		self:RefreshConfig();
+	elseif event == "CHAR_SELECT_BACKGROUND_MODEL_READY" then
+		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
+		if selectedCharacterID and self.ModelFFX:IsShown() then
+			SetCharSelectBackground(GetSelectBackgroundModel(selectedCharacterID));
+			ResetModel(self.ModelFFX);
+		end
 	end
 end
 

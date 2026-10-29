@@ -116,6 +116,7 @@ local Instance =
 				{ Name = "instanceGroupSize", Type = "number", Nilable = false },
 				{ Name = "lfgDungeonID", Type = "number", Nilable = true },
 				{ Name = "hasWorldTier", Type = "bool", Nilable = false, Default = false },
+				{ Name = "instanceServerID", Type = "number", Nilable = true },
 			},
 		},
 		{
@@ -280,6 +281,7 @@ local Instance =
 				{ Name = "instanceGroupSize", Type = "number", Nilable = false },
 				{ Name = "lfgDungeonID", Type = "number", Nilable = true },
 				{ Name = "hasWorldTier", Type = "bool", Nilable = false, Default = false },
+				{ Name = "instanceServerID", Type = "number", Nilable = true },
 			},
 		},
 	},

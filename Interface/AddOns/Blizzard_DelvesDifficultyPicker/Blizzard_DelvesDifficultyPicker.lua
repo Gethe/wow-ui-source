@@ -146,6 +146,8 @@ function DelvesDifficultyPickerFrameMixin:OnEvent(event, ...)
 			self:SetupTiers(); -- lairs tier info changes with party change (raid/cross-faction), refetch
 			self.Dropdown:GenerateMenu();
 			self:UpdateDropdownState(true);
+		elseif self.entranceType == Enum.TieredEntranceType.Tale then
+			self:UpdateDropdownState(not C_DelvesUI.HasActiveDelve());
 		end
 		self:UpdatePortalButtonState();
 		if self.displayMode == DelvesDisplayMode.Traits then
@@ -295,6 +297,35 @@ function DelveChallengesContainerFrameMixin:OnShow()
 	self.Title:SetText(self.entranceType == Enum.TieredEntranceType.Tale and TIERED_ENTRANCE_TALE or TIERED_ENTRANCE_CHALLENGES);
 end
 
+-- TalentFrameGridMixin override: same grid, but each row is horizontally centered in the frame.
+function DelveChallengesContainerFrameMixin:UpdateAllTalentButtonPositions()
+	local buttons = self.buttonsMethod(self);
+	local layout = AnchorUtil.CreateGridLayout(GridLayoutMixin.Direction.TopLeftToBottomRight, self.stride or 5, self.paddingX or 0, self.paddingY or 0);
+	layout:SetCenteredInWidth(self:GetWidth());
+
+	-- ButtonsParent is inset by leftPadding, so offset back to center on the frame.
+	local anchor = CreateAnchor("TOPLEFT", self.ButtonsParent, "TOPLEFT", -self.leftPadding, 0);
+	AnchorUtil.GridLayout(buttons, anchor, layout);
+
+	self:UpdateBlockingFrameSize(#buttons, layout.stride);
+end
+
+-- The container extends well below the node rows, so fit the blocking frame (and its label) to the rows instead.
+function DelveChallengesContainerFrameMixin:UpdateBlockingFrameSize(numButtons, stride)
+	if numButtons <= 0 then
+		return;
+	end
+
+	local numRows = math.ceil(numButtons / stride);
+	local rowsHeight = numRows * self:GetButtonSize() + (numRows - 1) * (self.paddingY or 0);
+
+	local blockingFrame = self.BlockingFrame;
+	blockingFrame:ClearAllPoints();
+	blockingFrame:SetPoint("TOPLEFT");
+	blockingFrame:SetPoint("TOPRIGHT");
+	blockingFrame:SetHeight(self.topPadding + rowsHeight + self.topPadding);
+end
+
 function DelveChallengesContainerFrameMixin:CheckPartyLeader()
 	-- show blocking frame if in a group and not leader
 	local doShow = false;
@@ -321,6 +352,7 @@ function DelvesDifficultyPickerStartNewRunButtonMixin:CheckPartyLeader()
 		end
 	end
 	self.BlockingFrame:SetShown(doShow);
+	self:SetEnabled(not doShow);
 end
 
 function DelvesDifficultyPickerStartNewRunButtonMixin:OnClick()
@@ -425,6 +457,10 @@ function DelvesDifficultyPickerFrameMixin:UpdateDropdownState(enabled)
 		local isPartyLeader = inParty and UnitIsGroupLeader("player");
 		local inLFGLair = C_DelvesUI.HasActiveLFGLair();
 		self.Dropdown:SetEnabled((isPartyLeader or not inParty) and not inLFGLair);
+	elseif self.entranceType == Enum.TieredEntranceType.Tale then
+		local inParty = UnitInParty("player");
+		local isPartyLeader = inParty and UnitIsGroupLeader("player");
+		self.Dropdown:SetEnabled(enabled ~= false and (isPartyLeader or not inParty));
 	else
 		self.Dropdown:SetEnabled(enabled);
 	end
@@ -914,6 +950,9 @@ function DelvesDifficultyPickerEnterDelveButtonMixin:OnClick()
 		return;
 	end
 	C_DelvesUI.SelectDelveEntranceTier(selectedTierInfo.tier);
+	if DelvesDifficultyPickerFrame.entranceType == Enum.TieredEntranceType.Tale then
+		HideUIPanel(DelvesDifficultyPickerFrame);
+	end
 end
 
 function DelvesDifficultyPickerFrameMixin:OnPartyEligibilityChanged(playerName, maxEligibleLevel)

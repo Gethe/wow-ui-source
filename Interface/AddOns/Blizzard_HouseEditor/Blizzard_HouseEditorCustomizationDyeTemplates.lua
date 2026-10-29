@@ -197,7 +197,7 @@ end
 function HousingDecorDyeSlotPopoutMixin:ReinitScrollBox()
 	self.DyeSlotScrollBox.Contents.DyeSwatchContainer:MarkDirty();
 	self.DyeSlotScrollBox.Contents.RecentlyUsedFrame.RecentlyUsedContainer:MarkDirty();
-	C_Timer.After(0, function() self.DyeSlotScrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately); end);
+	RunNextFrame(function() self.DyeSlotScrollBox:FullUpdate(ScrollBoxConstants.UpdateImmediately); end);
 end
 
 function HousingDecorDyeSlotPopoutMixin:UpdateDyeSlotInfo(dyeSlotInfo)

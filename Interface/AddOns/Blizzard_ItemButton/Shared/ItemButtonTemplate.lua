@@ -13,6 +13,12 @@ function ItemButtonMixin:OnItemContextChanged()
 	self:UpdateItemContextMatching();
 end
 
+function ItemButtonMixin:PostOnLoad()
+	self:GetNormalTexture():AddMaskTexture(self.Mask);
+	self:GetPushedTexture():AddMaskTexture(self.Mask);
+	self:GetItemButtonIconTexture():AddMaskTexture(self.Mask);
+end
+
 function ItemButtonMixin:PostOnShow()
 	self:UpdateItemContextMatching();
 

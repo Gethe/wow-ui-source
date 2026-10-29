@@ -34,6 +34,7 @@ Blizzard_TalentFrameList.lua
 Blizzard_TalentFrameList.xml
 Blizzard_TalentFrameGrid.lua
 Blizzard_TalentFrameGrid.xml
+WoWHack\Blizzard_WoWHackCharacterStats.lua [AllowLoadGameType wowhack]
 WoWHack\Blizzard_TalentFrameGridSelection.lua [AllowLoadGameType wowhack]
 WoWHack\Blizzard_TalentFrameGridSelection.xml [AllowLoadGameType wowhack]
 Blizzard_ClassTalentSearch.lua

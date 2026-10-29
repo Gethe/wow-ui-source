@@ -461,8 +461,6 @@ function ClassTrainerFrame_Update(retainScrollPosition)
 	local playerMoney = GetMoney();
 	local tradeSkillStepIndex = GetTrainerServiceStepIndex();
 
-	local empty = true;
-
 	local dataProvider = CreateTreeDataProvider();
 	dataProvider:SetSortComparator(EntrySortComparator);
 	local categoryNodes = {};
@@ -495,7 +493,6 @@ function ClassTrainerFrame_Update(retainScrollPosition)
 			else
 				dataProvider:Insert(elementData);
 			end
-			empty = false;
 		end
 	end
 
@@ -580,8 +577,8 @@ function ClassTrainerFrame_Update(retainScrollPosition)
 		ClassTrainerFrame.trainingPoints:Hide();
 	end
 
-	if empty then
-		ClassTrainerFrame.TrainButton:SetEnabled(false);
+	if numTrainerServices == 0 then
+		ClassTrainerFrame_SetTrainButtonEnabled(false)
 	end
 
 	UpdateGamepadFocus(previousSelection);

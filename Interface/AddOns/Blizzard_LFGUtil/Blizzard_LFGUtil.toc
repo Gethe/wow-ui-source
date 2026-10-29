@@ -8,6 +8,7 @@ Shared\LFGRole.xml
 Shared\LFGInvitePopup.lua
 Shared\LFGInvitePopup.xml
 Shared\LFGUtilShared.lua
+Shared\LFGVoiceChatUtil.lua
 Classic\LFGUtil.lua [AllowLoadGameType classic]
 Vanilla\LFGUtil.lua [AllowLoadGameType vanilla, tbc]
 [Family]\LFGUtil.lua [AllowLoadGameType mainline]

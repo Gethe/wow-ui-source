@@ -1,23 +1,3 @@
-INSPECTPAPERDOLLFRAME_SLOTS = {
-	"InspectHeadSlot",
-	"InspectNeckSlot",
-	"InspectShoulderSlot",
-	"InspectBackSlot",
-	"InspectChestSlot",
-	"InspectShirtSlot",
-	"InspectTabardSlot",
-	"InspectWristSlot",
-	"InspectHandsSlot",
-	"InspectWaistSlot",
-	"InspectLegsSlot",
-	"InspectFeetSlot",
-	"InspectFinger0Slot",
-	"InspectFinger1Slot",
-	"InspectTrinket0Slot",
-	"InspectTrinket1Slot",
-	"InspectMainHandSlot",
-	"InspectSecondaryHandSlot",
-};
 
 InspectPaperDollFrameMixin = {};
 

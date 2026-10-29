@@ -694,6 +694,7 @@ Interface\AddOns\Blizzard_ActionBarController\ActionBarController.xml
 Interface\AddOns\Blizzard_ActionBarController\Blizzard_ActionBarController.toc
 Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar.toc
 Interface\AddOns\Blizzard_ActionBar\Camelot\ActionButtonOverrides.lua
+Interface\AddOns\Blizzard_ActionBar\Camelot\ActionButtonUtilOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Camelot\ExtraActionBarOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Camelot\MainMenuBarEndCaps.lua
 Interface\AddOns\Blizzard_ActionBar\Camelot\MainMenuBarEndCaps.xml
@@ -2059,7 +2060,6 @@ Interface\AddOns\Blizzard_Gamepad\Blizzard_Gamepad.toc
 Interface\AddOns\Blizzard_Gamepad\Core.lua
 Interface\AddOns\Blizzard_Gamepad\SmartNavigationInGame\FrameBoltOns\GamepadItemPickupCursor.lua
 Interface\AddOns\Blizzard_Gamepad\SmartNavigationInGame\FrameBoltOns\GamepadItemPickupCursor.xml
-Interface\AddOns\Blizzard_Gamepad\UI\CinematicMovie.lua
 Interface\AddOns\Blizzard_Gamepad\UI\ConsoleHUD\ConsoleTemplates.lua
 Interface\AddOns\Blizzard_Gamepad\UI\ConsoleHUD\ConsoleTemplates.xml
 Interface\AddOns\Blizzard_Gamepad\UI\FrameReforms\StackSplitFrame.lua
@@ -2289,7 +2289,6 @@ Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Blizzard_LFGVanilla_Browse.lu
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Blizzard_LFGVanilla_Listing.lua
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Blizzard_LFGVanilla_Minimap.lua
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Blizzard_LFGVanilla_ParentFrame.lua
-Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Blizzard_LFGVanilla_VoiceChat.lua
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Classic\Blizzard_LFGVanilla_Browse.xml
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Classic\Blizzard_LFGVanilla_Listing.xml
 Interface\AddOns\Blizzard_GroupFinder_VanillaStyle\Classic\Blizzard_LFGVanilla_ParentFrame.xml
@@ -2571,6 +2570,7 @@ Interface\AddOns\Blizzard_LFGUtil\Shared\LFGInvitePopup.xml
 Interface\AddOns\Blizzard_LFGUtil\Shared\LFGRole.lua
 Interface\AddOns\Blizzard_LFGUtil\Shared\LFGRole.xml
 Interface\AddOns\Blizzard_LFGUtil\Shared\LFGUtilShared.lua
+Interface\AddOns\Blizzard_LFGUtil\Shared\LFGVoiceChatUtil.lua
 Interface\AddOns\Blizzard_LandingSoulbinds\Blizzard_LandingRenownButton.lua
 Interface\AddOns\Blizzard_LandingSoulbinds\Blizzard_LandingRenownButton.xml
 Interface\AddOns\Blizzard_LandingSoulbinds\Blizzard_LandingSoulbindButton.lua
@@ -2920,6 +2920,10 @@ Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Gamepad.lua
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Tooltips.lua
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_Reports.lua
 Interface\AddOns\Blizzard_PVPMatch\Blizzard_PVPMatch.toc
+Interface\AddOns\Blizzard_PVPMatch\Camelot\PVPMatchResults.lua
+Interface\AddOns\Blizzard_PVPMatch\Camelot\PVPMatchResults.xml
+Interface\AddOns\Blizzard_PVPMatch\Camelot\PVPMatchScoreboard.lua
+Interface\AddOns\Blizzard_PVPMatch\Camelot\PVPMatchScoreboard.xml
 Interface\AddOns\Blizzard_PVPMatch\Camelot\PVPMatchTableOverrides.lua
 Interface\AddOns\Blizzard_PVPMatch\PVPMatchResults.lua
 Interface\AddOns\Blizzard_PVPMatch\PVPMatchResults.xml
@@ -3362,6 +3366,7 @@ Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\Text.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\TextSizePreview.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\TextSizePreview.xml
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Network.lua
+Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Preset.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Subtitles.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Subtitles.xml
 Interface\AddOns\Blizzard_Settings\Blizzard_Settings.lua
@@ -3525,6 +3530,7 @@ Interface\AddOns\Blizzard_SharedTalentUI\Blizzard_TalentRedButton.xml
 Interface\AddOns\Blizzard_SharedTalentUI\Camelot\Blizzard_SharedTalentOverrides.lua
 Interface\AddOns\Blizzard_SharedTalentUI\WoWHack\Blizzard_TalentFrameGridSelection.lua
 Interface\AddOns\Blizzard_SharedTalentUI\WoWHack\Blizzard_TalentFrameGridSelection.xml
+Interface\AddOns\Blizzard_SharedTalentUI\WoWHack\Blizzard_WoWHackCharacterStats.lua
 Interface\AddOns\Blizzard_SharedTalentUI\talents-diamond-mask.png
 Interface\AddOns\Blizzard_SharedTalentUI\talents-hexagon-mask.png
 Interface\AddOns\Blizzard_SharedTalentUI\talents-octagon-mask-half.png

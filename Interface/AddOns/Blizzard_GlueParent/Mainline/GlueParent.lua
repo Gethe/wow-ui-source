@@ -435,7 +435,8 @@ local function GlueParent_UpdateScreenSound(screenInfo)
 	local expansionDisplayInfo = GetExpansionDisplayInfo(displayedExpansionLevel);
 
 	if ( screenInfo.playMusic ) then
-		local musicSoundKit = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm and SOUNDKIT.PLUNDERSTORM_QUEUE_SCREEN_MUSIC or (expansionDisplayInfo and expansionDisplayInfo.glueMusicSoundKit);
+		local musicOverrideId = C_GameRules.GetGameRuleAsFloat(Enum.GameRule.CharacterSelectMusicOverrideID);
+		local musicSoundKit = musicOverrideId > 0 and musicOverrideId or (expansionDisplayInfo and expansionDisplayInfo.glueMusicSoundKit);
 		if musicSoundKit then
 			PlayGlueMusic(musicSoundKit);
 		end
@@ -890,10 +891,6 @@ end
 function OnExcessiveErrors()
 	-- Glue Implementation, no-op.
 end
-
-setprinthandler(function(...)
-	C_Log.LogMessage(string.join(" ", tostringall(...)));
-end);
 
 SecureMixin = Mixin;
 CreateFromSecureMixins = CreateFromMixins;

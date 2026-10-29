@@ -52,6 +52,11 @@ function Shared.ResetTargetMarkerButton(actionBar, actionButton)
 		actionButton.raidTargetUpdateOwner = nil;
 	end
 
+	if actionButton.unitDiedOwner then
+		EventRegistry:UnregisterFrameEventAndCallback("UNIT_DIED", actionButton.unitDiedOwner);
+		actionButton.unitDiedOwner = nil;
+	end
+
 	actionButton.SpecialActionIcon:SetAllPoints();
 	actionButton.SpecialActionIcon:SetDesaturated(false);
 end
@@ -79,6 +84,8 @@ function Shared.SetUpTargetMarkerButton(actionBar, actionButton, direction)
 
 	actionButton.playerTargetChangedOwner = EventRegistry:RegisterFrameEventAndCallback("PLAYER_TARGET_CHANGED", UpdateState);
 	actionButton.raidTargetUpdateOwner = EventRegistry:RegisterFrameEventAndCallback("RAID_TARGET_UPDATE", UpdateState);
+	-- Death can make a marker reusable without changing its assignment or the current target
+	actionButton.unitDiedOwner = EventRegistry:RegisterFrameEventAndCallback("UNIT_DIED", UpdateState);
 
 	UpdateState();
 

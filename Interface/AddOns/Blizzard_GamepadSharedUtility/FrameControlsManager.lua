@@ -164,6 +164,7 @@ function GamepadFrameControlsManagerMixin:ResetVars()
 	self.topSuspendedFrame = nil;
 
 	self.isPopupFrame = {};
+	self.popupReturnFrames = {};
 
 	self.isUIFocused = false;
 end
@@ -487,7 +488,10 @@ function GamepadFrameControlsManagerMixin:FrameHidden(frame)
 		return false;
 	end
 
-	table.remove(self.shownFrames, index)
+	local returnFrame = self.popupReturnFrames[frame];
+	self.popupReturnFrames[frame] = nil;
+
+	table.remove(self.shownFrames, index);
 
 	if self.isPopupFrame[frame] then
 		self.isPopupFrame[frame] = nil;
@@ -496,8 +500,14 @@ function GamepadFrameControlsManagerMixin:FrameHidden(frame)
 	-- Check if this frame was the active one, if so, transfer ownership
 	if (self.focusedFrame == frame) then
 		local foundNewFrameInGroup = false;
+
+		-- Popups should return to their previous owner, not the first frame in the position-sorted list.
+		if self.isUIFocused and not frame.returnToPlayerControl and returnFrame then
+			foundNewFrameInGroup = self:FocusFrame(returnFrame);
+		end
+
 		-- If there is a group associated with this frame, check to make sure there are not others.
-		if (frame.FrameControlManagerGroup and #self.shownFrames >= 1) then
+		if not foundNewFrameInGroup and frame.FrameControlManagerGroup and #self.shownFrames >= 1 then
 			for shownFrameIndex, shownFrame in ipairs(self.shownFrames) do
 				if (shownFrame ~= nil and frame.FrameControlManagerGroup == shownFrame.FrameControlManagerGroup) then
 					if FocusFrame(self, shownFrameIndex) then
@@ -550,7 +560,19 @@ function GamepadFrameControlsManagerMixin:FrameHidden(frame)
 end
 
 function GamepadFrameControlsManagerMixin:HandlePopupShown(popupFrame)
-	self:FrameShown(popupFrame, true);
+	local returnFrame;
+	if self.isUIFocused and not popupFrame.skipGamepadAutoFocus then
+		returnFrame = self.focusedFrame;
+		-- Menus close, so return to the frame that was suspended when the menu opened.
+		if returnFrame and Menu.IsMenuProxy(returnFrame) then
+			returnFrame = self.topSuspendedFrame or returnFrame;
+		end
+	end
+
+	local wasAdded = self:FrameShown(popupFrame, true);
+	if wasAdded then
+		self.popupReturnFrames[popupFrame] = returnFrame;
+	end
 
 	if self.isUIFocused then
 		CheckForInputBinding(self);
