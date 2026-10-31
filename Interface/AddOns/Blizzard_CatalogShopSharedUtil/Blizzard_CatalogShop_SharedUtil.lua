@@ -1387,7 +1387,7 @@ function CatalogShopUtil.GetCardTemplate(useWideCard, productType)
 		return CatalogShopConstants.CardTemplate.SmallAccess;
 	elseif productType == CatalogShopConstants.ProductType.Room then
 		return CatalogShopConstants.CardTemplate.SmallRoom;
-	elseif productType == CatalogShopConstants.ProductType.ExteriorRoom then
+	elseif productType == CatalogShopConstants.ProductType.HousingExteriorType then
 		return CatalogShopConstants.CardTemplate.SmallExteriorType;
 	end
 

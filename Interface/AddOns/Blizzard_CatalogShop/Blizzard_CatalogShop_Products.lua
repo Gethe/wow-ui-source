@@ -4,6 +4,10 @@ local function IsElementDataItemInfo(elementData)
 	return (elementData and (elementData.elementType ~= CatalogShopConstants.ScrollViewElementType.Header)) or false;
 end
 
+local function ProductTypeUsesCarousel(productType)
+	return productType == CatalogShopConstants.ProductType.Room or productType == CatalogShopConstants.ProductType.HousingExteriorType;
+end
+
 -----------------------------------------------------------------------------------
 --- CatalogShopProductContainerFrameMixin
 -----------------------------------------------------------------------------------
@@ -343,10 +347,7 @@ function CatalogShopProductContainerFrameMixin:OnProductSelected(productInfo)
 		if productInfo.previewIconTexture then
 			iconFrame.Icon:SetAtlas(productInfo.previewIconTexture);
 		end
-	elseif productType == CatalogShopConstants.ProductType.Room then
-		CatalogShopFrame.PMTImageContainerFrame:Show();
-		CatalogShopFrame.PMTImageContainerFrame:SetupCarouselImagesAndHide(displayInfo);
-	elseif productType == CatalogShopConstants.ProductType.HousingExteriorType then
+	elseif ProductTypeUsesCarousel(productType) then
 		--SetupCarouselImages
 		local showWatermarkLogo = displayInfo.hasUnknownLicense;
 		CatalogShopFrame.PMTImageContainerFrame:Show();
