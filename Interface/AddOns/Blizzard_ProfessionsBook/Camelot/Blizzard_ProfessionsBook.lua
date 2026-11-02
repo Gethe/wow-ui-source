@@ -132,7 +132,6 @@ function ProfessionsBookFrameMixin:FormatProfession(frame, index)
 
 		if frame.UnlearnButton ~= nil then
 			frame.UnlearnButton:Hide();
-			frame.GamepadUnlearnButton:Hide();
 		end
 	end
 end

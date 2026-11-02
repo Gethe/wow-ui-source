@@ -3364,6 +3364,22 @@ function SetTitleByName(name)
 	return false;
 end
 
+local PAPERDOLL_BACKGROUND_OVERLAY_ALPHA = {
+	HUMAN = 1,
+	DWARF = 0.93,
+	NIGHTELF = 0.5,
+	TROLL = 0.85,
+	ORC = 0.75,
+	SCOURGE = 0.2,
+};
+
+function SetPaperDollBackgroundOverlayAlpha(backgroundOverlay, unit)
+	local _race, fileName = UnitRace(unit);
+	local raceKey = strupper(fileName);
+	local alpha = PAPERDOLL_BACKGROUND_OVERLAY_ALPHA[raceKey] or 0.85;
+	backgroundOverlay:SetAlpha(alpha);
+end
+
 function SetPaperDollBackground(model, unit)
 	local _race, fileName = UnitRace(unit);
 	local texture = DressUpTexturePath(fileName);
@@ -3371,6 +3387,7 @@ function SetPaperDollBackground(model, unit)
 	model.BackgroundTopRight:SetTexture(texture..2);
 	model.BackgroundBotLeft:SetTexture(texture..3);
 	model.BackgroundBotRight:SetTexture(texture..4);
+	SetPaperDollBackgroundOverlayAlpha(model.BackgroundOverlay, unit);
 end
 
 function PaperDollBgDesaturate(on)

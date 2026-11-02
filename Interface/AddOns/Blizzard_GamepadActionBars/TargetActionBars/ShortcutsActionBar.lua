@@ -14,14 +14,17 @@ end
 
 function GamepadShortcutsActionBarMixin:OnShow()
 	self:RegisterUnitEvent("UNIT_AURA", "player");
+	self:RegisterUnitEvent("UNIT_PORTRAIT_UPDATE", "focus");
 
 	self:RefreshBuffsButton();
+	self:RefreshFocusButton();
 
 	GamepadMainActionBarFrame:SetShoulderIcons("gamepad-targeting-shortcuts", "gamepad-targeting-shortcuts");
 end
 
 function GamepadShortcutsActionBarMixin:OnHide()
 	self:UnregisterEvent("UNIT_AURA");
+	self:UnregisterEvent("UNIT_PORTRAIT_UPDATE");
 
 	GamepadMainActionBarFrame:ResetShoulderIcons();
 end
@@ -31,6 +34,11 @@ function GamepadShortcutsActionBarMixin:OnEvent(event, ...)
 		local unitTarget = ...;
 		if unitTarget == "player" then
 			self:RefreshBuffsButton();
+		end
+	elseif event == "UNIT_PORTRAIT_UPDATE" then
+		local unit = ...;
+		if unit == "focus" then
+			self:RefreshFocusButton();
 		end
 	end
 end
@@ -109,4 +117,28 @@ function GamepadShortcutsActionBarMixin:SetUpFaceRight()
 	Shared.SetButtonHandler(self.faceRightButton, function()
 		ToggleAllBags();
 	end);
+end
+
+function GamepadShortcutsActionBarMixin:ResetFaceBottom()
+	Shared.ResetTargetingButton(self.faceBottomButton);
+end
+
+function GamepadShortcutsActionBarMixin:SetUpFaceBottom()
+	self:RefreshFocusButton();
+
+	self.faceBottomButton.IconOverlay:SetAtlas("gamepad-targeting-overlay");
+	self.faceBottomButton.IconOverlay:Show();
+
+	Shared.SetUpTargetingButton(self.faceBottomButton, "focus");
+end
+
+function GamepadShortcutsActionBarMixin:RefreshFocusButton()
+	if UnitExists("focus") then
+		SetPortraitTexture(self.faceBottomButton.SpecialActionIcon, "focus");
+		self.faceBottomButton.SpecialActionIcon:Show();
+		self:SetButtonEnabled(self.faceBottomButton, true);
+	else
+		self.faceBottomButton.SpecialActionIcon:Hide();
+		self:SetButtonEnabled(self.faceBottomButton, false);
+	end
 end

@@ -128,6 +128,15 @@ local PetInfo =
 			},
 		},
 		{
+			Name = "IsPetOrderMoveToPending",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isPetOrderMoveToPending", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "PetAbandon",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -211,6 +220,16 @@ local PetInfo =
 				{ Name = "declinedName3", Type = "cstring", Nilable = true },
 				{ Name = "declinedName4", Type = "cstring", Nilable = true },
 				{ Name = "declinedName5", Type = "cstring", Nilable = true },
+			},
+		},
+		{
+			Name = "PetOrderMoveToPendingChanged",
+			Type = "Event",
+			LiteralName = "PET_ORDER_MOVE_TO_PENDING_CHANGED",
+			SynchronousEvent = true,
+			Payload =
+			{
+				{ Name = "isPetOrderMoveToPending", Type = "bool", Nilable = false },
 			},
 		},
 		{

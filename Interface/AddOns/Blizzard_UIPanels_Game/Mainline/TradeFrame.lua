@@ -27,7 +27,8 @@ function TradeFrame_OnShow(self)
 	TradeFrame_UpdateMoney();
 
 	if InputUtil.IsGamepadUIEnabled() then
-		OpenBackpack();
+		local forceUpdate = true;
+		OpenAllBags(self, forceUpdate);
 	end
 end
 

@@ -120,10 +120,7 @@
 	</Texture-->
 
 
-	<Button name="NavButtonTemplate" mixin="NavButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
-		<KeyValues>
-			<KeyValue key="buttonContext" value="ButtonContext_NavButton" type="string"/>
-		</KeyValues>
+	<Button name="NavButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
 		<Size x="80" y="30"/>
 		<Layers>
 			<Layer level="OVERLAY" textureSubLevel="2">
@@ -208,7 +205,6 @@
 		</Frames>
 		<Scripts>
 			<OnShow function="NavButtonTemplate_OnShow"/>
-			<OnLoad method="OnLoad"/>
 			<OnMouseDown>
 				if self:IsEnabled() then
 					self.arrowUp:Hide();

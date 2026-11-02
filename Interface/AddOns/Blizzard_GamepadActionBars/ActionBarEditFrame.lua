@@ -935,7 +935,7 @@ function GamepadActionBarEditFrameMixin:SetDisplayedActionPickupInfo(actionPicku
 	self.pickupParams = {...};
 end
 
-function GamepadActionBarEditFrameMixin:UnFocusGamepad()
+function GamepadActionBarEditFrameMixin:UnfocusGamepad()
 	self:ExitActiveMode();
 end
 

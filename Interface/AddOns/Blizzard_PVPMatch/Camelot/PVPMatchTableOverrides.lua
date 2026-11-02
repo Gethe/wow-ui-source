@@ -30,3 +30,14 @@ function PVPCellHonorLevelMixin:GetTooltipText(rowData)
 
 	return nil;
 end
+
+function GetHonorableKillsHeaderTextID()
+	return KILLS;
+end
+
+function TryAddHonorColumn(tableBuilder, textPadding, useAlternateColor)
+	local column = tableBuilder:AddColumn();
+	column:ConstructHeader("BUTTON", "PVPHeaderStringTemplate", SCORE_HONOR_GAINED, "CENTER", "cp");
+	column:ConstrainToHeader(textPadding);
+	column:ConstructCells("FRAME", "PVPCellStringTemplate", "honorGained", useAlternateColor);
+end

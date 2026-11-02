@@ -17,11 +17,6 @@ function NameplatesOverrides.ShowHighlightImportantCastsOption()
 	return true;
 end
 
-function NameplatesOverrides.ShowRarityIconInfoDisplayOption()
-	-- Nameplates don't show Rarity icons in Camelot so this option is not needed.
-	return false;
-end
-
 function NameplatesOverrides.ShowClassColorSetting()
 	return true;
 end

@@ -95,18 +95,6 @@ function CharacterFrameMixin:GetTab(tabID)
 	return _G["CharacterFrameTab"..tabID];
 end
 
---[[
-	Boolean flag that identifies this frame as having updated jump hints, no longer
-	using legacy FrameControlsManager jump hints only displayed on targets.
-	See FrameControlsManager:RefreshJumpHints
-]]
-CharacterFrameMixin.useFooterJumpHints = true;
-
--- Text to display next to jump hints on other frames, if the jump takes them here
-function CharacterFrameMixin:GetJumpHintLabel()
-	return CHARACTER;
-end
-
 function CharacterFrameMixin:ToggleTokenFrame()
 	if C_CurrencyInfo.GetCurrencyListSize() <= 0 then
 		return;
@@ -638,14 +626,12 @@ function CharacterFrameMixin:SetupGamepad()
 		self.leftFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CharacterLeftFooter");
 		self.leftFooter:AddPromptedBindings(PaperDollFrame:CreateGamepadPromptedBindings());
 		self.leftFooter:AddNonFallbackSelectPrompt();
-		self.leftFooter:AddStandardFrameControlManagerBindings(self);
 		self.leftFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
 		self.leftFooter:Finalize();
 
 		self.rightFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CharacterRightFooter");
 		self.rightFooter:AddPromptedBindings(PaperDollFrame.EquipmentManagerPane:CreateGamepadPromptedBindings());
 		self.rightFooter:AddNonFallbackSelectPrompt();
-		self.rightFooter:AddStandardFrameControlManagerBindings(self);
 		self.rightFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
 		self.rightFooter:Finalize();
 	end

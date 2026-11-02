@@ -174,7 +174,7 @@ local BattlepayConstants =
 		{
 			Name = "VasTransactionPurchaseResult",
 			Type = "Enumeration",
-			NumValues = 145,
+			NumValues = 146,
 			MinValue = 0,
 			MaxValue = 20097,
 			Fields =
@@ -235,7 +235,8 @@ local BattlepayConstants =
 				{ Name = "ProxyCharacterHasWoWToken", Type = "VasTransactionPurchaseResult", EnumValue = 53 },
 				{ Name = "ProxyTooBusyBackOff", Type = "VasTransactionPurchaseResult", EnumValue = 54 },
 				{ Name = "ProxyAccountDataTooBig", Type = "VasTransactionPurchaseResult", EnumValue = 55 },
-				{ Name = "EndProxyErrors", Type = "VasTransactionPurchaseResult", EnumValue = 56 },
+				{ Name = "ProxyNoMixedAlliance", Type = "VasTransactionPurchaseResult", EnumValue = 56 },
+				{ Name = "EndProxyErrors", Type = "VasTransactionPurchaseResult", EnumValue = 57 },
 				{ Name = "BeginDbErrors", Type = "VasTransactionPurchaseResult", EnumValue = 20010 },
 				{ Name = "DbRealmNotEligible", Type = "VasTransactionPurchaseResult", EnumValue = 20011 },
 				{ Name = "DbCannotMoveGuildmaster", Type = "VasTransactionPurchaseResult", EnumValue = 20012 },

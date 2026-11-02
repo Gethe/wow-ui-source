@@ -29,10 +29,7 @@ function ControlsOverrides.SetupAutoDismountSetting(category)
 end
 
 function ControlsOverrides.SetupCombinedBagsSetting(category)
-	if C_CVar.GetCVar("combinedBags") then
-		-- Use Combined Inventory Bags
-		Settings.SetupCVarCheckbox(category, "combinedBags", USE_COMBINED_BAGS_TEXT, OPTION_TOOLTIP_USE_COMBINED_BAGS);
-	end
+	-- We don't have this in controls anymore; it's in Preset
 end
 
 function ControlsOverrides.RunSettingsCallback(callback)

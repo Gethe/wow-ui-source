@@ -128,14 +128,15 @@ end
 function PVPMatchUtil.UpdateDataProvider(scrollBox)
 	local useAlternateColor = not C_PvP.IsMatchFactional();
 	local dataProvider = CreateDataProvider();
+	local numScores = GetNumBattlefieldScores();
 
 	if C_PvP.GetCustomVictoryStatID() == 0 then
-		for index = 1, GetNumBattlefieldScores() do 
+		for index = 1, numScores do
 			dataProvider:Insert({index=index, useAlternateColor=useAlternateColor});
 		end
 	else
 		local isMatchComplete = PVPMatchUtil.IsActiveMatchComplete();
-		for index = 1, GetNumBattlefieldScores() do 
+		for index = 1, numScores do
 			if isMatchComplete then
 				local scoreInfo = C_PvP.GetScoreInfo(index);
 				local isLocalPlayer = scoreInfo and IsPlayerGuid(scoreInfo.guid);

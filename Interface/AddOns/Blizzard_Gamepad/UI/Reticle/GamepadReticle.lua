@@ -87,6 +87,7 @@ function GamepadReticleSwingTimerMixin:RefreshEnabled()
 			self.initialized = true;
 			self:RegisterEvent("PLAYER_ENTERING_WORLD");
 			self:RegisterEvent("PLAYER_SWING");
+			self:RegisterEvent("WEAPON_SLOT_CHANGED");
 			self:RegisterUnitEvent("UNIT_INVENTORY_CHANGED", "player");
 			self:RefreshOffHand();
 		end
@@ -94,6 +95,7 @@ function GamepadReticleSwingTimerMixin:RefreshEnabled()
 		self.initialized = false;
 		self:UnregisterEvent("PLAYER_ENTERING_WORLD");
 		self:UnregisterEvent("PLAYER_SWING");
+		self:UnregisterEvent("WEAPON_SLOT_CHANGED");
 		self:UnregisterEvent("UNIT_INVENTORY_CHANGED");
 		self:RefreshVisibility();
 	end
@@ -114,10 +116,14 @@ function GamepadReticleSwingTimerMixin:OnEvent(event, ...)
 	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:RefreshOffHand();
 	elseif event == "UNIT_INVENTORY_CHANGED" then
+		-- We should be using `WEAPON_SLOT_CHANGED` but that doesn't trigger reliably on enter world
+		-- so using `UNIT_INVENTORY_CHANGED` as a workaround.
 		local unitToken = ...;
 		if unitToken == "player" then
 			self:RefreshOffHand();
 		end
+	elseif event == "WEAPON_SLOT_CHANGED" then
+		self:RefreshOffHand();
 	end
 end
 

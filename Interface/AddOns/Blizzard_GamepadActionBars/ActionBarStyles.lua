@@ -43,6 +43,7 @@ function GamepadActionBarStyleInfoMixin:Init(style)
 	self.applyCollapsedButtonStyle = nop;
 	self.applyExpandedButtonStyle = nop;
 	self.applyExpandedButtonIconStyle = nop;
+	self.applyCollapsedButtonIconStyle = nop;
 	self.actionBarSizes = {};
 	self.focusSequenceMixins = {};
 	self.shadowDistances = {};
@@ -87,6 +88,10 @@ function GamepadActionBarStyleInfoMixin:SetFunc_ApplyExpandedButtonIconStyle(fun
 	self.applyExpandedButtonIconStyle = func;
 end
 
+function GamepadActionBarStyleInfoMixin:SetFunc_ApplyCollapsedButtonIconStyle(func)
+	self.applyCollapsedButtonIconStyle = func;
+end
+
 function GamepadActionBarStyleInfoMixin:SetFunc_ApplyCollapsedButtonStyle(func)
 	self.applyCollapsedButtonStyle = func;
 end
@@ -100,6 +105,7 @@ function GamepadActionBarStyleUtil.ApplyCollapsedActionBarStyle(actionBar, style
 	local styleInfo = gamepadActionBarStyleInfo[style];
 
 	styleInfo:applyCollapsedButtonStyle(actionBar);
+	styleInfo:applyCollapsedButtonIconStyle(actionBar);
 end
 
 function GamepadActionBarStyleUtil.ApplyExpandedActionBarStyle(actionBar, style)
@@ -402,6 +408,29 @@ leftSquareRightCircleStyleInfo:SetFunc_ApplyExpandedButtonIconStyle(
 
 		if actionBar.modifierIcon and actionBar.modifierIcon.SetFocused then
 			actionBar.modifierIcon:SetFocused();
+		end
+	end
+);
+
+leftSquareRightCircleStyleInfo:SetFunc_ApplyCollapsedButtonIconStyle(
+	function(self, actionBar)
+		local BUTTON_ICON_WIDTH = 15;
+		local BUTTON_ICON_HEIGHT = 15;
+		local RIGHT_SIDE_ICON_Y_OFFSET = -3;
+
+		for i = 1, Constants.GamepadActionBarConstants.NUM_SLOTS_PER_GAMEPAD_ACTION_BAR_GROUP do
+			local actionButton = "ActionButton" .. i;
+			local leftButton = actionBar.Left[actionButton];
+			local rightButton = actionBar.Right[actionButton];
+			local leftButtonIcon = leftButton.ButtonIcon;
+			local rightButtonIcon = rightButton.ButtonIcon;
+
+			leftButtonIcon:ClearAllPoints();
+			rightButtonIcon:ClearAllPoints();
+			leftButtonIcon:SetSize(BUTTON_ICON_WIDTH, BUTTON_ICON_HEIGHT);
+			rightButtonIcon:SetSize(BUTTON_ICON_WIDTH, BUTTON_ICON_HEIGHT);
+			leftButtonIcon:SetPoint("TOPRIGHT", -1, -1);
+			rightButtonIcon:SetPoint("TOPRIGHT", 0, RIGHT_SIDE_ICON_Y_OFFSET);
 		end
 	end
 );

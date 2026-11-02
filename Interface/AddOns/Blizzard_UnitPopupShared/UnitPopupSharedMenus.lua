@@ -326,11 +326,12 @@ UnitPopupManager:RegisterMenu("TARGET", UnitPopupMenuTarget);
 function UnitPopupMenuTarget:GetEntries()
 	return {
 		UnitPopupGamepadInteractButtonMixin,
-		UnitPopupRaidTargetButtonMixin, 
-		UnitPopupSetFocusButtonMixin, 
-		UnitPopupAddFriendButtonMixin, 
+		UnitPopupRaidTargetButtonMixin,
+		UnitPopupSetFocusButtonMixin,
+		UnitPopupClearFocusButtonMixin,
+		UnitPopupAddFriendButtonMixin,
 		UnitPopupAddFriendMenuButtonMixin,
-		UnitPopupOtherSubsectionTitle, 
+		UnitPopupOtherSubsectionTitle,
 		UnitPopupVoiceChatButtonMixin,
 		UnitPopupEnterEditModeMixin,
 	}

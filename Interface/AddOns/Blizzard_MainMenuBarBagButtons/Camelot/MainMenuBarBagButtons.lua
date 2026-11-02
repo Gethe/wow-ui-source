@@ -38,6 +38,10 @@ function BaseBagSlotButtonMixin:UpdateTextures()
 	highlight:SetAtlas(bagSlotHighlight);
 
 	self.SlotHighlightTexture:SetAtlas(bagSlotHighlight);
+
+	if self.UpdateBorderAtlases then
+		self:UpdateBorderAtlases();
+	end
 end
 
 function PutKeyInKeyRing()
@@ -235,6 +239,16 @@ end
 
 function GamepadKeyRingMixin:OnClick(button, down)
 	-- Only here to prevent base object behavior
+end
+
+function GamepadKeyRingMixin:BagSlotOnEnter()
+	EventRegistry:TriggerEvent("BagSlot.OnEnter", self);
+	KeyRingMixin.BagSlotOnEnter(self);
+end
+
+function GamepadKeyRingMixin:BagSlotOnLeave()
+	EventRegistry:TriggerEvent("BagSlot.OnLeave", self);
+	KeyRingMixin.BagSlotOnLeave(self);
 end
 
 function GamepadKeyRingMixin:UpdateOrientation(isHorizontal)

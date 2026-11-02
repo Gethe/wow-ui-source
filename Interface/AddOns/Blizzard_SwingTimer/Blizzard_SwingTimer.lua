@@ -9,6 +9,7 @@ local SHARED_EVENTS = {
 };
 local SHARED_UNIT_EVENTS = {
 	"UNIT_ATTACK_SPEED",
+	"UNIT_INVENTORY_CHANGED",
 };
 CVarCallbackRegistry:SetCVarCachable(SHOW_SWING_TIMER_CVAR);
 
@@ -151,8 +152,15 @@ function SwingTimerMixin:OnEvent(event, ...)
 	elseif event == "WEAPON_SLOT_CHANGED" then
 		self:UpdateFrameState();
 		self:ResetSwingTimerForEquippedWeapon();
-	elseif event == "PLAYER_ENTERING_WORLD" or event == "UNIT_ATTACK_SPEED" then
+	elseif event == "PLAYER_ENTERING_WORLD" then
 		self:UpdateFrameState();
+	elseif event == "UNIT_INVENTORY_CHANGED" or event == "UNIT_ATTACK_SPEED" then
+		-- We should be using `WEAPON_SLOT_CHANGED` but that doesn't trigger reliably on enter world
+		-- so using `UNIT_INVENTORY_CHANGED` as a workaround.
+		local unitToken = ...;
+		if unitToken == "player" then
+			self:UpdateFrameState();
+		end
 	elseif event == "PLAYER_SWING_RANGE_UPDATE" then
 		local swingType, isInRange, checksRange = ...;
 		if self.swingType == swingType then

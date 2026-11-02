@@ -133,7 +133,6 @@ function PTR_IssueReporter.SetupAttachedSurveyGamepad(surveyFrame, panelFrame)
 		return;
 	end
 
-	surveyFrame.useFooterJumpHints = true;
 	surveyFrame.layoutType = "ButtonFrameTemplateNoPortrait";
 
 	Mixin(surveyFrame, FocusFramesInterfaceMixin);
@@ -152,10 +151,6 @@ function PTR_IssueReporter.SetupAttachedSurveyGamepad(surveyFrame, panelFrame)
 	surveyFrame.FocusJumpHint:SetFrameLevel(515);
 	surveyFrame.FocusJumpHint:Hide();
 
-	function surveyFrame:GetJumpHintLabel()
-		return "Issue Reporter";
-	end
-
 	function surveyFrame:SmartNavigationCloseHandler()
 		ClearSurveyTextFieldFocus(self);
 		return GamepadMode.FrameControlsManager:FocusFrame(panelFrame);
@@ -165,7 +160,6 @@ function PTR_IssueReporter.SetupAttachedSurveyGamepad(surveyFrame, panelFrame)
 	InputUtil.RegisterGamepadSetup(surveyFrame, function()
 		surveyFrame.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(surveyFrame, "PTRIssueReporterAttachedSurvey");
 		surveyFrame.gamepadFooter:AddStandardSelectPrompt();
-		surveyFrame.gamepadFooter:AddStandardFrameControlManagerBindings(surveyFrame);
 		surveyFrame.gamepadFooter:AddStandardBackPrompt();
 		surveyFrame.gamepadFooter:Finalize();
 	end)

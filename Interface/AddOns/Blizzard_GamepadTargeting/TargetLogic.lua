@@ -89,7 +89,9 @@ function GamepadTargetLogicMixin:OnAbilityUsed(unit, _, _, spellId)
 	end
 
 	-- Attempt to hard target our soft target if we have no hard target and are casting a harmful spell.
-	if not UnitExists("target") and C_Spell.IsSpellHarmful(spellId) and UnitExists("softenemy") then
+	if (not UnitExists("target") or UnitIsDead("target"))
+		and C_Spell.IsSpellHarmful(spellId) and UnitExists("softenemy")
+	then
 		TargetUnit("softenemy");
 	end
 end

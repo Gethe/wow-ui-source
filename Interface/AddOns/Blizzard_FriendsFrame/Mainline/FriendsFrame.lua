@@ -2593,6 +2593,8 @@ function FriendsFrame_GetDisplayedInviteTypeAndGuid(index)
 end
 
 function FriendsFrame_GetInviteRestriction(index)
+	local currentPlayerFactionGroup = UnitFactionGroup("player");
+	local currentPlayerRealmID = GetRealmID();
 	local restriction = INVITE_RESTRICTION_NO_GAME_ACCOUNTS;
 	local numGameAccounts = C_BattleNet.GetFriendNumGameAccounts(index);
 	for i = 1, numGameAccounts do
@@ -2608,7 +2610,7 @@ function FriendsFrame_GetInviteRestriction(index)
 				end
 
 			-- Party info isn't available in the front end yet.
-			elseif C_PartyInfo and ((not C_PartyInfo.CanFormCrossFactionParties() or C_QuestSession.Exists()) and gameAccountInfo.factionName ~= playerFactionGroup) then
+			elseif C_PartyInfo and ((not C_PartyInfo.CanFormCrossFactionParties() or C_QuestSession.Exists()) and gameAccountInfo.factionName ~= currentPlayerFactionGroup) then
 				if C_QuestSession.Exists() then
 					restriction = max(INVITE_RESTRICTION_QUEST_SESSION, restriction);
 				elseif not C_PartyInfo.CanFormCrossFactionParties() then
@@ -2616,7 +2618,7 @@ function FriendsFrame_GetInviteRestriction(index)
 				end
 			elseif gameAccountInfo.realmID == 0 then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
-			elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= playerRealmID) then
+			elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= currentPlayerRealmID) then
 				restriction = max(INVITE_RESTRICTION_REALM, restriction);
 			elseif not gameAccountInfo.isInCurrentRegion then
 				restriction = INVITE_RESTRICTION_REGION;

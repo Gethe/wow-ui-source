@@ -72,7 +72,11 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="ColorPickerFrame" mixin="ColorPickerFrameMixin" toplevel="true" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" frameStrata="DIALOG">
+	<Frame name="ColorPickerFrame" mixin="ColorPickerFrameMixin, FocusFramesInterfaceMixin" toplevel="true" parent="UIParent" movable="true" enableMouse="true" clampedToScreen="true" hidden="true" frameStrata="DIALOG">
+		<KeyValues>
+			<KeyValue key="layoutType" value="DialogFrameWithHeaderTemplate" type="string"/>
+			<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+		</KeyValues>
 		<Size x="388" y="210"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -198,6 +202,10 @@
 					</Button>
 				</Frames>
 			</Frame>
+			<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameLevel="505"/>
+			<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
+			<Frame parentKey="RightJumpHint" inherits="FrameRightJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
+			<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameStrata="DIALOG" frameLevel="515"/>
 		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>

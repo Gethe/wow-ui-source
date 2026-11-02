@@ -1,9 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
-	<Texture name="ItemSlotBackgroundCombinedBagsTemplate" file="Interface\ContainerFrame\UI-Bag-Components" virtual="true">
-		<TexCoords left="0.64453125" right="0.7890625" top="0.42578125" bottom="0.498046875"/>
-	</Texture>
-
 	<Button name="ContainerFramePortraitButtonRouterTemplate" mixin="DropdownButtonProxyMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="routeToSibling" value="PortraitButton" type="string"/>
@@ -19,7 +15,7 @@
 			<OnMouseDown method="OnMouseDown"/>
 		</Scripts>
 	</Button>
-	
+
 	<Frame name="ContainerFrameExtendedItemButtonTemplate" virtual="true">
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -81,7 +77,6 @@
 	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" inherits="EnchantingItemButtonAnimTemplate" hidden="true" frameLevel="10" virtual="true">
 		<Size x="37" y="37"/>
 		<KeyValues>
-			<KeyValue key="emptyBackgroundAtlas" value="bags-item-slot64" type="string"/>
 			<KeyValue key="buttonContext" value="ButtonContext_ContainerFrameItemButton" type="string"/>
 		</KeyValues>
 		<Anchors>
@@ -154,6 +149,9 @@
 					</Anchors>
 				</Texture>
 			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="EmptyBagIcon" setAllPoints="true" hidden="true"/>
+			</Layer>
 		</Layers>
 		<Frames>
 			<Cooldown name="$parentCooldown" parentKey="Cooldown" inherits="CooldownFrameTemplate"/>
@@ -225,7 +223,7 @@
 			</OnLoad>
 		</Scripts>
 	</Frame>
-	
+
 	<Frame name="ContainerFrameContainer" parent="UIParent" setAllPoints="true" toplevel="true" inherits="PingTopLevelPassThroughAttributeTemplate"/>
 
 	<Frame name="ContainerFrameTemplate" inherits="PortraitFrameFlatTemplate" mixin="ContainerFrameMixin" parent="ContainerFrameContainer" parentArray="ContainerFrames" frameStrata="MEDIUM" movable="true" enableMouse="true" hidden="true" virtual="true">
@@ -318,7 +316,11 @@
 			<KeyValue key="layoutType" value="HeldBagLayout" type="string"/>
 		</KeyValues>
 		<Frames>
-			<DropdownButton name="$parentPortraitButton" parentKey="PortraitButton" inherits="ContainerFramePortraitButtonTemplate"/>
+			<DropdownButton name="$parentPortraitButton" parentKey="PortraitButton" inherits="ContainerFramePortraitButtonTemplate">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnoreGrid" value="true" type="boolean"/>
+				</KeyValues>
+			</DropdownButton>
 			<Button inherits="ContainerFramePortraitButtonRouterTemplate"/>
 			<Frame parentKey="MoneyFrame" inherits="ContainerMoneyFrameTemplate"/>
 			<Frame parentKey="CountContainer" frameStrata="HIGH">

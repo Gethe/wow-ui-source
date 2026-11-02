@@ -1,15 +1,3 @@
---[[
-	Boolean flag that identifies this frame as having updated jump hints, no longer
-	using legacy FrameControlsManager jump hints only displayed on targets.
-	See FrameControlsManager:RefreshJumpHints
-]]
-ClassTalentsFrameMixin.useFooterJumpHints = true;
-
--- Text to display next to jump hints on other frames, if the jump takes them here
-function ClassTalentsFrameMixin:GetJumpHintLabel()
-	return TALENTS;
-end
-
 function ClassTalentsFrameMixin:InitializeTreeHeaders()
 	self.treeHeaderPool = CreateFramePoolCollection();
 	self.treeHeaderPool:CreatePool("FRAME", self, "ClassTalentTreeHeaderTemplate");

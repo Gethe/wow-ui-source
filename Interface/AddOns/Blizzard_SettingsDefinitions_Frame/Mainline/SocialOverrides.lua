@@ -58,3 +58,10 @@ function SocialOverrides.CreateBlockNeighborhoodInvitesSetting(category)
 		Settings.VarType.Boolean, BLOCK_NEIGHBORHOOD_INVITES, defaultValue, GetAutoDeclineNeighborhoodInvites, SetAutoDeclineNeighborhoodInvites);
 	Settings.CreateCheckbox(category, setting, OPTION_TOOLTIP_BLOCK_NEIGHBORHOOD_INVITES);
 end
+
+function SocialOverrides.SetupToastWindowSetting(category)
+	if (C_CVar.GetCVar("showToastWindow")) then
+		-- Toast window
+		Settings.SetupCVarCheckbox(category, "showToastWindow", SHOW_TOAST_WINDOW_TEXT, OPTION_TOOLTIP_SHOW_TOAST_WINDOW);
+	end
+end

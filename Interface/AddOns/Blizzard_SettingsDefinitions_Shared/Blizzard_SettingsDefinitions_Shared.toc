@@ -5,6 +5,7 @@
 ## SavedVariables: NewSettingsSeen
 Groups.lua
 Graphics.xml
+Preset.lua [AllowLoadGameType camelot]
 Audio.xml
 Languages.xml
 Network.lua

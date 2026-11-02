@@ -2020,6 +2020,7 @@ Interface\AddOns\Blizzard_GamepadSharedUtility\Templates\BaseDialog.lua
 Interface\AddOns\Blizzard_GamepadSharedUtility\Templates\BaseDialog.xml
 Interface\AddOns\Blizzard_GamepadSmartNavigation\Blizzard_GamepadSmartNavigation.toc
 Interface\AddOns\Blizzard_GamepadSmartNavigation\Debug.lua
+Interface\AddOns\Blizzard_GamepadSmartNavigation\SecureHelper.lua
 Interface\AddOns\Blizzard_GamepadSmartNavigation\SmartNavigation.lua
 Interface\AddOns\Blizzard_GamepadSmartNavigation\SmartNavigation.xml
 Interface\AddOns\Blizzard_GamepadSmartNavigation\Utility.lua
@@ -2147,6 +2148,7 @@ Interface\AddOns\Blizzard_GlueXML\Camelot\AccountLoginOverrides.lua
 Interface\AddOns\Blizzard_GlueXML\Camelot\AccountReactivateOverrides.lua
 Interface\AddOns\Blizzard_GlueXML\Camelot\CharacterCopy.lua
 Interface\AddOns\Blizzard_GlueXML\Camelot\CharacterCopy.xml
+Interface\AddOns\Blizzard_GlueXML\Camelot\CharacterSelect.lua
 Interface\AddOns\Blizzard_GlueXML\Camelot\CharacterSelect\CharacterSelectList.lua
 Interface\AddOns\Blizzard_GlueXML\Camelot\CharacterSelect\CharacterSelectListBackground.xml
 Interface\AddOns\Blizzard_GlueXML\Camelot\CharacterSelect\CharacterSelectTemplates.lua
@@ -2884,6 +2886,10 @@ Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Gamepad.lua
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_PTRFeedback_Tooltips.lua
 Interface\AddOns\Blizzard_PTRFeedback\Blizzard_Reports.lua
 Interface\AddOns\Blizzard_PVPMatch\Blizzard_PVPMatch.toc
+Interface\AddOns\Blizzard_PVPMatch\Camelot\PVPMatchResults.lua
+Interface\AddOns\Blizzard_PVPMatch\Camelot\PVPMatchResults.xml
+Interface\AddOns\Blizzard_PVPMatch\Camelot\PVPMatchScoreboard.lua
+Interface\AddOns\Blizzard_PVPMatch\Camelot\PVPMatchScoreboard.xml
 Interface\AddOns\Blizzard_PVPMatch\Camelot\PVPMatchTableOverrides.lua
 Interface\AddOns\Blizzard_PVPMatch\PVPMatchResults.lua
 Interface\AddOns\Blizzard_PVPMatch\PVPMatchResults.xml
@@ -3310,6 +3316,7 @@ Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\Text.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\TextSizePreview.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\TextSizePreview.xml
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Network.lua
+Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Preset.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Subtitles.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Subtitles.xml
 Interface\AddOns\Blizzard_Settings\Blizzard_Settings.lua

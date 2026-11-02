@@ -130,9 +130,7 @@ local function Register()
 	-- Toasts
 	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(TOAST_SETTINGS_LABEL));
 
-	Settings.SetupCVarCheckbox(category, "enableLootToasts", SHOW_ITEM_TOASTS, OPTION_TOOLTIP_SHOW_ITEM_TOASTS);
-	Settings.SetupCVarCheckbox(category, "enableCollectionToasts", SHOW_COLLECTION_TOASTS, OPTION_TOOLTIP_SHOW_COLLECTION_TOASTS);
-	Settings.SetupCVarCheckbox(category, "enableLearnedRecipeToasts", SHOW_LEARNED_RECIPE_TOASTS, OPTION_TOOLTIP_SHOW_LEARNED_RECIPE_TOASTS);
+	InterfaceOverrides.SetupToastSettings(category);
 
 	InterfaceOverrides.AdjustDisplaySettings(category);
 

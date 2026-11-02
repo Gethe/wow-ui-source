@@ -2247,6 +2247,11 @@ function UnitPopupVehicleLeaveButtonMixin:OnClick(contextData)
 	VehicleExit();
 end
 
+local function UnitIsFocus(which)
+	local lowerWhich = which:lower();
+	return (lowerWhich == "focus") or (UnitExists("focus") and UnitIsUnit("focus", lowerWhich))
+end
+
 UnitPopupSetFocusButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupSetFocusButtonMixin:GetText(contextData)
@@ -2257,6 +2262,13 @@ function UnitPopupSetFocusButtonMixin:OnClick(contextData)
 	FocusUnit(contextData.unit);
 end
 
+function UnitPopupSetFocusButtonMixin:CanShow(contextData)
+	if InputUtil.IsGamepadUIEnabled() and (contextData.which == "TARGET") then
+		return not UnitIsFocus(contextData.which);
+	end
+	return true;
+end
+
 UnitPopupClearFocusButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 
 function UnitPopupClearFocusButtonMixin:GetText(contextData)
@@ -2264,7 +2276,14 @@ function UnitPopupClearFocusButtonMixin:GetText(contextData)
 end
 
 function UnitPopupClearFocusButtonMixin:OnClick(contextData)
-	ClearFocus(contextData.unit);
+	ClearFocus();
+end
+
+function UnitPopupClearFocusButtonMixin:CanShow(contextData)
+	if not InputUtil.IsGamepadUIEnabled() and (contextData.which == "TARGET") then
+		return false;
+	end
+	return UnitIsFocus(contextData.which);
 end
 
 UnitPopupAddFriendButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);

@@ -31,6 +31,10 @@ local function SetupCVarsForInputMode( useGamepad )
 	SetupTempCVar("SoftTargetInteractArc", 1);
 	SetupTempCVar("SoftTargetForce", 0);
 	SetupTempCVar("SoftTargetNameplateSize", 20);
+	SetupTempCVar("TargetAutoEnemy", 1);
+	SetupTempCVar("TargetAutoFriend", 1);
+	SetupTempCVar("TargetEnemyAttacker", 1);
+	SetupTempCVar("TargetAutoLock", 1);
 
 	-- CameraFollow[*]
 	SetupTempCVar("CameraFollowYawSpeed", 1.0);

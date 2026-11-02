@@ -19,13 +19,14 @@ local LocalizationShared =
 		{
 			Name = "NamePartType",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Firstname", Type = "NamePartType", EnumValue = 0 },
 				{ Name = "Surname", Type = "NamePartType", EnumValue = 1 },
+				{ Name = "Combined", Type = "NamePartType", EnumValue = 2 },
 			},
 		},
 		{

@@ -3,13 +3,13 @@
 
 	<Frame name="PlayerSpellsFrame" mixin="PlayerSpellsFrameMixin" inherits="PortraitFrameTemplate, TabSystemOwnerTemplate" parent="UIParent" toplevel="true" enableMouse="true" hidden="true">
 		<KeyValues>
-			<KeyValue key="spellBookMinimizedWidth" value="809"/>
-			<KeyValue key="spellBookMaximizedWidth" value="1618"/>
+			<KeyValue key="spellBookMinimizedWidth" value="577"/>
+			<KeyValue key="spellBookMaximizedWidth" value="1154"/>
 			<KeyValue key="spellBookHeight" value="720"/>
 			<KeyValue key="talentsWidth" value="1218"/>
 			<KeyValue key="talentsHeight" value="708"/>
 		</KeyValues>
-		<Size x="1618" y="883"/>
+		<Size x="1154" y="883"/>
 		<Anchors>
 			<Anchor point="TOP" x="0" y="-41"/>
 		</Anchors>
@@ -50,10 +50,10 @@
 
 			<Frame parentKey="SpellBookFrame" inherits="SpellBookFrameTemplate" frameLevel="100" hidden="true">
 				<KeyValues>
-					<KeyValue key="minimizedWidth" value="806"/>
-					<KeyValue key="maximizedWidth" value="1612"/>
+					<KeyValue key="minimizedWidth" value="574"/>
+					<KeyValue key="maximizedWidth" value="1148"/>
 				</KeyValues>
-				<Size x="1612" y="702"/>
+				<Size x="1148" y="702"/>
 				<Anchors>
 					<Anchor point="BOTTOMLEFT" x="0" y="4"/>
 				</Anchors>

@@ -357,3 +357,20 @@ function InterfaceOverrides.RegisterOutlineSettings(category)
 		Settings.SetupCVarDropdown(category, "Outline", Settings.VarType.Number, GetOptions, OBJECT_NPC_OUTLINE, OPTION_TOOLTIP_OBJECT_NPC_OUTLINE);
 	end
 end
+
+function InterfaceOverrides.SetupToastSettings(category)
+	if C_CVar.GetCVar("enableLootToasts") then
+		-- Loot toasts
+		Settings.SetupCVarCheckbox(category, "enableLootToasts", SHOW_ITEM_TOASTS, OPTION_TOOLTIP_SHOW_ITEM_TOASTS);
+	end
+
+	if C_CVar.GetCVar("enableCollectionToasts") then
+		-- Collection toasts
+		Settings.SetupCVarCheckbox(category, "enableCollectionToasts", SHOW_COLLECTION_TOASTS, OPTION_TOOLTIP_SHOW_COLLECTION_TOASTS);
+	end
+
+	if C_CVar.GetCVar("enableLearnedRecipeToasts") then
+		-- Recipe toasts
+		Settings.SetupCVarCheckbox(category, "enableLearnedRecipeToasts", SHOW_LEARNED_RECIPE_TOASTS, OPTION_TOOLTIP_SHOW_LEARNED_RECIPE_TOASTS);
+	end
+end

@@ -1,16 +1,4 @@
---[[
-	Boolean flag that identifies this frame as having updated jump hints, no longer
-	using legacy FrameControlsManager jump hints only displayed on targets.
-	See FrameControlsManager:RefreshJumpHints
-]]
-ProfessionsMixin.useFooterJumpHints = true;
-
 professionsFrameWidthOverride = 750;
-
--- Text to display next to jump hints on other frames, if the jump takes them here
-function ProfessionsMixin:GetJumpHintLabel()
-	return TRADE_SKILLS;
-end
 
 function ProfessionsMixin:RefreshRightTabs()
 	local prim1, prim2, sec1, sec2, sec3, sec4, sec5 = GetProfessions();

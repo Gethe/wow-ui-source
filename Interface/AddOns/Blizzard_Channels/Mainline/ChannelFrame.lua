@@ -186,7 +186,6 @@ do
 		moreActionsBinding:AddCondition(MoreActionsCondition);
 		moreActionsBinding:SetLabelFunction(GenerateClosure(self.GetMoreActionsLabel, self));
 		self.footer:AddPromptedBinding(moreActionsBinding);
-		self.footer:AddStandardFrameControlManagerBindings(self);
 		local function CloseCondition()
 			return not self.shouldReturnToChat;
 		end
@@ -257,17 +256,6 @@ do
 			end
 		end
 		return true;
-	end
-
-	--[[
-		Boolean flag that identifies this frame as having updated jump hints, no longer
-		using legacy FrameControlsManager jump hints only displayed on targets.
-		See FrameControlsManager:RefreshJumpHints
-	]]
-	ChannelFrameMixin.useFooterJumpHints = true;
-
-	function ChannelFrameMixin:GetJumpHintLabel()
-		return CHAT_CHANNELS;
 	end
 
 	function ChannelFrameMixin:OnShow()

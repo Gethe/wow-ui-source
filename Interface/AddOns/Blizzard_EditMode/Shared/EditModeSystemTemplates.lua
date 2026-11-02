@@ -1261,6 +1261,20 @@ function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSetting(setting, en
 	self:ClearDirtySetting(setting);
 end
 
+function EditModeGamepadMainActionBarSystemMixin:OnEditModeEnter()
+	EditModeSystemMixin.OnEditModeEnter(self);
+
+	self.editModeActive = true;
+	self:RefreshActiveActionBar();
+end
+
+function EditModeGamepadMainActionBarSystemMixin:OnEditModeExit()
+	EditModeSystemMixin.OnEditModeExit(self);
+
+	self.editModeActive = false;
+	self:RefreshActiveActionBar();
+end
+
 function EditModeGamepadMainActionBarSystemMixin:UpdateSystemSettingCompact()
 	local val = self:GetSettingValueBool(Enum.EditModeGamepadMainActionBarSetting.Compact);
 	local oldVal = self:SetUseCompactLayout(val);

@@ -890,7 +890,6 @@ function PlayerSpellsFrameMixin:SetUpSpellBookGamepad()
 	self.spellsFrameFooter:AddPromptedBinding(enterSearchBox);
 	self.spellsFrameFooter:AddPromptedBinding(previousCategory);
 	self.spellsFrameFooter:AddPromptedBinding(nextCategory);
-	self.spellsFrameFooter:AddStandardFrameControlManagerBindings(self);
 	self.spellsFrameFooter:Finalize();
 end
 
@@ -1095,7 +1094,6 @@ function PlayerSpellsFrameMixin:SetUpClassTalentsGamepad()
 	self.classTalentsFrameFooter:AddPromptedBinding(navigateElements);
 	self.classTalentsFrameFooter:AddPromptedBinding(openSettings);
 	self.classTalentsFrameFooter:AddPromptedBinding(enterSearchBox);
-	self.classTalentsFrameFooter:AddStandardFrameControlManagerBindings(self);
 	self.classTalentsFrameFooter:Finalize();
 end
 
@@ -1170,7 +1168,7 @@ function PlayerSpellsFrameMixin:SetUpSearchGamepad(frame)
 		searchBoxFooter:HideAndDeactivateBindings();
 	end
 
-	searchBox.clearButton.smartNavigationIgnored = true;
+	SmartNavigation_MarkFrameIgnored(searchBox.clearButton);
 	EventRegistry:RegisterCallback("SpellSearchBox.FocusedGained", OnSearchBoxFocusGained, frame);
 	EventRegistry:RegisterCallback("SpellSearchBox.FocusedLost", OnSearchBoxFocusLost, frame);
 	EventRegistry:RegisterCallback("SpellSearchPreview.FocusedGained", OnSearchPreviewFocusGained, frame);

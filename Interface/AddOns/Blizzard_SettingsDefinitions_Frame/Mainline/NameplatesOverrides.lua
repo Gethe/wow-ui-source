@@ -20,10 +20,6 @@ function NameplatesOverrides.ShowHighlightImportantCastsOption()
 	return true;
 end
 
-function NameplatesOverrides.ShowRarityIconInfoDisplayOption()
-	return true;
-end
-
 function NameplatesOverrides.ShowClassColorSetting()
 	return false;
 end

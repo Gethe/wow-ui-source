@@ -7,7 +7,7 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 	self.freeButtons = {};
 	self.navList = {};
 	self.widthBuffer = NAVBAR_WIDTHBUFFER;
-	
+
 	local name = self:GetName();
 
 	if not homeButton then
@@ -22,11 +22,11 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 		overflowButton = CreateFrame("DropdownButton", overflowButtonName, self, self.template);
 		overflowButton:SetWidth(30);
 	end
-	
+
 	if not homeButton:GetScript("OnEnter") then
 		homeButton:SetScript("OnEnter",	NavBar_ButtonOnEnter);
 	end
-	
+
 	if not homeButton:GetScript("OnLeave") then
 		homeButton:SetScript("OnLeave",	NavBar_ButtonOnLeave);
 	end
@@ -42,14 +42,14 @@ function NavBar_Initialize(self, template, homeData, homeButton, overflowButton)
 	homeButton:SetPoint("LEFT", self, "LEFT", 0, 0);
 	overflowButton:SetPoint("LEFT", self, "LEFT", 0, 0);
 	overflowButton:Hide();
-		
+
 	homeButton.oldClick = homeButton:GetScript("OnClick");
 	homeButton:SetScript("OnClick", NavBar_ButtonOnClick);
 	NavButtonTemplate_SetupDropdown(overflowButton, overflowButton);
 
 	self.homeButton = homeButton;
 	self.overflowButton = overflowButton;
-	
+
 
 	self.navList[#self.navList+1] = homeButton;
 	homeButton.myclick = homeData.OnClick;
@@ -79,7 +79,7 @@ function NavBar_AddButton(self, buttonData)
 	if navButton then
 		self.freeButtons[#self.freeButtons] = nil;
 	end
-	
+
 	if not navButton then
 		local name = self:GetName();
 		local buttonName = name and name.."Button"..(#self.navList+1);
@@ -91,20 +91,20 @@ function NavBar_AddButton(self, buttonData)
 		else
 			navButton:RegisterForClicks("LeftButtonUp");
 		end
-		
+
 		if not navButton:GetScript("OnEnter") then
 			navButton:SetScript("OnEnter",	NavBar_ButtonOnEnter);
 		end
-		
+
 		if not navButton:GetScript("OnLeave") then
 			navButton:SetScript("OnLeave", NavBar_ButtonOnLeave);
 		end
-		
+
 		if ( self.textMaxWidth ) then
 			navButton.text:SetWidth(self.textMaxWidth);
 		end
 	end
-	
+
 
 	--Set up the button
 	local navParent = self.navList[#self.navList];
@@ -125,7 +125,7 @@ function NavBar_AddButton(self, buttonData)
 	navButton.listFunc = buttonData.listFunc;
 	navButton.id = buttonData.id;
 	navButton.data = buttonData;
-	
+
 	navButton:Show();
 	NavBar_CheckLength(self);
 end
@@ -135,7 +135,7 @@ function NavBar_ClearTrailingButtons(list, freeList, button)
 		if not list[index] or button == list[index] then
 			break
 		end
-		
+
 		list[index]:Hide();
 		tinsert(freeList, list[index])
 		list[index] = nil;
@@ -153,7 +153,7 @@ function NavBar_OpenTo(self, id)
 			break;
 		end
 	end
-	
+
 	if (found) then
 		NavBar_ClearTrailingButtons(self.navList, self.freeButtons, button)
 	end
@@ -163,11 +163,11 @@ function NavBar_ButtonOnClick(self, button)
 	local parent = self:GetParent()
 	if button == "LeftButton" then
 		NavBar_ClearTrailingButtons(parent.navList, parent.freeButtons, self);
-		
+
 		if self.oldClick then
 			self:oldClick(button);
 		end
-		
+
 		if self.myclick then
 			self:myclick(button);
 		end
@@ -202,14 +202,14 @@ function NavBar_CheckLength(self)
 	local collapsedWidth;
 	local maxWidth = self:GetWidth() - self.widthBuffer;
 	local xoffset;
-	
+
 	local lastShown;
 	local collapsed = false;
-	
+
 	for i=#self.navList,1,-1 do
 		local currentWidth = width;
 		width = width + self.navList[i]:GetWidth();
-		
+
 		if width > maxWidth then
 			self.navList[i]:Hide();
 			collapsed = true;
@@ -228,7 +228,7 @@ function NavBar_CheckLength(self)
 			end
 			lastShown = i;
 		end
-		
+
 		if i<#self.navList then
 			if self.navList[i].selected then
 				self.navList[i].selected:Hide();
@@ -238,25 +238,25 @@ function NavBar_CheckLength(self)
 			if self.navList[i].selected then
 				self.navList[i].selected:Show();
 			end
-			
+
 			self.navList[i]:SetButtonState("NORMAL");
 			self.navList[i]:Disable();
 		end
 	end
-	
+
 	if collapsed then
 		if collapsedWidth + self.overflowButton:GetWidth() > maxWidth then
 			--No room for the overflow button
 			self.navList[lastShown]:Hide();
 			lastShown = lastShown + 1;
 		end
-		
+
 		self.overflowButton:Show();
-			
+
 		--There should only ever be no lastShown if a single button is longer than maxWidth by itself.
 		if ( lastShown ) then
-			local lastButton = self.navList[lastShown];	
-			
+			local lastButton = self.navList[lastShown];
+
 			--There should only ever be no lastButton when there is lastShown if a single button is less than maxWidth
 			--but it's width plus the width of the overflow button is longer than maxWidth.  In this case the single button
 			--is hidden to make room for the overflowButton.
@@ -316,24 +316,4 @@ function NavBar_OverflowItemOnClick(junk, index, navBar)
 	if button then
 		button:Click();
 	end
-end
-
-NavButtonMixin = {}
-
-function NavButtonMixin:OnLoad()
-	self.MenuArrowButton:RegisterCallback(self.MenuArrowButton.Event.OnMenuClose, self.RefreshReturnFrameGamepadNavButtonFocus, self);
-end
-
-function NavButtonMixin:RefreshReturnFrameGamepadNavButtonFocus(dropdown, menu, closeReason)
-	if (not InputUtil.IsGamepadUIEnabled()) then
-		return;
-	end
-
-	-- Get the new button representing the current nav level.
-	local navBar = self:GetParent();
-	local navLevel = #navBar.navList;
-	local navLevelButton = navBar.navList[navLevel];
-
-	-- Specify the navButton that should recieve focus when the menu is closed.
-	SmartNavigation_SetReturnFrameFocusButton(navLevelButton);
 end

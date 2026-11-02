@@ -51,7 +51,7 @@ function DamageMeterEntryMixin:UpdateIcon()
 	else
 		local texture = self:GetIconTexture();
 		if texture then
-			if texture ~= self.iconTexture then
+			if issecretvalue(texture) or issecretvalue(self.iconTexture) or texture ~= self.iconTexture then
 				self.iconTexture = texture;
 				self.iconAtlasElement = nil;
 				self:GetIcon():SetTexture(texture);

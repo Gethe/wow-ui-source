@@ -651,6 +651,12 @@ function CharacterSelectListMixin:SetScrollEnabled(enabled)
 	self.ScrollBox:SetScrollAllowed(enabled);
 end
 
+function CharacterSelectListMixin:AdjustSearchBox()
+	self.SearchBox:ClearAllPoints();
+	self.SearchBox:SetPoint("TOPLEFT", 40, -25);
+	self.SearchBox:SetWidth(309);
+end
+
 function CharacterSelectListMixin:EvaluateHelptips()
 	-- Warbands helptips used to be here.
 	-- Keeping the function around for the future since it's called from several places.

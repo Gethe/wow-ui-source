@@ -606,9 +606,7 @@ local function Register()
 			local container = Settings.CreateControlTextContainer();
 			container:AddCheckbox(Enum.NamePlateInfoDisplay.CurrentHealthPercent, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_PERCENT, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_PERCENT_TOOLTIP);
 			container:AddCheckbox(Enum.NamePlateInfoDisplay.CurrentHealthValue, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_VALUE, UNIT_NAMEPLATES_INFO_DISPLAY_CURRENT_HEALTH_VALUE_TOOLTIP);
-			if NameplatesOverrides.ShowRarityIconInfoDisplayOption() then
-				container:AddCheckbox(Enum.NamePlateInfoDisplay.RarityIcon, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON_TOOLTIP);
-			end
+			container:AddCheckbox(Enum.NamePlateInfoDisplay.RarityIcon, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON, UNIT_NAMEPLATES_INFO_DISPLAY_RARITY_ICON_TOOLTIP);
 			return container:GetData();
 		end
 

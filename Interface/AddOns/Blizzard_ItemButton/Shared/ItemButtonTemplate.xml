@@ -15,6 +15,8 @@
 		 <Size x="37" y="37"/>
 		 <Layers>
 			 <Layer level="BORDER">
+				<!-- Masked textures are set up in code -->
+				<MaskTexture parentKey="Mask" file="Interface\Common\common-iconmask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true"/>
 				 <Texture name="$parentIconTexture" parentKey="icon"/>
 			 </Layer>
 			 <Layer level="ARTWORK">
@@ -63,9 +65,10 @@
 			 </Layer>
 		 </Layers>
 		 <Scripts>
-			 <OnShow method="PostOnShow" intrinsicOrder="postcall"/>
-			 <OnHide method="PostOnHide" intrinsicOrder="postcall"/>
-			 <OnEvent method="PostOnEvent" intrinsicOrder="postcall"/>
+			<OnLoad method="PostOnLoad" intrinsicOrder="postcall"/>
+			<OnShow method="PostOnShow" intrinsicOrder="postcall"/>
+			<OnHide method="PostOnHide" intrinsicOrder="postcall"/>
+			<OnEvent method="PostOnEvent" intrinsicOrder="postcall"/>
 		 </Scripts>
 		 <NormalTexture name="$parentNormalTexture" parentKey="NormalTexture" file="Interface\Buttons\UI-Quickslot2">
 			 <Size x="64" y="64"/>

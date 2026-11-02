@@ -59,26 +59,18 @@ function ColorPickerFrameMixin:OnShow()
 	end
 
 	self:RegisterEvent("GLOBAL_MOUSE_DOWN");
+
+	if (InputUtil.IsGamepadUIEnabled()) then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
 end
 
 function ColorPickerFrameMixin:OnHide()
 	self:UnregisterEvent("GLOBAL_MOUSE_DOWN");
-	self:GamepadOnHide();
-end
 
-function ColorPickerFrameMixin:GamepadOnHide()
-	if not InputUtil.IsGamepadUIEnabled() then
-		return;
+	if (InputUtil.IsGamepadUIEnabled()) then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
 	end
-
-	ColorPickerSoftCursor:SetActive(false);
-
-	if SettingsPanel:IsShown() then
-		SmartNavigation:ShowCursor(false);
-	end
-
-	self.colorPickerDetailsFooter:HideAndDeactivateBindings();
-	GamepadMode.DeactivateBindingGroup(self.brightnessBinding);
 end
 
 function ColorPickerFrameMixin:OnEvent(event, ...)
@@ -196,10 +188,7 @@ function ColorPickerFrameMixin:SetUpGamepadCursorAndShow()
 	ColorPickerSoftCursor:SetActive(true);
 	ColorPickerSoftCursor:SetBounds(boundsFunc);
 	ColorPickerSoftCursor:SetPoint("CENTER", self.Content.ColorPicker.WheelThumb, "CENTER", 0, 0);
-
-	SmartNavigation:HideCursor(true);
-	self.colorPickerDetailsFooter:ShowAndActivateBindings();
-	GamepadMode.ActivateBindingGroup(self.brightnessBinding);
+	ColorPickerSoftCursor:SetInputStick("Left");
 end
 
 function ColorPickerSoftCursor_OnUpdate(self, delta)
@@ -231,37 +220,80 @@ function ColorPickerSoftCursor_OnUpdate(self, delta)
 	end
 end
 
-function ColorPickerFrameMixin:RegisterForTransitions()
-	InputUtil.RegisterForInterfaceTransitions(self, nil);
-	InputUtil.RegisterGamepadSetup(self, GenerateFlatClosure(self.SetupGamepad, self));
-	InputUtil.RegisterGamepadInit(self, GenerateFlatClosure(self.InitializeGamepad, self));
-	InputUtil.RegisterGamepadUninit(self, GenerateFlatClosure(self.UninitializeGamepad, self));
+function ColorPickerFrameMixin:AdjustOpacity(direction, down)
+	if down then
+		if self.activeOpacityDirection then
+			return;
+		end
+
+		self.activeOpacityDirection = direction;
+
+		local function Adjust()
+			local colorPicker = self.Content.ColorPicker;
+			local alpha = colorPicker:GetColorAlpha();
+			colorPicker:SetColorAlpha(math.min(1, math.max(0, alpha + direction * 0.01)));
+		end
+
+		Adjust();
+		self.opacityTicker = C_Timer.NewTicker(0.02, Adjust);
+	elseif self.activeOpacityDirection == direction then
+		if self.opacityTicker then
+		self.opacityTicker:Cancel();
+			self.opacityTicker = nil;
+		end
+
+		self.activeOpacityDirection = nil;
+	end
+end
+
+function ColorPickerFrameMixin:OpacityDecrease(down)
+	self:AdjustOpacity(-1, down);
+end
+
+function ColorPickerFrameMixin:OpacityIncrease(down)
+	self:AdjustOpacity(1, down);
+end
+
+function ColorPickerFrameMixin:OnLeftStick()
+	-- Capture Left stick input so that we are not moving player in tandem with SoftCursor
+end
+
+function ColorPickerFrameMixin:AdjustBrightness(x, y)
+	local h, s, v = ColorPickerFrame.Content.ColorPicker:GetColorHSV();
+	if y > 0 then
+		ColorPickerFrame.Content.ColorPicker:SetColorHSV(h, s, v + 0.01);
+	else
+		ColorPickerFrame.Content.ColorPicker:SetColorHSV(h, s, v - 0.01);
+	end
 end
 
 function ColorPickerFrameMixin:SetupGamepad()
-	local colorPickerSelect = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateFlatClosure(self.OnOkay, self), ACTION_LABEL_SELECT);
-	local colorPickerColor = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT, nil, ACTION_LABEL_ADJUST_COLOR);
-	local colorPickerBrightness = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_LEFT, nil, ACTION_LABEL_ADJUST_BRIGHTNESS);
+	local colorPickerConfirm = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateFlatClosure(self.OnOkay, self), FRAME_ACTION_CONFIRM);
+	local colorPickerColor = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_LEFT, GenerateClosure(self.OnLeftStick, self), COLOR);
+	local colorPickerBrightness = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT, nil, OPTIONS_BRIGHTNESS);
 	local colorPickerCancel = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateFlatClosure(self.OnCancel, self), FRAME_ACTION_CANCEL);
 
+	local function HasOpacitySettings()
+		return self.opacityFunc;
+	end
+
+	local colorPickerOpacity = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_VERTICAL, nil, OPACITY);
+	colorPickerOpacity:AddCondition(HasOpacitySettings);
+	colorPickerOpacity:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
 	self.colorPickerDetailsFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ColorPickerDetailsFooter");
-	self.colorPickerDetailsFooter:AddPromptedBinding(colorPickerSelect);
+	self.colorPickerDetailsFooter:AddPromptedBinding(colorPickerConfirm);
 	self.colorPickerDetailsFooter:AddPromptedBinding(colorPickerColor);
 	self.colorPickerDetailsFooter:AddPromptedBinding(colorPickerBrightness);
+	self.colorPickerDetailsFooter:AddPromptedBinding(colorPickerOpacity);
 	self.colorPickerDetailsFooter:AddPromptedBinding(colorPickerCancel);
 	self.colorPickerDetailsFooter:Finalize();
 
-	local brightnessFunc = function(x, y)
-		local h, s, v = ColorPickerFrame.Content.ColorPicker:GetColorHSV();
-		if y > 0 then
-			ColorPickerFrame.Content.ColorPicker:SetColorHSV(h, s, v + 0.01);
-		else
-			ColorPickerFrame.Content.ColorPicker:SetColorHSV(h, s, v - 0.01);
-		end
-	end;
-
-	self.brightnessBinding = GamepadMode.CreateBindingGroup("ColorPickerBrightnessBinding");
-	self.brightnessBinding:AddAxisBinding(GAMEPAD_STICK_LEFT, brightnessFunc);
+	self.colorAdjustments = GamepadMode.CreateBindingGroup("ColorPickerAdjustColorBindings");
+	self.colorAdjustments:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.AdjustBrightness, self));
+	self.colorAdjustments:AddAxisBinding(GAMEPAD_STICK_LEFT, GenerateFlatClosure(self.OnLeftStick, self));
+	self.colorAdjustments:AddFunctionBinding(GAMEPAD_DPAD_BOTTOM, GenerateClosure(self.OpacityDecrease, self), GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
+	self.colorAdjustments:AddFunctionBinding(GAMEPAD_DPAD_TOP, GenerateClosure(self.OpacityIncrease, self), GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
 end
 
 function ColorPickerFrameMixin:InitializeGamepad()
@@ -269,7 +301,26 @@ function ColorPickerFrameMixin:InitializeGamepad()
 	self.Footer.OkayButton:Hide();
 end
 
-function ColorPickerFrameMixin:UninitializeGamepad()
-	self.Footer.CancelButton:Show();
-	self.Footer.OkayButton:Show();
+function ColorPickerFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateFlatClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateFlatClosure(self.InitializeGamepad, self));
+end
+
+function ColorPickerFrameMixin:FocusGamepad()
+	self.colorPickerDetailsFooter:ShowAndActivateBindings();
+	GamepadMode.ActivateBindingGroup(self.colorAdjustments);
+	ColorPickerSoftCursor:SetActive(true);
+end
+
+function ColorPickerFrameMixin:UnfocusGamepad()
+	self.colorPickerDetailsFooter:HideAndDeactivateBindings();
+	GamepadMode.DeactivateBindingGroup(self.colorAdjustments);
+	ColorPickerSoftCursor:SetActive(false);
+
+	if self.opacityTicker then
+		self.opacityTicker:Cancel();
+		self.opacityTicker = nil;
+		self.activeOpacityDirection = nil
+	end
 end

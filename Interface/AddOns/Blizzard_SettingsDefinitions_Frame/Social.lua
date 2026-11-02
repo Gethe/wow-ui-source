@@ -154,7 +154,7 @@ local function Register()
 	Settings.SetupCVarCheckbox(category, "showToastFriendRequest", SHOW_TOAST_FRIEND_REQUEST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_FRIEND_REQUEST);
 
 	-- Show Toast Window
-	Settings.SetupCVarCheckbox(category, "showToastWindow", SHOW_TOAST_WINDOW_TEXT, OPTION_TOOLTIP_SHOW_TOAST_WINDOW);
+	SocialOverrides.SetupToastWindowSetting(category);
 
 	if C_CVar.GetCVar("autoAcceptQuickJoinRequests") then
 		-- Auto Accept Quick Join Requests

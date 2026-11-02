@@ -43,6 +43,8 @@ function SuperDistrictMixin:OnLoad()
 
 	self:RefreshSuperDistrictButtons();
 	self:UpdateSelection(self.selectedSuperDistrictID);
+
+	self:RegisterForTransitions();
 end
 
 function SuperDistrictMixin:OnShow()
@@ -118,6 +120,55 @@ function SuperDistrictMixin:OnCancel()
 	end
 end
 
+function SuperDistrictMixin:FocusGamepad()
+	self.frameFooter:ShowAndActivateBindings();
+
+	for button in self.districtButtonPool:EnumerateActive() do
+		if button.layoutIndex == 1 then
+			SmartNavigation:SetTargetButtonForFrame(self, button);
+			break;
+		end
+	end
+end
+
+function SuperDistrictMixin:UnfocusGamepad()
+	self.frameFooter:HideAndDeactivateBindings();
+end
+
+function SuperDistrictMixin:SetupGamepad()
+	local select = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, function()
+		EventRegistry:TriggerEvent("SuperDistrict.ConfirmSuperDistrict");
+	end, ACTION_LABEL_SELECT);
+
+	local back = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, function()
+		EventRegistry:TriggerEvent("SuperDistrict.CancelSelection");
+	end, FRAME_ACTION_BACK);
+
+	self.frameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "SuperDistrictFooter");
+	self.frameFooter:AddPromptedBinding(select);
+	self.frameFooter:AddPromptedBinding(back);
+	self.frameFooter:Finalize();
+	self.frameFooter.inputLegend:ClearAllPoints();
+	self.frameFooter.inputLegend:SetPoint("BOTTOM", self, "BOTTOM", 0, 10);
+end
+
+function SuperDistrictMixin:InitializeGamepad()
+	self.SelectButton:Hide();
+	self.CancelButton:Hide();
+end
+
+function SuperDistrictMixin:UninitializeGamepad()
+	self.SelectButton:Show();
+	self.CancelButton:Show();
+end
+
+function SuperDistrictMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
+end
+
 SuperDistrictButtonMixin = CreateFromMixins(SelectableButtonMixin, DisabledTooltipButtonMixin);
 
 function SuperDistrictButtonMixin:SetDisabledVisuals(disabled)
@@ -177,4 +228,8 @@ end
 
 function SuperDistrictButtonMixin:NarrationGetDescription()
 	return self.Description:GetText();
+end
+
+function SuperDistrictButtonMixin:OnSmartNavSelect()
+	self:OnClick();
 end

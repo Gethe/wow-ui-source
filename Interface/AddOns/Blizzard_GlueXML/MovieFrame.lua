@@ -82,6 +82,14 @@ function MovieFrame_OnKeyUp(self, key)
 	end
 end
 
+function MovieFrame_OnGamePadButtonUp(self, button)
+	if (button == GAMEPAD_MENU_RIGHT) or (button == GAMEPAD_FACE_RIGHT) then
+		local userCanceled = true;
+		CinematicFinished(Enum.CinematicType.GlueMovie, userCanceled);
+		MovieFrame_Close();
+	end
+end
+
 function MovieFrame_OnMovieFinished(self)
 	if ( self:IsShown() ) then
 		CinematicFinished(Enum.CinematicType.GlueMovie);

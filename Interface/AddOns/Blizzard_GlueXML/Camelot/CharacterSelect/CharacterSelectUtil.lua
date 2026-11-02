@@ -1,3 +1,9 @@
+local showDebugTooltipInfo = GetCVarBool("debugTargetInfo");
+
+function CharacterSelectUtil.UpdateShowDebugTooltipInfo(state)
+	showDebugTooltipInfo = state;
+end
+
 function CharacterSelectUtil.SetTooltipForCharacterInfo(characterInfo, characterID)
 	if not characterInfo then
 		return false;

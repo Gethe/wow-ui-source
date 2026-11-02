@@ -137,6 +137,11 @@ function BaseBagSlotButtonMixin:UpdateBagMatchesSearch()
 end
 
 function BaseBagSlotButtonMixin:UpdateBagButtonHighlight(containerFrame)
+	-- Gamepad bag buttons manage their own slot highlight.
+	if self.UpdateBorderAtlases then
+		return;
+	end
+
 	if containerFrame:MatchesBagID(self:GetBagID()) then
 		self.SlotHighlightTexture:SetShown(containerFrame:IsShown());
 	end
@@ -197,13 +202,88 @@ function BaseBagSlotButtonMixin:SetBarExpanded(isExpanded)
 	self:SetShown(isExpanded);
 end
 
-function BaseBagSlotButtonMixin:UpdateHighlightForItemButton(itemButton)
-	local showHighlight = itemButton:GetBagID() == self:GetBagID();
-	self.SlotHighlightTexture:SetShown(showHighlight);
+local FREE_SLOTS_FORMAT = "(%s)";
+
+local GAMEPAD_BAG_SLOT_BORDER_ATLASES = {
+	expanded = {
+		normal = "BagSlotFrame_Expanded_Default",
+		pushed = "BagSlotFrame_Expanded_Pushed_",
+		disabled = "BagSlotFrame_Expanded_Disabled",
+		highlight = "BagSlotFrame_Expanded_Hover",
+	},
+	collapsed = {
+		normal = "BagSlotFrame_Collapsed_Default",
+		pushed = "BagSlotFrame_Collapsed_Pushed",
+		disabled = "BagSlotFrame_Collapsed_Disabled",
+		highlight = "BagSlotFrame_Collapsed_Hover",
+	},
+};
+
+GamepadBagSlotMixin = {};
+
+function GamepadBagSlotMixin:HasBag()
+	if self:IsBackpack() or self:GetBagID() == KEYRING_CONTAINER then
+		return true;
+	end
+
+	return self:HasBagEquipped();
 end
 
-function BaseBagSlotButtonMixin:ClearHighlight()
-	self.SlotHighlightTexture:SetShown(false);
+function GamepadBagSlotMixin:UpdateBorderAtlases()
+	local hasBag = self:HasBag();
+	local useCollapsed = hasBag and self.isCollapsed;
+	local atlases = useCollapsed and GAMEPAD_BAG_SLOT_BORDER_ATLASES.collapsed or GAMEPAD_BAG_SLOT_BORDER_ATLASES.expanded;
+	-- Empty slots keep the default normal atlas that UpdateTextures already applied.
+	if hasBag then
+		self:GetNormalTexture():SetAtlas(atlases.normal);
+		self:GetPushedTexture():SetAtlas(atlases.pushed);
+		self:GetDisabledTexture():SetAtlas(atlases.disabled);
+		self:GetHighlightTexture():SetAtlas(atlases.highlight);
+	end
+
+	self.SlotHighlightTexture:SetShown(not hasBag);
+
+	self:UpdateItemCount();
+end
+
+function GamepadBagSlotMixin:IsAmmunitionBag()
+	if self:IsBackpack() then
+		return false;
+	end
+
+	local itemID = GetInventoryItemID("player", self:GetID());
+	if itemID ~= self.ammunitionBagItemID then
+		self.ammunitionBagItemID = itemID;
+		local classID = itemID and select(6, C_Item.GetItemInfoInstant(itemID));
+		self.isAmmunitionBag = classID == Enum.ItemClass.Quiver;
+	end
+
+	return self.isAmmunitionBag or false;
+end
+
+function GamepadBagSlotMixin:UpdateItemCount()
+	local isAmmunitionBag = self:IsAmmunitionBag();
+	-- SetItemButtonCount hides counts at or below minDisplayCount, so lower it to show 0 ammo.
+	self.minDisplayCount = isAmmunitionBag and -1 or nil;
+
+	if isAmmunitionBag or self:GetBagID() == KEYRING_CONTAINER or not self:HasBag() then
+		return;
+	end
+
+	self.Count:SetText(FREE_SLOTS_FORMAT:format(C_Container.GetContainerNumFreeSlots(self:GetBagID())));
+	self.Count:Show();
+end
+
+function GamepadBagSlotMixin:TryOpenBagMenu(button)
+	if button ~= "RightButton" then
+		return false;
+	end
+
+	if self:HasBag() and not CursorHasItem() then
+		self.BagDropdownButton:OpenMenu();
+	end
+
+	return true;
 end
 
 GamepadBagBarMixin = {};
@@ -224,6 +304,8 @@ function GamepadBagBarMixin:OnLoad()
 		if gamepadBagButton then
 			gamepadBagButton.BagDropdownButton:ClearAllPoints();
 			gamepadBagButton.BagDropdownButton:SetPoint("TOPRIGHT", gamepadBagButton, "TOPRIGHT", 0, 0);
+			gamepadBagButton.BagDropdownButton:SetMouseClickEnabled(false);
+			gamepadBagButton.BagDropdownButton:SetMouseMotionEnabled(false);
 			gamepadBagButton.BagDropdownButton:SetupMenu(function(dropdown, rootDescription)
 				ContainerFrame_AddButtons_BagFilters(rootDescription, bagID);
 				ContainerFrame_AddButtons_BagCleanup(rootDescription, bagID);
@@ -233,6 +315,20 @@ function GamepadBagBarMixin:OnLoad()
 					rootDescription:CreateButton(CONTEXT_ACTION_LABEL_UNEQUIP_BAG, function()
 						local index = C_Container.ContainerIDToInventoryID(bagID);
 						PickupBagFromSlot(index);
+						for i = BACKPACK_CONTAINER, NUM_BAG_SLOTS do
+							if i ~= bagID then
+								local freeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(i);
+								local gamepadBag = freeSlots and freeSlots > 0 and bagFamily == 0 and self:GetBagButton(i);
+								if gamepadBag then
+									if i == BACKPACK_CONTAINER then
+										PutItemInBackpack();
+									else
+										PutItemInBag(gamepadBag:GetID(), false);
+									end
+									return;
+								end
+							end
+						end
 						PutItemInBackpack();
 					end);
 				end
@@ -245,6 +341,7 @@ function GamepadBagBarMixin:OnLoad()
 	local gamepadkeyRingButton = GamepadBagBar and GamepadBagBar:GetBagButton(KEYRING_CONTAINER);
 	if gamepadkeyRingButton then
 		gamepadkeyRingButton.isCollapsed = true;
+		gamepadkeyRingButton:UpdateBorderAtlases();
 	end
 end
 
@@ -258,23 +355,15 @@ function GamepadBagSlotButtonMixin:BagSlotOnLoad()
 end
 
 function GamepadBagSlotButtonMixin:BagSlotOnClick(button, down)
+	if self:TryOpenBagMenu(button) then
+		return;
+	end
+
 	if CursorHasItem() then
 		self:PutItemInBag();
 	else
 		PickupBagFromSlot(self:GetID());
 	end
-end
-
-function GamepadBagSlotButtonMixin:BagSlotOnShow()
-	BaseBagSlotButtonMixin.BagSlotOnShow(self);
-	EventRegistry:RegisterCallback("ContainerFrameItemButton.EnterButton", self.UpdateHighlightForItemButton, self);
-	EventRegistry:RegisterCallback("ContainerFrameItemButton.ExitButton", self.ClearHighlight, self);
-end
-
-function GamepadBagSlotButtonMixin:BagSlotOnHide()
-	BaseBagSlotButtonMixin.BagSlotOnHide(self);
-	EventRegistry:UnregisterCallback("ContainerFrameItemButton.EnterButton", self);
-	EventRegistry:UnregisterCallback("ContainerFrameItemButton.ExitButton", self);
 end
 
 MainMenuBarBackpackMixin = CreateFromMixins(BaseBagSlotButtonMixin);
@@ -339,8 +428,6 @@ function MainMenuBarBackpackMixin:BackpackOnEvent(event, ...)
 	end
 end
 
-local BACKPACK_FREESLOTS_FORMAT = "(%s)";
-
 function MainMenuBarBackpackMixin:UpdateFreeSlots()
 	local totalFree = C_Container.CalculateTotalNumberOfFreeBagSlots();
 	if totalFree == 3 then
@@ -350,7 +437,7 @@ function MainMenuBarBackpackMixin:UpdateFreeSlots()
 	end
 
 	self.freeSlots = totalFree;
-	self.FreeSlots:SetText(BACKPACK_FREESLOTS_FORMAT:format(totalFree));
+	self.FreeSlots:SetText(FREE_SLOTS_FORMAT:format(totalFree));
 end
 
 function MainMenuBarBackpackMixin:SetCountShown(shown)
@@ -435,6 +522,10 @@ end
 
 GamepadBackpackButtonMixin = CreateFromMixins(MainMenuBarBackpackMixin);
 
+function GamepadBackpackButtonMixin:SetCountShown()
+	-- Free slots will be handled by UpdateItemCount.
+end
+
 function GamepadBackpackButtonMixin:BagSlotOnLoad()
 	-- We don't want to be registered to the MainMenuBarBagManager
 	self:RegisterEvent("ITEM_PUSH");
@@ -447,19 +538,13 @@ function GamepadBackpackButtonMixin:BagSlotOnLoad()
 end
 
 function GamepadBackpackButtonMixin:BagSlotOnClick(button, down)
+	if self:TryOpenBagMenu(button) then
+		return;
+	end
+
 	if CursorHasItem() then
 		self:PutItemInBag();
 	end
-end
-
-function GamepadBackpackButtonMixin:BagSlotOnShow()
-	EventRegistry:RegisterCallback("ContainerFrameItemButton.EnterButton", self.UpdateHighlightForItemButton, self);
-	EventRegistry:RegisterCallback("ContainerFrameItemButton.ExitButton", self.ClearHighlight, self);
-end
-
-function GamepadBackpackButtonMixin:BagSlotOnHide()
-	EventRegistry:UnregisterCallback("ContainerFrameItemButton.EnterButton", self);
-	EventRegistry:UnregisterCallback("ContainerFrameItemButton.ExitButton", self);
 end
 
 CharacterReagentBagMixin = {};
@@ -481,6 +566,10 @@ function GamepadCharacterReagentBagMixin:BagSlotOnLoad()
 end
 
 function GamepadCharacterReagentBagMixin:BagSlotOnClick(button, down)
+	if self:TryOpenBagMenu(button) then
+		return;
+	end
+
 	if CursorHasItem() then
 		self:PutItemInBag();
 	else

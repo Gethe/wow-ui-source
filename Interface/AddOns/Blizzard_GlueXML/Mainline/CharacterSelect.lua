@@ -323,6 +323,8 @@ function CharacterSelectFrameMixin:OnUpdate(elapsed)
 				StaticPopup_Show("UNDELETE_NAME_TAKEN_REGIONAL");
 			elseif (self.undeleteFailed == "dracthyr") then
 				StaticPopup_Show("UNDELETE_DRACTHYR_LEVEL_REQUIREMENT");
+			elseif (self.undeleteFailed == "pvpTeams") then
+				StaticPopup_Show("UNDELETE_PVP_TEAMS_VIOLATION");
 			else
 				StaticPopup_Show("UNDELETE_FAILED");
 			end
@@ -549,6 +551,8 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 				self.undeleteFailed = "regionalname";
 			elseif ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_DRACTHYR_LEVEL_REQUIREMENT ) then
 				self.undeleteFailed = "dracthyr";
+			elseif ( result == LE_CHARACTER_UNDELETE_RESULT_ERROR_PVP_TEAMS_VIOLATION ) then
+				self.undeleteFailed = "pvpTeams";
 			else
 				self.undeleteFailed = "other";
 			end
@@ -2426,6 +2430,12 @@ StaticPopupDialogs["UNDELETE_DRACTHYR_LEVEL_REQUIREMENT"] = {
 	escapeHides = true,
 }
 
+StaticPopupDialogs["UNDELETE_PVP_TEAMS_VIOLATION"] = {
+	text = UNDELETE_PVP_TEAMS_VIOLATION,
+	button1 = OKAY,
+	escapeHides = true,
+}
+
 StaticPopupDialogs["UNDELETE_NO_CHARACTERS"] = {
 	text = UNDELETE_NO_CHARACTERS;
 	button1 = OKAY,
@@ -3136,6 +3146,11 @@ function CharacterSelectFrameMixin:SetUpGamepad()
 	self.SmartNavigationOnSelect = self.OnSmartNavButtonSelected;
 end
 
+function CharacterSelectFrameMixin:ConfigureCharacterListSearchBoxGamepad()
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox:SetPoint("TOPLEFT", 40, -25);
+	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox:SetWidth(297);
+end
+
 function CharacterSelectFrameMixin:InitializeGamepad()
 	--Set up navigation overrides.
 	local navBar = self.CharacterSelectUI.VisibilityFramesContainer.NavBar;
@@ -3156,7 +3171,8 @@ function CharacterSelectFrameMixin:InitializeGamepad()
 	CharacterSelectCharacterFrame.DeleteCharacterButton:Hide();
 
 	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox.FocusIcon:Show();
-	CharacterSelectUI.VisibilityFramesContainer.CharacterList.SearchBox:SetPoint("TOPLEFT", 40, -25);
+	self:ConfigureCharacterListSearchBoxGamepad();
+
 	CharacterSelectUI.VisibilityFramesContainer.ToolTray:SetPoint("RIGHT", CharSelectEnterWorldButton, "BOTTOMLEFT", -200, 0);
 	CharSelectCharacterName:SetPoint("BOTTOM", self.frameFooter.inputLegend, "TOP", 0, 15);
 
@@ -3168,6 +3184,20 @@ function CharacterSelectFrameMixin:InitializeGamepad()
 	EventRegistry:RegisterCallback("CharacterSelectList.OnCharacterSelectionUpdated",
 	function()
 		if SmartNavigation:GetActiveFrame() ~= CharacterSelect then
+			-- The character list equates focus with selection, but the two can be updated
+			-- independently. If the selection is updated while CharacterSelect is out of focus,
+			-- then the on-return focus target must be updated to match.
+			local panelInfo = SmartNavigation:GetPanelInfo(CharacterSelect, true);
+			local buttonContext = panelInfo and panelInfo.lastButton and panelInfo.lastButton.buttonContext;
+			-- It's possible to be focusing something other than the character list when the update comes.
+			-- Only prep the new focus target if our prior focus target was a character list entry.
+			if buttonContext == 'ButtonContext_CharacterSelectListCharacterButton' then
+				local selectedButton = CharacterSelect:GetSelectedCharacterButton();
+				if selectedButton and selectedButton.buttonContext == "ButtonContext_CharacterSelectListCharacterButton" then
+					SmartNavigation:SetLastButtonForPanelInfo(panelInfo, selectedButton);
+				end
+			end
+
 			return;
 		end
 

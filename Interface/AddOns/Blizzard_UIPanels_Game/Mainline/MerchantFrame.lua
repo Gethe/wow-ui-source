@@ -1249,7 +1249,6 @@ function MerchantFrame_SetupGamepad(self)
 	self.footer:AddStandardSelectPrompt();
 	self.footer:AddPromptedBinding(multibuyItem);
 	self.footer:AddPromptedBinding(inspectItem);
-	self.footer:AddStandardFrameControlManagerBindings(self);
 	self.footer:AddStandardBackPrompt();
 	self.footer:Finalize();
 

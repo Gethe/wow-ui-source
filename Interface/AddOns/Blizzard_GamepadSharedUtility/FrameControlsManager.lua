@@ -1,3 +1,5 @@
+local SecureHelper = import("Blizzard_GamepadSmartNavigation.SecureHelper");
+
 --[[
 	Handles transferring controls when multiple windows are active.
 
@@ -42,12 +44,8 @@ local function UnfocusFocusedFrame(self)
 
 	local frameToUnfocus = self.focusedFrame;
 
-	if (frameToUnfocus.UnfocusGamepad) then
-		frameToUnfocus:UnfocusGamepad();
-	end
-	if (frameToUnfocus.EndFocus) then
-		frameToUnfocus:EndFocus();
-	end
+	SecureHelper.SecureCallOptionalFunction(frameToUnfocus, "UnfocusGamepad", frameToUnfocus);
+	SecureHelper.SecureCallOptionalFunction(frameToUnfocus, "EndFocus", frameToUnfocus);
 
 	--[[
 		Unfocusing a frame may cause another frame to become
@@ -105,12 +103,8 @@ local function FocusFrame(self, index)
 	self.focusedFrame = frame;
 	EnableNavigation(frame);
 
-	if (frame.FocusGamepad) then
-		frame:FocusGamepad();
-	end
-	if (self.focusedFrame.StartFocus) then
-		self.focusedFrame:StartFocus();
-	end
+	SecureHelper.SecureCallOptionalFunction(frame, "FocusGamepad", frame);
+	SecureHelper.SecureCallOptionalFunction(frame, "StartFocus", frame);
 
 	self:RefreshFocus();
 
@@ -164,6 +158,7 @@ function GamepadFrameControlsManagerMixin:ResetVars()
 	self.topSuspendedFrame = nil;
 
 	self.isPopupFrame = {};
+	self.popupReturnFrames = {};
 
 	self.isUIFocused = false;
 end
@@ -430,6 +425,7 @@ function GamepadFrameControlsManagerMixin:FrameShown(frame, isPopup, shouldFocus
 	if self.isUIFocused then
 		local shouldActivateFrame = shouldFocusFrame;
 		if type(shouldActivateFrame) == "function" then
+			-- Intentionally missing taint barrier: This controls focus
 			shouldActivateFrame = shouldActivateFrame();
 		end
 
@@ -464,6 +460,9 @@ function GamepadFrameControlsManagerMixin:FrameShown(frame, isPopup, shouldFocus
 	return true;
 end
 
+-- A lot of code calls into FrameShown. Try to keep taint away.
+GamepadFrameControlsManagerMixin.FrameShown = SecureHelper:WrapFunction(GamepadFrameControlsManagerMixin.FrameShown);
+
 --[[
 	Called when a frame is closed, takes it out of shownFrames.
 
@@ -487,7 +486,10 @@ function GamepadFrameControlsManagerMixin:FrameHidden(frame)
 		return false;
 	end
 
-	table.remove(self.shownFrames, index)
+	local returnFrame = self.popupReturnFrames[frame];
+	self.popupReturnFrames[frame] = nil;
+
+	table.remove(self.shownFrames, index);
 
 	if self.isPopupFrame[frame] then
 		self.isPopupFrame[frame] = nil;
@@ -496,8 +498,14 @@ function GamepadFrameControlsManagerMixin:FrameHidden(frame)
 	-- Check if this frame was the active one, if so, transfer ownership
 	if (self.focusedFrame == frame) then
 		local foundNewFrameInGroup = false;
+
+		-- Popups should return to their previous owner, not the first frame in the position-sorted list.
+		if self.isUIFocused and not frame.returnToPlayerControl and returnFrame then
+			foundNewFrameInGroup = self:FocusFrame(returnFrame);
+		end
+
 		-- If there is a group associated with this frame, check to make sure there are not others.
-		if (frame.FrameControlManagerGroup and #self.shownFrames >= 1) then
+		if not foundNewFrameInGroup and frame.FrameControlManagerGroup and #self.shownFrames >= 1 then
 			for shownFrameIndex, shownFrame in ipairs(self.shownFrames) do
 				if (shownFrame ~= nil and frame.FrameControlManagerGroup == shownFrame.FrameControlManagerGroup) then
 					if FocusFrame(self, shownFrameIndex) then
@@ -549,17 +557,36 @@ function GamepadFrameControlsManagerMixin:FrameHidden(frame)
 	return true;
 end
 
+-- A lot of code calls into FrameHidden. Try to keep taint away.
+GamepadFrameControlsManagerMixin.FrameHidden = SecureHelper:WrapFunction(GamepadFrameControlsManagerMixin.FrameHidden);
+
 function GamepadFrameControlsManagerMixin:HandlePopupShown(popupFrame)
-	self:FrameShown(popupFrame, true);
+	local returnFrame;
+	if self.isUIFocused and not popupFrame.skipGamepadAutoFocus then
+		returnFrame = self.focusedFrame;
+		-- Menus close, so return to the frame that was suspended when the menu opened.
+		if returnFrame and Menu.IsMenuProxy(returnFrame) then
+			returnFrame = self.topSuspendedFrame or returnFrame;
+		end
+	end
+
+	local wasAdded = self:FrameShown(popupFrame, true);
+	if wasAdded then
+		self.popupReturnFrames[popupFrame] = returnFrame;
+	end
 
 	if self.isUIFocused then
 		CheckForInputBinding(self);
 	end
 end
 
+GamepadFrameControlsManagerMixin.HandlePopupShown = SecureHelper:WrapFunction(GamepadFrameControlsManagerMixin.HandlePopupShown);
+
 function GamepadFrameControlsManagerMixin:HandlePopupHide(popupFrame)
 	self:FrameHidden(popupFrame);
 end
+
+GamepadFrameControlsManagerMixin.HandlePopupHide = SecureHelper:WrapFunction(GamepadFrameControlsManagerMixin.HandlePopupHide);
 
 --[[
 	Returns the amount of focusable frames
@@ -621,12 +648,8 @@ function GamepadFrameControlsManagerMixin:SetUIFocusState(shouldFocusUI)
 			local currentFocusedFrame = self.focusedFrame;
 			EnableNavigation(currentFocusedFrame);
 
-			if (currentFocusedFrame.FocusGamepad) then
-				currentFocusedFrame:FocusGamepad();
-			end
-			if (currentFocusedFrame.StartFocus) then
-				currentFocusedFrame:StartFocus();
-			end
+			SecureHelper.SecureCallOptionalFunction(currentFocusedFrame, "FocusGamepad", currentFocusedFrame);
+			SecureHelper.SecureCallOptionalFunction(currentFocusedFrame, "StartFocus", currentFocusedFrame);
 
 			CheckForInputBinding(self);
 		end
@@ -635,9 +658,7 @@ function GamepadFrameControlsManagerMixin:SetUIFocusState(shouldFocusUI)
 			-- Close any popup menus when toggling the UI.
 			local currentActiveFrame = self.focusedFrame;
 			if (currentActiveFrame and currentActiveFrame.dismissOnUnfocus) then
-				if (currentActiveFrame.SmartNavigationCloseHandler) then
-					currentActiveFrame:SmartNavigationCloseHandler();
-				else
+				if not SecureHelper.SecureCallOptionalFunction(currentActiveFrame, "SmartNavigationCloseHandler", currentActiveFrame) then
 					HideUIPanel(currentActiveFrame);
 				end
 
@@ -650,11 +671,9 @@ function GamepadFrameControlsManagerMixin:SetUIFocusState(shouldFocusUI)
 			GamepadMode.PopupHandler:UpdateVisiblePopups();
 
 			currentActiveFrame = self.focusedFrame;
-			if (currentActiveFrame and currentActiveFrame.UnfocusGamepad) then
-				currentActiveFrame:UnfocusGamepad();
-			end
-			if (currentActiveFrame and currentActiveFrame.EndFocus) then
-				currentActiveFrame:EndFocus();
+			if currentActiveFrame then
+				SecureHelper.SecureCallOptionalFunction(currentActiveFrame, "UnfocusGamepad", currentActiveFrame);
+				SecureHelper.SecureCallOptionalFunction(currentActiveFrame, "EndFocus", currentActiveFrame);
 			end
 
 			CheckForInputBinding(self);
@@ -743,8 +762,8 @@ function GamepadFrameControlsManagerMixin:UnsuspendFrame()
 		GamepadSharedUtility.HideSuspendFooter();
 	end
 
-	if (returnFrame and returnFrame.LockInFocus) then
-		returnFrame:LockInFocus(false);
+	if returnFrame then
+		SecureHelper.SecureCallOptionalFunction(returnFrame, "LockInFocus", returnFrame, false);
 	end
 
 	local frameFocused = false;
@@ -838,9 +857,6 @@ end
 function GamepadFrameControlsManagerMixin:DisableCustomNavigation(focusedFrame)
 	focusedFrame.useCustomNavigation = nil;
 end
-function GamepadFrameControlsManagerMixin:ClearSmartNavReturnFrame(focusedFrame)
-	focusedFrame.smartNavReturnFrame = nil;
-end
 
 function GamepadFrameControlsManagerMixin:ToggleFrameControls(enable)
 	if (enable) then
@@ -858,37 +874,25 @@ end
 
 local function ShowLeftJumpHint(frame, show)
 	if show then
-		if frame.ShowLeftJumpHint then
-			frame:ShowLeftJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "ShowLeftJumpHint", frame);
 	else
-		if frame.HideLeftJumpHint then
-			frame:HideLeftJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "HideLeftJumpHint", frame);
 	end
 end
 
 local function ShowRightJumpHint(frame, show)
 	if show then
-		if frame.ShowRightJumpHint then
-			frame:ShowRightJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "ShowRightJumpHint", frame);
 	else
-		if frame.HideRightJumpHint then
-			frame:HideRightJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "HideRightJumpHint", frame);
 	end
 end
 
 local function ShowFocusJumpHint(frame, show)
 	if show then
-		if frame.ShowFocusJumpHint then
-			frame:ShowFocusJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "ShowFocusJumpHint", frame);
 	else
-		if frame.HideFocusJumpHint then
-			frame:HideFocusJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "HideFocusJumpHint", frame);
 	end
 end
 
@@ -912,110 +916,6 @@ local function GetJumpHintFocusedFrame(manager)
 	return focusedFrame;
 end
 
---[[
-	Returns the label of the leftward Jump Hint.
-	Private helper function not intended to be used by external sources.
-
-	Returns nil if there is no JumpHint target.
-]]
-local function GetJumpHintLeftLabel(manager, frame)
-	assert(frame, "Nil frame provided to GetJumpHintLeftLabel");
-	local frameIndex = ArrayIndexOf(manager.shownFrames, frame);
-
-	-- Footers are established when they are not tracked by FrameControlsManager
-	if frameIndex == 0 then
-		return nil;
-	end
-
-	local hasLeftFrame = frameIndex > 1;
-	if not hasLeftFrame then
-		return nil;
-	end
-
-	local prevIndex = frameIndex - 1;
-	local prevFrame = manager.shownFrames[prevIndex];
-	if prevFrame.GetJumpHintLabel then
-		return prevFrame:GetJumpHintLabel();
-	end
-
-	return PREVIOUS;
-end
-
---[[
-	Returns the label of the rightward Jump Hint.
-	Private helper function not intended to be used by external sources.
-
-	Returns nil if there is no JumpHint target.
-]]
-local function GetJumpHintRightLabel(manager, frame)
-	assert(frame, "Nil frame provided to GetJumpHintRightLabel");
-	local frameIndex = ArrayIndexOf(manager.shownFrames, frame);
-
-	-- Footers are established when they are not tracked by FrameControlsManager
-	if frameIndex == 0 then
-		return nil;
-	end
-
-	local hasRightFrame = frameIndex < #manager.shownFrames;
-	if not hasRightFrame then
-		return nil;
-	end
-
-	local nextIndex = frameIndex + 1;
-	local nextFrame = manager.shownFrames[nextIndex];
-	if nextFrame.GetJumpHintLabel then
-		return nextFrame:GetJumpHintLabel();
-	end
-
-	return NEXT;
-end
-
---[[
-	Returns if the provided frame should display a jump hint directing leftward.
-	Private helper function not intended to be used by external sources.
-]]
-local function HasJumpHintLeft(manager, frame)
-	if frame.disableFrameFocusPagingWhenFocused then
-		return false;
-	end
-
-	return GetJumpHintLeftLabel(manager, frame) ~= nil;
-end
-
---[[
-	Returns if the provided frame should display a jump hint directing rightward.
-	Private helper function not intended to be used by external sources.
-]]
-local function HasJumpHintRight(manager, frame)
-	if frame.disableFrameFocusPagingWhenFocused then
-		return false;
-	end
-
-	return GetJumpHintRightLabel(manager, frame) ~= nil;
-end
-
---[[
-	Processes a prompted binding as the "Right" directional jump hint. Called from footers.
-]]
-function GamepadFrameControlsManagerMixin:RegisterJumpHintRightBinding(frame, promptedBinding)
-	promptedBinding:AddFooterBinding({
-		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
-		conditions = GenerateClosure(HasJumpHintRight, self, frame),
-		label = GenerateClosure(GetJumpHintRightLabel, self, frame),
-	})
-end
-
---[[
-	Processes a prompted binding as the "Left" directional jump hint. Called from footers.
-]]
-function GamepadFrameControlsManagerMixin:RegisterJumpHintLeftBinding(frame, promptedBinding)
-	promptedBinding:AddFooterBinding({
-		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
-		conditions = GenerateClosure(HasJumpHintLeft, self, frame),
-		label = GenerateClosure(GetJumpHintLeftLabel, self, frame),
-	})
-end
-
 function GamepadFrameControlsManagerMixin:ClearAllJumpHints()
 	for _, frame in ipairs(self.shownFrames) do
 		ShowLeftJumpHint(frame, false);
@@ -1026,19 +926,6 @@ end
 
 --[[
 	Updates Left, Right, and TargetFocus jump hint prompts on managed frames.
-
-	Current implmentation is for frames to register their footer bindings with
-	this class. See: RegisterJumpHintRightBinding, RegisterJumpHintLeftBinding
-
-	Migration: Navigation jump hints should be handled via frame footers. Frames
-	that have been migrated should set self.useFooterJumpHints = true. When
-	we are confident that no unmigrated frames remain, we can remove this
-	branch / functionality altogether.
-
-	Legacy: Show directional jump hints on the target frames
-	Current: Show directional jump hints on the focused frame's footer
-
-	Cleanup Task: https://t2jira.corp.blizzard.net/browse/CAM-14610
 ]]
 function GamepadFrameControlsManagerMixin:RefreshJumpHints()
 	self:ClearAllJumpHints();
@@ -1066,22 +953,22 @@ function GamepadFrameControlsManagerMixin:RefreshJumpHints()
 		ShowFocusJumpHint(focusedFrame, true);
 	end
 
-	-- Legacy: Show JumpHints on the surrounding frames
+	-- Show JumpHints on the surrounding frames
 	local focusedIndex = ArrayIndexOf(self.shownFrames, focusedFrame);
 	assert(focusedIndex > 0, "Frame is not tracked by FrameControlsManager");
 
-	-- Legacy: Previous frame gets a "LT" image
+	-- Previous frame gets a "LT" image
 	local previousIndex = focusedIndex > 1 and focusedIndex - 1 or nil;
 	local previousFrame = previousIndex and self.shownFrames[previousIndex] or nil;
-	if previousFrame and not focusedFrame.useFooterJumpHints then
-		ShowLeftJumpHint(previousFrame, true);
+	if previousFrame then
+		ShowLeftJumpHint(previousFrame, self.isUIFocused);
 	end
 
-	-- Legacy: Next frame gets a "RT" image
+	-- Next frame gets a "RT" image
 	local nextIndex = focusedIndex < #self.shownFrames and focusedIndex + 1 or nil;
 	local nextFrame = nextIndex and self.shownFrames[nextIndex] or nil;
-	if nextFrame and not focusedFrame.useFooterJumpHints then
-		ShowRightJumpHint(nextFrame, true);
+	if nextFrame then
+		ShowRightJumpHint(nextFrame, self.isUIFocused);
 	end
 end
 

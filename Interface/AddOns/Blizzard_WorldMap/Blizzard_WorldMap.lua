@@ -5,18 +5,6 @@ end
 
 WorldMapMixin = {};
 
---[[
-	Boolean flag that identifies this frame as having updated jump hints, no longer
-	using legacy FrameControlsManager jump hints only displayed on targets.
-	See FrameControlsManager:RefreshJumpHints
-]]
-WorldMapMixin.useFooterJumpHints = true;
-
--- Text to display next to jump hints on other frames, if the jump takes them here
-function WorldMapMixin:GetJumpHintLabel()
-	return WORLD_MAP;
-end
-
 local TITLE_CANVAS_SPACER_FRAME_HEIGHT = 67;
 local MAP_FOCUS = "Map";
 local QUEST_FOCUS = "Quest";
@@ -545,18 +533,13 @@ end
 
 function WorldMapMixin:OnOpenQuestDetails()
 	if InputUtil.IsGamepadUIEnabled() then
-		self.refocusQuestButton = SmartNavigation:GetCurrentButton();
 		self:FocusDetails();
 	end
 end
 
 function WorldMapMixin:SelectQuestButton()
 	if InputUtil.IsGamepadUIEnabled() then
-		if self.refocusQuestButton then
-			SmartNavigation:SelectButton(self.refocusQuestButton);
-		else
-			SmartNavigation:SelectFirstButton();
-		end
+		SmartNavigation:SelectFirstButton();
 	end
 end
 
@@ -1057,13 +1040,11 @@ end
 function WorldMapMixin:FocusSearchBox()
 	local searchBox = QuestScrollFrame.SearchBox;
 	if not searchBox:HasFocus() then
-		self.refocusQuestButton = SmartNavigation:GetCurrentButton();
 		SmartNavigation:SelectButton(searchBox);
 		searchBox:SetFocus();
 	else
 		searchBox:ClearFocus();
 		self:SelectQuestButton();
-		self.refocusQuestButton = nil;
 	end
 end
 
@@ -1144,7 +1125,6 @@ function WorldMapMixin:SetupGamepad()
 	self.questLogFooter:AddPromptedBinding(focusMap);
 	self.questLogFooter:AddPromptedBinding(focusSearch);
 	self.questLogFooter:AddPromptedBinding(back);
-	self.questLogFooter:AddStandardFrameControlManagerBindings(self);
 	self.questLogFooter:SetAlignmentType(PromptedBindingFooterMixin.ALIGNMENT_TYPE.RIGHT);
 	self.questLogFooter:Finalize();
 	

@@ -241,7 +241,7 @@ function QuestLogMixin:ValidateTabs()
 			self:SetDisplayMode(QuestLogDisplayMode.Quests);
 		end
 	end
-	
+
 	if QuestMapFrameOverrides.mapLegendTabHidden then
 		self.MapLegendTab:Hide()
 	elseif mapLegendRelativeTab then
@@ -1078,7 +1078,11 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	detailsFrame:Show();
 
 	-- save current view; SetMapID below re-enters this function, so keep the first value
-	detailsFrame.returnMapID = detailsFrame.returnMapID or QuestMapFrame:GetParent():GetMapID();
+	local originalFunctionEntry = false;
+	if detailsFrame.returnMapID == nil then
+		detailsFrame.returnMapID = QuestMapFrame:GetParent():GetMapID();
+		originalFunctionEntry = true;
+	end
 
 	-- destination/waypoint
 	local ignoreWaypoints = false;
@@ -1104,7 +1108,7 @@ function QuestMapFrame_ShowQuestDetails(questID)
 	StaticPopup_Hide("ABANDON_QUEST");
 	StaticPopup_Hide("ABANDON_QUEST_WITH_ITEMS");
 
-	if InputUtil.IsGamepadUIEnabled() then
+	if InputUtil.IsGamepadUIEnabled() and originalFunctionEntry then
 		WorldMapFrame:OnOpenQuestDetails();
 	end
 end
@@ -1475,12 +1479,6 @@ function QuestMapQuestOptions_AbandonQuest(questID)
 	C_QuestLog.SetSelectedQuest(questID);
 	C_QuestLog.SetAbandonQuest();
 
-	-- Remove the smart nav return frame to prevent refocusing the quest frame on showing the static popup.
-	if (InputUtil.IsGamepadUIEnabled()) then
-		local menu = GamepadMode.FrameControlsManager:GetActiveFrame();
-		menu.smartNavReturnFrame = nil;
-	end
-
 	local items = BuildItemNames(C_QuestLog.GetAbandonQuestItems());
 	local title = QuestUtils_GetQuestName(C_QuestLog.GetAbandonQuest());
 	if ( items ) then
@@ -1841,7 +1839,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 
 	local isTracked = C_QuestLog.GetQuestWatchType(questID) ~= nil;
 	button.Checkbox.CheckMark:SetShown(isTracked);
-	button.Checkbox.smartNavigationIgnored = true;
+	SmartNavigation_MarkFrameIgnored(button.Checkbox);
 
 	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
 	local tagAtlas;
@@ -2498,7 +2496,7 @@ function QuestMapLogTitleButton_OnClick(self, button)
 	if IsShiftKeyDown() then
 		self:ToggleTracking();
 	else
-	local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(self.questID);
+		local isDisabledQuest = C_QuestLog.IsQuestDisabledForSession(self.questID);
 		if not isDisabledQuest and button == "RightButton" then
 			QuestMapLogTitleButton_CreateContextMenu(self);
 		elseif button == "LeftButton" then

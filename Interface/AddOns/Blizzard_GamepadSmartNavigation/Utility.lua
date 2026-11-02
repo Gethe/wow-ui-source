@@ -1,5 +1,7 @@
 local Utility = {};
 
+local SecureHelper = import(".SecureHelper");
+
 -- The directional inputs smart nav can use
 SMART_NAV_INPUT_DIRECTION =
 {
@@ -9,13 +11,49 @@ SMART_NAV_INPUT_DIRECTION =
 	RIGHT = { x = 1, y = 0, dirKey = "right" }
 }
 
+-- IMPORTANT: These values may be set without causing taint (only while out of combat). Don't add
+-- or modify any of these calls unless you have discussed with someone who has a clear
+-- understanding of addon security.
+
+SecureHelper:RegisterKey("blockSmartNavClick", SecureHelper.CoerceToBoolean);
+SecureHelper:RegisterKey("smartNavigationCanFocus", SecureHelper.CoerceToBoolean);
+SecureHelper:RegisterKey("smartNavigationCustomCursorAnchor-point", SecureHelper.ToOptionalString);
+SecureHelper:RegisterKey("smartNavigationCustomCursorAnchor-relativeTo", function(v) return v; end);
+SecureHelper:RegisterKey("smartNavigationCustomCursorAnchor-relativePoint", SecureHelper.ToOptionalString);
+SecureHelper:RegisterKey("smartNavigationCustomCursorAnchor-x", tonumber);
+SecureHelper:RegisterKey("smartNavigationCustomCursorAnchor-y", tonumber);
+SecureHelper:RegisterKey("smartNavigationFocusKey", SecureHelper.ToOptionalString);
+SecureHelper:RegisterKey("smartNavigationIgnored", SecureHelper.CoerceToBoolean);
+SecureHelper:RegisterKey("smartNavigationIgnoredContainerFrame", SecureHelper.CoerceToBoolean);
+SecureHelper:RegisterKey("smartNavigationIgnoredDontPropagate", SecureHelper.CoerceToBoolean);
+SecureHelper:RegisterKey("smartNavMaintainPreviousButtonOnScroll", SecureHelper.CoerceToBoolean);
+SecureHelper:RegisterKey("smartNavigationNonCollapsingScrollBoxElement", SecureHelper.CoerceToBoolean);
+SecureHelper:RegisterKey("smartNavigationProxyTarget", function(v) return v; end);
+SecureHelper:RegisterKey("smartNavigationVerticalCursor", SecureHelper.CoerceToBoolean);
+
+for _, direction in pairs(SMART_NAV_INPUT_DIRECTION) do
+	SecureHelper:RegisterKey("smartNavigationDirectionBufferThreshold-"..direction.dirKey, tonumber);
+	SecureHelper:RegisterKey("smartNavigationOverride-"..direction.dirKey, function(v) return v; end);
+
+	-- Allow this one always (while out of combat too). We can't prevent insertion anyway since it's
+	-- a table (insecure code can just insert at their leisure). Every entry in the table keeps
+	-- their taint regardless. Using the setter just prevents the table reference itself from being
+	-- tainted.
+	SecureHelper:RegisterKey("smartNavigationOutgoingCallbacks-"..direction.dirKey, function(v) return v; end, function() return true; end);
+end
+
 --All children of the frame will be ignored too
-function SmartNavigation_MarkFrameIgnored(inFrame)
-	inFrame.smartNavigationIgnored = true;
+function SmartNavigation_MarkFrameIgnored(inFrame, dontPropagate)
+	if dontPropagate then
+		SecureHelper:SetSecureValue(inFrame, "smartNavigationIgnoredDontPropagate", true);
+	else
+		SecureHelper:SetSecureValue(inFrame, "smartNavigationIgnored", true);
+	end
 end
 
 function SmartNavigation_ClearIgnoreStatus(inFrame)
-	inFrame.smartNavigationIgnored = nil;
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationIgnored", nil);
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationIgnoredDontPropagate", nil);
 end
 
 function SmartNavigation_IsFrameIgnored(frame)
@@ -41,7 +79,7 @@ function SmartNavigation_IsFrameIgnored(frame)
 end
 
 function SmartNavigation_MarkFrameFocusable(inFrame)
-	inFrame.smartNavigationCanFocus = true;
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationCanFocus", true);
 end
 
 function SmartNavigation_IsFrameFocusable(inFrame)
@@ -50,7 +88,7 @@ end
 
 -- Make attempts to focus `inFrame` focus `forFrame` instead.
 function SmartNavigation_SetButtonFrame(inFrame, forFrame)
-	inFrame.smartNavigationProxyTarget = forFrame;
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationProxyTarget", forFrame);
 end
 
 --[[
@@ -59,7 +97,7 @@ end
 	the child itself is marked as ignored).
 ]]
 function SmartNavigation_MarkFrameIgnoredContainerFrame(inFrame)
-	inFrame.smartNavigationIgnoredContainerFrame = true;
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationIgnoredContainerFrame", true);
 end
 
 function SmartNavigation_IsIgnoredContainerFrame(inFrame)
@@ -67,7 +105,7 @@ function SmartNavigation_IsIgnoredContainerFrame(inFrame)
 end
 
 function SmartNavigation_MarkFrameSubSection(inFrame, inFocusKey)
-	inFrame.smartNavigationFocusKey = inFocusKey;
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationFocusKey", inFocusKey);
 end
 
 function SmartNavigation_SetDirectionBufferThreshold(inFrame, direction, degree)
@@ -75,29 +113,35 @@ function SmartNavigation_SetDirectionBufferThreshold(inFrame, direction, degree)
 		return;
 	end
 
-	if (not inFrame.smartNavigationDirectionBufferData) then
-		inFrame.smartNavigationDirectionBufferData = {};
+	local name = "smartNavigationDirectionBufferThreshold-"..direction.dirKey;
+	SecureHelper:SetSecureValue(inFrame, name, math.rad(degree));
+end
+
+function SmartNavigation_GetDirectionBufferThreshold(inFrame, direction)
+	return inFrame and inFrame["smartNavigationDirectionBufferThreshold-"..direction.dirKey];
+end
+
+function SmartNavigation_ClearDirectionBufferThresholdInDirection(inFrame, direction)
+	if not inFrame or not direction then
+		return;
 	end
-	inFrame.smartNavigationDirectionBufferData[direction] = degree * (math.pi / 180);
+
+	local name = "smartNavigationDirectionBufferThreshold-"..direction.dirKey;
+	SecureHelper:SetSecureValue(inFrame, name, nil);
+end
+
+function SmartNavigation_ClearDirectionBufferThresholds(inFrame)
+	for _, direction in pairs(SMART_NAV_INPUT_DIRECTION) do
+		SmartNavigation_ClearDirectionBufferThresholdInDirection(inFrame, direction);
+	end
 end
 
 function SmartNavigation_IsFrameSubSection(inFrame)
 	return inFrame and inFrame.smartNavigationFocusKey ~= nil;
 end
 
-function SmartNavigation_SetReturnFrameFocusButton(inButton)
-	local activeFrame = GamepadMode.FrameControlsManager:GetActiveFrame();
-
-	if (activeFrame.smartNavReturnFrame) then
-		local returnFramePanelInfo = SmartNavigation:GetPanelInfo(activeFrame.smartNavReturnFrame, true);
-		if (returnFramePanelInfo) then
-			SmartNavigation:SetLastButtonForPanelInfo(returnFramePanelInfo, inButton);
-		end
-	end
-end
-
 function SmartNavigation_MarkFrameNonCollapsingScrollBoxElement(inFrame)
-	inFrame.smartNavigationNonCollapsingScrollBoxElement = true;
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationNonCollapsingScrollBoxElement", true);
 end
 
 function SmartNavigation_IsFrameNonCollapsingScrollBoxElement(inFrame)
@@ -115,7 +159,7 @@ function SmartNavigation_SelectScrollBoxCurrentOrTop(scrollBox)
 end
 
 function SmartNavigation_MarkFrameBlockingSmartNavClick(inFrame)
-	inFrame.blockSmartNavClick = true;
+	SecureHelper:SetSecureValue(inFrame, "blockSmartNavClick", true);
 end
 
 function SmartNavigation_IsFrameBlockingSmartNavClick(inFrame)
@@ -123,7 +167,30 @@ function SmartNavigation_IsFrameBlockingSmartNavClick(inFrame)
 end
 
 function SmartNavigation_SetCustomCursorAnchorPointForFrame(inFrame, cursorAnchor)
-	inFrame.smartNavigationCustomCursorAnchor = cursorAnchor;
+	local point, relativeTo, relativePoint, x, y;
+
+	if cursorAnchor then
+		point, relativeTo, relativePoint, x, y = cursorAnchor:Get();
+	end
+
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationCustomCursorAnchor-point", point);
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationCustomCursorAnchor-relativeTo", relativeTo);
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationCustomCursorAnchor-relativePoint", relativePoint);
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationCustomCursorAnchor-x", x);
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationCustomCursorAnchor-y", y);
+end
+
+function SmartNavigation_GetCustomCursorAnchorPointForFrame(inFrame)
+	local point = inFrame["smartNavigationCustomCursorAnchor-point"];
+	if not point then
+		return nil;
+	end
+
+	local relativeTo = inFrame["smartNavigationCustomCursorAnchor-relativeTo"];
+	local relativePoint = inFrame["smartNavigationCustomCursorAnchor-relativePoint"];
+	local x = inFrame["smartNavigationCustomCursorAnchor-x"];
+	local y = inFrame["smartNavigationCustomCursorAnchor-y"];
+	return CreateAnchor(point, relativeTo, relativePoint, x, y);
 end
 
 --[[
@@ -138,7 +205,7 @@ end
 	FindButtons function), and the scroll frame doesn't have any focusable content itself (like message text).
 ]]
 function SmartNavigation_MarkScrollFrameMaintainPreviousButtonOnScroll(inScrollFrame)
-	inScrollFrame.smartNavMaintainPreviousButtonOnScroll = true;
+	SecureHelper:SetSecureValue(inScrollFrame, "smartNavMaintainPreviousButtonOnScroll", true);
 end
 
 function SmartNavigation_ShouldScrollFrameMaintainPreviousButtonOnScroll(inScrollFrame)
@@ -163,19 +230,19 @@ end
 	Undo all smart nav customization applied to a frame, and optionally all its children.
 ]]
 function SmartNavigation_ResetData(frame, recurse)
-	frame.blockSmartNavClick = nil;
-	frame.smartNavigationCanFocus = nil;
-	frame.smartNavigationCustomCursorAnchor = nil;
-	frame.smartNavigationDirectionBufferData = nil;
-	frame.smartNavigationFocusKey = nil;
-	frame.smartNavigationIgnored = nil;
-	frame.smartNavigationIgnoredContainerFrame = nil;
-	frame.smartNavigationIgnoredDontPropagate = nil;
-	frame.smartNavigationNonCollapsingScrollBoxElement = nil;
-	frame.smartNavigationVerticalCursor = nil;
-	frame.smartNavData = nil;
-	frame.smartNavMaintainPreviousButtonOnScroll = nil;
-	frame.smartNavReturnFrame = nil;
+	SecureHelper:SetSecureValue(frame, "blockSmartNavClick", nil);
+	SecureHelper:SetSecureValue(frame, "smartNavigationCanFocus", nil);
+	SecureHelper:SetSecureValue(frame, "smartNavigationFocusKey", nil);
+	SecureHelper:SetSecureValue(frame, "smartNavigationIgnoredContainerFrame", nil);
+	SecureHelper:SetSecureValue(frame, "smartNavigationNonCollapsingScrollBoxElement", nil);
+	SecureHelper:SetSecureValue(frame, "smartNavigationVerticalCursor", nil);
+	SecureHelper:SetSecureValue(frame, "smartNavMaintainPreviousButtonOnScroll", nil);
+
+	SmartNavigation_ClearIgnoreStatus(frame);
+	SmartNavigation_ClearDirectionBufferThresholds(frame);
+	SmartNavigation_ClearJumpNavigationOverrides(frame);
+	SmartNavigation_SetCustomCursorAnchorPointForFrame(frame, nil);
+	SmartNavigation_ClearOutgoingNavigationCallbacks(frame);
 
 	if recurse then
 		for _, child in ipairs({frame:GetChildren()}) do
@@ -199,13 +266,17 @@ function SmartNavigation_CanFocusFrame(frame)
 
 	-- Check for things that act like buttons but are not...
 	if not isButton then
-		isButton = frame:GetScript("OnMouseUp") ~= nil or frame:GetScript("OnMouseDown") ~= nil;
+		-- Needs a taint barrier since the returned handlers may be tainted, which would cause
+		-- taint even if we don't execute them.
+		isButton = securecallfunction(function()
+			return frame:GetScript("OnMouseUp") ~= nil or frame:GetScript("OnMouseDown") ~= nil;
+		end);
 	end
 
 	return (isButton or canFocus) and frame:GetSize() and (not SmartNavigation_IsIgnoredContainerFrame(frame));
 end
 
-Utility.FindButtons = function(inFrame, extraPanels, includeInFrame)
+function Utility.FindButtons(inFrame, extraPanels, includeInFrame)
 	local buttonsFound = {};
 	local scrollFramesFound = {};
 
@@ -218,7 +289,12 @@ Utility.FindButtons = function(inFrame, extraPanels, includeInFrame)
 			table.insert(foundButtons, frame);
 		end
 
-		local isScrollFrame = frame:IsObjectType("ScrollFrame") or frame.ScrollTarget ~= nil;
+		local isScrollFrame = frame:IsObjectType("ScrollFrame");
+		if not isScrollFrame then
+			-- The `ScrollTarget` value may be tainted
+			isScrollFrame = securecallfunction(function() return frame.ScrollTarget ~= nil; end);
+		end
+
 		local scrollInfo = nil;
 		if isScrollFrame and not isButton then
 			scrollInfo = { scrollFrame = frame, buttons = {} };
@@ -259,7 +335,7 @@ Utility.FindButtons = function(inFrame, extraPanels, includeInFrame)
 	return buttonsFound, scrollFramesFound;
 end
 
-Utility.FindButtonGroups = function(inFrame, extraPanels)
+function Utility.FindButtonGroups(inFrame, extraPanels)
 	local buttonGroups = {};
 	buttonGroups.mainGroup = {};
 	buttonGroups.subGroups = {};
@@ -297,16 +373,16 @@ function Utility.ForEachButtonInGroup(buttonGroup, cb)
 	end
 
 	if buttonGroup.buttons then
-		for _, button in ipairs(buttonGroup.buttons) do
+		secureexecuterange(buttonGroup.buttons, function(_, button)
 			cb(button);
-		end
+		end);
 	end
 
 	if buttonGroup.scrollFrames then
 		for _, scrollFrameGroup in ipairs(buttonGroup.scrollFrames) do
-			for _, button in ipairs(scrollFrameGroup.buttons) do
+			secureexecuterange(scrollFrameGroup.buttons, function(_, button)
 				cb(button, scrollFrameGroup.scrollFrame);
-			end
+			end);
 		end
 	end
 end
@@ -316,9 +392,9 @@ function Utility.ForEachScrollFrameInGroup(buttonGroup, cb)
 		return;
 	end
 
-	for _, scrollFrameGroup in ipairs(buttonGroup.scrollFrames) do
+	secureexecuterange(buttonGroup.scrollFrames, function(_, scrollFrameGroup)
 		cb(scrollFrameGroup.scrollFrame);
-	end
+	end);
 end
 
 --[[
@@ -340,15 +416,7 @@ function SmartNavigation_AddJumpNavigationOverride(button, direction, overrideBu
 		return;
 	end
 
-	if (not button.smartNavData) then
-		button.smartNavData = {};
-	end
-
-	if (not button.smartNavData.navigationOverrides) then
-		button.smartNavData.navigationOverrides = {};
-	end
-
-	button.smartNavData.navigationOverrides[direction.dirKey] = overrideButton;
+	SecureHelper:SetSecureValue(button, "smartNavigationOverride-"..direction.dirKey, overrideButton);
 end
 
 --[[
@@ -390,20 +458,6 @@ function SmartNavigation_AddBidirectionalJumpNavigationOverride(sourceButton, de
 end
 
 --[[
-	Clears all jump overrides set on the button, regardless of directional button
-	the jump override is tied to.
-
-	button = The button that smart nav would be focusing on to trigger the override
-]]
-function SmartNavigation_ClearJumpNavigationOverrides(button)
-	if (not button or not button.smartNavData) then
-		return;
-	end
-
-	button.smartNavData.navigationOverrides = nil;
-end
-
---[[
 	Clears the custom jump navigation override for a given direction. When the smart nav
 	system is focused on the button and the specified input direction (SMART_NAV_INPUT_DIRECTION)
 	is used, the default behavior will be used instead of any override previously set.
@@ -414,13 +468,23 @@ end
 				See SMART_NAV_INPUT_DIRECTION for valid arguments.
 ]]
 function SmartNavigation_ClearJumpNavigationOverridesInDirection(button, direction)
-	if (not button or not direction -- Validate arguments are not nil.
-		or not button.smartNavData -- Validates that the button is registered by Smart Navigation.
-		or not button.smartNavData.navigationOverrides) then -- Validates that there are overrides.
+	if not button or not direction then
 		return;
 	end
 
-	button.smartNavData.navigationOverrides[direction.dirKey] = nil;
+	SecureHelper:SetSecureValue(button, "smartNavigationOverride-"..direction.dirKey, nil);
+end
+
+--[[
+	Clears all jump overrides set on the button, regardless of directional button
+	the jump override is tied to.
+
+	button = The button that smart nav would be focusing on to trigger the override
+]]
+function SmartNavigation_ClearJumpNavigationOverrides(button)
+	for _, dir in pairs(SMART_NAV_INPUT_DIRECTION) do
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(button, dir);
+	end
 end
 
 --[[
@@ -434,19 +498,7 @@ end
 				See SMART_NAV_INPUT_DIRECTION for valid arguments.
 ]]
 function SmartNavigation_AddIgnoreInputNavigationOverride(button, direction)
-	if (not button or not direction) then
-		return;
-	end
-
-	if (not button.smartNavData) then
-		button.smartNavData = {};
-	end
-
-	if (not button.smartNavData.navigationOverrides) then
-		button.smartNavData.navigationOverrides = {};
-	end
-
-	button.smartNavData.navigationOverrides[direction.dirKey] = { shouldIgnoreInputNavOverride = true };
+	SmartNavigation_AddJumpNavigationOverride(button, direction, true);
 end
 
 --[[
@@ -455,19 +507,18 @@ end
 	For jump navigation overrides that were setup with a function instead of a button reference, the function
 	will be called first and its return value will be returned.
 
-	For navigation overrides that were setup using the SmartNavigation_AddIgnoreInputNavigationOverride
-	function a table containing a shouldIgnoreInputNavOverride key set to true will be returned.
-
 	button = The button which we will return the navigation override for
 	direction = The directional override we are requesting from the frame. (SMART_NAV_INPUT_DIRECTION)
 ]]
 function SmartNavigation_GetNavigationOverrideFrame(button, direction)
-	if (not button or not direction or not button.smartNavData or not button.smartNavData.navigationOverrides) then
+	if not button or not direction then
 		return;
 	end
 
-	local navOverride = button.smartNavData.navigationOverrides[direction.dirKey];
+	local navOverride = button["smartNavigationOverride-"..direction.dirKey];
 	if (type(navOverride) == "function") then
+		-- Intentionally not securecall wrapped, as it would allow insecure code to redirect
+		-- navigation dynamically without taint.
 		return navOverride();
 	end
 	return navOverride;
@@ -491,19 +542,14 @@ function SmartNavigation_RegisterOutgoingDirNavCallback(button, direction, callb
 		return;
 	end
 
-	if (not button.smartNavData) then
-		button.smartNavData = {};
-	end
+	-- Individual elements of this table should carry taint, but not the table itself.
+	local keyName = "smartNavigationOutgoingCallbacks-"..direction.dirKey;
+	local navigationCallbacks = button[keyName];
 
-	if (not button.smartNavData.navigationCallbacks) then
-		button.smartNavData.navigationCallbacks = {};
-	end
-
-	local callbackTable = button.smartNavData.navigationCallbacks[direction.dirKey];
-	if (callbackTable) then
-		table.insert(callbackTable, callback);
+	if navigationCallbacks then
+		table.insert(navigationCallbacks, callback);
 	else
-		button.smartNavData.navigationCallbacks[direction.dirKey] = { callback };
+		SecureHelper:SetSecureValue(button, keyName, { callback });
 	end
 end
 
@@ -521,6 +567,16 @@ function SmartNavigation_RegisterOutgoingNavCallback_MultiDir(button, directions
 	end
 end
 
+function SmartNavigation_ClearOutgoingNavigationCallbacks(button)
+	if not button then
+		return;
+	end
+
+	for _, direction in pairs(SMART_NAV_INPUT_DIRECTION) do
+		SecureHelper:SetSecureValue(button, "smartNavigationOutgoingCallbacks-"..direction.dirKey, nil);
+	end
+end
+
 --[[
 	Calls the button's outgoing navigation callback functions registered to the passed in
 	navigation direction.
@@ -530,22 +586,20 @@ end
 				SMART_NAV_INPUT_DIRECTION.
 ]]
 function SmartNavigation_CallOutgoingDirNavigationCallbacks(button, direction)
-	if (not button or not direction or not button.smartNavData or not button.smartNavData.navigationCallbacks) then
+	if not button or not direction then
 		return;
 	end
 
-	local navigationCallbacks = button.smartNavData.navigationCallbacks;
-	if (navigationCallbacks and navigationCallbacks[direction.dirKey]) then
-		if #navigationCallbacks[direction.dirKey] > 0 then
-			for _, callback in ipairs(navigationCallbacks[direction.dirKey]) do
-				callback();
-			end
-		end
+	local navigationCallbacks = button["smartNavigationOutgoingCallbacks-"..direction.dirKey];
+	if navigationCallbacks then
+		secureexecuterange(navigationCallbacks, function(_, callback)
+			callback();
+		end);
 	end
 end
 
 function SmartNavigation_UseVerticalCursorForFrame(inFrame)
-	inFrame.smartNavigationVerticalCursor = true;
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationVerticalCursor", true);
 end
 
 return Utility;

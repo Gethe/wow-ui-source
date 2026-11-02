@@ -102,7 +102,7 @@
 			</Frame>
 			<EditBox parentKey="SearchBox" inherits="SpellBookSearchBoxTemplate" hidden="false">
 				<KeyValues>
-					<KeyValue key="instructionText" value="SPELLBOOK_SEARCH_INSTRUCTIONS" type="global"/>
+					<KeyValue key="instructionText" value="COOLDOWN_VIEWER_SETTINGS_SEARCH_INSTRUCTIONS" type="global"/>
 				</KeyValues>
 				<Size x="300" y="30"/>
 			</EditBox>

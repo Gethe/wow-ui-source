@@ -1,0 +1,151 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+	<Script file="Camelot\PVPMatchResults.lua"/>
+	
+	<Frame name="PVPMatchResults" mixin="PVPMatchResultsMixin" toplevel="true" frameStrata="HIGH" parent="UIParent" enableMouse="true" hidden="true" roleset="pvp">
+		<Size x="1024" y="520"/>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Frames>
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
+			<Frame parentKey="HeaderContainer" frameLevel="510">
+				<Size x="400" y="20"/>
+				<Anchors>
+					<Anchor point="TOP" y="-1"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Text" inherits="GameFontNormal" justifyH="CENTER" justifyV="MIDDLE">
+							<Anchors>
+								<Anchor point="CENTER"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Frame>
+
+			<Frame parentKey="NineSlice" inherits="NineSlicePanelTemplate">
+				<KeyValues>
+					<KeyValue key="layoutType" value="ButtonFrameTemplateNoPortrait" type="string"/>
+				</KeyValues>
+			</Frame>
+
+			<Frame parentKey="content">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="8" y="-23"/>
+					<Anchor point="BOTTOMRIGHT" x="0" y="55"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture atlas="UI-Character-Info-Stat-BG" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="-50"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<Texture atlas="UI-Character-Info-ScrollLine" useAtlasSize="true">
+							<Anchors>
+								<Anchor point="BOTTOMLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Frame parentKey="scrollCategories">
+						<Size y="50"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="3" y="-3"/>
+							<Anchor point="TOPRIGHT" x="-30" y="-3"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture name="$parentStoneBg" atlas="UI-Character-Info-Stat-StoneBG3" useAtlasSize="true">
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+										<Anchor point="TOPRIGHT" x="26"/>
+										<Anchor point="BOTTOM" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+
+					<Frame parentKey="scrollBox" inherits="WowScrollBoxList">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeKey="$parent.scrollCategories" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.scrollCategories" relativePoint="BOTTOMRIGHT"/>
+							<Anchor point="BOTTOM"/>
+						</Anchors>
+					</Frame>
+					<EventFrame parentKey="scrollBar" inherits="MinimalScrollBar">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-20" y="-60"/>
+							<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-20" y="5"/>
+						</Anchors>
+					</EventFrame>
+					
+					<Frame parentKey="tabContainer">
+						<Size y="45"/>
+						<Anchors>
+							<Anchor point="TOP" relativePoint="BOTTOM"/>
+							<Anchor point="LEFT" relativePoint="BOTTOMLEFT"/>
+							<Anchor point="TOPRIGHT"/>
+						</Anchors>
+						<Frames>
+							<Frame parentKey="tabGroup">
+								<Size x="1" y="1"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="10" y="-100"/>
+								</Anchors>
+								<Frames>
+									<Button name="PVPScoreFrameTab1" parentKey="tab1" inherits="PanelTabButtonTemplate" id="1">
+										<KeyValues>
+											<KeyValue key="factionEnum" value="-1" type="number"/>
+										</KeyValues>
+											<Anchors>
+											<Anchor point="TOPLEFT" y="46"/>
+										</Anchors>
+									</Button>
+									<Button name="PVPScoreFrameTab2"  parentKey="tab2" inherits="PanelTabButtonTemplate" id="2">
+										<KeyValues>
+											<KeyValue key="factionEnum" value="1" type="number"/>
+										</KeyValues>
+									</Button>
+									<Button name="PVPScoreFrameTab3"  parentKey="tab3" inherits="PanelTabButtonTemplate" id="3">
+										<KeyValues>
+											<KeyValue key="factionEnum" value="0" type="number"/>
+										</KeyValues>
+									</Button>
+								</Frames>
+							</Frame>
+						</Frames>
+					</Frame>
+				</Frames>
+			</Frame>
+			<Frame parentKey="buttonContainer">
+				<Size x="1" y="40"/>
+				<Anchors>
+					<Anchor point="TOP" y="-8" relativeKey="$parent.content" relativePoint="BOTTOM"/>
+				</Anchors>
+				<Frames>
+					<Button parentKey="leaveButton" inherits="SharedButtonTemplate">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+					</Button>
+				</Frames>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+			<OnUpdate method="OnUpdate"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+		</Scripts>
+	</Frame>
+</Ui>

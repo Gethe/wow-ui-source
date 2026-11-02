@@ -10,6 +10,7 @@ local LossOfControl =
 		{
 			Name = "GetActiveLossOfControlData",
 			Type = "Function",
+			SecretWhenLossOfControlRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =
@@ -25,7 +26,7 @@ local LossOfControl =
 		{
 			Name = "GetActiveLossOfControlDataByUnit",
 			Type = "Function",
-			SecretWhenLossOfControlInfoRestricted = true,
+			SecretWhenLossOfControlRestricted = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

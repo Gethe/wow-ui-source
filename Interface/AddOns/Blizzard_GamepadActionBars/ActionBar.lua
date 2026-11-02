@@ -88,8 +88,7 @@ function GamepadActionBarMixin:ShowHighlight()
 	local shouldShowHighlight = actionbar.showHighlight;
 	local shouldShowScaling = actionbar.shouldExpand;
 
-	-- If we disable scaling, button icons overlap the spell icons so disabling scaling will also disable buttons for now.
-	if shouldShowButtonIcons and shouldShowScaling then
+	if shouldShowButtonIcons then
 		self:ShowButtonIcons();
 	else
 		self:HideButtonIcons();
@@ -97,13 +96,14 @@ function GamepadActionBarMixin:ShowHighlight()
 
 	self:SetFrameLevel(HIGHLIGHT_ACTIVE_FRAME_LEVEL);
 
-	if shouldShowHighlight then
-		self.BackgroundFocus:Show();
-	end
+	self.BackgroundFocus:SetShown(shouldShowHighlight);
 
 	if shouldShowScaling then
 		self:ExpandActionButtons();
 		self.actionBarScaledUp = true;
+	elseif self.actionBarScaledUp then
+		self:CollapseActionButtons();
+		self.actionBarScaledUp = false;
 	end
 end
 

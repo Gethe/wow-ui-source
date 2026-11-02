@@ -97,9 +97,14 @@ local SecretPredicates =
 			Documentation = { "Guarded APIs and events produce secret values when combat addon restrictions are in effect." },
 		},
 		{
+			Name = "SecretWhenLossOfControlRestricted",
+			Type = "Secret",
+			Documentation = { "Guarded APIs always produce secret values, unless the active player is an active spectator or commentator of a PvP match." },
+		},
+		{
 			Name = "SecretWhenLossOfControlInfoRestricted",
 			Type = "Secret",
-			Documentation = { "Guarded APIs and events produce secret values if the subject unit is not the active player, unless they are an active spectator or commentator of a PvP match." },
+			Documentation = { "Guarded APIs and events always produce secret values, unless the active player is an active spectator or commentator of a PvP match." },
 		},
 		{
 			Name = "SecretWhenTotemSlotSecret",

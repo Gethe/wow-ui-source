@@ -7,7 +7,10 @@ function GamepadMainActionBarFrameMixin:GetActionBars()
 	return self.PageUnit.actionBars;
 end
 
-local function AreActionBarsUsable()
+local function AreActionBarsUsable(self)
+	if self.editModeActive then
+		return true;
+	end
 	return GamepadSharedUtility.InputBindingManager:IsOnlyCoreBindingSetActive();
 end
 
@@ -18,7 +21,9 @@ end
 function GamepadMainActionBarFrameMixin:AssignActionBarUsableConditionalFunc()
 	local actionBars = self:GetActionBars();
 	for _, value in pairs(actionBars) do
-		value:SetIsActionBarUsableFunc(AreActionBarsUsable);
+		value:SetIsActionBarUsableFunc(function()
+			return AreActionBarsUsable(self);
+		end);
 	end
 end
 
@@ -34,7 +39,7 @@ end
 	Checks if the action bars should be collapsed or not.
 ]]
 function GamepadMainActionBarFrameMixin:UpdateActionBarFocusedState()
-	local actionBarUsability = AreActionBarsUsable();
+	local actionBarUsability = AreActionBarsUsable(self);
 	local inTargetingModifierVisualDelay = InTargetingModifierVisualDelay();
 
 	if actionBarUsability then
@@ -45,7 +50,6 @@ function GamepadMainActionBarFrameMixin:UpdateActionBarFocusedState()
 		for i, actionBar in pairs(actionBars) do
 			if not inTargetingModifierVisualDelay then
 				actionBar:HideHighlight();
-				actionBar:HideButtonIcons();
 			end
 		end
 	end
@@ -77,7 +81,10 @@ function GamepadMainActionBarFrameMixin:InitializeGamepad()
 	self:RegisterEvent("PLAYER_LEAVE_COMBAT");
 	self:RegisterEvent("START_AUTOREPEAT_SPELL");
 	self:RegisterEvent("STOP_AUTOREPEAT_SPELL");
-
+	self:RegisterEvent("PET_ORDER_MOVE_TO_PENDING_CHANGED");
+	self:RegisterEvent("UPDATE_BONUS_ACTIONBAR");
+	self:RegisterEvent("PLAYER_TARGET_CHANGED");
+	self:RegisterEvent("LOOT_CLOSED");
 	self:ResyncAttackState();
 end
 
@@ -87,6 +94,10 @@ function GamepadMainActionBarFrameMixin:UninitializeGamepad()
 	self:UnregisterEvent("PLAYER_LEAVE_COMBAT");
 	self:UnregisterEvent("START_AUTOREPEAT_SPELL");
 	self:UnregisterEvent("STOP_AUTOREPEAT_SPELL");
+	self:UnregisterEvent("PET_ORDER_MOVE_TO_PENDING_CHANGED");
+	self:UnregisterEvent("UPDATE_BONUS_ACTIONBAR");
+	self:UnregisterEvent("PLAYER_TARGET_CHANGED");
+	self:UnregisterEvent("LOOT_CLOSED");
 end
 
 function GamepadMainActionBarFrameMixin:OnAutoLootCVarChanged()
@@ -223,7 +234,21 @@ local function GetAttackIcon()
 	return C_Spell.GetSpellTexture(icon);
 end
 
+local function SimulateScreenClick()
+	CameraOrSelectOrMoveStart();
+	CameraOrSelectOrMoveStop(false);
+end
+
 local interactActions = {
+	-- Pet move-to command (awaiting a confirmation press)
+	-- These handled outside the spell / targeting system, but match the spellcast UX
+	{
+		condition = function(vars) return C_PetInfo.IsPetOrderMoveToPending(); end,
+		action = SimulateScreenClick,
+		icon = PET_MOVE_TO_TEXTURE, -- See: PetActionBar.lua
+		overheadTarget = nil,
+	},
+
 	-- Lootable soft interact (in interact range)
 	{
 		condition = function(vars) return vars.softInteractExists and vars.softInteractIsInInteractRange and vars.softInteractHasLoot; end,
@@ -262,6 +287,13 @@ local interactActions = {
 	{
 		condition = function(vars) return vars.targetExists and UnitCanAttack("player", "target"); end,
 		action = function() AttackTarget(); end,
+		icon = GetAttackIcon,
+	},
+
+	-- Attackable mouseover (reticle) enemy
+	{
+		condition = function() return UnitExists("mouseover") and UnitCanAttack("player", "mouseover"); end,
+		action = function() TargetUnit("mouseover"); AttackTarget(); end,
 		icon = GetAttackIcon,
 	},
 
@@ -304,6 +336,22 @@ local function ResolveNonBindableInteract()
 	error("At least one action should resolve");
 end
 
+local function RemoveLockedUnitOnLootClose()
+	-- AoE looting may have mutlple loot owners and the user may have
+	-- changed the loot owner while the loot window is open via mouse
+	-- clicking another dead unit.
+	-- So we may clear a dead target that is not the target we are looting
+	-- in very rare circumstances but overall that is fine for our needs
+	-- since soft, tab and analog enemy targeting cannot target dead units.
+	-- Soft enemy will not be equal to the locked target if the target
+	-- does not have the `TARGET_FLAG_ENEMY` flag set which is true for
+	-- dead units so clearing dead units on loot close avoids confusion
+	-- here with soft enemy targeting.
+	if UnitExists("target") and UnitIsDead("target") then
+		ClearTarget();
+	end
+end
+
 function GamepadMainActionBarFrameMixin:UpdateInteractIcons()
 	local actionBars = self:GetActionBars();
 	local iconTexture = actionBars.topBar.Right.ActionButton1.SpecialActionIcon;
@@ -330,6 +378,17 @@ function GamepadMainActionBarFrameMixin:OnEvent(event, ...)
 	if (event == "PLAYER_ENTERING_WORLD") then
 		self.PageUnit:RefreshActionBarVisibilities();
 		self:UpdateInteractIcons();
+	elseif (event == "PET_ORDER_MOVE_TO_PENDING_CHANGED") then
+		self:UpdateInteractIcons();
+	elseif (event == "PLAYER_TARGET_CHANGED") then
+		self:UpdateBackIcons();
+	elseif (event == "UPDATE_BONUS_ACTIONBAR") then
+		if not UnitOnTaxi("player") then
+			self.pendingTaxiCancel = false;
+		end
+		self:UpdateBackIcons();
+	elseif (event == "LOOT_CLOSED") then
+		RemoveLockedUnitOnLootClose();
 	else
 		if (event == "PLAYER_ENTER_COMBAT") then
 			self.isMeleeAttacking = true;
@@ -386,23 +445,51 @@ local function SetupNonBindableJump(gamepadActionBarFrame)
 	topBarJumpButton.SpecialActionIcon:Show();
 end
 
+function GamepadMainActionBarFrameMixin:UpdateBackIcons()
+	local topBarBackButton = self.PageUnit.actionBars.topBar.Right.ActionButton3;
+	if UnitExists("target") then
+		topBarBackButton.SpecialActionIcon:SetAtlas("128-redbutton-exit");
+	elseif UnitOnTaxi("player") then
+		topBarBackButton.SpecialActionIcon:SetTexture("Interface\\VEHICLES\\UI-Vehicles-Button-Exit-Down");
+	else
+		topBarBackButton.SpecialActionIcon:SetAtlas("128-redbutton-exit");
+	end
+	topBarBackButton:SetChecked();
+end
+
 local function SetupNonBindableBack(gamepadActionBarFrame)
 	local function BackFunction()
 		if ( SpellStopCasting() ) then
 		elseif ( SpellStopTargeting() ) then
 		elseif ( ClearTarget() ) then
+		elseif ( UnitOnTaxi("player") ) then
+			TaxiRequestEarlyLanding();
+			gamepadActionBarFrame.pendingTaxiCancel = true;
 		end
 	end
 
 	local topBarBackButton = gamepadActionBarFrame.PageUnit.actionBars.topBar.Right.ActionButton3;
+	-- The update state function on action buttons is written to establish checked state based
+	-- on spellcast state, and has click handling that forces checked state outside of this control
+	-- path. This button needs to set checked state in response to elements that are netiher spells
+	-- nor actions. Since not all callsites of UpdateState() can be caught, this button will instead
+	-- override SetChecked and caclulate the desired checked state anew with each call.
+	-- Since this is not an action button to begin with, it's safe to override these behaviors.
+	local parentSetChecked = topBarBackButton.SetChecked;
+	topBarBackButton.SetChecked = function(self)
+		local hasNoTarget = not UnitExists("target");
+		local hasCanceledTaxi = UnitOnTaxi("player") and gamepadActionBarFrame.pendingTaxiCancel;
+		parentSetChecked(self, hasNoTarget and hasCanceledTaxi);
+	end;
 	topBarBackButton:RegisterForClicks("AnyDown", "AnyUp");
 	topBarBackButton:SetScript("OnClick", function(self, mouseButton, down)
 		self:ApplyPressedStyle(down);
 		if down then
 			BackFunction();
+			gamepadActionBarFrame:UpdateBackIcons();
 		end
 	end);
-	topBarBackButton.SpecialActionIcon:SetAtlas("128-redbutton-exit");
+	gamepadActionBarFrame:UpdateBackIcons();
 	topBarBackButton.SpecialActionIcon:ClearAllPoints();
 	topBarBackButton.SpecialActionIcon:SetPoint("TOPLEFT", topBarBackButton, "TOPLEFT", -6, 6);
 	topBarBackButton.SpecialActionIcon:SetPoint("BOTTOMRIGHT", topBarBackButton, "BOTTOMRIGHT", 6, -6);

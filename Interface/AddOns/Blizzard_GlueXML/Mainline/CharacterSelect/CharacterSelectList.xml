@@ -38,7 +38,7 @@
 						</KeyValues>
 						<Size x="28" y="28"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativePoint="LEFT" x="-2" y="-2"/>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-2" y="0"/>
 						</Anchors>
 					</Frame>
 				</Frames>
