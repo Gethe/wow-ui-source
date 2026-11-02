@@ -14,5 +14,5 @@ jobs:
       - name: Export UI source files
         uses: Gethe/wow-ui-source@automation
         with:
-          product: wow_classic_beta
+          product: wowf
           token: ${{ secrets.GITHUB_TOKEN }}
