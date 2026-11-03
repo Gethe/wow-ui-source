@@ -11,7 +11,7 @@ PartyMemberFrameMixin.ArtLayoutInfo.Player = {
 		Height = 10,
 		OffsetX = 47,
 		OffsetY = -20,
-		OffsetXMask = -28,
+		OffsetXMask = -30,
 		OffsetYMask = 3
 	},
 	Mana = {

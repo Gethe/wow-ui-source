@@ -8,7 +8,7 @@ do
 		checkFitExtraHeight = 140,
 		whileDead = 1,
 		allowOtherPanels = 1,
-		yoffset = 75,
+		yoffset = PlayerSpellsFrame.uiPanelYOffset,
 
 		autoMinimizeWithOtherPanels = 1,
 		autoMinimizeOnCondition = PlayerSpellsFrame.ShouldAutoMinimize,

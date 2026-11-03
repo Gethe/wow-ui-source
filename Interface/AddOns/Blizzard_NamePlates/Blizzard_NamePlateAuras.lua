@@ -6,36 +6,7 @@ function NamePlateAuraItemMixin:OnLoad()
 	self.Cooldown:SetUseAuraDisplayTime(self.useAuraDisplayTime);
 end
 
-function NamePlateAuraItemMixin:OnEnter()
-	local tooltip = GetAppropriateTooltip();
-	GameTooltip_SetDefaultAnchor(tooltip, self);
-	self:RefreshTooltip();
-	tooltip:Show();
-end
-
-function NamePlateAuraItemMixin:OnLeave()
-	GetAppropriateTooltip():Hide();
-end
-
-function NamePlateAuraItemMixin:RefreshTooltip()
-	local tooltip = GetAppropriateTooltip();
-	if self.auraInstanceID then
-		tooltip:SetUnitAuraByAuraInstanceID(self.unitToken, self.auraInstanceID);
-	elseif self.spellID then
-		local isPet = false;
-		tooltip:SetSpellByID(self.spellID, isPet);
-	end
-end
-
-function NamePlateAuraItemMixin:UpdateTooltip()
-	if GameTooltip:IsOwned(self) then
-		self:RefreshTooltip();
-	end
-end
-
 function NamePlateAuraItemMixin:SetAura(aura)
-	self.auraInstanceID = aura.auraInstanceID;
-	self.isBuff = aura.isHelpful;
 	self.spellID = aura.spellId;
 
 	self.Icon:SetTexture(aura.icon);
@@ -54,11 +25,6 @@ function NamePlateAuraItemMixin:SetAura(aura)
 	-- Don't show numbers for auras longer than a minute.
 	local hideCountdownNumbers = aura.duration > 60;
 	self.Cooldown:SetHideCountdownNumbers(hideCountdownNumbers);
-end
-
--- The unit to which the nameplate is attached.
-function NamePlateAuraItemMixin:SetUnit(unitToken)
-	self.unitToken = unitToken;
 end
 
 CVarCallbackRegistry:SetCVarCachable(NamePlateConstants.ENEMY_NPC_AURA_DISPLAY_CVAR);
@@ -306,7 +272,6 @@ function NamePlateAurasMixin:RefreshList(listFrame, auraList)
 		auraItemFrame.layoutIndex = auraIndex;
 		auraItemFrame:SetAura(aura);
 		auraItemFrame:SetScale(self.auraItemScale);
-		auraItemFrame:SetUnit(self.unitToken);
 		auraItemFrame:SetParent(listFrame);
 		auraItemFrame:Show();
 
@@ -353,7 +318,6 @@ function NamePlateAurasMixin:RefreshLossOfControl()
 		self.LossOfControlFrame:SetScale(self.auraItemScale);
 
 		auraItemFrame:SetAura(auraData);
-		auraItemFrame:SetUnit(self.unitToken);
 		auraItemFrame:Show();
 	else
 		auraItemFrame:Hide();

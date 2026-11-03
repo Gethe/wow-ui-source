@@ -109,11 +109,13 @@ function CollectionWardrobeUtil.GetSlotFromCategoryID(categoryID)
 		end
 	end
 	if not slot then
-		local name, isWeapon, canEnchant, canMainHand, canOffHand = C_TransmogCollection.GetCategoryInfo(categoryID);
+		local name, isWeapon, canEnchant, canMainHand, canOffHand, canRanged = C_TransmogCollection.GetCategoryInfo(categoryID);
 		if canMainHand then
 			slot = "MAINHANDSLOT";
 		elseif canOffHand then
 			slot = "SECONDARYHANDSLOT";
+		elseif canRanged then
+			slot = "RANGEDSLOT";
 		end
 	end
 	return slot;

@@ -243,12 +243,6 @@ function SocialUIBattleNetMenuButtonMixin:Refresh()
 			return button;
 		end
 
-		if self:ShouldShowBroadcastMenuOption() then
-			CreateBattleNetMenuButton(SOCIAL_UI_MENU_BROADCAST_BUTTON_LABEL, function()
-				self:SocialUIRequestToggleSideWindow(SocialUISideWindowType.BattleNetBroadcastFrame);
-			end);
-		end
-
 		if self:ShouldShowIgnoreListMenuOption() then
 			CreateBattleNetMenuButton(SOCIAL_UI_MENU_IGNORE_LIST_BUTTON_LABEL, function()
 				self:SocialUIRequestToggleSideWindow(SocialUISideWindowType.IgnoreListFrame);
@@ -280,16 +274,12 @@ function SocialUIBattleNetMenuButtonMixin:OnLeave()
 	GetAppropriateTooltip():Hide();
 end
 
-function SocialUIBattleNetMenuButtonMixin:ShouldShowBroadcastMenuOption()
-	return BNFeaturesEnabled() and BNConnected();
-end
-
 function SocialUIBattleNetMenuButtonMixin:ShouldShowIgnoreListMenuOption()
 	return not C_Glue.IsOnGlueScreen();
 end
 
 function SocialUIBattleNetMenuButtonMixin:HasAnyAvailableMenuOptions()
-	return self:ShouldShowBroadcastMenuOption() or self:ShouldShowIgnoreListMenuOption();
+	return self:ShouldShowIgnoreListMenuOption();
 end
 
 SocialUIPersonalBattleTagDisplayMixin = {};

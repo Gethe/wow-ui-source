@@ -241,6 +241,9 @@ function TargetFrameMixin:OnEvent(event, ...)
 				self.totFrame:Update();
 			end
 			self:CheckFaction();
+			if (self.showLeader) then
+				self:CheckPartyLeader();
+			end
 		end
 	elseif (event == "RAID_TARGET_UPDATE") then
 		self:UpdateRaidTargetIcon(self);

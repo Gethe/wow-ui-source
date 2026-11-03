@@ -6,6 +6,7 @@
 			<KeyValue key="minimizedWidth" value="809"/>
 			<KeyValue key="maximizedWidth" value="1618"/>
 			<KeyValue key="desiredHeight" value="883"/>
+			<KeyValue key="uiPanelYOffset" value="75" type="number"/>
 		</KeyValues>
 		<Size x="1618" y="883"/>
 		<Anchors>

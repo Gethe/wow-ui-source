@@ -43,8 +43,9 @@ function CombatLogProcessor:StartRefiltering()
 		-- Cycle through combat log entries front-to-back until we find one
 		-- that can be shown in the combat log frame.
 
+		local messageLimit = C_CombatLog.GetMessageLimit();
 		local isEntryValid = (C_CombatLogSecure.GetCurrentEntryInfo() ~= nil);
-		while isEntryValid do
+		while isEntryValid and messageIndex < messageLimit do
 			messageIndex = messageIndex + 1;
 
 			if C_CombatLogSecure.ShouldShowCurrentEntry() then
@@ -57,7 +58,6 @@ function CombatLogProcessor:StartRefiltering()
 		end
 
 		local messageCount = C_CombatLogSecure.GetEntryCount();
-		local messageLimit = C_CombatLog.GetMessageLimit();
 		local messageProgressLimit = math.min(messageCount, messageLimit);
 
 		if messageProgressLimit > 0 then

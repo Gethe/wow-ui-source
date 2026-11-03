@@ -227,7 +227,7 @@ function BNToastMixin:ShowToast()
 				middleLine:SetFormattedText(characterName);
 				middleLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
 			end
-		end);
+		end, accountInfo.gameAccountInfo.subIcon);
 		middleLine:Show();
 
 		self.IconTexture:SetTexCoord(0, 0.25, 0.5, 1);

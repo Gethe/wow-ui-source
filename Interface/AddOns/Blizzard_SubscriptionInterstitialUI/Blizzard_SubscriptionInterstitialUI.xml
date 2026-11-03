@@ -37,7 +37,6 @@
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>
-			<OnClick method="OnClick"/>
 		</Scripts>
 	</Button>
 
@@ -51,13 +50,6 @@
 				<Anchors>
 					<Anchor point="TOPLEFT" x="4" y="-26"/>
 					<Anchor point="BOTTOMRIGHT" x="-6" y="26"/>
-				</Anchors>
-			</Frame>
-
-			<Frame parentKey="ShadowOverlay" inherits="ShadowOverlaySmallTemplate" frameLevel="500">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeKey="$parent.Inset" relativePoint="TOPLEFT" x="3" y="-3"/>
-					<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Inset" relativePoint="BOTTOMRIGHT" x="-3" y="2"/>
 				</Anchors>
 			</Frame>
 
@@ -152,23 +144,17 @@
 				</Layers>
 			</Button>
 
-			<Button parentKey="CloseButton" mixin="SubscriptionInterstitialCloseButtonMixin" inherits="UIPanelCloseButtonNoScripts">
+			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors">
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="1" y="-1"/>
 				</Anchors>
-				<Scripts>
-					<OnClick method="OnClick"/>
-				</Scripts>
 			</Button>
 
-			<Button parentKey="ClosePanelButton" mixin="SubscriptionInterstitialCloseButtonMixin" inherits="UIPanelButtonTemplate" text="CLOSE">
+			<Button parentKey="ClosePanelButton" inherits="UIPanelButtonTemplate" text="CLOSE">
 				<Size x="120" y="22"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="4"/>
 				</Anchors>
-				<Scripts>
-					<OnClick method="OnClick"/>
-				</Scripts>
 			</Button>
 		</Frames>
 		<Scripts>

@@ -68,6 +68,7 @@ function CharacterSelectFrameMixin:OnLoad()
 	self:RegisterEvent("WARBAND_GROUP_SCENE_UPDATED");
 	self:RegisterEvent("ACTIVE_MAP_SCENE_TRANSITIONED");
 	self:RegisterEvent("ACCOUNT_DATA_RESTORING");
+	self:RegisterEvent("SUBSCRIPTION_INTERSTITIAL_AVAILABLE");
 
 	CharacterSelectCharacterFrame:Init();
 
@@ -354,7 +355,10 @@ end
 function CharacterSelectFrameMixin:OnKeyDown(key)
 	local handled = false;
 	if key == "ESCAPE" then
-		if not CharacterSelectUI:GetVisibilityState() then
+		if SubscriptionInterstitialFrame and SubscriptionInterstitialFrame:IsShown() then
+			SubscriptionInterstitialFrame:HideInterstitial();
+			return false;
+		elseif not CharacterSelectUI:GetVisibilityState() then
 			CharacterSelectUI:ToggleVisibilityState();
 			return false;
 		elseif C_Login.IsLauncherLogin() then
@@ -641,6 +645,10 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 	elseif (event == "AUTO_REALM_SWAP") then
 		local swapping = ...;
 		self.autoRealmSwap = swapping;
+	elseif (event == "SUBSCRIPTION_INTERSTITIAL_AVAILABLE") then
+		if not InputUtil.IsGamepadUIEnabled() then
+			SubscriptionInterstitial_ShowSubscriptionPeriod();
+		end
 	elseif (event == "ALL_WARBAND_GROUP_SCENES_UPDATED") then
 		-- Clear search to correct visual issues with the camp/map scene when we refresh things.
 		CharacterSelectCharacterFrame:ClearSearch();

@@ -158,6 +158,9 @@ StaticPopupDialogs["XP_LOSS_NO_SICKNESS_NO_DURABILITY"] = {
 			dialog:Hide();
 		end
 	end,
+	OnCancel = function(dialog, data)
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+	end,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,

@@ -120,9 +120,6 @@ local function Register()
 	--Offline Friends
 	Settings.SetupCVarCheckbox(category, "showToastOffline", SHOW_TOAST_OFFLINE_TEXT, OPTION_TOOLTIP_SHOW_TOAST_OFFLINE);
 
-	-- Broadcast Updates
-	Settings.SetupCVarCheckbox(category, "showToastBroadcast", SHOW_TOAST_BROADCAST_TEXT, OPTION_TOOLTIP_SHOW_TOAST_BROADCAST);
-
 	-- Location visibility
 	-- Friends and Guildmates can always see your location, so right now this only controls Recent Ally visibility
 	do

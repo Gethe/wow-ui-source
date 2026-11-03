@@ -25,8 +25,12 @@ function TargetFrameMixin:OnLoad(unit, menuFunc)
 	manaBar:SetWidth(134);
 	manaBar:ClearAllPoints();
 	manaBar:SetPoint("TOPRIGHT", targetFrameContentMain.HealthBarsContainer, "BOTTOMRIGHT", 4, -1);
+	manaBar.LeftText:ClearAllPoints();
+	manaBar.LeftText:SetPoint("LEFT", manaBar, "LEFT", 6, 0);
 	manaBar.RightText:ClearAllPoints();
-	manaBar.RightText:SetPoint("RIGHT", manaBar, "RIGHT", -3, 0);
+	manaBar.RightText:SetPoint("RIGHT", manaBar, "RIGHT", -7, 0);
+	manaBar.ManaBarText:ClearAllPoints();
+	manaBar.ManaBarText:SetPoint("CENTER", manaBar, "CENTER", 0, 0);
 
 	local levelBackgroundCircle	= targetFrameContentMain.LevelBackgroundCircle;
 	local levelText	= targetFrameContentMain.LevelText;
@@ -75,6 +79,7 @@ function TargetFrameMixin:UpdateHealthBarVisuals(classification)
 	healthBarsContainer:SetHeight(15);
 	healthBarsContainer:SetWidth(126);
 	healthBarsContainer:SetPoint("BOTTOMRIGHT", self.TargetFrameContainer, "LEFT", 147, -9);
+	healthBarsContainer.RightText:SetPoint("RIGHT", -3, 0);
 
 	healthBarsContainer.HealthBarMask:SetAtlas("UI-HUD-UnitFrame-Target-PortraitOn-Bar-Health-Mask", TextureKitConstants.UseAtlasSize);
 	healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 9);
@@ -92,12 +97,13 @@ function TargetOfTargetMixin:OnLoad()
 	self.Name:SetPoint("TOPLEFT", self.Portrait, "TOPRIGHT", 2, -1);
 
 	self.HealthBar:ClearAllPoints();
-	self.HealthBar:SetPoint("BOTTOMRIGHT", self, "RIGHT", -5, -3);
+	self.HealthBar:SetPoint("BOTTOMRIGHT", self, "RIGHT", -5, -4);
+	self.HealthBar:SetHeight(11);
 	self.HealthBar.HealthBarMask:ClearAllPoints();
-	self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", self.HealthBar, "TOPLEFT", -26, 3);
+	self.HealthBar.HealthBarMask:SetPoint("TOPLEFT", self.HealthBar, "TOPLEFT", -28, 3);
 
-	self.ManaBar:SetWidth(74);
+	self.ManaBar:SetWidth(78);
 	self.ManaBar:SetHeight(7);
 	self.ManaBar:ClearAllPoints();
-	self.ManaBar:SetPoint("TOPLEFT", self.HealthBar, "BOTTOMLEFT", -2, -2);
+	self.ManaBar:SetPoint("TOPLEFT", self.HealthBar, "BOTTOMLEFT", -3, -1);
 end

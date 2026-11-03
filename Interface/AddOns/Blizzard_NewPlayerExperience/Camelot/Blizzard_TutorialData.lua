@@ -32,7 +32,10 @@ TutorialData.MAX_CHANGE_EQUIPMENT_LEVEL = 3;
 TutorialData.CHANGE_EQUIPMENT_LIMIT = 1
 TutorialData.PICK_REWARD_LEVEL = 3;
 
-TutorialData.AUTO_ATTACK_SPELL_ID = 6603; 
+TutorialData.AUTO_ATTACK_SPELL_ID = 6603;
+TutorialData.EQUIPMENT_TUTORIAL_EXEMPT_ITEM_IDS = {
+	264908, -- Ancient heirloom
+};
 
 TutorialData.UI_Elements = {};
 TutorialData.UI_Elements.BACKPACK =	{MainMenuBarBackpackButton};

@@ -87,6 +87,11 @@ function Class_UseVendor:CanBegin()
 end
 
 function Class_UseVendor:OnBegin()
+	-- This could get queued and trigger when the merchant frame isn't visible.
+	if (not MerchantFrame:IsVisible()) then
+		self:Interrupt(self);
+		return;
+	end
 	-- We're' doing the vendor tutorial at this point.
 	C_CVar.SetCVar(PERFORMED_VENDOR_TUTORIAL_CVAR, "1");
 	self:MerchantTabHelp()
@@ -116,6 +121,11 @@ local originalClass_UseVendorOnComplete = Class_UseVendor.OnComplete;
 function Class_UseVendor:OnComplete()
 	originalClass_UseVendorOnComplete(self);
 	self:EndBuyTutorialTimer();
+	-- If we didn't actually complete the tutorial then setup the callback again. This would be better as a watcher.
+	local performedVendorTutorial = C_CVar.GetCVarBool(PERFORMED_VENDOR_TUTORIAL_CVAR);
+	if not performedVendorTutorial then
+		self:SetupMerchantCallbacks();
+	end
 end
 
 function Class_UseVendor:EndBuyTutorialTimer()

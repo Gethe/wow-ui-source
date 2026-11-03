@@ -174,7 +174,7 @@
 		</KeyValues>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="0">
-				<Texture parentKey="Background" atlas="Talents-Background-c60" horizTile="true" >
+				<Texture parentKey="Background" atlas="Talents-Background-c60">
 					<Size y="701"/>
 					<Anchors>
 						<Anchor point="BOTTOMLEFT"/>

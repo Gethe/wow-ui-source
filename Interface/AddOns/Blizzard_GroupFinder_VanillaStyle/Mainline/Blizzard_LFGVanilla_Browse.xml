@@ -143,7 +143,7 @@
 			<KeyValue key="NameSoloOffsetY" value="0" type="number"/>
 			<KeyValue key="NameGroupOffsetX" value="0" type="number"/>
 			<KeyValue key="NameGroupOffsetY" value="0" type="number"/>
-			<KeyValue key="NameMaxWidth" value="228" type="number"/>
+			<KeyValue key="NameMaxWidth" value="200" type="number"/>
 		</KeyValues>
 		<Layers>
 			<Layer level="ARTWORK">

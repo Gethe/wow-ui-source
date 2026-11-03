@@ -315,12 +315,22 @@ function ActionButtonUtil.GetActionBarStatusForSpell(spellID, excludeNonPlayerBa
 
 	if (InputUtil.IsMKBUIEnabled()) then
 		local barsWithSpell = ActionButtonUtil.GetMkbActionBarsForSpell(spellID, excludeNonPlayerBars, excludeSpecialPlayerBars);
-		return ActionButtonUtil.GetActionBarStatusFromMkbBars(barsWithSpell);
+		local status = ActionButtonUtil.GetActionBarStatusFromMkbBars(barsWithSpell);
+		status = ActionButtonUtil.OverrideStatusForUnplacedSpell(status, spellID, not barsWithSpell);
+		return status;
 	elseif (InputUtil.IsGamepadUIEnabled()) then
-		return ActionButtonUtil.GetActionBarStatusForSpellFromGamepadBars(spellID, excludeSpecialPlayerBars);
+		-- Get the slots this spell is in across both normal and stance gamepad bars.
+		local gamepadButtonsWithSpell = C_ActionBar.FindSpellActionButtons(spellID, Enum.ActionBarSet.Gamepad);
+		local status = ActionButtonUtil.GetActionBarStatusForSpellFromGamepadBars(spellID, excludeSpecialPlayerBars, gamepadButtonsWithSpell);
+		status = ActionButtonUtil.OverrideStatusForUnplacedSpell(status, spellID, not gamepadButtonsWithSpell);
+		return status;
 	end
 
 	return ActionButtonUtil.ActionBarActionStatus.NotMissing;
+end
+
+function ActionButtonUtil.OverrideStatusForUnplacedSpell(status, spellID, barsWithSpell)
+	return status;
 end
 
 -- Determine a standard action bar "status" based on the status of bars a spell is on, if any
@@ -413,9 +423,7 @@ local function HasAnySlotOnGamepadActiveStanceBar(slots)
 	return false;
 end
 
-function ActionButtonUtil.GetActionBarStatusForSpellFromGamepadBars(spellID, excludeSpecialPlayerBars)
-	-- Get the slots this spell is in across both normal and stance gamepad bars.
-	local gamepadButtonsWithSpell = C_ActionBar.FindSpellActionButtons(spellID, Enum.ActionBarSet.Gamepad);
+function ActionButtonUtil.GetActionBarStatusForSpellFromGamepadBars(spellID, excludeSpecialPlayerBars, gamepadButtonsWithSpell)
 	if (not gamepadButtonsWithSpell) then
 		return ActionButtonUtil.ActionBarActionStatus.MissingFromAllBars;
 	end

@@ -1182,6 +1182,9 @@ StaticPopupDialogs["XP_LOSS"] = {
 			C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
 		end
 	end,
+	OnCancel = function(dialog, data)
+		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.SpiritHealer);
+	end,
 	timeout = 0,
 	exclusive = 1,
 	whileDead = 1,

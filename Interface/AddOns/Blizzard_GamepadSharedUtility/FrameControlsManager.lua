@@ -721,7 +721,22 @@ function GamepadFrameControlsManagerMixin:SuspendFrame()
 	if currentFrame then
 		currentFrame.suspendedButton = SmartNavigation:GetCurrentButton();
 		if currentFrame ~= self.topSuspendedFrame then
-			currentFrame.unsuspendToFrame = self.topSuspendedFrame; -- Sets to nil for initial/bottom suspended frame.
+			local chainFrame = self.topSuspendedFrame;
+			while chainFrame and chainFrame ~= currentFrame do
+				chainFrame = chainFrame.unsuspendToFrame;
+			end
+
+			-- A frame already in the chain becomes the top again; unlink the frames above it so the chain truncates instead of forming a cycle.
+			if chainFrame then
+				local aboveFrame = self.topSuspendedFrame;
+				while aboveFrame ~= currentFrame do
+					local nextFrame = aboveFrame.unsuspendToFrame;
+					aboveFrame.unsuspendToFrame = nil;
+					aboveFrame = nextFrame;
+				end
+			else
+				currentFrame.unsuspendToFrame = self.topSuspendedFrame; -- Sets to nil for initial/bottom suspended frame.
+			end
 			self.topSuspendedFrame = currentFrame;
 		end
 		return true;

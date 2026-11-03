@@ -30,7 +30,7 @@ local PaperDollInfo =
 			Type = "Function",
 			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Cancels active temporary enchantments on inventory slot items." },
+			Documentation = { "Cancels active temporary enchantments on inventory slot items. Imbue enchants take priority over temporary enchants." },
 
 			Arguments =
 			{
@@ -227,7 +227,7 @@ local PaperDollInfo =
 			Type = "Function",
 			MayReturnNothing = true,
 			SecretArguments = "AllowedWhenUntainted",
-			Documentation = { "Queries information about active temporary enchants on inventory slot items." },
+			Documentation = { "Queries information about active temporary enchants on inventory slot items. Imbue enchants take priority over temporary enchants." },
 
 			Arguments =
 			{

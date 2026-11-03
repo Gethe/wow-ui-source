@@ -689,6 +689,7 @@ Interface\AddOns\Blizzard_ActionBarController\ActionBarController.xml
 Interface\AddOns\Blizzard_ActionBarController\Blizzard_ActionBarController.toc
 Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar.toc
 Interface\AddOns\Blizzard_ActionBar\Camelot\ActionButtonOverrides.lua
+Interface\AddOns\Blizzard_ActionBar\Camelot\ActionButtonUtilOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Camelot\ExtraActionBarOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Camelot\MainMenuBarEndCaps.lua
 Interface\AddOns\Blizzard_ActionBar\Camelot\MainMenuBarEndCaps.xml

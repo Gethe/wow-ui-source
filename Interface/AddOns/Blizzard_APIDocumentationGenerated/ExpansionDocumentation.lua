@@ -292,14 +292,15 @@ local Expansion =
 		{
 			Name = "SubscriptionInterstitialType",
 			Type = "Enumeration",
-			NumValues = 3,
+			NumValues = 4,
 			MinValue = 0,
-			MaxValue = 2,
+			MaxValue = 3,
 			Fields =
 			{
 				{ Name = "Standard", Type = "SubscriptionInterstitialType", EnumValue = 0 },
 				{ Name = "LeftNpeArea", Type = "SubscriptionInterstitialType", EnumValue = 1 },
 				{ Name = "MaxLevel", Type = "SubscriptionInterstitialType", EnumValue = 2 },
+				{ Name = "SubscriptionPeriod", Type = "SubscriptionInterstitialType", EnumValue = 3 },
 			},
 		},
 		{

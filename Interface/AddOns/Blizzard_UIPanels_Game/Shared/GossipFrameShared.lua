@@ -254,6 +254,7 @@ function GossipFrameSharedMixin:Update()
 
 	local availableQuests = C_GossipInfo.GetAvailableQuests();
 	local hasAvailableQuests = availableQuests and #availableQuests > 0;
+	self.hasAvailableQuests = hasAvailableQuests;
 
 	local index = 1;
 	for _, questInfo in ipairs(availableQuests) do

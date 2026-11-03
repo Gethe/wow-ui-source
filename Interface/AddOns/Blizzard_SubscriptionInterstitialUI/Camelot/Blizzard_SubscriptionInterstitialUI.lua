@@ -2,9 +2,20 @@ local MAXIMUM_BULLET_POINTS = 10;
 local TITLE_COLOR = CreateColor(1.0, 0.9294118, 0.8235294);
 local SUBTEXT_COLOR = CreateColor(0.9215686, 0.8039216, 0.6352941);
 
-local function GetUpgradeAtlas()
-	local factionGroup = UnitFactionGroup("player");
+local function GetFactionGroup()
+	if C_Glue.IsOnGlueScreen() then
+		-- No player exists at glues, so the faction art is picked at random.
+		return math.random(2) == 1 and "Alliance" or "Horde";
+	end
+
+	return UnitFactionGroup("player");
+end
+
+local function GetUpgradeAtlas(factionGroup)
 	return string.format("interstitial-newplayerexperience-upgrade-%s", factionGroup);
+end
+
+function SubscriptionInterstitialFrameMixin:CreateShadowOverlay()
 end
 
 local SubscriptionInterstitialFrameMixin_OnLoad = SubscriptionInterstitialFrameMixin.OnLoad;
@@ -12,7 +23,6 @@ function SubscriptionInterstitialFrameMixin:OnLoad()
 	SubscriptionInterstitialFrameMixin_OnLoad(self);
 	self:SetSize(812, 509);
 	self.Inset:Hide();
-	self.ShadowOverlay:Hide();
 	SubscriptionInterstitialFrameBg:Hide();
 	SubscriptionInterstitialFrameTopTileStreaks:Hide();
 	self.ClosePanelButton:Hide();
@@ -30,10 +40,10 @@ function SubscriptionInterstitialUpgradeButtonMixin:OnLoad()
 	self.insideFrame:SetAtlas("common-insideframe");
 	self.insideFrame:SetAllPoints(self.insideFrameContainer);
 
-	local factionGroup = UnitFactionGroup("player");
+	local factionGroup = GetFactionGroup();
 	local hordeOffsetX = factionGroup == "Alliance" and 0 or 305;
 
-	self.Background:SetAtlas(GetUpgradeAtlas(), TextureKitConstants.UseAtlasSize);
+	self.Background:SetAtlas(GetUpgradeAtlas(factionGroup), TextureKitConstants.UseAtlasSize);
 	self.Background:ClearAllPoints();
 	self.Background:SetPoint("CENTER", -1, -9);
 	self.TitleLine:SetTextColor(TITLE_COLOR:GetRGBA());

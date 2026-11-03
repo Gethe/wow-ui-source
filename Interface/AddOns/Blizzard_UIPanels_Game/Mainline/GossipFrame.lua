@@ -66,7 +66,7 @@ function GossipFrameMixin:HandleShow(textureKit)
 end
 
 function GossipFrameMixin:OnEvent(event, ...)
-	if ( event == "QUEST_LOG_UPDATE" and GossipFrame.hasActiveQuests ) then
+	if ( event == "QUEST_LOG_UPDATE" and (GossipFrame.hasActiveQuests or GossipFrame.hasAvailableQuests) ) then
 		self:Update();
 	end
 end
