@@ -460,6 +460,7 @@ local BattleNet =
 				{ Name = "regionID", Type = "number", Nilable = false },
 				{ Name = "isInCurrentRegion", Type = "bool", Nilable = false },
 				{ Name = "timerunningSeasonID", Type = "number", Nilable = true },
+				{ Name = "subIcon", Type = "string", Nilable = true },
 			},
 		},
 	},

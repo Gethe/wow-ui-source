@@ -4049,7 +4049,7 @@ local Unit =
 				{ Name = "unitTarget", Type = "UnitTokenVariant", Nilable = false },
 				{ Name = "event", Type = "cstring", Nilable = false },
 				{ Name = "flagText", Type = "cstring", Nilable = false },
-				{ Name = "amount", Type = "number", Nilable = false },
+				{ Name = "amount", Type = "number", Nilable = false, SecretValue = true },
 				{ Name = "schoolMask", Type = "number", Nilable = false },
 			},
 		},

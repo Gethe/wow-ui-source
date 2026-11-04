@@ -15,7 +15,7 @@ local FriendsListTagInterestFilterOptions = {
 	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DELVE,       searchInfo = { tags = { Enum.BattleNetFriendTag.Delves } } },
 	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_QUESTING,    searchInfo = { tags = { Enum.BattleNetFriendTag.Questing } } },
 	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_ROLEPLAYING, searchInfo = { tags = { Enum.BattleNetFriendTag.Roleplaying } } },
-};
+		};
 
 local FriendsListTagRoleFilterOptions = {
 	{ label = SOCIAL_UI_BATTLE_NET_FRIEND_TAG_LABEL_DPS,         searchInfo = { tags = { Enum.BattleNetFriendTag.DamagerRole } } },
@@ -539,7 +539,7 @@ function FriendsListSocialCardMixin:InitializeGameIcon()
 	end
 
 	local gameAccountInfo = self.elementData.accountInfo.gameAccountInfo;
-	C_Texture.SetTitleIconTexture(gameIconHolder.Icon, gameAccountInfo.clientProgram, Enum.TitleIconVersion.Medium);
+	C_Texture.SetTitleIconTexture(gameIconHolder.Icon, gameAccountInfo.clientProgram, Enum.TitleIconVersion.Medium, gameAccountInfo.subIcon);
 
 	local friendIsPlayingDifferentWowProject = FriendsListUtil.IsPlayingDifferentWoWProject(gameAccountInfo);
 	gameIconHolder.Icon:SetAlpha(friendIsPlayingDifferentWowProject and 0.6 or 1);
@@ -975,13 +975,13 @@ end
 
 local function GetGameAccountIconPrefix(gameAccountInfo)
 	local iconPrefix = "";
-	if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small) then
+	if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, gameAccountInfo.subIcon) then
 		C_Texture.GetTitleIconTexture(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
 			if success then
 				local fileWidth, fileHeight, width, height, xOffset, yOffset = 32, 32, 0, 0, 0, 0;
 				iconPrefix = BNet_GetClientEmbeddedTexture(texture, fileWidth, fileHeight, width, height, xOffset, yOffset) .. " ";
 			end
-		end);
+		end, gameAccountInfo.subIcon);
 	end
 	return iconPrefix;
 end
@@ -1506,13 +1506,13 @@ end
 
 local function BuildNonWoWGameAccountDropdownText(gameAccountInfo, battleTag)
 	local iconPrefix = "";
-	if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small) then
+	if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, gameAccountInfo.subIcon) then
 		C_Texture.GetTitleIconTexture(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
 			if success then
 				local fileWidth, fileHeight, width, height, xOffset, yOffset = 32, 32, 14, 14, 0, 0;
 				iconPrefix = BNet_GetClientEmbeddedTexture(texture, fileWidth, fileHeight, width);
 			end
-		end);
+		end, gameAccountInfo.subIcon);
 	end
 
 	local characterName = BNet_GetValidatedCharacterName(gameAccountInfo.characterName, battleTag, gameAccountInfo.clientProgram) or "";
