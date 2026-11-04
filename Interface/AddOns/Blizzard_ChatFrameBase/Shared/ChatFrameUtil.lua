@@ -385,7 +385,22 @@ function ChatFrameUtil.SendTell(name, chatFrame)
 	ChatFrameUtil.SendTellWithMessage(name, message, chatFrame);
 end
 
+function ChatFrameUtil.GetCharacterWhisperTargetIfTitleFriend(tokenizedName)
+	local bnetIDAccount = BNet_GetBNetIDAccount(tokenizedName);
+	if not bnetIDAccount then
+		return nil;
+	end
+
+	return C_BattleNet.GetDefaultTitleWhisperTarget(bnetIDAccount);
+end
+
 function ChatFrameUtil.SendBNetTell(tokenizedName)
+	local titleFriendWhisperTarget = tokenizedName and ChatFrameUtil.GetCharacterWhisperTargetIfTitleFriend(tokenizedName);
+	if titleFriendWhisperTarget then
+		ChatFrameUtil.SendTell(titleFriendWhisperTarget);
+		return;
+	end
+
 	local editBox = ChatFrameUtil.ChooseBoxForSend();
 	editBox:SetTellTarget(tokenizedName);
 	editBox:SetChatType("BN_WHISPER");

@@ -110,7 +110,11 @@ function ChatFrameEditBoxBaseMixin:ExtractTellTarget(msg, chatType)
 
 	msg = strsub(msg, strlen(target) + 2);
 
-	if ( chatType ~= "WHISPER" and BNet_GetBNetIDAccount(target) ) then --"WHISPER" forces character whisper
+	local titleFriendWhisperTarget = (chatType ~= "WHISPER") and ChatFrameUtil.GetCharacterWhisperTargetIfTitleFriend(target);
+	if ( titleFriendWhisperTarget ) then
+		target = titleFriendWhisperTarget;
+		chatType = "WHISPER";
+	elseif ( chatType ~= "WHISPER" and BNet_GetBNetIDAccount(target) ) then --"WHISPER" forces character whisper
 		chatType = "BN_WHISPER";
 	else
 		chatType = "WHISPER";
@@ -334,7 +338,12 @@ function ChatFrameEditBoxMixin:OnLoad()
 
 	local function ChatEditAutoComplete(editBox, fullText, nameInfo, ambiguatedName)
 		if hash_ChatTypeInfoList[string.upper(editBox.command)] == "SMART_WHISPER" then
-			if nameInfo.bnetID ~= nil and nameInfo.bnetID ~= 0 then
+			local isBNetResult = nameInfo.bnetID ~= nil and nameInfo.bnetID ~= 0;
+			local titleFriendWhisperTarget = isBNetResult and C_BattleNet.GetDefaultTitleWhisperTarget(nameInfo.bnetID);
+			if titleFriendWhisperTarget then
+				editBox:SetTellTarget(titleFriendWhisperTarget);
+				editBox:SetChatType("WHISPER");
+			elseif isBNetResult then
 				editBox:SetTellTarget(nameInfo.name);
 				editBox:SetChatType("BN_WHISPER");
 			else
@@ -644,8 +653,12 @@ function ChatFrameEditBoxMixin:UpdateHeader()
 	header:SetWidth(0);
 	--BN_WHISPER FIXME
 	if ( type == "SMART_WHISPER" ) then
-		--If we have a bnetIDAccount or this name, it's a BN whisper.
-		if ( BNet_GetBNetIDAccount(tellTarget) ) then
+		--If we have a bnetIDAccount or this name, it's a BN whisper. (Excluding title friends)
+		local titleFriendWhisperTarget = ChatFrameUtil.GetCharacterWhisperTargetIfTitleFriend(tellTarget);
+		if ( titleFriendWhisperTarget ) then
+			self:SetTellTarget(titleFriendWhisperTarget);
+			self:SetChatType("WHISPER");
+		elseif ( BNet_GetBNetIDAccount(tellTarget) ) then
 			self:SetChatType("BN_WHISPER");
 		else
 			self:SetChatType("WHISPER");

@@ -129,6 +129,22 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "GetDefaultTitleWhisperTarget",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "whisperTarget", Type = "string", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFriendAccountInfo",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
