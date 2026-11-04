@@ -2042,6 +2042,7 @@ Interface\AddOns\Blizzard_GamepadSharedUtility\Templates\BaseDialog.lua
 Interface\AddOns\Blizzard_GamepadSharedUtility\Templates\BaseDialog.xml
 Interface\AddOns\Blizzard_GamepadSmartNavigation\Blizzard_GamepadSmartNavigation.toc
 Interface\AddOns\Blizzard_GamepadSmartNavigation\Debug.lua
+Interface\AddOns\Blizzard_GamepadSmartNavigation\SecureHelper.lua
 Interface\AddOns\Blizzard_GamepadSmartNavigation\SmartNavigation.lua
 Interface\AddOns\Blizzard_GamepadSmartNavigation\SmartNavigation.xml
 Interface\AddOns\Blizzard_GamepadSmartNavigation\Utility.lua

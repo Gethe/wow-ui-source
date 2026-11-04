@@ -995,10 +995,12 @@ function TalentFrameBaseMixin:ReleaseAllTalentButtons()
 	end
 
 	self.edgePool:ReleaseAll();
-	self.buttonOverlayPool:ReleaseAll();
 	self.talentButtonCollection:ReleaseAll();
 	self.talentAnimationFramePoolCollection:ReleaseAll();
 	self.buttonsWithDirtyEdges = {};
+
+	-- Should come last since other release calls may try to double release these
+	self.buttonOverlayPool:ReleaseAll();
 end
 
 function TalentFrameBaseMixin:EnumerateAllTalentButtons()

@@ -80,10 +80,10 @@ Shared\GameLogoDarkBackdrop.xml
 [Family]\CharacterSelect\CharacterSelectRPE.lua [AllowLoadGameType mainline]
 [Family]\CharacterSelect\CharacterSelectRPE.xml [AllowLoadGameType mainline]
 
-WoWLabs\GluePartyPoseUI.lua [AllowLoadGameType mainline]
-WoWLabs\GluePartyPoseUI.xml [AllowLoadGameType mainline]
-WoWLabs\PlunderstormLobby.lua [AllowLoadGameType mainline]
-WoWLabs\PlunderstormLobby.xml [AllowLoadGameType mainline]
+WoWLabs\GluePartyPoseUI.lua [ExcludeLoadGameType classic, camelot]
+WoWLabs\GluePartyPoseUI.xml [ExcludeLoadGameType classic, camelot]
+WoWLabs\PlunderstormLobby.lua [ExcludeLoadGameType classic, camelot]
+WoWLabs\PlunderstormLobby.xml [ExcludeLoadGameType classic, camelot]
 
 Shared\AccountReactivate.lua
 [Game]\AccountReactivateOverrides.lua [AllowLoadGameType camelot]

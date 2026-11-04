@@ -1168,7 +1168,7 @@ function PlayerSpellsFrameMixin:SetUpSearchGamepad(frame)
 		searchBoxFooter:HideAndDeactivateBindings();
 	end
 
-	searchBox.clearButton.smartNavigationIgnored = true;
+	SmartNavigation_MarkFrameIgnored(searchBox.clearButton);
 	EventRegistry:RegisterCallback("SpellSearchBox.FocusedGained", OnSearchBoxFocusGained, frame);
 	EventRegistry:RegisterCallback("SpellSearchBox.FocusedLost", OnSearchBoxFocusLost, frame);
 	EventRegistry:RegisterCallback("SpellSearchPreview.FocusedGained", OnSearchPreviewFocusGained, frame);

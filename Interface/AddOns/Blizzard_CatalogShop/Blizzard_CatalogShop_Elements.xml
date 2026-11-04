@@ -910,7 +910,7 @@
 					<OnHide method="OnHide" />
 				</Scripts>
 			</Frame>
-			<Button parentKey="BYOBPurchaseButton" inherits="CatalogShopRedGoldButtonTemplate" frameLevel="2000" >
+			<Button parentKey="BYOBPurchaseButton" inherits="CatalogShopRedGoldButtonTemplate" mixin="CatalogShopBYOBPurchaseButtonMixin" frameLevel="2000" >
 				<Size x="290" y="50"/>
 				<Anchors>
 					<Anchor point="BOTTOM" x="0" y="30"/>

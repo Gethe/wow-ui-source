@@ -60,6 +60,7 @@ GenericTraitUtil.AddFrameLayoutInfo(1261, {
 	FrameSize = { Width = 873, Height = 910 },
 	BackgroundAtlas = "talebound-vendor-outfitter-background",
 	HideUndiscoveredNodes = true,
+	EmptyNodeAtlas = "talents-node-circle-locked",
 	OnEnterDisplayCallback = function(display)
 		local spellID = display:GetSpellID();
 		if spellID then

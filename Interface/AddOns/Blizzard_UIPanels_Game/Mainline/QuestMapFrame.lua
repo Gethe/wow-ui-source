@@ -241,7 +241,7 @@ function QuestLogMixin:ValidateTabs()
 			self:SetDisplayMode(QuestLogDisplayMode.Quests);
 		end
 	end
-	
+
 	if QuestMapFrameOverrides.mapLegendTabHidden then
 		self.MapLegendTab:Hide()
 	elseif mapLegendRelativeTab then
@@ -1484,12 +1484,6 @@ function QuestMapQuestOptions_AbandonQuest(questID)
 	C_QuestLog.SetSelectedQuest(questID);
 	C_QuestLog.SetAbandonQuest();
 
-	-- Remove the smart nav return frame to prevent refocusing the quest frame on showing the static popup.
-	if (InputUtil.IsGamepadUIEnabled()) then
-		local menu = GamepadMode.FrameControlsManager:GetActiveFrame();
-		menu.smartNavReturnFrame = nil;
-	end
-
 	local items = BuildItemNames(C_QuestLog.GetAbandonQuestItems());
 	local title = QuestUtils_GetQuestName(C_QuestLog.GetAbandonQuest());
 	if ( items ) then
@@ -1850,7 +1844,7 @@ local function QuestLogQuests_AddQuestButton(displayState, info)
 
 	local isTracked = C_QuestLog.GetQuestWatchType(questID) ~= nil;
 	button.Checkbox.CheckMark:SetShown(isTracked);
-	button.Checkbox.smartNavigationIgnored = true;
+	SmartNavigation_MarkFrameIgnored(button.Checkbox);
 
 	-- tag. daily icon can be alone or before other icons except for COMPLETED or FAILED
 	local tagAtlas;

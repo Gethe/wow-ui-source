@@ -105,8 +105,6 @@ function SettingsPanelMixin:OnLoad()
 
 	self:RegisterEvent("SETTINGS_PANEL_OPEN");
 	self:RegisterEvent("UPDATE_BINDINGS");
-
-	self:RegisterTransitions();
 end
 
 function SettingsPanelMixin:OnTabSelected(tab, tabIndex)
@@ -1159,7 +1157,18 @@ function SettingsPanelMixin:SettingsUpdated()
 	SmartNavigation_AddJumpNavigationOverride(topMostFrame, SMART_NAV_INPUT_DIRECTION.UP, defaultsButton);
 end
 
+function SettingsPanelMixin:CreateGamepadFooter()
+	local footer = GamepadSharedUtility.CreatePromptedBindingFooter(self);
+	footer:AddStandardSelectPrompt();
+	footer:AddStandardBackPrompt();
+	footer:SetAnchorOffsets(12, -3);
+	footer:Finalize();
+	return footer;
+end
+
 function SettingsPanelMixin:SetupGamepad()
+	GamepadBaseDialogMixin.SetupGamepad(self);
+
 	SmartNavigation_MarkFrameIgnored(self.CloseButton);
 	SmartNavigation_MarkFrameIgnored(self.ClosePanelButton);
 	SmartNavigation_MarkFrameSubSection(self.Container, "Container");
@@ -1200,14 +1209,10 @@ function SettingsPanelMixin:SetupGamepad()
 	end);
 end
 
-function SettingsPanelMixin:InitializeGamepad()
+function SettingsPanelMixin:InitGamepad()
+	GamepadBaseDialogMixin.InitGamepad(self);
+
 	if self:IsShown() then
 		GamepadMode.FrameControlsManager:FrameShown(self);
 	end
-end
-
-function SettingsPanelMixin:RegisterTransitions()
-	InputUtil.RegisterForInterfaceTransitions(self);
-	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
-	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
 end

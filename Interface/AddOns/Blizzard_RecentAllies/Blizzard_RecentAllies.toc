@@ -1,5 +1,6 @@
 ## Title: Blizzard_RecentAllies
-## AllowLoad: both
+## AllowLoad: both [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+## AllowLoad: game [AllowLoadGameType camelot]
 ## AllowLoadGameType: mainline
 ## OptionalDeps: Blizzard_UnitPopupShared
 ## Dependencies: Blizzard_SocialUIShared

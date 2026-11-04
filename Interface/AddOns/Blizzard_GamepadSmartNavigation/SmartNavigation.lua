@@ -1,8 +1,13 @@
+local SecureHelper = import(".SecureHelper");
 local Utility = import(".Utility");
 
-local DEFAULT_DIRECTION_BUFFER = 45 * (math.pi / 180);
+-- Make sure we can trust globals
+local issecure = issecure;
+local IsAddOnRestrictionActive = C_RestrictedActions.IsAddOnRestrictionActive;
+local CombatAddOnRestriction = Enum.AddOnRestrictionType.Combat;
+
+local DEFAULT_DIRECTION_BUFFER = math.rad(45);
 local ALLOW_DIAGONAL_NAVIGATION = false; -- May be re-enabled as an optional setting or special case solution later
-local STICK_NAV_THRESHOLD = 0.1;
 
 --[[
 	Get a reference to the table holding all the buttons contained within `scrollFrame` for the
@@ -22,13 +27,12 @@ end
 
 local function SelectClosestScrollFrameButton(self, scrollFrame, scrollFrameButtons)
 	local scrollLeft, scrollBottom, scrollWidth, scrollHeight = scrollFrame:GetRect();
-	local scrollRight, scrollTop = scrollLeft + scrollWidth, scrollBottom + scrollHeight;
 	local scrollX, scrollY = scrollLeft + scrollWidth * 0.5, scrollBottom + scrollHeight * 0.5;
 	local bestDistSq = math.huge;
 	local bestButton = nil;
 
 	for _, button in ipairs(scrollFrameButtons) do
-		local buttonIsValid = self:CanNavigateToButton(button);
+		local buttonIsValid = not SmartNavigation_IsFrameIgnored(button);
 		if buttonIsValid then
 			local left, bottom, width, height = button:GetRect();
 			if left then
@@ -67,6 +71,22 @@ local function UpdateScrollSelection(self)
 	end
 end
 
+local function EnsureIsSecure()
+	-- Functions calling this are currently assumed to always be called from a secure context, and
+	-- not doing so may spread taint across half the game. Most of them are only meant to be called
+	-- internally. This check isn't meant to be super exhaustive, and in most cases not long-term.
+	-- It's just meant to reduce the impact of trivial (most likely accidental) breakage.
+	if issecure() then
+		return true;
+	end
+
+	if DisplayInterfaceActionBlockedMessage then
+		DisplayInterfaceActionBlockedMessage();
+	end
+
+	return false;
+end
+
 SmartNavigationMixin = CreateFromMixins(CallbackRegistryMixin);
 
 local SmartNavigationEvents =
@@ -84,8 +104,17 @@ local SmartNavigationEvents =
 SmartNavigationMixin:GenerateCallbackEvents(SmartNavigationEvents);
 
 function SmartNavigationMixin:ResetVars()
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	self.activePanels = {};
 	self.hookedFrames = {};
+	self.hookedButtons = {};
+
+	-- Don't keep hooked frames from being gc'd
+	setmetatable(self.hookedFrames, { __mode = "k" });
+	setmetatable(self.hookedButtons, { __mode = "k" });
 
 	self.activeInfo = nil;
 	self.currentButton = nil;
@@ -107,9 +136,12 @@ function SmartNavigationMixin:ResetVars()
 end
 
 function SmartNavigationMixin:OnLoad()
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	CallbackRegistryMixin.OnLoad(self);
 
-	self:EnableGamePadButton(true);
 	self:SetFrameStrata("TOOLTIP");
 
 	self:ResetVars();
@@ -121,8 +153,6 @@ function SmartNavigationMixin:OnLoad()
 	self.repeatDelay = 0.2;
 	self.isRepeating = false;
 	self.maxScrollSpeed = GetCVarNumberOrDefault("SmartNavigationScrollSpeed");
-
-	self.IsHandlingInputEvents = true;
 
 	self:UpdateResolution();
 
@@ -147,16 +177,28 @@ function SmartNavigationMixin:OnLoad()
 end
 
 function SmartNavigationMixin:RegisterForTransitions()
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	InputUtil.RegisterForHighPrioInterfaceTransitions(self, nil);
 	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
 	InputUtil.RegisterGamepadUninit(self, GenerateClosure(self.UninitializeGamepad, self));
 end
 
 function SmartNavigationMixin:InitializeGamepad()
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	self.enabled = true;
 end
 
 function SmartNavigationMixin:UninitializeGamepad()
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	self.enabled = false;
 	self:HideCursor();
 	self:ResetVars();
@@ -166,13 +208,16 @@ function SmartNavigationMixin:UninitializeGamepad()
 end
 
 function SmartNavigationMixin:SetupInputBindings()
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	local function OnNavigationBindingOverbound(inDirection)
 		local index = tIndexOf(self.currentDirections, inDirection);
 		if index ~= nil then
 			table.remove(self.currentDirections, index);
 		end
 		self.navigatingTime = 0;
-		self.shouldPropagate = false;
 	end
 
 	self.navigationBindings = GamepadMode.CreateBindingGroup("SmartNavigationBindings");
@@ -201,6 +246,10 @@ function SmartNavigationMixin:SetupInputBindings()
 end
 
 function SmartNavigationMixin:SetupFrameHooks()
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	hooksecurefunc("CreateFrame", function(frameType, name, parent, template, id)
 		if parent then
 			self:UpdateParent(parent);
@@ -215,8 +264,10 @@ function SmartNavigationMixin:OnDropDownShown(inListFrame)
 	end
 end
 
+SmartNavigationMixin.OnDropDownShown = SecureHelper:WrapFunction(SmartNavigationMixin.OnDropDownShown);
+
 function SmartNavigationMixin:ActivateBinding()
-	if (self.bindingActive) then
+	if not EnsureIsSecure() or (self.bindingActive) then
 		return;
 	end
 
@@ -228,7 +279,7 @@ function SmartNavigationMixin:ActivateBinding()
 end
 
 function SmartNavigationMixin:DeactivateBinding()
-	if (not self.bindingActive) then
+	if not EnsureIsSecure() or (not self.bindingActive) then
 		return;
 	end
 
@@ -256,8 +307,10 @@ function SmartNavigationMixin:SetRightStickScrollingEnabled(inEnable)
 	self.scrollSpeed = 0;
 end
 
+SmartNavigationMixin.SetRightStickScrollingEnabled = SecureHelper:WrapFunction(SmartNavigationMixin.SetRightStickScrollingEnabled);
+
 function SmartNavigationMixin:OnShow()
-	if not self.enabled then
+	if not EnsureIsSecure() or not self.enabled then
 		return;
 	end
 
@@ -267,6 +320,10 @@ function SmartNavigationMixin:OnShow()
 end
 
 function SmartNavigationMixin:OnHide()
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	self:SetActiveFrame(nil);
 	self:HideCursor();
 
@@ -294,6 +351,10 @@ function SmartNavigationMixin:OnHide()
 end
 
 function SmartNavigationMixin:SuspendCursor(shouldSuspend)
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	if (shouldSuspend) then
 		self:SelectButton(nil)
 		self:HideCursor();
@@ -304,7 +365,7 @@ function SmartNavigationMixin:SuspendCursor(shouldSuspend)
 end
 
 function SmartNavigationMixin:ShowCursor(shouldSelectButton)
-	if (not self.enabled or self.isCursorSuspended) then
+	if not self.enabled or self.isCursorSuspended then
 		return;
 	end
 
@@ -323,6 +384,8 @@ function SmartNavigationMixin:ShowCursor(shouldSelectButton)
 	end
 end
 
+SmartNavigationMixin.ShowCursor = SecureHelper:WrapFunction(SmartNavigationMixin.ShowCursor);
+
 function SmartNavigationMixin:HideCursor(maintainPreviousButton)
 	self:ClearNavigationInput();
 	self:SetAlpha(0);
@@ -337,6 +400,8 @@ function SmartNavigationMixin:HideCursor(maintainPreviousButton)
 	--Enable stick controlling the cursor/character while SmartNavigation is not active.
 	SetGamePadCursorControl(false);
 end
+
+SmartNavigationMixin.HideCursor = SecureHelper:WrapFunction(SmartNavigationMixin.HideCursor);
 
 function SmartNavigationMixin:IsCursorHidden()
 	return self:GetAlpha() == 0;
@@ -372,6 +437,10 @@ function SmartNavigationMixin:OnEvent(event, ...)
 end
 
 function SmartNavigationMixin:OnUpdate(delta)
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	if self.activeInfo then
 		if #self.currentDirections > 0 then
 			self.navigatingTime = self.navigatingTime + delta;
@@ -501,6 +570,11 @@ function SmartNavigationMixin:OnUpdate(delta)
 end
 
 function SmartNavigationMixin:TrySelectButton(inButton)
+	-- Currently only meant to be used for mouse click focus
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	while inButton and inButton.smartNavigationProxyTarget do
 		inButton = inButton.smartNavigationProxyTarget;
 	end
@@ -566,6 +640,12 @@ function SmartNavigationMixin:TrySelectButton(inButton)
 end
 
 function SmartNavigationMixin:SelectButton(inButton, forceReselect)
+	-- Intended to be internal only, although we have a number of calls spread out among our addons.
+	-- They should pretty much universally be replaced with SetTargetButtonForFrame.
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	if self.isCursorSuspended
 		or self.activeInfo == nil
 		or (self.currentButton == inButton and not forceReselect)
@@ -589,8 +669,8 @@ function SmartNavigationMixin:SelectButton(inButton, forceReselect)
 
 		-- RunCurrentButtonLeaveScript may have re-selected this button, in which case we need to
 		-- leave it selected.
-		if prevButton.OnSmartNavDeselect and (IsCurrent() or self.currentButton ~= prevButton) then
-			prevButton:OnSmartNavDeselect();
+		if (IsCurrent() or self.currentButton ~= prevButton) then
+			SecureHelper.SecureCallOptionalFunction(prevButton, "OnSmartNavDeselect", prevButton);
 		end
 
 		-- OnSmartNavDeselect may also have changed the current button, in which case none of the
@@ -612,15 +692,15 @@ function SmartNavigationMixin:SelectButton(inButton, forceReselect)
 		-- RunCurrentButtonEnterScript may have called SelectButton
 		if IsCurrent() then
 			local activeFrame = self.activeInfo.frame;
-			if activeFrame and activeFrame.SmartNavigationOnSelect then
-				activeFrame:SmartNavigationOnSelect(inButton);
+			if activeFrame then
+				SecureHelper.SecureCallOptionalFunction(activeFrame, "SmartNavigationOnSelect", activeFrame, inButton);
 			end
 		end
 
 		-- OnSmartNavSelect will have already been called if there was a recursive call with the
 		-- same button. Or if another button was selected instead it's no longer relevant.
-		if inButton.OnSmartNavSelect and IsCurrent() then
-			inButton:OnSmartNavSelect();
+		if IsCurrent() then
+			SecureHelper.SecureCallOptionalFunction(inButton, "OnSmartNavSelect", inButton);
 		end
 
 		if IsCurrent() then
@@ -632,11 +712,9 @@ function SmartNavigationMixin:SelectButton(inButton, forceReselect)
 end
 
 function SmartNavigationMixin:TrackButtonEnabledState(button)
-	if not button then
+	if not EnsureIsSecure() or not button then
 		return;
 	end
-
-	self.hookedButtons = self.hookedButtons or {};
 
 	if self.hookedButtons[button] then
 		return;
@@ -699,9 +777,10 @@ function SmartNavigationMixin:UpdateCursorPosition()
 		return;
 	end
 
-	if (self.currentButton.smartNavigationCustomCursorAnchor) then
+	local customCursorAnchor = SmartNavigation_GetCustomCursorAnchorPointForFrame(self.currentButton);
+	if customCursorAnchor then
 		local clearAllPoints = true;
-		self.currentButton.smartNavigationCustomCursorAnchor:SetPoint(self, clearAllPoints);
+		customCursorAnchor:SetPoint(self, clearAllPoints);
 		return;
 	end
 
@@ -723,6 +802,20 @@ function SmartNavigationMixin:UpdateCursorPosition()
 	self:ShowCursor(false);
 end
 
+local function CreatePanelInfo(self, inFrame)
+	local panelInfo = { buttonGroups = {}, frame = inFrame };
+	if not self.hookedFrames[inFrame] then
+		self.hookedFrames[inFrame] = true;
+		inFrame:HookScript("OnHide", function(hiddenPanel)
+			self:HandlePanelClose(hiddenPanel);
+		end);
+	end
+	table.insert(self.activePanels, panelInfo);
+	return panelInfo;
+end
+
+CreatePanelInfo = SecureHelper:WrapFunction(CreatePanelInfo);
+
 function SmartNavigationMixin:GetPanelInfo(inFrame, dontCreateIfNotFound)
 	local foundPanelInfo = nil;
 
@@ -734,19 +827,9 @@ function SmartNavigationMixin:GetPanelInfo(inFrame, dontCreateIfNotFound)
 	end
 
 	if not dontCreateIfNotFound and not foundPanelInfo then
-		foundPanelInfo = { frame = inFrame, buttonGroups = {} };
-		if not self.hookedFrames[inFrame] then
-			-- There is no way to unhook a script so make sure we only hook it one time.
-			self.hookedFrames[inFrame] = true;
-			inFrame:HookScript("OnHide", function(hiddenPanel)
-				self:HandlePanelClose(hiddenPanel);
-			end);
-		end
-
-		table.insert(self.activePanels, foundPanelInfo);
-
-		if (inFrame.smartNavPanelInfoAddedCallback) then
-			inFrame.smartNavPanelInfoAddedCallback(foundPanelInfo);
+		foundPanelInfo = CreatePanelInfo(self, inFrame);
+		if foundPanelInfo then
+			SecureHelper.SecureCallOptionalFunction(inFrame, "smartNavPanelInfoAddedCallback", foundPanelInfo);
 		end
 	end
 
@@ -757,6 +840,7 @@ function SmartNavigationMixin:GetLastButtonForPanelInfo(panelInfo)
 	return panelInfo.lastButton;
 end
 
+-- This should almost never be used. Prefer SetTargetButtonForFrame instead.
 function SmartNavigationMixin:SetLastButtonForPanelInfo(panelInfo, lastButton)
 	panelInfo.lastButton = lastButton;
 end
@@ -799,14 +883,22 @@ function SmartNavigationMixin:RemovePanelInfo(inFrame)
 	end
 
 	-- Called after the remove so that the SetActiveFrame call can update the last button for the active frame's info.
-	if associatedPanelInfo and inFrame.smartNavPanelInfoRemovedCallback then
-		inFrame.smartNavPanelInfoRemovedCallback(associatedPanelInfo);
+	if associatedPanelInfo then
+		SecureHelper.SecureCallOptionalFunction(inFrame, "smartNavPanelInfoRemovedCallback", associatedPanelInfo);
 	end
 
 	return index ~= nil;
 end
 
+-- RemovePanelInfo calls SetActiveFrame, which can only be called in secure contexts. The combat
+-- restriction should be kept for this one too, to disallow focus manipulation during combat.
+SmartNavigationMixin.RemovePanelInfo = SecureHelper:WrapFunction(SmartNavigationMixin.RemovePanelInfo);
+
 function SmartNavigationMixin:SetActiveFrame(inFrameInfo)
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	if self.activeInfo ~= inFrameInfo then
 		if self.activeInfo then
 			GamepadScrollBarHint:Hide();
@@ -828,9 +920,7 @@ function SmartNavigationMixin:SetActiveFrame(inFrameInfo)
 			end
 
 			local frame = self.activeInfo.frame;
-			if frame.OnSmartNavFocus then
-				frame:OnSmartNavFocus();
-			end
+			SecureHelper.SecureCallOptionalFunction(frame, "OnSmartNavFocus", frame);
 		else
 			self:Hide();
 		end
@@ -839,7 +929,13 @@ end
 
 function SmartNavigationMixin:ClearActiveFrames()
 	while self.activeInfo ~= nil do
-		self:RemovePanelInfo(self.activeInfo.frame);
+		local activeInfo = self.activeInfo;
+		self:RemovePanelInfo(activeInfo.frame);
+
+		-- RemovePanelInfo may bail due to addon restrictions. Prevent an infinite loop
+		if self.activeInfo == activeInfo then
+			break;
+		end
 	end
 end
 
@@ -860,6 +956,8 @@ function SmartNavigationMixin:SelectFirstButton(forceReselect)
 	end
 end
 
+SmartNavigationMixin.SelectFirstButton = SecureHelper:WrapFunction(SmartNavigationMixin.SelectFirstButton);
+
 function SmartNavigationMixin:SelectTopLeftButton()
 	if self.activeInfo then
 		self:SelectButton(self:FindTopLeftButton(self.activeInfo));
@@ -869,6 +967,8 @@ function SmartNavigationMixin:SelectTopLeftButton()
 		end
 	end
 end
+
+SmartNavigationMixin.SelectTopLeftButton = SecureHelper:WrapFunction(SmartNavigationMixin.SelectTopLeftButton);
 
 function SmartNavigationMixin:IsButtonInCurrentFocusGroup(button)
 	local activeInfo = self.activeInfo;
@@ -905,6 +1005,8 @@ function SmartNavigationMixin:SetTargetButtonForFrame(inFrame, inTargetButton)
 	end
 end
 
+SmartNavigationMixin.SetTargetButtonForFrame = SecureHelper:WrapFunction(SmartNavigationMixin.SetTargetButtonForFrame);
+
 function SmartNavigationMixin:SetScrollFrameForFrame(inFrame, inScrollFrame)
 	local panelInfo = self:GetPanelInfo(inFrame, true);
 	if panelInfo then
@@ -918,26 +1020,23 @@ function SmartNavigationMixin:SetScrollFrameForFrame(inFrame, inScrollFrame)
 	end
 end
 
+SmartNavigationMixin.SetScrollFrameForFrame = SecureHelper:WrapFunction(SmartNavigationMixin.SetScrollFrameForFrame);
+
 function SmartNavigationMixin:GetParentPanelInfo(frame)
 	if #self.activePanels == 0 then
 		return;
 	end
 
+	local root = UIParent or GlueParent;
+
 	local function CheckForPanelInfo(curr)
-		if curr and curr ~= UIParent then
+		if curr and curr ~= root then
 			local panelInfo = self:GetPanelInfo(curr, true);
 			return panelInfo or CheckForPanelInfo(curr:GetParent());
 		end
 	end
 
 	return CheckForPanelInfo(frame);
-end
-
-function SmartNavigationMixin:SetNavigationFunction(inFrame, inFunc)
-	local panelInfo = self:GetPanelInfo(inFrame, true);
-	if panelInfo then
-		panelInfo.canNavigateTo = inFunc;
-	end
 end
 
 function SmartNavigationMixin:ClearLastTarget(inFrame)
@@ -954,12 +1053,16 @@ function SmartNavigationMixin:SetWrapping(inFrame, shouldWrap)
 	end
 end
 
+SmartNavigationMixin.SetWrapping = SecureHelper:WrapFunction(SmartNavigationMixin.SetWrapping);
+
 function SmartNavigationMixin:SetGridHeightCompensation(inFrame, shouldCompensate)
 	local panelInfo = self:GetPanelInfo(inFrame, true);
 	if panelInfo then
 		panelInfo.gridHeightCompensate = shouldCompensate;
 	end
 end
+
+SmartNavigationMixin.SetGridHeightCompensation = SecureHelper:WrapFunction(SmartNavigationMixin.SetGridHeightCompensation);
 
 -- Changes the navigation to use a logical grid to allow for more specific wrapping behaviors.
 -- This assumes all the frames exist in a strict grid where all frames share an X or Y coord with their neighbors.
@@ -972,7 +1075,14 @@ function SmartNavigationMixin:SetUseGridNavigation(inFrame, inUseGrid)
 	end
 end
 
+SmartNavigationMixin.SetUseGridNavigation = SecureHelper:WrapFunction(SmartNavigationMixin.SetUseGridNavigation);
+
 function SmartNavigationMixin:HandleScroll(nextButton, buttonScrollFrame)
+	-- Meant to be internal only
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	-- We will try to keep the target button in the middle of the scroll frame
 	-- May want to add a way to "jump" out of a scroll frame
 	local _, scrollMiddile = buttonScrollFrame:GetCenter();
@@ -991,7 +1101,8 @@ function SmartNavigationMixin:HandleScroll(nextButton, buttonScrollFrame)
 
 		buttonScrollFrame:SetVerticalScroll(newScrollOffset);
 	else
-		if buttonScrollFrame:HasScrollableExtent() or buttonScrollFrame.ScrollTarget then
+		-- ScrollTarget may be tainted
+		if buttonScrollFrame:HasScrollableExtent() or securecallfunction(function() return buttonScrollFrame.ScrollTarget ~= nil; end) then
 			local scrollPercentageOffset = 0;
 			local scrollRange = buttonScrollFrame:GetDerivedScrollRange();
 			if scrollRange > 0 then
@@ -1086,21 +1197,8 @@ function ResolveAnchor(point, left, bottom, width, height)
 	return AnchorResolvers[point](left, bottom, width, height)
 end
 
-function SmartNavigationMixin:CanNavigateToButton(inButton)
-	if SmartNavigation_IsFrameIgnored(inButton) then
-		return false;
-	end
-
-	local canNavigateTo = self.activeInfo and self.activeInfo.canNavigateTo;
-	if canNavigateTo and not canNavigateTo(inButton) then
-		return false;
-	end
-
-	return true;
-end
-
 function SmartNavigationMixin:IsButtonValid(inButton, inScrollFrame)
-	if not self:CanNavigateToButton(inButton) then
+	if SmartNavigation_IsFrameIgnored(inButton) then
 		return false;
 	end
 
@@ -1112,7 +1210,7 @@ function SmartNavigationMixin:IsButtonValid(inButton, inScrollFrame)
 		local buttonX, buttonY;
 		local sCenterX, sCenterY;
 
-		local anchor = inButton.smartNavigationCustomCursorAnchor;
+		local anchor = SmartNavigation_GetCustomCursorAnchorPointForFrame(inButton);
 		if anchor then
 			buttonX, buttonY = ResolveAnchor(anchor.relativePoint, anchor.relativeTo:GetRect());
 			sCenterX, sCenterY = ResolveAnchor(anchor.relativePoint, anchor.relativeTo:GetScaledRect());
@@ -1153,7 +1251,7 @@ function SmartNavigationMixin:GetButtonInfoInDirection(inButton, inDirection, in
 
 	local currentX, currentY;
 
-	local currentAnchor = inButton.smartNavigationCustomCursorAnchor;
+	local currentAnchor = SmartNavigation_GetCustomCursorAnchorPointForFrame(inButton);
 	if currentAnchor then
 		currentX, currentY = ResolveAnchor(currentAnchor.relativePoint, currentAnchor.relativeTo:GetScaledRect());
 	else
@@ -1161,6 +1259,14 @@ function SmartNavigationMixin:GetButtonInfoInDirection(inButton, inDirection, in
 		currentX, currentY, currentWidth, currentHeight = inButton:GetScaledRect();
 		currentX = currentX + (currentWidth / 2) + inOffset.x;
 		currentY = currentY + (currentHeight / 2) + inOffset.y;
+	end
+
+	local usedSmartNavDirection = nil;
+	for _, smartNavDirection in pairs(SMART_NAV_INPUT_DIRECTION) do
+		if (smartNavDirection.x == inDirection.x and smartNavDirection.y == inDirection.y) then
+			usedSmartNavDirection = smartNavDirection;
+			break;
+		end
 	end
 
 	local function FindNearestInDirection(inButtons, inScrollFrame)
@@ -1173,25 +1279,7 @@ function SmartNavigationMixin:GetButtonInfoInDirection(inButton, inDirection, in
 					local angle = math.abs(Vector2D_CalculateAngleBetween(directionTo.x, directionTo.y, inDirection.x, inDirection.y));
 
 					-- Adjust directional buffer based on the frames custom buffer data.
-					local buffer = nil;
-					local bufferData = inButton.smartNavigationDirectionBufferData;
-					if bufferData then
-						local usedSmartNavDirection = nil;
-						for _, smartNavDirection in pairs(SMART_NAV_INPUT_DIRECTION) do
-							if (smartNavDirection.x == inDirection.x and smartNavDirection.y == inDirection.y) then
-								usedSmartNavDirection = smartNavDirection;
-								break;
-							end
-						end
-
-						if (bufferData[usedSmartNavDirection]) then
-							buffer = bufferData[usedSmartNavDirection];
-						end
-					end
-
-					if (buffer == nil) then
-						buffer = DEFAULT_DIRECTION_BUFFER;
-					end
+					local buffer = SmartNavigation_GetDirectionBufferThreshold(inButton, usedSmartNavDirection) or DEFAULT_DIRECTION_BUFFER;
 
 					if angle <= buffer then
 						local distance = directionTo:GetLength();
@@ -1235,6 +1323,11 @@ function SmartNavigationMixin:GetButtonInfoInDirection(inButton, inDirection, in
 end
 
 function SmartNavigationMixin:UpdateGrid(inPanelInfo)
+	-- This should only be called internally
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	if not inPanelInfo.useGrid then
 		inPanelInfo.grid = nil;
 		return;
@@ -1370,6 +1463,11 @@ function SmartNavigationMixin:GetButtonInDirectionGrid(inButton, inDirection)
 end
 
 function SmartNavigationMixin:Navigate(inDirection)
+	-- This should only be called internally
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	inDirection = CreateVector2D(inDirection.x, inDirection.y)
 	if self.activeInfo then
 		inDirection = inDirection:Normalize();
@@ -1397,9 +1495,22 @@ function SmartNavigationMixin:Navigate(inDirection)
 
 			-- Handle Navigation Overrides
 			if (usedSmartNavDirection) then
-				local navOverride = SmartNavigation_GetNavigationOverrideFrame(self.currentButton, usedSmartNavDirection);
+				-- NOTE: navOverride can (expectedly) cause taint. If the override was a function,
+				-- and it was registered from a tainted state, the return value is tainted (and
+				-- intentionally not cleansed). Only allow this while out of combat.
+				local navOverride, isSecure = securecallfunction(function()
+					return SmartNavigation_GetNavigationOverrideFrame(self.currentButton, usedSmartNavDirection), issecure();
+				end);
+
+				if not isSecure and IsAddOnRestrictionActive(CombatAddOnRestriction) then
+					if DisplayInterfaceActionBlockedMessage then
+						DisplayInterfaceActionBlockedMessage();
+					end
+					return;
+				end
+
 				if (navOverride) then
-					if (navOverride == true) or navOverride.shouldIgnoreInputNavOverride then
+					if (navOverride == true) then
 						return;
 					elseif (self:IsButtonValid(navOverride) or SmartNavigation_IsFrameNonCollapsingScrollBoxElement(navOverride)) then
 						local previousButton = self.currentButton;
@@ -1464,10 +1575,20 @@ function SmartNavigationMixin:Navigate(inDirection)
 end
 
 function SmartNavigationMixin:ClearNavigationInput()
+	-- This should only be called internally
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	table.wipe(self.currentDirections);
 end
 
 function SmartNavigationMixin:HandleNavigationInput(isDown, inDirection)
+	-- This should only be called internally
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	if isDown then
 		if not tContains(self.currentDirections, inDirection) then
 			if not ALLOW_DIAGONAL_NAVIGATION then
@@ -1490,7 +1611,6 @@ function SmartNavigationMixin:HandleNavigationInput(isDown, inDirection)
 	end
 
 	self.navigatingTime = 0;
-	self.shouldPropagate = false;
 end
 
 function SmartNavigationMixin:NavigateRight(isDown)
@@ -1509,34 +1629,25 @@ function SmartNavigationMixin:NavigateDown(isDown)
 	self:HandleNavigationInput(isDown, SMART_NAV_INPUT_DIRECTION.DOWN);
 end
 
-local function PerformClick(inButton)
-	inButton:MouseDown();
-	inButton:MouseUp();
+local function PerformClick(inButton, button)
+	-- MouseDown/MouseUp should always exist, but we can't use securecallmethod since that uses
+	-- rawget, and MouseDown/MouseUp may come from metatables
+	SecureHelper.SecureCallOptionalFunction(inButton, "MouseDown", inButton, button);
+	SecureHelper.SecureCallOptionalFunction(inButton, "MouseUp", inButton, button);
 end
 
 function SmartNavigationMixin:Click()
-	if self.activeInfo then
-		self.shouldPropagate = false;
-		if SmartNavigation_IsCurrentButtonClickable() then
-			local cachedButton = self.currentButton;
-			if cachedButton.OnSmartNavClick then
-				cachedButton:OnSmartNavClick();
-			else
-				cachedButton:MouseDown();
-				cachedButton:MouseUp();
-			end
+	if self.activeInfo and SmartNavigation_IsCurrentButtonClickable() then
+		local cachedButton = self.currentButton;
+		if not SecureHelper.SecureCallOptionalFunction(cachedButton, "OnSmartNavClick", cachedButton) then
+			PerformClick(cachedButton);
 		end
 	end
 end
 
 function SmartNavigationMixin:RightClick()
-	if self.activeInfo then
-		self.shouldPropagate = false;
-		if SmartNavigation_IsCurrentButtonClickable() then
-			local cachedButton = self.currentButton;
-			cachedButton:MouseDown("RightButton");
-			cachedButton:MouseUp("RightButton");
-		end
+	if self.activeInfo and SmartNavigation_IsCurrentButtonClickable() then
+		PerformClick(self.currentButton, "RightButton");
 	end
 end
 
@@ -1544,40 +1655,46 @@ function SmartNavigationMixin:AttemptClose()
 	if self.activeInfo then
 		local activeFrame = self.activeInfo.frame;
 
-		if activeFrame.SmartNavigationCloseHandler then
-			if activeFrame:SmartNavigationCloseHandler() then
-				self.shouldPropagate = false;
-				return;
-			end
+		local wasCalled, wasHandled = SecureHelper.SecureCallOptionalFunction(activeFrame, "SmartNavigationCloseHandler", activeFrame);
+		if wasCalled and wasHandled then
+			return;
 		end
 
-		local possibleCloseButton = activeFrame.CloseButton;
-		if not possibleCloseButton then
+		-- CloseButton may be a tainted reference, in which case we must ensure to keep that taint
+		-- when triggering the click, but not let it taint past that.
+		local wasClicked = securecallfunction(function()
+			if activeFrame.CloseButton then
+				PerformClick(activeFrame.CloseButton);
+				return true;
+			end
+		end);
+
+		if not wasClicked then
 			local activeGroup = self:GetActiveGroup(self.activeInfo);
 			if activeGroup then
 				for _, button in ipairs(activeGroup.buttons) do
 					if button:IsVisible() then
 						local buttonName = button:GetName();
 						if buttonName and string.match(buttonName, "CloseButton") then
-							possibleCloseButton = button;
+							PerformClick(button);
 							break;
 						end
 					end
 				end
 			end
 		end
-
-		if possibleCloseButton then
-			self.shouldPropagate = false;
-			PerformClick(possibleCloseButton);
-		end
 	end
 end
 
 function SmartNavigationMixin:OnGamepadRightStick(inX, inY)
+	-- Internal only
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	if self.activeInfo and self.activeInfo.currentScrollFrame then
 		local scrollFrame = self.activeInfo.currentScrollFrame;
-		local maxScrollSpeed = scrollFrame.smartNavRightStickMaxScrollSpeed and scrollFrame.smartNavRightStickMaxScrollSpeed or self.maxScrollSpeed;
+		local maxScrollSpeed = scrollFrame.smartNavRightStickMaxScrollSpeed or self.maxScrollSpeed;
 		self.scrollSpeed = inY * maxScrollSpeed;
 	end
 
@@ -1621,6 +1738,9 @@ function SmartNavigationMixin:FindTopLeftButton(frameInfo)
 end
 
 function SmartNavigationMixin:UpdateResolution()
+	if not EnsureIsSecure() then
+		return;
+	end
 	self.xRes, self.yRes = GetPhysicalScreenSize();
 end
 
@@ -1640,6 +1760,8 @@ function SmartNavigationMixin:HandlePanelOpen(inPanel, extraPanels)
 
 	self:SetActiveFrame(panelInfo);
 end
+
+SmartNavigationMixin.HandlePanelOpen = SecureHelper:WrapFunction(SmartNavigationMixin.HandlePanelOpen);
 
 function SmartNavigationMixin:RefreshButtonGroups(inPanel, extraPanels)
 	local panelInfo = self.activeInfo;
@@ -1664,6 +1786,8 @@ function SmartNavigationMixin:RefreshButtonGroups(inPanel, extraPanels)
 		self:UpdateGrid(panelInfo);
 	end
 end
+
+SmartNavigationMixin.RefreshButtonGroups = SecureHelper:WrapFunction(SmartNavigationMixin.RefreshButtonGroups);
 
 function SmartNavigationMixin:UpdateParent(inChild)
 	local parentFrame = self:GetParentPanelInfo(inChild);
@@ -1708,7 +1832,7 @@ function SmartNavigationMixin:FindButton(inMatchFunc)
 	local function CheckForMatch(buttons, matchFunc)
 		local foundButton = nil;
 		for _, button in ipairs(buttons) do
-			if self:IsButtonValid(button) and matchFunc(button) then
+			if self:IsButtonValid(button) and securecallfunction(matchFunc, button) then
 				foundButton = button;
 				break;
 			end
@@ -1746,12 +1870,13 @@ function SmartNavigationMixin:GetActiveFrame()
 	end
 end
 
-function SmartNavigationMixin:SetIsHandlingInputEvents(handleInputEvents)
-	self.IsHandlingInputEvents = handleInputEvents;
-end
-
 -- Specifying a focus group owner will set the active frame to the focus group owner and then enter the focus group.
 function SmartNavigationMixin:EnterFocusGroup(inFocusKey, optionalFocusGroupOwner, button, scrollFrame)
+	-- Secure only for now, needs extra plumbing to allow insecure
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	if (optionalFocusGroupOwner) then
 		local focusGroupOwnerPanelInfo = self:GetPanelInfo(optionalFocusGroupOwner);
 		self:SetActiveFrame(focusGroupOwnerPanelInfo);
@@ -1782,6 +1907,11 @@ function SmartNavigationMixin:EnterFocusGroup(inFocusKey, optionalFocusGroupOwne
 end
 
 function SmartNavigationMixin:LeaveFocusGroup(button, scrollFrame)
+	-- Secure only for now, needs extra plumbing to allow insecure
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	if self.activeInfo then
 		self.activeInfo.buttonGroups.focusedGroup = nil;
 		self.activeInfo.focusedKey = nil;
@@ -1804,6 +1934,11 @@ function SmartNavigationMixin:IsInFocusGroup()
 end
 
 function SmartNavigationMixin:SetItemToBeDeleted(cursorType, ...)
+	-- Internal only, and should ideally be moved out of SmartNav
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	if cursorType == "item" then
 		local itemID = ...;
 		self.itemBeingDeleted = itemID;
@@ -1811,6 +1946,11 @@ function SmartNavigationMixin:SetItemToBeDeleted(cursorType, ...)
 end
 
 function SmartNavigationMixin:ClearItemToBeDeleted()
+	-- Internal only, and should ideally be moved out of SmartNav
+	if not EnsureIsSecure() then
+		return;
+	end
+
 	self.itemBeingDeleted = nil;
 end
 

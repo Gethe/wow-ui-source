@@ -32,6 +32,7 @@ local GenericTraitFrameLayoutOptions = {
 		PanelArea = "left",
 		HideCurrencyDisplay = false,
 		HideUndiscoveredNodes = false, -- Only show nodes that are learned or reachable from a learned node.
+		EmptyNodeAtlas = nil, -- If set, hidden (undiscovered) nodes show a placeholder with this atlas.
 	},
 
 	Skyriding = {

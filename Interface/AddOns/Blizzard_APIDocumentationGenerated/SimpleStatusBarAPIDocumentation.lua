@@ -148,6 +148,7 @@ local SimpleStatusBarAPI =
 		{
 			Name = "GetTimerDuration",
 			Type = "Function",
+			ChecksForbiddenAspects = { { Argument = "self", Aspect = Enum.ForbiddenAspect.QueryTimerDuration } },
 
 			Arguments =
 			{

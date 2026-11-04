@@ -1,13 +1,21 @@
 local SOFT_CURSOR_DEFAULT_MAX_SPEED = 200;
 local SOFT_CURSOR_DEFAULT_INPUT_STICK = "Right";
+local LINE_CENTER_OFFSET = 13;
 
-SoftCursorMixin = {}
+SoftCursorMixin = CreateFromMixins(CallbackRegistryMixin);
+
+SoftCursorMixin:GenerateCallbackEvents({
+	"OnMove",
+});
 
 function SoftCursorMixin:OnLoad()
+	CallbackRegistryMixin.OnLoad(self);
+
 	self.speedX = 0;
 	self.speedY = 0;
 	self.maxSpeed = SOFT_CURSOR_DEFAULT_MAX_SPEED;
 	self.inputStick = SOFT_CURSOR_DEFAULT_INPUT_STICK;
+	self.linesEnabled = false;
 
 	self:RegisterEvent("DISPLAY_SIZE_CHANGED");
 	self:RegisterEvent("UI_SCALE_CHANGED");
@@ -33,6 +41,7 @@ end
 
 function SoftCursorMixin:OnHide()
 	self:EnableGamePadStick(false);
+	self:SetLinesEnabled(false);
 end
 
 function SoftCursorMixin:OnUpdate(delta)
@@ -48,17 +57,39 @@ function SoftCursorMixin:OnUpdate(delta)
 	nextX, nextY = self.bounds:ClampPointInBounds(nextX, nextY);
 
 	if nextX ~= currentX or nextY ~= currentY then
-		self:ClearAllPoints();
-		self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", nextX, nextY);
+		self:SetPosition(nextX, nextY);
 	end
 end
 
 function SoftCursorMixin:ResetPosition()
 	if self.bounds then
 		local x, y = self.bounds:GetCenter();
-		self:ClearAllPoints();
-		self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y);
+		self:SetPosition(x, y);
 	end
+end
+
+function SoftCursorMixin:SetPosition(x, y)
+	self:ClearAllPoints();
+	self:SetPoint("CENTER", UIParent, "BOTTOMLEFT", x, y);
+
+	if self.linesEnabled then
+		-- Make sure the lines end up being aligned to device pixels, so they don't change thickness
+		-- every frame. `roundLayoutToNearestPixel` snaps points individually, so it may cause two
+		-- sides of a rect to snap in opposite directions. The size must thus be set to a pixel-aligned
+		-- value manually.
+		local offset = 0.5 * PixelUtil.ConvertPixelsToUI(2, UIParent:GetEffectiveScale());
+
+		self.Lines.LeftLine:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", self.bounds.left, y + offset);
+		self.Lines.LeftLine:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMLEFT", x - LINE_CENTER_OFFSET, y - offset);
+		self.Lines.RightLine:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x + LINE_CENTER_OFFSET, y + offset);
+		self.Lines.RightLine:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMLEFT", self.bounds.right, y - offset);
+		self.Lines.TopLine:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x - offset, self.bounds.top);
+		self.Lines.TopLine:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMLEFT", x + offset, y + LINE_CENTER_OFFSET);
+		self.Lines.BottomLine:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", x - offset, y - LINE_CENTER_OFFSET);
+		self.Lines.BottomLine:SetPoint("BOTTOMRIGHT", UIParent, "BOTTOMLEFT", x + offset, self.bounds.bottom);
+	end
+
+	self:TriggerEvent("OnMove", x, y);
 end
 
 function SoftCursorMixin:GetPosition()
@@ -96,11 +127,33 @@ end
 
 function SoftCursorMixin:SetInputStick(inStick)
 	self.inputStick = inStick;
+
+	if inStick == "Left" then
+		self.blockedStick = "Movement";
+	elseif inStick == "Right" then
+		self.blockedStick = "Camera";
+	elseif inStick == "Movement" then
+		self.blockedStick = "Left";
+	elseif inStick == "Camera" then
+		self.blockedStick = "Right";
+	else
+		self.blockedStick = nil;
+	end
+end
+
+function SoftCursorMixin:SetLinesEnabled(enabled, parent)
+	self.linesEnabled = enabled;
+	self.Lines:SetParent(parent or UIParent);
+	self.Lines:SetShown(enabled);
+
+	if enabled then
+		self:SetPosition(self:GetPosition());
+	end
 end
 
 function SoftCursorMixin:OnGamePadStick(inStick, inX, inY)
-	if ( inStick ~= self.inputStick ) then
-		return true;
+	if inStick ~= self.inputStick then
+		return inStick ~= self.blockedStick;
 	end
 
 	self.speedX = inX * self.maxSpeed;
@@ -173,13 +226,13 @@ function SoftCursorRectBoundsMixin:Init(inX, inY, inWidth, inHeight)
 	local halfHeight = inHeight * 0.5;
 	self.left = inX - halfWidth;
 	self.right = inX + halfWidth;
-	self.top = inY - halfHeight;
-	self.bottom = inY + halfHeight;
+	self.bottom = inY - halfHeight;
+	self.top = inY + halfHeight;
 end
 
 function SoftCursorRectBoundsMixin:ClampPointInBounds(inX, inY)
 	inX = Clamp(inX, self.left, self.right);
-	inY = Clamp(inY, self.top, self.bottom);
+	inY = Clamp(inY, self.bottom, self.top);
 
 	return inX, inY;
 end

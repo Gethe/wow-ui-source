@@ -1124,8 +1124,8 @@ function ProfessionsMixin:InitializeGamepad()
 	self.CraftingPage.RecipeList.SearchBox:SetPoint("RIGHT", self.CraftingPage.RecipeList.FilterDropdown.GamepadFocusIcon, "LEFT", -2, 0);
 	self.CraftingPage.CreateAllButton:SetWidth(130);
 	self.CraftingPage.CreateButton:SetWidth(130);
-	self.CraftingPage.CreateAllButton.smartNavigationIgnored = true;
-	self.CraftingPage.CreateButton.smartNavigationIgnored = true;
+	SmartNavigation_MarkFrameIgnored(self.CraftingPage.CreateAllButton);
+	SmartNavigation_MarkFrameIgnored(self.CraftingPage.CreateButton);
 	self.CraftingPage.GamepadCreateMultiple.ControlDescText.FontString:SetWidth(60);
 	self.CraftingPage.GamepadCreateMultiple.ControlDescText.FontString:SetMaxLines(2);
 	self.CraftingPage.LinkButton:Hide();

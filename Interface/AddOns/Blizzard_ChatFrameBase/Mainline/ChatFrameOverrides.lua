@@ -527,7 +527,7 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 							self:AddMessage(message, info.r, info.g, info.b, info.id);
 							ChatFrameUtil.FlashTabIfNotShown(self, info, type, chatGroup, chatTarget);
 						end
-					end);
+					end, accountInfo.gameAccountInfo.subIcon);
 					return;
 				else
 					local linkDisplayText = ("[%s]"):format(arg2);

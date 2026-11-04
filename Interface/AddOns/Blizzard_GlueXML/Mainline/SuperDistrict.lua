@@ -141,16 +141,12 @@ end
 
 function SuperDistrictMixin:SetupGamepad()
 	local select = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, function()
-		EventRegistry:TriggerEvent("SuperDistrict.ConfirmSuperDistrict");
+		self:ConfirmSuperDistrict();
 	end, ACTION_LABEL_SELECT);
-
-	local back = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, function()
-		EventRegistry:TriggerEvent("SuperDistrict.CancelSelection");
-	end, FRAME_ACTION_BACK);
 
 	self.frameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "SuperDistrictFooter");
 	self.frameFooter:AddPromptedBinding(select);
-	self.frameFooter:AddPromptedBinding(back);
+	self.frameFooter:AddStandardBackPrompt();
 	self.frameFooter:Finalize();
 	self.frameFooter.inputLegend:ClearAllPoints();
 	self.frameFooter.inputLegend:SetPoint("BOTTOM", self, "BOTTOM", 0, 10);
@@ -164,6 +160,11 @@ end
 function SuperDistrictMixin:UninitializeGamepad()
 	self.SelectButton:Show();
 	self.CancelButton:Show();
+end
+
+function SuperDistrictMixin:SmartNavigationCloseHandler()
+	self:OnCancel();
+	return true;
 end
 
 function SuperDistrictMixin:RegisterForTransitions()
@@ -233,5 +234,5 @@ function SuperDistrictButtonMixin:NarrationGetDescription()
 end
 
 function SuperDistrictButtonMixin:OnSmartNavSelect()
-	self:OnClick();
+	self:Click();
 end

@@ -5,8 +5,6 @@ function ShowTaxiMapFrame()
 	ShowUIPanel(TaxiFrame);
 end
 
-TAXI_MAP_WIDTH = 580;
-TAXI_MAP_HEIGHT = 580;
 NUM_TAXI_BUTTONS = 0;
 NUM_TAXI_ROUTES = 0;
 TAXIROUTE_LINEFACTOR = 32/30; -- Multiplying factor for texture coordinates
@@ -35,20 +33,113 @@ local taxiNodePositions = {};
 
 TAXI_BUTTON_MIN_DIST = 18;
 
-function TaxiFrame_OnLoad(self)
+local SOFT_CURSOR_SELECT_DISTANCE_SQ = 30 * 30;
+
+TaxiFrameMixin = {};
+
+function TaxiFrameMixin:OnLoad()
 	self:RegisterEvent("TAXIMAP_CLOSED");
-	self.InsetBg:SetHorizTile(false);
-	self.InsetBg:SetVertTile(false);
+	self.MapTexture:SetHorizTile(false);
+	self.MapTexture:SetVertTile(false);
 end
 
-function TaxiFrame_OnShow(self)
+function TaxiFrameMixin:SetupGamepad()
+	local function CanSelect()
+		return self.gamepadSelection and TaxiNodeGetType(self.gamepadSelection:GetID()) == "REACHABLE";
+	end
+
+	local function SelectNode()
+		if self.gamepadSelection then
+			self.gamepadSelection:Click();
+		end
+	end
+
+	local selectBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, SelectNode, ACTION_LABEL_SELECT);
+	selectBinding:AddCondition(CanSelect);
+
+	local moveCursorBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_LEFT, nil, FRAME_ACTION_NAVIGATE);
+
+	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self);
+	self.gamepadFooter:AddPromptedBinding(moveCursorBinding);
+	self.gamepadFooter:AddPromptedBinding(selectBinding);
+	self.gamepadFooter:AddStandardBackPrompt();
+	self.gamepadFooter:Finalize();
+end
+
+function TaxiFrameMixin:FocusGamepad()
+	SoftCursor:SetBounds(function()
+		local width, height = self.MapTexture:GetSize();
+		local centerX, centerY = self.MapTexture:GetCenter();
+		return SoftCursor_CreateRectBounds(centerX, centerY, width, height);
+	end);
+
+	SoftCursor:SetInputStick("Left");
+	SoftCursor:SetMaxSpeed(GetCVarNumberOrDefault("GamepadMapScrollSpeed"));
+	SoftCursor:SetLinesEnabled(true, self);
+	SoftCursor:RegisterCallback(SoftCursor.Event.OnMove, self.OnSoftCursorMoved, self);
+	SoftCursor:Show();
+
+	if self.gamepadSelection then
+		SoftCursor:SetPosition(self.gamepadSelection:GetCenter());
+	end
+
+	self.gamepadFooter:ShowAndActivateBindings();
+end
+
+function TaxiFrameMixin:UnfocusGamepad()
+	SoftCursor:UnregisterCallback(SoftCursor.Event.OnMove, self);
+	SoftCursor:Hide();
+	self.gamepadFooter:HideAndDeactivateBindings();
+end
+
+function TaxiFrameMixin:OnSoftCursorMoved(x, y)
+	local bestButton = nil;
+	local bestButtonDistSq = math.huge;
+
+	for i=1, NUM_TAXI_BUTTONS do
+		local nodeButton = _G["TaxiButton"..i];
+		local buttonX, buttonY = nodeButton:GetCenter();
+		local deltaX = x - buttonX;
+		local deltaY = y - buttonY;
+		local buttonDistSq = (deltaX * deltaX) + (deltaY * deltaY);
+
+		if buttonDistSq <= SOFT_CURSOR_SELECT_DISTANCE_SQ and buttonDistSq < bestButtonDistSq then
+			bestButton = nodeButton;
+			bestButtonDistSq = buttonDistSq;
+		end
+	end
+
+	if bestButton and bestButton ~= self.gamepadSelection then
+		self:SetGamepadSelection(bestButton);
+	end
+end
+
+function TaxiFrameMixin:SetGamepadSelection(newButton)
+	if newButton == self.gamepadSelection or not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	if self.gamepadSelection then
+		self.gamepadSelection:FocusExit();
+		self.gamepadSelection:UnlockHighlight();
+	end
+
+	self.gamepadSelection = newButton;
+
+	if newButton then
+		newButton:FocusEnter();
+		newButton:LockHighlight();
+	end
+
+	self.gamepadFooter:Refresh();
+end
+
+function TaxiFrameMixin:OnShow()
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 
-	self.TitleText:SetText(FLIGHT_MAP);
+	self.NineSlice.Text:SetText(FLIGHT_MAP);
 
-	-- Set the texture coords on the map
-	self.InsetBg:SetTexCoord(0,1,0,1);
-	SetTaxiMap(self.InsetBg);
+	SetTaxiMap(self.MapTexture);
 
 	-- Show the taxi node map and buttons
 	local num_nodes = NumTaxiNodes();
@@ -61,7 +152,10 @@ function TaxiFrame_OnShow(self)
 	end
 
 	-- Draw nodes
+	local mapWidth = self.MapTexture:GetWidth();
+	local mapHeight = self.MapTexture:GetHeight();
 	local numValidFlightNodes = 0;
+	local currentNode;
 	for index = 1, num_nodes do
 		local type = TaxiNodeGetType(index);
 		local button = _G["TaxiButton"..index];
@@ -69,8 +163,8 @@ function TaxiFrame_OnShow(self)
 		if ( type ~= "NONE" ) then
 			numValidFlightNodes = numValidFlightNodes + 1;
 			local x, y = TaxiNodePosition(button:GetID());
-			local currX = x*TAXI_MAP_WIDTH;
-			local currY = (1.0-y)*TAXI_MAP_HEIGHT;
+			local currX = x * mapWidth;
+			local currY = (1.0 - y) * mapHeight;
 			taxiNodePositions[index].x = currX;
 			taxiNodePositions[index].y = currY;
 			-- check if we are obscuring a previous placement (eg: Ebon Hold and Light's Hope Chapel)
@@ -98,13 +192,16 @@ function TaxiFrame_OnShow(self)
 			end
 			-- set the button position
 			button:ClearAllPoints();
-			button:SetPoint("CENTER", self.InsetBg, "BOTTOMLEFT", floor(taxiNodePositions[index].x+.5), floor(taxiNodePositions[index].y+.5));
+			button:SetPoint("CENTER", self.MapTexture, "BOTTOMLEFT", floor(taxiNodePositions[index].x+.5), floor(taxiNodePositions[index].y+.5));
 			button:SetNormalTexture(TaxiButtonTypes[type].file);
 			local texture = button:GetHighlightTexture();
 			texture:SetAlpha(TaxiButtonTypes[type].highlightBrightness);
 			if ( type == "DISTANT" ) then
 				button:Hide(); -- We'll only show them when a path is going through them (or directly connected to current location)
 			else
+				if type == "CURRENT" then
+					currentNode = button;
+				end
 				button:Show();
 			end
 		else
@@ -123,18 +220,35 @@ function TaxiFrame_OnShow(self)
 	end
 
 	DrawOneHopLines();
+
+	if InputUtil.IsGamepadUIEnabled() and currentNode then
+		SoftCursor:SetPosition(currentNode:GetCenter());
+	end
 end
 
-function TaxiFrame_OnEvent(self, event, ...)
+function TaxiFrameMixin:OnHide()
+	CloseTaxiMap();
+	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+
+	if GameTooltip:GetOwner() == self then
+		GameTooltip:Hide();
+	end
+end
+
+function TaxiFrameMixin:OnEvent(event, ...)
 	if ( event == "TAXIMAP_CLOSED" ) then
 		HideUIPanel(self);
 		return;
 	end
 end
 
-function TaxiNodeOnButtonEnter(button)
-	local index = button:GetID();
-	GameTooltip:SetOwner(button, "ANCHOR_RIGHT");
+TaxiButtonMixin = {};
+
+function TaxiButtonMixin:OnEnter()
+	TaxiFrame:SetGamepadSelection(self);
+
+	local index = self:GetID();
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 	GameTooltip:AddLine(TaxiNodeName(index), nil, nil, nil, true);
 
 	-- Setup variables
@@ -142,8 +256,6 @@ function TaxiNodeOnButtonEnter(button)
 	local numRoutes = GetNumRoutes(index);
 	local line;
 	local sX, sY, dX, dY;
-	local w = TAXI_MAP_WIDTH;
-	local h = TAXI_MAP_HEIGHT;
 	local type = TaxiNodeGetType(index);
 
 	-- if not on a distant node...
@@ -159,7 +271,7 @@ function TaxiNodeOnButtonEnter(button)
 	end
 
 	if ( type == "REACHABLE" ) then
-		GameTooltip_AddMoneyLine(GameTooltip, TaxiNodeCost(button:GetID()));
+		GameTooltip_AddMoneyLine(GameTooltip, TaxiNodeCost(self:GetID()));
 
 		-- Show the path to this node
 		if ( numRoutes > NUM_TAXI_ROUTES ) then
@@ -193,8 +305,8 @@ function TaxiNodeOnButtonEnter(button)
 		end
 	elseif ( type == "UNREACHABLE" ) then
 		-- Show error state when unreachable node is hovered over
-		button:SetNormalTexture(TaxiButtonTypes[type].hoverFile);
-		local texture = button:GetHighlightTexture();
+		self:SetNormalTexture(TaxiButtonTypes[type].hoverFile);
+		local texture = self:GetHighlightTexture();
 		texture:SetAlpha(TaxiButtonTypes[type].highlightBrightness);
 		for i=1, NUM_TAXI_ROUTES do
 			line = _G["TaxiRoute"..i];
@@ -202,29 +314,31 @@ function TaxiNodeOnButtonEnter(button)
 		end
 	elseif ( type == "CURRENT" ) then
 		GameTooltip:AddLine(TAXINODEYOUAREHERE, 1.0, 1.0, 1.0, true);
-		DrawOneHopLines(button.parent);
+		DrawOneHopLines(self.parent);
 	end
 
 	GameTooltip:Show();
 end
 
-function TaxiNodeOnButtonLeave(button)
+function TaxiButtonMixin:OnLeave()
 	GameTooltip:Hide();
 
-	local index = button:GetID();
+	local index = self:GetID();
 	local type = TaxiNodeGetType(index);
 	if TaxiButtonTypes[type] then
 		-- Don't leave it with the hover icon (if it had one)
-		button:SetNormalTexture(TaxiButtonTypes[type].file);
+		self:SetNormalTexture(TaxiButtonTypes[type].file);
 	end
+end
+
+function TaxiButtonMixin:OnClick()
+	TakeTaxiNode(self:GetID());
 end
 
 -- Draw all flightpaths within one hop of current location
 function DrawOneHopLines(self)
 	local line;
 	local sX, sY, dX, dY;
-	local w = TAXI_MAP_WIDTH;
-	local h = TAXI_MAP_HEIGHT;
 	local numNodes = NumTaxiNodes();
 	local numLines = 0;
 	local numSingleHops = 0;

@@ -35,6 +35,11 @@ local GM_SPLASH_SCREEN_MAP = {
 };
 
 function GameModeInfoDisplayMixin:OnShow()
+	if CharacterCreateFrame:IsShown() then
+		self:SetShown(false);
+		return;
+	end
+
 	self.gameModeForSplashScreen = C_GameRules.GetActiveGameModeForSplashScreen() or self.gameModeForSplashScreen or C_GameRules.GetActiveGameMode();
 	if not self.gameModeForSplashScreen then
 		self:SetShown(false);

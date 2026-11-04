@@ -112,6 +112,7 @@ local TextureUtils =
 				{ Name = "titleID", Type = "string", Nilable = false },
 				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
 				{ Name = "callback", Type = "GetTitleIconTextureCallback", Nilable = false },
+				{ Name = "subIcon", Type = "string", Nilable = true },
 			},
 		},
 		{
@@ -123,6 +124,7 @@ local TextureUtils =
 			{
 				{ Name = "titleID", Type = "string", Nilable = false },
 				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
+				{ Name = "subIcon", Type = "string", Nilable = true },
 			},
 
 			Returns =
@@ -140,6 +142,7 @@ local TextureUtils =
 				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 				{ Name = "titleID", Type = "string", Nilable = false },
 				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
+				{ Name = "subIcon", Type = "string", Nilable = true },
 			},
 		},
 		{

@@ -1998,7 +1998,7 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.rafLinkType, accountInfo.gameAccountInfo.areaName);
 				end
 
-					C_Texture.SetTitleIconTexture(button.gameIcon, accountInfo.gameAccountInfo.clientProgram, Enum.TitleIconVersion.Medium);
+					C_Texture.SetTitleIconTexture(button.gameIcon, accountInfo.gameAccountInfo.clientProgram, Enum.TitleIconVersion.Medium, accountInfo.gameAccountInfo.subIcon);
 
 				local fadeIcon = (accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (accountInfo.gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID);
 				if fadeIcon then
@@ -2336,12 +2336,12 @@ function FriendsListButtonMixin:OnEnter()
 				characterNameString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Name"];
 				gameAccountInfoString = _G["FriendsTooltipGameAccount"..gameAccountIndex.."Info"];
 				text = "";
-				if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small) then
+				if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, gameAccountInfo.subIcon) then
 					C_Texture.GetTitleIconTexture(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
 						if success then
 							text = BNet_GetClientEmbeddedTexture(texture, 32, 32, 0).." ";
 						end
-					end);
+					end, gameAccountInfo.subIcon);
 				end
 				if (gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (gameAccountInfo.wowProjectID == WOW_PROJECT_ID) then
 					if (gameAccountInfo.realmName == playerRealmName) and (gameAccountInfo.factionName == playerFactionGroup) then
@@ -2504,12 +2504,12 @@ function FriendsFrame_SetupTravelPassDropdown(friendIndex, attachedTo)
 				end
 			else
 				restriction = INVITE_RESTRICTION_CLIENT;
-				if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small) then
+				if C_Texture.IsTitleIconTextureReady(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, gameAccountInfo.subIcon) then
 					C_Texture.GetTitleIconTexture(gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, function(success, texture)
 						if success then
 							text = BNet_GetClientEmbeddedTexture(texture, 32, 32, 18);
 						end
-					end);
+					end, gameAccountInfo.subIcon);
 				end
 			end
 

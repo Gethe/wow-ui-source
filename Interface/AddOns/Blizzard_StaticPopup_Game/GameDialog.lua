@@ -26,14 +26,6 @@ function GameDialogBaseMixin:OnLoad()
 	self.BG.Bottom:SetAtlas("UI-DialogBox-Background-Dark", TextureKitConstants.UseAtlasSize);
 	self.BG.Bottom:SetPoint("TOPLEFT", 7, -7);
 	self.BG.Bottom:SetPoint("BOTTOMRIGHT", -7, 7);
-
-	self.GamepadSequence:SetSequence({GAMEPAD_FACE_TOP, GAMEPAD_SHOULDER_LEFT, GAMEPAD_FACE_BOTTOM, GAMEPAD_FACE_LEFT, GAMEPAD_SHOULDER_RIGHT});
-
-	local function OnSequenceComplete()
-		self:GetButton1():Enable();
-	end
-
-	self.GamepadSequence:RegisterOnSequenceComplete(OnSequenceComplete);
 end
 
 function GameDialogBaseMixin:SetCloseButtonToMinimize()
@@ -59,6 +51,19 @@ do
 
 	function GameDialogMixin:OnLoad()
 		GameDialogBaseMixin.OnLoad(self);
+
+		self.GamepadSequence:SetSequence({
+			GAMEPAD_FACE_TOP,
+			GAMEPAD_SHOULDER_LEFT,
+			GAMEPAD_FACE_BOTTOM,
+			GAMEPAD_FACE_LEFT,
+			GAMEPAD_SHOULDER_RIGHT
+		});
+
+		local function OnSequenceComplete()
+			self:GetButton1():Enable();
+		end
+		self.GamepadSequence:RegisterOnSequenceComplete(OnSequenceComplete);
 
 		for buttonIndex, button in ipairs(self:GetButtons()) do
 			SetupButton(self, button);

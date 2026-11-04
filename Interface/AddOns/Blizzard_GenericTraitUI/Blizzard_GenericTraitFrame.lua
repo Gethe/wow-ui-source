@@ -70,6 +70,8 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 	self.OnShowCallback = layoutInfo.OnShowCallback;
 	self.OnHideCallback = layoutInfo.OnHideCallback;
 	self.hideUndiscoveredNodes = not not layoutInfo.HideUndiscoveredNodes;
+	self.emptyNodeAtlas = layoutInfo.EmptyNodeAtlas;
+	self:SetButtonOverlayTemplateCallback(self.emptyNodeAtlas and GenerateClosure(self.GetButtonOverlayTemplate, self) or nil);
 
 	-- Show currency costs and held currency amounts by default unless overridden to be hidden by layout info.
 	local showCurrencyDisplay = not layoutInfo.HideCurrencyDisplay;
@@ -181,6 +183,16 @@ function GenericTraitFrameMixin:ShouldNodeBeVisible(nodeInfo)
 	return isLearned or nodeInfo.meetsEdgeRequirements;
 end
 
+function GenericTraitFrameMixin:GetButtonOverlayTemplate(talentButton)
+	-- Undiscovered nodes are invisible, so show a placeholder to keep the board from looking empty.
+	local nodeInfo = talentButton:GetNodeInfo();
+	if nodeInfo and nodeInfo.isVisible and not talentButton:IsInDeactivatedSubTree() and not self:ShouldNodeBeVisible(nodeInfo) then
+		return "GenericTraitEmptyNodeOverlayTemplate";
+	end
+
+	return nil;
+end
+
 function GenericTraitFrameMixin:OnButtonUpdateNodeInfo(nodeID)
 	TalentFrameBaseMixin.OnButtonUpdateNodeInfo(self, nodeID);
 
@@ -222,6 +234,25 @@ function GenericTraitFrameMixin:ShowGenericTraitFrameTutorial()
 	if tutorialInfo and not GetCVarBitfield("closedInfoFrames", tutorialInfo.tutorial.bitfieldFlag) then
 		HelpTip:Show(self, tutorialInfo.tutorial, firstButton);
 	end
+end
+
+GenericTraitEmptyNodeOverlayMixin = {};
+
+function GenericTraitEmptyNodeOverlayMixin:Attach(talentButton)
+	self.talentButton = talentButton;
+	self:SetParent(talentButton:GetParent());
+	self:SetAllPoints(talentButton);
+	-- Stay behind the node so the overlay never intercepts or covers its input and art.
+	self:SetFrameLevel(math.max(talentButton:GetFrameLevel() - 1, 0));
+	self:Update(talentButton);
+end
+
+function GenericTraitEmptyNodeOverlayMixin:OnRelease()
+	self.talentButton = nil;
+end
+
+function GenericTraitEmptyNodeOverlayMixin:Update(talentButton)
+	self.Texture:SetAtlas(talentButton:GetTalentFrame().emptyNodeAtlas, TextureKitConstants.IgnoreAtlasSize);
 end
 
 GenericTraitFrameCurrencyFrameMixin = {};

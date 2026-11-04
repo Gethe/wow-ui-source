@@ -5,9 +5,9 @@ local ForbiddenAspectConstants =
 		{
 			Name = "ForbiddenAspect",
 			Type = "Enumeration",
-			NumValues = 15,
+			NumValues = 16,
 			MinValue = 1,
-			MaxValue = 16384,
+			MaxValue = 32768,
 			Fields =
 			{
 				{ Name = "SetToDefaults", Type = "ForbiddenAspect", EnumValue = 1, Documentation = { "Restricts resetting this object to a default state. Implied automatically when any other forbidden aspect is set." } },
@@ -25,6 +25,7 @@ local ForbiddenAspectConstants =
 				{ Name = "QueryRotation", Type = "ForbiddenAspect", EnumValue = 4096, Documentation = { "Restricts APIs that query texture rotation." } },
 				{ Name = "QueryAnimationProgress", Type = "ForbiddenAspect", EnumValue = 8192, Documentation = { "Restricts APIs that query the progress or state of animations." } },
 				{ Name = "AddAnimations", Type = "ForbiddenAspect", EnumValue = 16384, Documentation = { "Restricts APIs that add animations to animation groups." } },
+				{ Name = "QueryTimerDuration", Type = "ForbiddenAspect", EnumValue = 32768, Documentation = { "Restricts APIs that query the timer duration object of a status bar." } },
 			},
 		},
 	},

@@ -1,5 +1,27 @@
 
 ----------------------------------------------------------------------------------
+-- CatalogShopBYOBPurchaseButtonMixin
+----------------------------------------------------------------------------------
+CatalogShopBYOBPurchaseButtonMixin = {};
+
+function CatalogShopBYOBPurchaseButtonMixin:OnEnter()
+	if self:IsEnabled() then
+		return;
+	end
+
+	local tooltip = CatalogShopFrame:GetAppropriateTooltip();
+	tooltip:SetOwner(self, "ANCHOR_NONE");
+	tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -10, -8);
+	GameTooltip_AddErrorLine(tooltip, CATALOG_SHOP_BYOB_MUST_SELECT_REQUIRED_NUMBER);
+	tooltip:Show();
+end
+
+function CatalogShopBYOBPurchaseButtonMixin:OnLeave()
+	CatalogShopFrame:HideTooltip();
+end
+
+
+----------------------------------------------------------------------------------
 -- CatalogShopProductBYOBContainerFrameMixin
 ----------------------------------------------------------------------------------
 CatalogShopProductBYOBContainerFrameMixin = {};

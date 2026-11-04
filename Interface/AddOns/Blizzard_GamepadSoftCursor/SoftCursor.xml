@@ -40,7 +40,7 @@
 			</AnimationGroup>
 		</Animations>
 		<Frames>
-			<Frame parentKey="Icon" setAllPoints="true" frameStrata="HIGH">
+			<Frame parentKey="Icon" setAllPoints="true" frameStrata="HIGH" roundLayoutToNearestPixel="true">
 				<Layers>
 					<Layer level="OVERLAY">
 						<Texture atlas="gamepad-reticletargeting-indicator-x1">
@@ -65,6 +65,29 @@
 	</Frame>
 
 	<Frame name="SoftCursor" parent="UIParent" inherits="MetallicSoftCursorPointerTemplate" mixin="SoftCursorMixin" hidden="true">
+		<Frames>
+			<Frame parentKey="Lines" hidden="true">
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="UIParent"/>
+				</Anchors>
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture parentKey="LeftLine" roundLayoutToNearestPixel="true">
+							<Color color="NORMAL_FONT_COLOR"/>
+						</Texture>
+						<Texture parentKey="RightLine" roundLayoutToNearestPixel="true">
+							<Color color="NORMAL_FONT_COLOR"/>
+						</Texture>
+						<Texture parentKey="TopLine" roundLayoutToNearestPixel="true">
+							<Color color="NORMAL_FONT_COLOR"/>
+						</Texture>
+						<Texture parentKey="BottomLine" roundLayoutToNearestPixel="true">
+							<Color color="NORMAL_FONT_COLOR"/>
+						</Texture>
+					</Layer>
+				</Layers>
+			</Frame>
+		</Frames>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnShow method="OnShow"/>

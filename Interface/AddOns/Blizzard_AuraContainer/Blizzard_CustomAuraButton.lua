@@ -226,6 +226,7 @@ function CustomAuraButtonSharedMixin:SetDurationBar(statusBar, options)
 	options = C_AuraContainerUtil.ProcessCustomAuraButtonDurationBarOptions(securecopy(options));
 
 	statusBar = AuraContainerUtil.InitializeInboundScriptObject(statusBar);
+	statusBar:AddForbiddenAspects(Enum.ForbiddenAspect.QueryTimerDuration);
 	statusBar:AddSecretAspect(Enum.SecretAspect.BarValue);
 
 	self.durationBar = PackDisplayElement(statusBar, options);

@@ -420,10 +420,6 @@ function MapCanvasScrollControllerMixin:OnUpdate(elapsed)
 		local viewRect = self:GetViewRect();
 		self:GetMap():UpdateAreaTriggers(viewRect);
 	end
-
-	if self.gamepadCursorLinesActive then
-		self:UpdateGamepadCursorLines();
-	end
 end
 
 function MapCanvasScrollControllerMixin:MarkAreaTriggersDirty()
@@ -886,8 +882,6 @@ function MapCanvasScrollControllerMixin:SetGamepadFocus(inFocus)
 	self.edgePanDistance = GetCVarNumberOrDefault("GamepadMapEdgePanDistance");
 
 	if inFocus then
-		local map = self:GetMap();
-
 		-- Only initialize the cursor when entering the map UI, we want to retain cursor position on sub frame focus change.
 		if not self.hasInitializedGamepadCursor then
 			self.hasInitializedGamepadCursor = true;
@@ -902,97 +896,17 @@ function MapCanvasScrollControllerMixin:SetGamepadFocus(inFocus)
 			SoftCursor:SetMaxSpeed(self:GetGamepadMaxScrollSpeed());
 			SoftCursor:SetBounds(boundsFunc);
 			SoftCursor:SetInputStick("Left");
+			SoftCursor:SetLinesEnabled(true, self);
 			SoftCursor:SetActive(true);
 		end
-
-		self:CreateGamepadCursorLines();
-		self.gamepadCursorLinesActive = true;
-		self:SetGamepadCursorLinesShown(true);
-		self:UpdateGamepadCursorLines();
-		SoftCursor:SetParent(self.gamepadOverlayFrame);
 	else
-		self.gamepadCursorLinesActive = false;
-
-		if self.gamepadCursorLines then
-			self:SetGamepadCursorLinesShown(false);
-		end
-
 		-- Only disable the cursor when leaving the map UI entirely
 		local map = self:GetMap();
 		if not map.currentFocus then
 			SmartNavigation:SuspendCursor(false);
 			SoftCursor:SetActive(false);
-			SoftCursor:SetParent(UIParent);
 		end
 	end
-end
-
-function MapCanvasScrollControllerMixin:SetGamepadCursorLinesShown(shown)
-	self.gamepadOverlayFrame:SetShown(shown);
-end
-
-function MapCanvasScrollControllerMixin:CreateGamepadCursorLines()
-	if self.gamepadCursorLines then
-		return;
-	end
-
-	local overlay = CreateFrame("Frame", nil, self);
-	overlay:SetAllPoints(self);
-	overlay:SetFrameLevel(self.Child:GetFrameLevel() + 1);
-	overlay:SetClipsChildren(true);
-
-	local color = NORMAL_FONT_COLOR;
-	local function CreateLine()
-		local line = overlay:CreateTexture(nil, "OVERLAY");
-		line:SetColorTexture(color:GetRGBA());
-		return line;
-	end
-
-	self.gamepadOverlayFrame = overlay;
-	self.gamepadCursorLines = {
-		left = CreateLine(),
-		right = CreateLine(),
-		top = CreateLine(),
-		bottom = CreateLine(),
-	};
-end
-
-function MapCanvasScrollControllerMixin:UpdateGamepadCursorLines()
-	if not SoftCursor:IsShown() then
-		self:SetGamepadCursorLinesShown(false);
-		return;
-	end
-
-	local overlay = self.gamepadOverlayFrame;
-	local overlayX, overlayY = overlay:GetCenter();
-
-	local x, y = SoftCursor:GetCenter();
-	x = x - overlayX;
-	y = y - overlayY;
-
-	local iconTexture = SoftCursor.Icon.Texture;
-	local offset = iconTexture:GetWidth() * 0.5 - 1;
-
-	local left = self.gamepadCursorLines.left;
-	local right = self.gamepadCursorLines.right;
-	local top = self.gamepadCursorLines.top;
-	local bottom = self.gamepadCursorLines.bottom;
-
-	left:ClearAllPoints();
-	left:SetSize(self:GetWidth(), 2);
-	left:SetPoint("RIGHT", overlay, "CENTER", x - offset, y);
-
-	right:ClearAllPoints();
-	right:SetSize(self:GetWidth(), 2);
-	right:SetPoint("LEFT", overlay, "CENTER", x + offset, y);
-
-	top:ClearAllPoints();
-	top:SetSize(2, self:GetHeight());
-	top:SetPoint("BOTTOM", overlay, "CENTER", x, y + offset);
-
-	bottom:ClearAllPoints();
-	bottom:SetSize(2, self:GetHeight());
-	bottom:SetPoint("TOP", overlay, "CENTER", x, y - offset);
 end
 
 function MapCanvasScrollControllerMixin:GetGamepadMaxScrollSpeed()

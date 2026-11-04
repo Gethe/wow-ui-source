@@ -2,7 +2,8 @@
 ## Dep: Blizzard_TimerunningUtil
 ## Dep: Blizzard_AddFriend
 ## OptionalDeps: Blizzard_GlueStubs, Blizzard_ActionBar, Blizzard_SocialUIShared, Blizzard_RecentAllies, Blizzard_UnitPopupShared, Blizzard_UnitPopup
-## AllowLoad: both
+## AllowLoad: both [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+## AllowLoad: game [AllowLoadGameType camelot]
 ## AllowLoadGameType: mainline
 
 [Family]\FriendsListConstants.lua

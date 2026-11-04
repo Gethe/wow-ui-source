@@ -3,6 +3,7 @@
 ## SavedVariables: SmartNavigation_Mod_Options
 ## AllowLoad: Both
 
+SecureHelper.lua
 Utility.lua
 
 SmartNavigation.lua

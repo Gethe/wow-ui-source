@@ -5,7 +5,7 @@ local WowCSConstants =
 		{
 			Name = "FragmentID",
 			Type = "Enumeration",
-			NumValues = 78,
+			NumValues = 79,
 			MinValue = 0,
 			MaxValue = 255,
 			Fields =
@@ -55,6 +55,7 @@ local WowCSConstants =
 				{ Name = "FPathingDoor", Type = "FragmentID", EnumValue = 42 },
 				{ Name = "FWorldStateListenerData", Type = "FragmentID", EnumValue = 43 },
 				{ Name = "FMapObject", Type = "FragmentID", EnumValue = 44 },
+				{ Name = "RemoteMirrorState", Type = "FragmentID", EnumValue = 45 },
 				{ Name = "TagItem", Type = "FragmentID", EnumValue = 200 },
 				{ Name = "TagContainer", Type = "FragmentID", EnumValue = 201 },
 				{ Name = "TagAzeriteEmpoweredItem", Type = "FragmentID", EnumValue = 202 },

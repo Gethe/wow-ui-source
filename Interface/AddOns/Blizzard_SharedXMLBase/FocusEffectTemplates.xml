@@ -67,7 +67,7 @@
 		</Layers>
 	</Frame>
 
-	<Frame name="FocusFramesInterfaceTemplate" mixin="FocusFramesInterfaceMixin" virtual="true">
+	<Frame name="FocusFramesInterfaceBaseTemplate" virtual="true">
 		<Frames>
 			<Frame parentKey="FrameGlow" inherits="FrameGlowTemplate" hidden="true" frameLevel="505"/>
 			<Frame parentKey="LeftJumpHint" inherits="FrameLeftJumpHintTemplate" hidden="true" frameLevel="515"/>
@@ -75,4 +75,6 @@
 			<Frame parentKey="FocusJumpHint" inherits="FrameFocusJumpHintTemplate" hidden="true" frameLevel="515"/>
 		</Frames>
 	</Frame>
+
+	<Frame name="FocusFramesInterfaceTemplate" mixin="FocusFramesInterfaceMixin" inherits="FocusFramesInterfaceBaseTemplate" virtual="true"/>
 </Ui>

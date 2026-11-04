@@ -381,7 +381,7 @@ function SmallCatalogShopBYOBCardMixin:OnEnter()
 		local tooltip = CatalogShopFrame:GetAppropriateTooltip();
 		tooltip:SetOwner(self, "ANCHOR_NONE");
 		tooltip:ClearAllPoints();
-		tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT");
+		tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -15, -16);
 		GameTooltip_AddNormalLine(tooltip, CATALOG_SHOP_BYOB_ALREADY_OWNED);
 		tooltip:Show();
 	end
@@ -453,7 +453,8 @@ function BYOBCheckboxMixin:OnEnter()
 	end
 
 	local tooltip = CatalogShopFrame:GetAppropriateTooltip();
-	tooltip:SetOwner(self, "ANCHOR_RIGHT");
+	tooltip:SetOwner(self, "ANCHOR_NONE");
+	tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -6, -6);
 	GameTooltip_AddErrorLine(tooltip, CATALOG_SHOP_BYOB_MAX_SELECTED);
 	tooltip:Show();
 end

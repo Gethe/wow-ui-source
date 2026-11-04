@@ -11,8 +11,8 @@
 ## Dep: Blizzard_GameMenuEsc
 ## Dep: Blizzard_SharedXML
 ## Dep: Blizzard_GamepadSharedUtility [AllowLoadGameType mainline, camelot]
-## AllowLoad: both [AllowLoadGameType mainline]
-## AllowLoad: game [AllowLoadGameType classic]
+## AllowLoad: both [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+## AllowLoad: game [AllowLoadGameType classic, camelot]
 ## LoadFirst: 1 [AllowLoadGameType classic]
 Shared\HistoryKeeper.lua
 Shared\SlashCommandsRegistry.lua

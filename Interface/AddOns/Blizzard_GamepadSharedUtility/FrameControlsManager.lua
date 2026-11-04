@@ -1,3 +1,5 @@
+local SecureHelper = import("Blizzard_GamepadSmartNavigation.SecureHelper");
+
 --[[
 	Handles transferring controls when multiple windows are active.
 
@@ -42,12 +44,8 @@ local function UnfocusFocusedFrame(self)
 
 	local frameToUnfocus = self.focusedFrame;
 
-	if (frameToUnfocus.UnfocusGamepad) then
-		frameToUnfocus:UnfocusGamepad();
-	end
-	if (frameToUnfocus.EndFocus) then
-		frameToUnfocus:EndFocus();
-	end
+	SecureHelper.SecureCallOptionalFunction(frameToUnfocus, "UnfocusGamepad", frameToUnfocus);
+	SecureHelper.SecureCallOptionalFunction(frameToUnfocus, "EndFocus", frameToUnfocus);
 
 	--[[
 		Unfocusing a frame may cause another frame to become
@@ -105,12 +103,8 @@ local function FocusFrame(self, index)
 	self.focusedFrame = frame;
 	EnableNavigation(frame);
 
-	if (frame.FocusGamepad) then
-		frame:FocusGamepad();
-	end
-	if (self.focusedFrame.StartFocus) then
-		self.focusedFrame:StartFocus();
-	end
+	SecureHelper.SecureCallOptionalFunction(frame, "FocusGamepad", frame);
+	SecureHelper.SecureCallOptionalFunction(frame, "StartFocus", frame);
 
 	self:RefreshFocus();
 
@@ -431,6 +425,7 @@ function GamepadFrameControlsManagerMixin:FrameShown(frame, isPopup, shouldFocus
 	if self.isUIFocused then
 		local shouldActivateFrame = shouldFocusFrame;
 		if type(shouldActivateFrame) == "function" then
+			-- Intentionally missing taint barrier: This controls focus
 			shouldActivateFrame = shouldActivateFrame();
 		end
 
@@ -464,6 +459,9 @@ function GamepadFrameControlsManagerMixin:FrameShown(frame, isPopup, shouldFocus
 
 	return true;
 end
+
+-- A lot of code calls into FrameShown. Try to keep taint away.
+GamepadFrameControlsManagerMixin.FrameShown = SecureHelper:WrapFunction(GamepadFrameControlsManagerMixin.FrameShown);
 
 --[[
 	Called when a frame is closed, takes it out of shownFrames.
@@ -559,6 +557,9 @@ function GamepadFrameControlsManagerMixin:FrameHidden(frame)
 	return true;
 end
 
+-- A lot of code calls into FrameHidden. Try to keep taint away.
+GamepadFrameControlsManagerMixin.FrameHidden = SecureHelper:WrapFunction(GamepadFrameControlsManagerMixin.FrameHidden);
+
 function GamepadFrameControlsManagerMixin:HandlePopupShown(popupFrame)
 	local returnFrame;
 	if self.isUIFocused and not popupFrame.skipGamepadAutoFocus then
@@ -579,9 +580,13 @@ function GamepadFrameControlsManagerMixin:HandlePopupShown(popupFrame)
 	end
 end
 
+GamepadFrameControlsManagerMixin.HandlePopupShown = SecureHelper:WrapFunction(GamepadFrameControlsManagerMixin.HandlePopupShown);
+
 function GamepadFrameControlsManagerMixin:HandlePopupHide(popupFrame)
 	self:FrameHidden(popupFrame);
 end
+
+GamepadFrameControlsManagerMixin.HandlePopupHide = SecureHelper:WrapFunction(GamepadFrameControlsManagerMixin.HandlePopupHide);
 
 --[[
 	Returns the amount of focusable frames
@@ -643,12 +648,8 @@ function GamepadFrameControlsManagerMixin:SetUIFocusState(shouldFocusUI)
 			local currentFocusedFrame = self.focusedFrame;
 			EnableNavigation(currentFocusedFrame);
 
-			if (currentFocusedFrame.FocusGamepad) then
-				currentFocusedFrame:FocusGamepad();
-			end
-			if (currentFocusedFrame.StartFocus) then
-				currentFocusedFrame:StartFocus();
-			end
+			SecureHelper.SecureCallOptionalFunction(currentFocusedFrame, "FocusGamepad", currentFocusedFrame);
+			SecureHelper.SecureCallOptionalFunction(currentFocusedFrame, "StartFocus", currentFocusedFrame);
 
 			CheckForInputBinding(self);
 		end
@@ -657,9 +658,7 @@ function GamepadFrameControlsManagerMixin:SetUIFocusState(shouldFocusUI)
 			-- Close any popup menus when toggling the UI.
 			local currentActiveFrame = self.focusedFrame;
 			if (currentActiveFrame and currentActiveFrame.dismissOnUnfocus) then
-				if (currentActiveFrame.SmartNavigationCloseHandler) then
-					currentActiveFrame:SmartNavigationCloseHandler();
-				else
+				if not SecureHelper.SecureCallOptionalFunction(currentActiveFrame, "SmartNavigationCloseHandler", currentActiveFrame) then
 					HideUIPanel(currentActiveFrame);
 				end
 
@@ -672,11 +671,9 @@ function GamepadFrameControlsManagerMixin:SetUIFocusState(shouldFocusUI)
 			GamepadMode.PopupHandler:UpdateVisiblePopups();
 
 			currentActiveFrame = self.focusedFrame;
-			if (currentActiveFrame and currentActiveFrame.UnfocusGamepad) then
-				currentActiveFrame:UnfocusGamepad();
-			end
-			if (currentActiveFrame and currentActiveFrame.EndFocus) then
-				currentActiveFrame:EndFocus();
+			if currentActiveFrame then
+				SecureHelper.SecureCallOptionalFunction(currentActiveFrame, "UnfocusGamepad", currentActiveFrame);
+				SecureHelper.SecureCallOptionalFunction(currentActiveFrame, "EndFocus", currentActiveFrame);
 			end
 
 			CheckForInputBinding(self);
@@ -780,8 +777,8 @@ function GamepadFrameControlsManagerMixin:UnsuspendFrame()
 		GamepadSharedUtility.HideSuspendFooter();
 	end
 
-	if (returnFrame and returnFrame.LockInFocus) then
-		returnFrame:LockInFocus(false);
+	if returnFrame then
+		SecureHelper.SecureCallOptionalFunction(returnFrame, "LockInFocus", returnFrame, false);
 	end
 
 	local frameFocused = false;
@@ -875,9 +872,6 @@ end
 function GamepadFrameControlsManagerMixin:DisableCustomNavigation(focusedFrame)
 	focusedFrame.useCustomNavigation = nil;
 end
-function GamepadFrameControlsManagerMixin:ClearSmartNavReturnFrame(focusedFrame)
-	focusedFrame.smartNavReturnFrame = nil;
-end
 
 function GamepadFrameControlsManagerMixin:ToggleFrameControls(enable)
 	if (enable) then
@@ -895,37 +889,25 @@ end
 
 local function ShowLeftJumpHint(frame, show)
 	if show then
-		if frame.ShowLeftJumpHint then
-			frame:ShowLeftJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "ShowLeftJumpHint", frame);
 	else
-		if frame.HideLeftJumpHint then
-			frame:HideLeftJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "HideLeftJumpHint", frame);
 	end
 end
 
 local function ShowRightJumpHint(frame, show)
 	if show then
-		if frame.ShowRightJumpHint then
-			frame:ShowRightJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "ShowRightJumpHint", frame);
 	else
-		if frame.HideRightJumpHint then
-			frame:HideRightJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "HideRightJumpHint", frame);
 	end
 end
 
 local function ShowFocusJumpHint(frame, show)
 	if show then
-		if frame.ShowFocusJumpHint then
-			frame:ShowFocusJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "ShowFocusJumpHint", frame);
 	else
-		if frame.HideFocusJumpHint then
-			frame:HideFocusJumpHint();
-		end
+		SecureHelper.SecureCallOptionalFunction(frame, "HideFocusJumpHint", frame);
 	end
 end
 
