@@ -33,6 +33,10 @@ end
 ShardTransferImminentMixin = {};
 
 function ShardTransferImminentMixin:OnLoad()
+	if C_Glue.IsOnGlueScreen() then
+		return;
+	end
+	
 	self:RegisterEvent("SHARD_TRANSFER_IMMINENT");
 	self:RegisterEvent("SHARD_TRANSFER_CANCELLED");
 	self:RegisterEvent("SHARD_TRANSFER");
@@ -44,6 +48,11 @@ function ShardTransferImminentMixin:OnLoad()
 	if self.CloseButton then
 		self.CloseButton:Hide();
 		self.CloseButton:SetParent(nil);
+	end
+
+	-- If a shard transfer is already scheduled to occur, show the display immediately
+	if GetEvictionTimeRemaining() > 0 then
+		self:Start()
 	end
 end
 
@@ -57,7 +66,7 @@ function ShardTransferImminentMixin:OnEvent(event, ...)
 	end
 end
 
-function ShardTransferImminentMixin:Start(time)
+function ShardTransferImminentMixin:Start()
 	self:SetExternallyManagedOutroAnimation(true);
 	AlertFrame_ShowNewAlert(self);
 	self.timer = GetEvictionTimeRemaining();
@@ -102,6 +111,10 @@ end
 ShardTransferImminentMinimizeMixin = {};
 
 function ShardTransferImminentMinimizeMixin:OnLoad()
+	if C_Glue.IsOnGlueScreen() then
+		return;
+	end
+
 	self:RegisterEvent("SHARD_TRANSFER_IMMINENT");
 	self:RegisterEvent("SHARD_TRANSFER_CANCELLED");
 	self:RegisterEvent("SHARD_TRANSFER");
@@ -113,6 +126,11 @@ function ShardTransferImminentMinimizeMixin:OnLoad()
 	if self.CloseButton then
 		self.CloseButton:Hide();
 		self.CloseButton:SetParent(nil);
+	end
+
+	-- If a shard transfer is already scheduled to occur, show the display immediately
+	if GetEvictionTimeRemaining() > 0 then
+		self:Start()
 	end
 end
 
@@ -126,7 +144,7 @@ function ShardTransferImminentMinimizeMixin:OnEvent(event, ...)
 	end
 end
 
-function ShardTransferImminentMinimizeMixin:Start(time)
+function ShardTransferImminentMinimizeMixin:Start()
 	self:SetExternallyManagedOutroAnimation(true);
 	AlertFrame_ShowNewAlert(self);
 	self.timer = GetEvictionTimeRemaining();

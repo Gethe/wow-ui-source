@@ -40,7 +40,7 @@
 		</Scripts>
 	</Button>
 
-	<Frame name="SubscriptionInterstitialFrame" mixin="SubscriptionInterstitialFrameMixin" inherits="DefaultPanelTemplate" parent="UIParent" toplevel="true" hidden="true">
+	<Frame name="SubscriptionInterstitialFrame" mixin="SubscriptionInterstitialFrameMixin" inherits="DefaultPanelTemplate, GamepadBaseDialogTemplate, FocusFramesInterfaceTemplate" parent="UIParent" toplevel="true" hidden="true">
 		<Size x="816" y="536"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="100"/>
@@ -158,7 +158,7 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnLoad method="OnLoad"/>
+			<OnLoad method="OnLoad" inherit="prepend"/>
 			<OnShow method="OnShow"/>
 			<OnHide method="OnHide"/>
 			<OnEvent method="OnEvent"/>

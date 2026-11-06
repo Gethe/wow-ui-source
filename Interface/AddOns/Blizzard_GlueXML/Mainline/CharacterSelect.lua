@@ -646,9 +646,7 @@ function CharacterSelectFrameMixin:OnEvent(event, ...)
 		local swapping = ...;
 		self.autoRealmSwap = swapping;
 	elseif (event == "SUBSCRIPTION_INTERSTITIAL_AVAILABLE") then
-		if not InputUtil.IsGamepadUIEnabled() then
-			SubscriptionInterstitial_ShowSubscriptionPeriod();
-		end
+		SubscriptionInterstitial_ShowSubscriptionPeriod();
 	elseif (event == "ALL_WARBAND_GROUP_SCENES_UPDATED") then
 		-- Clear search to correct visual issues with the camp/map scene when we refresh things.
 		CharacterSelectCharacterFrame:ClearSearch();
