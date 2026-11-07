@@ -192,6 +192,11 @@ function SmartNavigationMixin:InitializeGamepad()
 	end
 
 	self.enabled = true;
+
+	EventRegistry:RegisterCallback("UI.AlternateTopLevelParentChanged", function(_, frame)
+		SetAppropriateTopLevelParent(self);
+		self:SetFrameStrata("TOOLTIP");
+	end, self);
 end
 
 function SmartNavigationMixin:UninitializeGamepad()
@@ -205,6 +210,8 @@ function SmartNavigationMixin:UninitializeGamepad()
 
 	GamepadMode.DeactivateBindingGroup(self.navigationBindings);
 	GamepadMode.DeactivateBindingGroup(self.rightStickScrollBindings);
+
+	EventRegistry:UnregisterCallback("UI.AlternateTopLevelParentChanged", self);
 end
 
 function SmartNavigationMixin:SetupInputBindings()
