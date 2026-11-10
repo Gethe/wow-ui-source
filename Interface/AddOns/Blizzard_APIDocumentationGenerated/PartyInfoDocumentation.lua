@@ -773,6 +773,7 @@ local PartyInfo =
 				{ Name = "isHealer", Type = "bool", Nilable = false },
 				{ Name = "isDamage", Type = "bool", Nilable = false },
 				{ Name = "isNativeRealm", Type = "bool", Nilable = false },
+				{ Name = "isCrossShard", Type = "bool", Nilable = false },
 				{ Name = "allowMultipleRoles", Type = "bool", Nilable = false },
 				{ Name = "inviterGUID", Type = "WOWGUID", Nilable = false },
 				{ Name = "questSessionActive", Type = "bool", Nilable = false },

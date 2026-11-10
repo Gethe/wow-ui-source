@@ -167,7 +167,8 @@ function LegacyTreeTraitPanelMixin:UpdateConfigButtonsState()
 
 	local shouldShowUndo = self:HasAnyConfigChanges() and not self.isConfigReadyToApply;
 	self.UndoButton:SetShown(shouldShowUndo);
-	self.ResetButton:SetShown(not shouldShowUndo);
+	local cannotRefund = self.talentTreeInfo and self.talentTreeInfo.cannotRefund;
+	self.ResetButton:SetShown(not shouldShowUndo and not cannotRefund);
 	self.ResetButton:SetEnabledState(self:HasValidConfig() and self:HasAnyPurchasedRanks() and not self:IsCommitInProgress());
 
 	if InputUtil.IsGamepadUIEnabled() then

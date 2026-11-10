@@ -12,6 +12,9 @@ Shared\Game.lua
 [Family]\EventRouting.lua
 [Family]\Game.lua
 
+[Family]\EventImplementationUtils.lua	[ExcludeLoadGameType camelot, classic]
+[Game]\EventImplementationUtils.lua		[AllowLoadGameType camelot]
+
 [Game]\EventImplementation.lua			[AllowLoadGameType camelot]
 [Game]\EventRouting.lua					[AllowLoadGameType camelot]
 [Game]\Game.lua							[AllowLoadGameType camelot]

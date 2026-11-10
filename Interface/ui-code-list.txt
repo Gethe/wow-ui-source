@@ -1922,6 +1922,7 @@ Interface\AddOns\Blizzard_GameTooltip\Mainline\GameTooltip.xml
 Interface\AddOns\Blizzard_GameTooltip\Shared\GameTooltipConstants.lua
 Interface\AddOns\Blizzard_Game\Blizzard_Game.toc
 Interface\AddOns\Blizzard_Game\Camelot\EventImplementation.lua
+Interface\AddOns\Blizzard_Game\Camelot\EventImplementationUtils.lua
 Interface\AddOns\Blizzard_Game\Camelot\EventRouting.lua
 Interface\AddOns\Blizzard_Game\Camelot\Game.lua
 Interface\AddOns\Blizzard_Game\Camelot\Startup.lua
@@ -1934,6 +1935,7 @@ Interface\AddOns\Blizzard_Game\Classic\Game.lua
 Interface\AddOns\Blizzard_Game\Hardcore\EventImplementation.lua
 Interface\AddOns\Blizzard_Game\Hardcore\EventRouting.lua
 Interface\AddOns\Blizzard_Game\Mainline\EventImplementation.lua
+Interface\AddOns\Blizzard_Game\Mainline\EventImplementationUtils.lua
 Interface\AddOns\Blizzard_Game\Mainline\EventRouting.lua
 Interface\AddOns\Blizzard_Game\Mainline\Game.lua
 Interface\AddOns\Blizzard_Game\Mists\EventImplementation.lua

@@ -509,9 +509,6 @@ function CharacterSelectListCharacterMixin:SetSelectedState(isSelected)
 
 	-- Gamepad overrides
 	if InputUtil.IsGamepadUIEnabled() then
-		local showVersion = not CharacterSelect.undeleting;
-		self.InnerContent.Text.LastVersion:SetShown(showVersion);
-
 		local showFactionSelected = not (CharacterSelect.isMovingCharacter or CharacterSelect.undeleting or CharacterSelect.pendingUndeleteGuid);
 		self.InnerContent.FactionEmblemSelected:SetShown(isSelected and showFactionSelected);
 	end
