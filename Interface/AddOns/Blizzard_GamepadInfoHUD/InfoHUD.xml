@@ -1,0 +1,219 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\..\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
+
+	<Button name="GamepadInfoHUDPulsingButtonTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="align" type="string" value="center"/>
+		</KeyValues>
+		<Size x="43" y="43"/>
+		<NormalTexture parentKey="NormalTexture" atlas="bag-border">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="-3" y="3"/>
+				<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+			</Anchors>
+		</NormalTexture>
+		<HighlightTexture parentKey="HighlightTexture" atlas="bag-border-highlight">
+			<Anchors>
+				<Anchor point="TOPLEFT" x="-3" y="3"/>
+				<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+			</Anchors>
+		</HighlightTexture>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-1">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0"/>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Icon" setAllPoints="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<MaskTexture parentKey="IconMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+					<MaskedTextures>
+						<MaskedTexture childKey="Background"/>
+						<MaskedTexture childKey="Icon"/>
+					</MaskedTextures>
+				</MaskTexture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="FlashTexture" atlas="bag-border-highlight" desaturated="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="3"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+
+	<Frame name="GamepadInfoHUD" inherits="EditModeGamepadInfoHUDSystemTemplate" parent="UIParent" mixin="GamepadInfoHUDMixin" hidden="true">
+		<Mixins>
+			<Mixin key="LayoutMixin"/>
+			<Mixin key="HorizontalLayoutMixin"/>
+			<Mixin key="GamepadInfoHUDMixin"/>
+		</Mixins>
+		<KeyValues>
+			<KeyValue key="childLayoutDirection" type="string" value="rightToLeft"/>
+			<KeyValue key="spacing" type="number" value="8"/>
+		</KeyValues>
+		<Size x="100" y="100"/>
+		<Frames>
+			<Button parentKey="BackpackButton" frameLevel="10">
+				<KeyValues>
+					<KeyValue key="align" type="string" value="center"/>
+					<KeyValue key="layoutIndex" type="number" value="1"/>
+				</KeyValues>
+				<Size x="68" y="68"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT"/>
+				</Anchors>
+				<NormalTexture parentKey="NormalTexture" atlas="bag-main" setAllPoints="true"/>
+				<HighlightTexture parentKey="HighlightTexture" atlas="bag-main-highlight" setAllPoints="true"/>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Count" inherits="NumberFontNormalLarge">
+							<Anchors>
+								<Anchor point="BOTTOM" y="16"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnClick function="OpenBackpack"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="AmmoButton" frameLevel="11" hidden="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" type="boolean" value="true"/>
+				</KeyValues>
+				<Size x="43" y="43"/>
+				<Anchors>
+					<Anchor point="CENTER" relativeKey="$parent.BackpackButton" relativePoint="TOPRIGHT"/>
+				</Anchors>
+				<NormalTexture parentKey="NormalTexture" atlas="bag-border">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="3"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+				</NormalTexture>
+				<HighlightTexture parentKey="HighlightTexture" atlas="bag-border-highlight">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="-3" y="3"/>
+						<Anchor point="BOTTOMRIGHT" x="7" y="-7"/>
+					</Anchors>
+				</HighlightTexture>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture parentKey="Icon" setAllPoints="true"/>
+						<MaskTexture parentKey="IconMask" file="Interface\CharacterFrame\TempPortraitAlphaMask" hWrapMode="CLAMPTOBLACKADDITIVE" vWrapMode="CLAMPTOBLACKADDITIVE" setAllPoints="true">
+							<MaskedTextures>
+								<MaskedTexture childKey="Icon"/>
+							</MaskedTextures>
+						</MaskTexture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString parentKey="Count" inherits="NumberFontNormalLarge">
+							<Anchors>
+								<Anchor point="BOTTOM" y="9"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<!-- We only use combined bag, so this also opens the ammo bag -->
+					<OnClick function="OpenBackpack"/>
+				</Scripts>
+			</Button>
+			<Button parentKey="ShardTransferButton" inherits="GamepadInfoHUDPulsingButtonTemplate" hidden="true">
+				<Mixins>
+					<Mixin key="GamepadInfoHUDShardTransferButtonMixin"/>
+				</Mixins>
+				<KeyValues>
+					<KeyValue key="layoutIndex" type="number" value="2"/>
+				</KeyValues>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Countdown" inherits="NumberFontNormalLarge">
+							<Anchors>
+								<Anchor point="BOTTOM" y="5"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnHide method="OnHide"/>
+					<OnEvent method="OnEvent"/>
+					<OnUpdate method="OnUpdate"/>
+				</Scripts>
+			</Button>
+			<Frame parentKey="ButtonHint" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="align" type="string" value="center"/>
+					<KeyValue key="includeAsLayoutChildWhenHidden" type="boolean" value="true"/>
+					<KeyValue key="layoutIndex" type="number" value="1000"/>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="34" y="34"/>
+			</Frame>
+		</Frames>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnEvent method="OnEvent"/>
+		</Scripts>
+	</Frame>
+
+	<Frame name="GamepadShardTransferFrame" inherits="SocialToastTemplate">
+		<Size x="320" y="90"/>
+		<Mixins>
+			<Mixin key="GamepadShardTransferMixin"/>
+		</Mixins>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT" relativeTo="GamepadInfoHUD" relativePoint="TOPRIGHT" y="8"/>
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Text" inherits="FriendsFont_Normal" justifyH="LEFT">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="12" y="-12"/>
+						<Anchor point="RIGHT" x="-12" y="0"/>
+					</Anchors>
+					<Color color="FRIENDS_BNET_NAME_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame parentKey="AcceptPrompt" inherits="InputIconTextureFrameTemplate">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_LEFT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="16" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Text" relativePoint="BOTTOMLEFT" x="2" y="-14"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<FontString parentKey="PromptText" inherits="FriendsFont_Normal" justifyH="LEFT" text="SHARD_TRANSFER_NOW">
+					<Anchors>
+						<Anchor point="LEFT" relativeKey="$parent.AcceptPrompt" relativePoint="RIGHT" x="8"/>
+					</Anchors>
+					<Color color="FRIENDS_BNET_NAME_COLOR"/>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad" inherit="prepend"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
+			<OnUpdate method="OnUpdate"/>
+		</Scripts>
+	</Frame>
+
+</Ui>

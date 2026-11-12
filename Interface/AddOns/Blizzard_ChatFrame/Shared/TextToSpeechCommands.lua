@@ -817,9 +817,8 @@ do
 	local function InitFailureText()
 		if not failureText then
 			failureText, failureTextNarrated = GetInitialSuboptionFailureStrings();
-			for index, info in CombatAudioAlertUtil.EnumeratePulseHealthPercentInfo() do
-				local cvarVal = index - 1;
-				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(cvarVal, info.str);
+			for _, info in CombatAudioAlertUtil.EnumeratePulseHealthPercentInfo() do
+				local subOptionString = SLASH_CAA_HELP_SUBOPTION_FORMAT:format(info.cvarVal, info.str);
 				failureText, failureTextNarrated = AddSuboptionFailureString(failureText, failureTextNarrated, subOptionString);
 			end
 		end

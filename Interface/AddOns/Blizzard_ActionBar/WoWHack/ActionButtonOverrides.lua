@@ -24,6 +24,25 @@ local function ResetUltimateAnimationState(ultimateDecoration)
 	ultimateDecoration.isReady = nil;
 end
 
+local function UpdateUltimateProgress(self)
+	local ultimateDecoration = self.ultimateDecoration;
+	if not ultimateDecoration then
+		return;
+	end
+
+	local progressSwipe = ultimateDecoration.ProgressSwipe;
+	local percent = IsWoWHackUltimateAction(self.action) and C_ActionBar.GetWoWHackUltimateProgressPercent() or 100;
+	ultimateDecoration.ProgressText:SetText(PERCENTAGE_STRING:format(math.floor(percent)));
+	if percent >= 100 then
+		progressSwipe:Hide();
+		return;
+	end
+
+	-- The dark region is the portion still remaining.
+	progressSwipe:SetRadialProgressBarPercent(1 - percent / 100);
+	progressSwipe:Show();
+end
+
 local function PlayUltimateReadyLoop(ultimateDecoration)
 	StopUltimateReadyAnimations(ultimateDecoration);
 	ultimateDecoration.ReadyLoopFrame:Show();
@@ -52,12 +71,29 @@ local function InitializeUltimateDecoration(self)
 	local ultimateDecoration = CreateFrame("Frame", nil, self, "WoWHackUltimateButtonDecorationTemplate");
 	self.ultimateDecoration = ultimateDecoration;
 	self:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player");
+	self:RegisterEvent("ULTIMATE_PROGRESS_CHANGED");
+	self:RegisterUnitEvent("UNIT_AURA", "player");
 	ultimateDecoration.owner = self;
 	ultimateDecoration:SetFrameLevel(self:GetFrameLevel());
 	ultimateDecoration:SetFrameStrata("LOW");
 	ultimateDecoration.IntroFrame:SetFrameLevel(ultimateDecoration:GetFrameLevel());
 	ultimateDecoration.ReadyLoopFrame:SetFrameLevel(ultimateDecoration:GetFrameLevel());
 	ultimateDecoration.UseBurstFrame:SetFrameLevel(ultimateDecoration:GetFrameLevel() + 1);
+
+	-- Lives on the button (not the LOW-strata decoration) so it draws over the icon, clipped by the same mask.
+	local progressSwipe = self:CreateTexture(nil, "ARTWORK", nil, 3);
+	progressSwipe:SetAllPoints(self.icon);
+	progressSwipe:SetColorTexture(0, 0, 0, 0.64);
+	progressSwipe:AddMaskTexture(self.IconMask);
+	progressSwipe:SetRadialProgressBarStartOffset(0.5);
+	progressSwipe:SetRadialProgressBarReverse(true);
+	progressSwipe:Hide();
+	ultimateDecoration.ProgressSwipe = progressSwipe;
+
+	local progressText = self:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline", 7);
+	progressText:SetPoint("CENTER", self.icon);
+	progressText:Hide();
+	ultimateDecoration.ProgressText = progressText;
 
 	ultimateDecoration.IntroFrame.Anim:SetScript("OnFinished", function()
 		ultimateDecoration.IntroFrame:Hide();
@@ -78,8 +114,23 @@ local function InitializeUltimateDecoration(self)
 
 	ultimateDecoration:SetScript("OnShow", function()
 		ultimateDecoration.owner:UpdateUltimateReadyState();
+		UpdateUltimateProgress(ultimateDecoration.owner);
 	end);
 end
+
+EventRegistry:RegisterCallback("ActionButton.OnEnter", function(_owner, button)
+	local ultimateDecoration = button.ultimateDecoration;
+	if ultimateDecoration and IsWoWHackUltimateAction(button.action) then
+		ultimateDecoration.ProgressText:Show();
+	end
+end);
+
+EventRegistry:RegisterCallback("ActionButton.OnLeave", function(_owner, button)
+	local ultimateDecoration = button.ultimateDecoration;
+	if ultimateDecoration then
+		ultimateDecoration.ProgressText:Hide();
+	end
+end);
 
 local function GetUltimateDecoration(self)
 	if not self.ultimateDecoration then
@@ -217,6 +268,7 @@ local function SetupUltimateButtonArt(self, parent)
 	ultimateDecoration.TreeTopBranchesFrame:Show();
 
 	self:UpdateUltimateReadyState();
+	UpdateUltimateProgress(self);
 end
 
 local function ResetUltimateButtonArt(self)
@@ -237,6 +289,8 @@ local function ResetUltimateButtonArt(self)
 	if ultimateDecoration then
 		ultimateDecoration.TreeTexture:Hide();
 		ultimateDecoration.TreeTopBranchesFrame:Hide();
+		ultimateDecoration.ProgressSwipe:Hide();
+		ultimateDecoration.ProgressText:Hide();
 		ResetUltimateAnimationState(ultimateDecoration);
 	end
 end
@@ -349,7 +403,19 @@ function ActionBarActionButtonMixin:OnEvent(event, ...)
 		end
 	elseif event == "SPELL_UPDATE_CHARGES" then
 		self:UpdateUltimateReadyState();
+	elseif event == "ULTIMATE_PROGRESS_CHANGED" or event == "UNIT_AURA" then
+		UpdateUltimateProgress(self);
 	end
+end
+
+function ActionBarActionButtonMixin:AddOverrideTooltipInfo()
+	if not IsWoWHackUltimateAction(self.action) then
+		return false;
+	end
+
+	local percent = math.floor(C_ActionBar.GetWoWHackUltimateProgressPercent());
+	GameTooltip:AddLine(WOWHACK_ULTIMATE_PROGRESS:format(percent), HIGHLIGHT_FONT_COLOR:GetRGB());
+	return true;
 end
 
 local actionButtonUpdateUsable = ActionBarActionButtonMixin.UpdateUsable;

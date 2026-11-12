@@ -220,6 +220,8 @@ function HouseSettingsAccessOptionsMixin:SetSelectedSettings(currentlySelectedSe
 		end
 		if noneSelected then
 			self:OnAccessTypeSelected(HOUSING_HOUSE_SETTINGS_NOONE);
+		else
+			self:OnAccessTypeSelected(HOUSING_HOUSE_SETTINGS_LIMITED);
 		end
 	end
 end

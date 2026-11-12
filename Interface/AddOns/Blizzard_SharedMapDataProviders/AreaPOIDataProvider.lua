@@ -156,10 +156,30 @@ function AreaPOIPinMixin:GetHighlightType() -- override
 	return MapPinHighlightType.None;
 end
 
+function AreaPOIPinMixin:MarkUnseenIconSeen()
+	local poiInfo = self.poiInfo;
+	if not poiInfo.hasUnseenGlow then
+		return;
+	end
+
+	C_AreaPoiInfo.MarkAreaPOISeen(poiInfo.areaPoiID);
+
+	-- Other pins that share the same world state pick up the seen state on their next refresh.
+	local updatedInfo = C_AreaPoiInfo.GetAreaPOIInfo(self:GetMap():GetMapID(), poiInfo.areaPoiID);
+	if updatedInfo then
+		poiInfo.atlasName = updatedInfo.atlasName;
+		poiInfo.textureIndex = updatedInfo.textureIndex;
+		poiInfo.hasUnseenGlow = false;
+		self:SetTexture(poiInfo);
+	end
+end
+
 function AreaPOIPinMixin:OnMouseEnter()
 	if not self:HasDisplayName() then
 		return;
 	end
+
+	self:MarkUnseenIconSeen();
 
 	self.UpdateTooltip = function() self:OnMouseEnter(); end;
 

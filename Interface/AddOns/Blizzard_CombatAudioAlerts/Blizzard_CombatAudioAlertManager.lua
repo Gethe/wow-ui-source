@@ -775,13 +775,14 @@ function CombatAudioAlertManagerMixin:UpdateHealthPulse()
 
 	if pulseEnabled and not self:ShouldConsiderUnitDead("player") then
 		local healthPercent = self:GetUnitHealthPercent("player");
-		if healthPercent < self:GetPulsePlayerHealthPercent() then
-			soundKitID = CombatAudioAlertUtil.GetPulseHealthSoundKit(healthPercent);
+		local pulsePercent = self:GetPulsePlayerHealthPercent();
+		if healthPercent < pulsePercent or pulsePercent == CombatAudioAlertConstants.HEALTH_PULSE_ALWAYS_PERCENT then
+			soundKitID = CombatAudioAlertUtil.GetPulseHealthSoundKit();
 		end
 	end
 
 	-- A running volume sample is left to finish out on its own unless a real pulse needs to take over.
-	if not soundKitID and pulseEnabled and self.healthPulseSampleTimer then
+	if pulseEnabled and self.healthPulseSampleTimer and (not soundKitID or self:IsHealthPulseSampleRange()) then
 		return;
 	end
 
@@ -822,12 +823,17 @@ function CombatAudioAlertManagerMixin:StopHealthPulse()
 	self.healthPulseSoundHandle = nil;
 end
 
+function CombatAudioAlertManagerMixin:IsHealthPulseSampleRange()
+	return self:GetUnitHealthPercent("player") >= CombatAudioAlertConstants.HEALTH_PULSE_SAMPLE_MIN_HEALTH_PERCENT;
+end
+
 function CombatAudioAlertManagerMixin:StartHealthPulseSampleTimer()
 	self:CancelHealthPulseSampleTimer();
 
 	self.healthPulseSampleTimer = C_Timer.NewTimer(CombatAudioAlertConstants.HEALTH_PULSE_SAMPLE_SECONDS, function()
 		self.healthPulseSampleTimer = nil;
 		self:StopHealthPulse();
+		self:UpdateHealthPulse();
 	end);
 end
 
@@ -838,14 +844,14 @@ function CombatAudioAlertManagerMixin:CancelHealthPulseSampleTimer()
 	end
 end
 
--- The sound kits loop, so the only way to apply a new volume is to restart whatever is playing. If nothing is pulsing, play a short sample so the new volume can still be heard.
+-- The sound kits loop, so the only way to apply a new volume is to restart whatever is playing. If nothing is pulsing, or health is too high for the pulse to be audible, play a short sample so the new volume can still be heard.
 function CombatAudioAlertManagerMixin:RefreshHealthPulseVolume()
 	if not addonTable.IsEnabled() then
 		return;
 	end
 
-	local isSample = (self.healthPulseSoundKitID == nil) or (self.healthPulseSampleTimer ~= nil);
-	local soundKitID = self.healthPulseSoundKitID or CombatAudioAlertUtil.GetPulseHealthSoundKit(CombatAudioAlertConstants.HEALTH_PULSE_SAMPLE_PERCENT);
+	local isSample = (self.healthPulseSoundKitID == nil) or (self.healthPulseSampleTimer ~= nil) or self:IsHealthPulseSampleRange();
+	local soundKitID = isSample and CombatAudioAlertConstants.HEALTH_PULSE_SAMPLE_SOUND_KIT or self.healthPulseSoundKitID;
 
 	self:StopHealthPulse();
 	self:SetHealthPulseSoundKit(soundKitID);

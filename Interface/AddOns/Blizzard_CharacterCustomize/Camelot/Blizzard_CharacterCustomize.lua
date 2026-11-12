@@ -768,6 +768,7 @@ function CharCustomizeMixin:OnOptionButtonsUpdated()
 			SmartNavigation_ClearJumpNavigationOverrides(v);
 		end
 		SmartNavigation_ClearJumpNavigationOverrides(SDToggleButton);
+		SmartNavigation_ClearJumpNavigationOverrides(SelfFoundToggleButton);
 
 		local firstOption = options[1];
 		local lastOption = options[#options];
@@ -906,6 +907,7 @@ function CharCustomizeMixin:UninitializeGamepad()
 	SmartNavigation_ClearJumpNavigationOverrides(surnameEditBox);
 
 	SmartNavigation_ClearJumpNavigationOverrides(SDToggleButton);
+	SmartNavigation_ClearJumpNavigationOverrides(SelfFoundToggleButton);
 
 	EventRegistry:UnregisterCallback("Customization.OnCategorySelected", self);
 	EventRegistry:UnregisterCallback("CharCustomize.OnShow", self);

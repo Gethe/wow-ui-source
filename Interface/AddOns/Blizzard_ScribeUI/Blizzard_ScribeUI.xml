@@ -3,8 +3,8 @@
 
 	<Frame name="WoWHackScribeCurrencyHighlightTemplate" inherits="WoWHackTutorialHighlightTemplate" virtual="true">
 		<Anchors>
-			<Anchor point="TOPLEFT" x="20" y="-10"/>
-			<Anchor point="BOTTOMRIGHT" x="-5" y="7"/>
+			<Anchor point="TOPLEFT" x="25" y="-7"/>
+			<Anchor point="BOTTOMRIGHT" x="-5" y="4"/>
 		</Anchors>
 		<KeyValues>
 			<KeyValue key="pulse" value="true" type="boolean"/>
@@ -12,7 +12,7 @@
 	</Frame>
 
 	<Frame name="ScribeFrame" mixin="ScribeFrameMixin" inherits="DefaultPanelTemplate" parent="UIParent" hidden="true" frameStrata="HIGH">
-		<Size x="1112" y="807"/>
+		<Size x="1122" y="811"/>
 		<Frames>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 				<Anchors>
@@ -27,7 +27,7 @@
 				</Anchors>
 				<Layers>
 					<Layer level="BACKGROUND">
-						<Texture parentKey="CurrencyBackground" useAtlasSize="true" atlas="Talebound-Vendor-Talent-Point-Frame">
+						<Texture parentKey="CurrencyBackground" atlas="Talebound-Vendor-Talent-Point-Frame">
 							<Anchors>
 								<Anchor point="RIGHT" relativePoint="RIGHT" x="0" y="-2" />
 							</Anchors>
@@ -37,7 +37,7 @@
 						<FontString parentKey="UnspentPointsCount" inherits="GameFontNormalHuge2" justifyH="RIGHT">
 							<Size x="80" y="0"/>
 							<Anchors>
-								<Anchor point="RIGHT" x="-8" y="-2"/>
+								<Anchor point="RIGHT" relativeKey="$parent.CurrencyBackground" x="-16"/>
 							</Anchors>
 
 							<Color color="SCRIBE_POINTS_COLOR"/>

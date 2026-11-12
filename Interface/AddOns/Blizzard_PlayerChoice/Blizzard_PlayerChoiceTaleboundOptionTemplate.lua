@@ -30,6 +30,16 @@ function PlayerChoiceTaleboundOptionTemplateMixin:OnLoad()
 	self.ArtworkCircleMask:SetPoint("BOTTOMRIGHT", self.CircleBorder, "BOTTOMRIGHT", -3, 3);
 end
 
+local OPTION_TEXT_WIDTH = 208;
+local OPTION_TEXT_HEIGHT = 115;
+
+function PlayerChoiceTaleboundOptionTemplateMixin:SetupOptionText()
+	self.OptionText:ClearText();
+	self.OptionText:SetStringHeight(OPTION_TEXT_HEIGHT);
+	self.OptionText:SetWidth(OPTION_TEXT_WIDTH);
+	self.OptionText:SetText(self:GetRarityDescriptionString()..self.optionInfo.description);
+end
+
 function PlayerChoiceTaleboundOptionTemplateMixin:OnShow()
 	PlayerChoicePowerChoiceTemplateMixin.OnShow(self);
 	EventRegistry:TriggerEvent("PlayerChoiceTaleboundOptionTemplate.OnShow", self);

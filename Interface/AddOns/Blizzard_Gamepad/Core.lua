@@ -1,48 +1,62 @@
-local function SetupCVarsForInputMode( useGamepad )
-	local function SetupTempCVar(cvar, val)
-		if useGamepad then
-			C_CVar.SetTempCVar(cvar, val);
-		else
-			C_CVar.RemoveTempCVar(cvar);
-		end
-	end
+local Gamepad = {"Gamepad"};
 
+local function SetupTempCVar(set, cvar, val)
+	if set then
+		C_CVar.SetTempCVar(cvar, val);
+	else
+		C_CVar.RemoveTempCVar(cvar);
+	end
+end
+
+
+local function SetupCameraFollowCVars(set)
+	SetupTempCVar(set, "CameraFollowYawSpeed", 1.0);
+	SetupTempCVar(set, "CameraFollowPitchSpeed", 0.5);
+	SetupTempCVar(set, "CameraFollowPitchStrength", 1.0);
+	SetupTempCVar(set, "CameraFollowPitchDeadZone", 0.0);
+	SetupTempCVar(set, "CameraReduceUnexpectedMovement", "0");
+	SetupTempCVar(set, "CameraKeepCharacterCentered", "1");
+end
+
+local function SetupCVarsForInputMode( useGamepad )
 	if InGlue() then
 		return;
 	end
 
 	-- SoftTarget[*]
-	SetupTempCVar("SoftTargetEnemy", 1);
-	SetupTempCVar("SoftTargetFriend", 0);
-	SetupTempCVar("SoftTargetIconEnemy", 0);
-	SetupTempCVar("SoftTargetIconFriend", 0);
-	SetupTempCVar("SoftTargetWithLocked", 1);
-	SetupTempCVar("SoftTargetMatchLocked", 1);
-	SetupTempCVar("SoftTargetIconInteract", 1);
-	SetupTempCVar("SoftTargetNameplateEnemy", 0);
-	SetupTempCVar("SoftTargetNameplateInteract", 0);
-	SetupTempCVar("SoftTargetTooltipEnemy", 0);
-	SetupTempCVar("SoftTargetTooltipFriend", 0);
-	SetupTempCVar("SoftTargetInteract", 1);
-	SetupTempCVar("SoftTargetInteractRange", 20);
-	SetupTempCVar("SoftTargetIconGameObject", 1);
-	SetupTempCVar("SoftTargetEnemyArc", 1);
-	SetupTempCVar("SoftTargetFriendArc", 2);
-	SetupTempCVar("SoftTargetInteractArc", 1);
-	SetupTempCVar("SoftTargetForce", 0);
-	SetupTempCVar("SoftTargetNameplateSize", 20);
-	SetupTempCVar("TargetAutoEnemy", 1);
-	SetupTempCVar("TargetAutoFriend", 1);
-	SetupTempCVar("TargetEnemyAttacker", 1);
-	SetupTempCVar("TargetAutoLock", 1);
+	SetupTempCVar(useGamepad, "SoftTargetEnemy", 1);
+	SetupTempCVar(useGamepad, "SoftTargetFriend", 0);
+	SetupTempCVar(useGamepad, "SoftTargetIconEnemy", 0);
+	SetupTempCVar(useGamepad, "SoftTargetIconFriend", 0);
+	SetupTempCVar(useGamepad, "SoftTargetWithLocked", 1);
+	SetupTempCVar(useGamepad, "SoftTargetMatchLocked", 1);
+	SetupTempCVar(useGamepad, "SoftTargetIconInteract", 1);
+	SetupTempCVar(useGamepad, "SoftTargetNameplateEnemy", 0);
+	SetupTempCVar(useGamepad, "SoftTargetNameplateInteract", 0);
+	SetupTempCVar(useGamepad, "SoftTargetTooltipEnemy", 0);
+	SetupTempCVar(useGamepad, "SoftTargetTooltipFriend", 0);
+	SetupTempCVar(useGamepad, "SoftTargetInteract", 1);
+	SetupTempCVar(useGamepad, "SoftTargetInteractRange", 20);
+	SetupTempCVar(useGamepad, "SoftTargetIconGameObject", 1);
+	SetupTempCVar(useGamepad, "SoftTargetEnemyArc", 1);
+	SetupTempCVar(useGamepad, "SoftTargetFriendArc", 2);
+	SetupTempCVar(useGamepad, "SoftTargetInteractArc", 1);
+	SetupTempCVar(useGamepad, "SoftTargetForce", 0);
+	SetupTempCVar(useGamepad, "SoftTargetNameplateSize", 20);
+	SetupTempCVar(useGamepad, "TargetAutoEnemy", 1);
+	SetupTempCVar(useGamepad, "TargetAutoFriend", 1);
+	SetupTempCVar(useGamepad, "TargetEnemyAttacker", 1);
+	SetupTempCVar(useGamepad, "TargetAutoLock", 1);
 
 	-- CameraFollow[*]
-	SetupTempCVar("CameraFollowYawSpeed", 1.0);
-	SetupTempCVar("CameraFollowPitchSpeed", 0.5);
-	SetupTempCVar("CameraFollowPitchStrength", 1.0);
-	SetupTempCVar("CameraFollowPitchDeadZone", 0.0);
-	SetupTempCVar("CameraReduceUnexpectedMovement", "0");
-	SetupTempCVar("CameraKeepCharacterCentered", "1");
+	if useGamepad then
+		SetupCameraFollowCVars(CVarCallbackRegistry:GetCVarValueBool("GamepadCameraFollowOnStick"));
+		CVarCallbackRegistry:RegisterCallback("GamepadCameraFollowOnStick", function()
+			SetupCameraFollowCVars(CVarCallbackRegistry:GetCVarValueBool("GamepadCameraFollowOnStick"));
+		end, Gamepad);
+	else
+		SetupCameraFollowCVars(false);
+	end
 end
 
 local function SetGamepadModeCoreBindingContextActive(useGamepad)
@@ -67,7 +81,6 @@ local function RegisterEvents()
 	CVarCallbackRegistry:SetCVarCachable("GamepadCompassCustomFilterParty");
 	CVarCallbackRegistry:SetCVarCachable("GamepadCompassCustomFilterCritter");
 
-	local Gamepad = {"Gamepad"};
 	InputUtil.RegisterForInterfaceTransitions(Gamepad);
 	InputUtil.RegisterGamepadInit(Gamepad, function ()
 		SetupCVarsForInputMode(true);

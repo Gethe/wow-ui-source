@@ -1014,25 +1014,12 @@ do
 		return id1 > id2;
 	end
 
-	local function SortItemsByExtendedState(item1, item2)
-		local extended1, extended2 = item1:IsExtended(), item2:IsExtended();
-		if extended1 ~= extended2 then
-			return not extended1;
-		end
-
-		return SortItems(item1, item2);
-	end
-
 	local function UpdateItemSort(items)
 		if not ContainerFrameSettingsManager:IsUsingCombinedBags() then
 			return;
 		end
 
-		if not IsAccountSecured() then
-			table.sort(items, SortItemsByExtendedState);
-		else
-			table.sort(items, SortItems);
-		end
+		table.sort(items, SortItems);
 	end
 
 	local function GetBagSetupIndices(ascendingOrder)
@@ -1099,8 +1086,10 @@ do
 
 		UpdateItemSort(itemsToLayout);
 
-		AnchorUtil.GridLayout(itemsToLayout, self:GetInitialItemAnchor(), self:GetAnchorLayout());
+		local anchorLayout = self:GetAnchorLayout();
+		AnchorUtil.GridLayout(itemsToLayout, self:GetInitialItemAnchor(), anchorLayout);
 
+		self:LayoutBagEndDividers(itemsToLayout, anchorLayout.stride);
 		self:LayoutAddSlots();
 	end
 end
@@ -1263,6 +1252,10 @@ function ContainerFrameMixin:UpdateAddSlots()
 end
 
 function ContainerFrameMixin:LayoutAddSlots()
+	-- override if needed
+end
+
+function ContainerFrameMixin:LayoutBagEndDividers(sortedItems, columns)
 	-- override if needed
 end
 
@@ -1662,6 +1655,8 @@ function ContainerFrameItemButtonMixin:OnLoad()
 	self:SetItemLocationCallback(GetItemLocationCallback);
 
 	if InputUtil.IsGamepadUIEnabled() then
+		self:InitDropState();
+
 		self.Highlight:SetAtlas("ItemSlotState_Focused");
 		self.Highlight:SetAllPoints(self);
 		self.Highlight:Show();
@@ -1681,6 +1676,11 @@ function ContainerFrameItemButtonMixin:OnLoad()
 end
 
 function ContainerFrameItemButtonMixin:OnClick(button)
+	if self:IsExtended() and InputUtil.IsGamepadUIEnabled() then
+		StaticPopup_Show("BACKPACK_INCREASE_SIZE");
+		return;
+	end
+
 	local modifiedClick = IsModifiedClick();
 	-- If we can loot the item and autoloot toggle is active, then do a normal click
 	if ( button ~= "LeftButton" and modifiedClick and IsModifiedClick("AUTOLOOTTOGGLE") ) then
@@ -1705,6 +1705,12 @@ end
 function ContainerFrameItemButtonMixin:OnEnter()
 	self:OnUpdate();
 
+	if InputUtil.IsGamepadUIEnabled() then
+		EventRegistry:RegisterCallback("ItemSlotDropState.BagStatesUpdated", self.UpdateDropState, self);
+		self:SetDropFocused(true);
+		self:UpdateDropState();
+	end
+
 	if ArtifactFrame and self:HasItem() then
 		ArtifactFrame:OnInventoryItemMouseEnter(self:GetBagID(), self:GetID());
 	end
@@ -1720,6 +1726,12 @@ end
 
 function ContainerFrameItemButtonMixin:OnLeave()
 	GameTooltip_Hide();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		EventRegistry:UnregisterCallback("ItemSlotDropState.BagStatesUpdated", self);
+		self:SetDropFocused(false);
+	end
+
 	if ( not SpellIsTargeting() ) then
 		ResetCursor();
 	end
@@ -1732,7 +1744,23 @@ function ContainerFrameItemButtonMixin:OnLeave()
 	EventRegistry:TriggerEvent("ContainerFrameItemButton.ExitButton", self);
 end
 
+function ContainerFrameItemButtonMixin:UpdateDropState()
+	-- Locked slots can't accept items.
+	if self:IsExtended() then
+		local dropState = ItemSlotDropStateBagRules:IsItemOnCursor() and ItemSlotDropState.Restricted or ItemSlotDropState.None;
+		self:SetDropState(dropState);
+		return;
+	end
+
+	self:SetDropState(ItemSlotDropStateBagRules:GetContainerSlotBagState(self:GetBagID(), self:GetID()));
+end
+
 function ContainerFrameItemButtonMixin:OnUpdate()
+	if self:IsExtended() and InputUtil.IsGamepadUIEnabled() then
+		ContainerFrameExtendedItemButton_OnEnter(self);
+		return;
+	end
+
 	GameTooltip:SetOwner(self, "ANCHOR_NONE");
 
 	C_NewItems.RemoveNewItem(self:GetBagID(), self:GetID());
@@ -2035,9 +2063,12 @@ function ContainerFrameItemButtonMixin:UpdateExtended()
 			if not self.extendedFrame then
 				self.extendedFrame = CreateFrame("FRAME", nil, self, "ContainerFrameExtendedItemButtonTemplate");
 				self.extendedFrame:SetAllPoints(self);
+				if InputUtil.IsGamepadUIEnabled() then
+					self.extendedFrame:EnableMouse(false);
+				end
 			end
 			self.extendedFrame:Show();
-			self:EnableMouse(false);
+			self:EnableMouse(InputUtil.IsGamepadUIEnabled());
 		else
 			if self.extendedFrame then
 				self.extendedFrame:Hide();
@@ -2692,6 +2723,10 @@ ContainerFrameSettingsManager:Init();
 ContainerFrameExtendedSlotPack = CreateFromMixins(ContainerFrameMixin);
 
 function ContainerFrameExtendedSlotPack:UpdateAddSlots()
+	if InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
 	if not self.AddSlotsButton then
 		self.AddSlotsButton = CreateFrame("BUTTON", nil, self, "AddExtendedSlotsButtonTemplate");
 	end
@@ -2825,6 +2860,7 @@ function ContainerFrameCombinedBagsMixin:OnLoad()
 	ContainerFrame_OnLoad(self);
 	self:RegisterEvent("BAG_CONTAINER_UPDATE");
 	self.PortraitButton:SetPoint("CENTER", self:GetPortrait() , "CENTER", 3, -3);
+	self.bagEndDividerPool = CreateTexturePool(self, "ARTWORK", 0, "BagEndDividerTemplate");
 
 	self.PortraitButton:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_CONTAINER_FRAME_COMBINED");
@@ -3060,6 +3096,34 @@ function ContainerFrameCombinedBagsMixin:SetItemsMatchingBagHighlighted(bagID, h
 	end
 end
 
+function ContainerFrameCombinedBagsMixin:LayoutBagEndDividers(sortedItems, columns)
+	self.bagEndDividerPool:ReleaseAll();
+	if not GamepadBagBar or not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	local bagSizes = {};
+	for index, item in ipairs(sortedItems) do
+		-- An item in the rightmost column has the frame edge so we avoid putting a bag divider.
+		local isRightmostButton = (index - 1) % columns == 0;
+		if not isRightmostButton and not item.isBag then
+			local bagID = item:GetBagID();
+			local bagSize = bagSizes[bagID];
+			if not bagSize then
+				bagSize = ContainerFrame_GetContainerNumSlots(bagID);
+				bagSizes[bagID] = bagSize;
+			end
+
+			if item:GetID() == bagSize then
+				local divider = self.bagEndDividerPool:Acquire();
+				divider:SetPoint("TOP", item, "TOPRIGHT", ITEM_SPACING_X / 2, 0);
+				divider:SetPoint("BOTTOM", item, "BOTTOMRIGHT", ITEM_SPACING_X / 2, 0);
+				divider:Show();
+			end
+		end
+	end
+end
+
 function ContainerFrameCombinedBagsMixin:ClearBagHighlights()
 	for i, item in self:EnumerateValidItems() do
 		item.BagIndicator:SetShown(false);
@@ -3160,8 +3224,9 @@ local function Gamepad_IsClickContextActionValid()
 	local isItem = button.hasItem;
 	local isClickableBag = button.isBag and not button.isBackpack;
 	local isItemMoving = CursorHasItem();
+	local isExtendedSlot = button.IsExtended and button:IsExtended();
 
-	if (isItem or isClickableBag or isItemMoving) and not InRepairMode() then
+	if (isItem or isClickableBag or isItemMoving or isExtendedSlot) and not InRepairMode() then
 		return true;
 	end
 	return false;
@@ -3253,6 +3318,10 @@ local function Gamepad_IsEquipItemActionValid()
 		end
 	end
 	return false;
+end
+
+local function Gamepad_IsBindableItemActionValid()
+	return Gamepad_IsUseItemActionValid() or Gamepad_IsEquipItemActionValid();
 end
 
 local function Gamepad_SplitFocusedItemStack()
@@ -3524,7 +3593,7 @@ function ContainerFrameCombinedBagsMixin:SetupGamepad()
 	if UnitClassBase("player") == "HUNTER" then
 		itemMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_FEED_TO_PET, Gamepad_FeedToPet, Gamepad_IsFeedToPetValid);
 	end
-	itemMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_BIND_TO_GAMEPAD_ACTION_BAR, Gamepad_BindItemToGamepadActionBar, Gamepad_IsUseItemActionValid);
+	itemMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_BIND_TO_GAMEPAD_ACTION_BAR, Gamepad_BindItemToGamepadActionBar, Gamepad_IsBindableItemActionValid);
 	itemMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_DESTROY_ITEM, Gamepad_DestroyFocusedButtonItem, nil);
 	itemMoreActions:AddMoreActionsEntry(SHARE_IN_CHAT, Gamepad_ShareItemInChat, Gamepad_IsShareItemInChatContextActionValid);
 	itemMoreActions:AddMoreActionsEntry(CONTEXT_ACTION_LABEL_SPLIT_ITEM_STACK, Gamepad_SplitFocusedItemStack, Gamepad_IsSplitItemStackButtonContextActionValid);

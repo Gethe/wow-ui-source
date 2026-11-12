@@ -3508,6 +3508,10 @@ StaticPopupDialogs["SHARD_TRANSFER_IMMEDIATE"] = {
 	skipGamepadAutoFocus = 1,
 };
 
+function GetDuelerInfoOverride()
+	return C_DuelInfo.GetDuelerInfo();
+end
+
 -- Hardcore popups
 if (C_GameRules.IsHardcoreActive()) then
 	StaticPopupDialogs["HARDCORE_DEATH"] = {
@@ -3608,7 +3612,7 @@ if (C_GameRules.IsHardcoreActive()) then
 				return;
 			end
 
-			local guid, level = GetDuelerInfo();
+			local guid, level = GetDuelerInfoOverride();
 			local className, classFilename, _, _, gender, characterName, _ = GetPlayerInfoByGUID(guid);
 			dialog.target = characterName;
 			GameTooltip:SetOwner(dialog.linkRegion, "ANCHOR_CURSOR_RIGHT");

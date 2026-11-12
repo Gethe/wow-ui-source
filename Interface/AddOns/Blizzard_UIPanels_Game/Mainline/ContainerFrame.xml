@@ -1,5 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\Blizzard_SharedXML\UI.xsd">
+	<Texture name="BagEndDividerTemplate" atlas="BagEndDivider" useAtlasSize="true" virtual="true"/>
+
 	<Button name="ContainerFramePortraitButtonRouterTemplate" mixin="DropdownButtonProxyMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="routeToSibling" value="PortraitButton" type="string"/>
@@ -74,7 +76,7 @@
 		</Scripts>
 	</DropdownButton>
 
-	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" inherits="EnchantingItemButtonAnimTemplate" hidden="true" frameLevel="10" virtual="true">
+	<ItemButton name="ContainerFrameItemButtonTemplate" mixin="ContainerFrameItemButtonMixin" inherits="EnchantingItemButtonAnimTemplate, ItemSlotDropStateTemplate" hidden="true" frameLevel="10" virtual="true">
 		<Size x="37" y="37"/>
 		<KeyValues>
 			<KeyValue key="buttonContext" value="ButtonContext_ContainerFrameItemButton" type="string"/>

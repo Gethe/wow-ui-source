@@ -28,7 +28,6 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 	self.Inset:SetShown(layoutInfo.ShowInset);
 	self.Header:SetPoint("TOP", layoutInfo.HeaderOffset.x, layoutInfo.HeaderOffset.y);
 	self.Currency:SetPoint("TOPRIGHT", self.Header, "BOTTOMRIGHT", layoutInfo.CurrencyOffset.x, layoutInfo.CurrencyOffset.y);
-	self.Currency.UnspentPointsCount:SetPoint("RIGHT", self.Currency, "RIGHT", layoutInfo.CurrencyTextOffset.x, layoutInfo.CurrencyTextOffset.y);
 
 	local font = layoutInfo.CurrencyTextOverrides.Font or GameFontNormal;
 	self.Currency.UnspentPointsCount:SetFontObject(font);
@@ -36,7 +35,7 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 	self.Currency:SetOverrideFontColor(layoutInfo.CurrencyTextOverrides.Color);
 	self.Currency:SetTooltipOptions(not not layoutInfo.UseCurrencyTooltip);
 
-	self.Currency.CurrencyBackground:SetAtlas(layoutInfo.CurrencyBackgroundAtlas, true);
+	self.Currency:ApplyBackgroundLayout(layoutInfo.CurrencyBackgroundAtlas, layoutInfo.CurrencyBackgroundPadding, layoutInfo.CurrencyTextOffset, layoutInfo.CurrencyBackgroundHeight);
 
 	self.CloseButton:SetPoint("TOPRIGHT", self, "TOPRIGHT", layoutInfo.CloseButtonOffset.x, layoutInfo.CloseButtonOffset.y);
 
@@ -257,6 +256,9 @@ end
 
 GenericTraitFrameCurrencyFrameMixin = {};
 
+-- The padding only applies when it would push the background past this width.
+local MIN_CURRENCY_BACKGROUND_WIDTH = 99;
+
 function GenericTraitFrameCurrencyFrameMixin:UpdateWidgetSet()
 	local configID = self:GetParent():GetConfigID();
 	self.uiWidgetSetID = configID and C_Traits.GetTraitSystemWidgetSetID(configID) or nil;
@@ -270,13 +272,43 @@ function GenericTraitFrameCurrencyFrameMixin:SetTooltipOptions(useCurrencyToolti
 	self.useCurrencyTooltip = useCurrencyTooltip;
 end
 
-function GenericTraitFrameCurrencyFrameMixin:Setup(currencyInfo, displayText)
-	displayText = displayText or "";
-	local currencyCostText = GENERIC_TRAIT_FRAME_CURRENCY_TEXT:format(currencyInfo and currencyInfo.quantity or 0, displayText);
-	local fontColor = self.overrideFontColor or WHITE_FONT_COLOR;
-	local currencyText = fontColor:WrapTextInColorCode(currencyCostText);
+function GenericTraitFrameCurrencyFrameMixin:ApplyBackgroundLayout(atlas, padding, textOffset, height)
+	self.CurrencyBackground:SetAtlas(atlas, TextureKitConstants.UseAtlasSize);
+	self.backgroundPadding = padding;
+	self.backgroundHeight = height or self.CurrencyBackground:GetHeight();
 
-	self.UnspentPointsCount:SetText(currencyText);
+	self.UnspentPointsCount:ClearAllPoints();
+	-- The text is right aligned and inset by the padding when there is one.
+	self.UnspentPointsCount:SetPoint("RIGHT", self, "RIGHT", padding and -padding or textOffset.x, textOffset.y);
+
+	self:UpdateBackgroundWidth();
+end
+
+function GenericTraitFrameCurrencyFrameMixin:FormatCurrencyText(quantity, displayText)
+	local currencyCostText = GENERIC_TRAIT_FRAME_CURRENCY_TEXT:format(quantity, displayText or "");
+	local fontColor = self.overrideFontColor or WHITE_FONT_COLOR;
+	return fontColor:WrapTextInColorCode(currencyCostText);
+end
+
+-- The frame is anchored on its right edge, so growing the width extends it to the left.
+function GenericTraitFrameCurrencyFrameMixin:UpdateBackgroundWidth()
+	if not self.backgroundPadding then
+		return;
+	end
+
+	local textWidth = self.UnspentPointsCount:GetStringWidth();
+	local backgroundWidth = math.max(textWidth + (self.backgroundPadding * 2), MIN_CURRENCY_BACKGROUND_WIDTH);
+
+	self.UnspentPointsCount:SetWidth(textWidth);
+	self.CurrencyBackground:SetSize(backgroundWidth, self.backgroundHeight);
+	self:SetWidth(backgroundWidth);
+end
+
+function GenericTraitFrameCurrencyFrameMixin:Setup(currencyInfo, displayText)
+	self.displayText = displayText or "";
+
+	self.UnspentPointsCount:SetText(self:FormatCurrencyText(currencyInfo and currencyInfo.quantity or 0, self.displayText));
+	self:UpdateBackgroundWidth();
 	self.traitCurrencyID = currencyInfo and currencyInfo.traitCurrencyID;
 	self:UpdateWidgetSet();
 

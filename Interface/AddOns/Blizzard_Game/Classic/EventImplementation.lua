@@ -61,7 +61,7 @@ end
 function GameEvent.HandlePartyInviteRequest(_dispatcher, _event, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
 	FlashClientIcon();
 
-	local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid = arg1, arg2, arg3, arg4, arg5, arg6, arg7;
+	local name, tank, healer, damage, isXRealm, isXShard, allowMultipleRoles, inviterGuid = arg1, arg2, arg3, arg4, arg5, arg6, arg7;
 	local text = isXRealm and INVITATION_XREALM or INVITATION;
 	text = string.format(text, name);
 

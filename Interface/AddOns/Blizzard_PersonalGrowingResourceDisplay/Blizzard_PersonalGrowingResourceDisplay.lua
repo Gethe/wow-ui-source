@@ -129,6 +129,11 @@ end
 
 function PersonalGrowingResourceDisplayMixin:OnShow()
 	self:UpdateAll();
+	EventRegistry:TriggerEvent("PersonalGrowingResourceDisplay.OnShow", self);
+end
+
+function PersonalGrowingResourceDisplayMixin:OnHide()
+	EventRegistry:TriggerEvent("PersonalGrowingResourceDisplay.OnHide", self);
 end
 
 function PersonalGrowingResourceDisplayMixin:OnTempMaxHealthLossCVarChanged()

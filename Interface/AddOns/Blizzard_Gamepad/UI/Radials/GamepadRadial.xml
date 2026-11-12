@@ -20,6 +20,9 @@
 				<Color color="NORMAL_FONT_COLOR"/>
 			</FontString>
 			<Texture parentKey="SegmentIcon" atlas="gamepad-radialgamemenu-icon-main-bags">
+				<KeyValues>
+					<KeyValue key="showWhenDone" type="boolean" value="true"/>
+				</KeyValues>
 				<Size x="45" y="45"/>
 				<Anchors>
 					<Anchor point="CENTER"/>

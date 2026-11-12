@@ -46,32 +46,23 @@ local partyHealthPercentInfo = {
 	{percentVal = 10, str = GetUnderPercentOptionString(10)},
 };
 
--- Each pulse tier loops until the player's health drops into the next lower tier. There is intentionally no 100% tier, nothing pulses above 90% health.
+-- Display order. cvarVal is the stored enum value
 local pulseHealthPercentInfo = {
-	{percentVal = 0, str = LOC_OPTION_OFF},
-	{percentVal = 90, str = GetUnderPercentOptionString(90)},
-	{percentVal = 80, str = GetUnderPercentOptionString(80)},
-	{percentVal = 70, str = GetUnderPercentOptionString(70)},
-	{percentVal = 60, str = GetUnderPercentOptionString(60)},
-	{percentVal = 50, str = GetUnderPercentOptionString(50)},
-	{percentVal = 40, str = GetUnderPercentOptionString(40)},
-	{percentVal = 30, str = GetUnderPercentOptionString(30)},
-	{percentVal = 20, str = GetUnderPercentOptionString(20)},
-	{percentVal = 10, str = GetUnderPercentOptionString(10)},
+	{cvarVal = Enum.CombatAudioAlertPulsePercentValues.Off, percentVal = 0, str = LOC_OPTION_OFF},
+	{cvarVal = Enum.CombatAudioAlertPulsePercentValues.AlwaysOn, percentVal = 100, str = LOC_OPTION_ON},
+	{cvarVal = Enum.CombatAudioAlertPulsePercentValues.Under90Percent, percentVal = 90, str = GetUnderPercentOptionString(90)},
+	{cvarVal = Enum.CombatAudioAlertPulsePercentValues.Under80Percent, percentVal = 80, str = GetUnderPercentOptionString(80)},
+	{cvarVal = Enum.CombatAudioAlertPulsePercentValues.Under70Percent, percentVal = 70, str = GetUnderPercentOptionString(70)},
+	{cvarVal = Enum.CombatAudioAlertPulsePercentValues.Under60Percent, percentVal = 60, str = GetUnderPercentOptionString(60)},
+	{cvarVal = Enum.CombatAudioAlertPulsePercentValues.Under50Percent, percentVal = 50, str = GetUnderPercentOptionString(50)},
+	{cvarVal = Enum.CombatAudioAlertPulsePercentValues.Under40Percent, percentVal = 40, str = GetUnderPercentOptionString(40)},
+	{cvarVal = Enum.CombatAudioAlertPulsePercentValues.Under30Percent, percentVal = 30, str = GetUnderPercentOptionString(30)},
+	{cvarVal = Enum.CombatAudioAlertPulsePercentValues.Under20Percent, percentVal = 20, str = GetUnderPercentOptionString(20)},
+	{cvarVal = Enum.CombatAudioAlertPulsePercentValues.Under10Percent, percentVal = 10, str = GetUnderPercentOptionString(10)},
 };
 
--- Looping sound kit for each health tier, read on demand so addons can substitute their own sounds.
-CombatAudioAlertPulseSoundData = {
-	[90] = 359338,
-	[80] = 359340,
-	[70] = 359342,
-	[60] = 359347,
-	[50] = 359348,
-	[40] = 359349,
-	[30] = 359352,
-	[20] = 359353,
-	[10] = 359355,
-};
+-- Looping sound kit for the health pulse. Audio drives its intensity.
+CombatAudioAlertPulseSoundKit = 372876;
 
 local sayCombatStartInfo = {
 	{str = LOC_OPTION_OFF},
@@ -227,7 +218,11 @@ function CombatAudioAlertUtil.EnumeratePartyHealthPercentInfo()
 end
 
 function CombatAudioAlertUtil.GetPulseHealthPercentInfo(cvarVal)
-	return pulseHealthPercentInfo[cvarVal + 1];
+	for _, info in ipairs(pulseHealthPercentInfo) do
+		if info.cvarVal == cvarVal then
+			return info;
+		end
+	end
 end
 
 function CombatAudioAlertUtil.GetCurrentPulseHealthPercentInfo()
@@ -239,18 +234,13 @@ function CombatAudioAlertUtil.EnumeratePulseHealthPercentInfo()
 	return ipairs(pulseHealthPercentInfo);
 end
 
--- Rounds up to the tier the health falls into, so 42% health uses the 50% pulse. Tiers above 90% have no sound.
-function CombatAudioAlertUtil.GetPulseHealthSoundKit(healthPercent)
-	return CombatAudioAlertPulseSoundData[math.ceil(healthPercent / 10) * 10];
+function CombatAudioAlertUtil.GetPulseHealthSoundKit()
+	return CombatAudioAlertPulseSoundKit;
 end
 
--- Replaces the looping sound for a health tier. Restarts the pulse so the change is audible immediately.
-function CombatAudioAlertUtil.SetPulseHealthSoundKit(percentVal, soundKitID)
-	if CombatAudioAlertPulseSoundData[percentVal] == nil then
-		error("SetPulseHealthSoundKit passed a percent that is not a pulse tier");
-	end
-
-	CombatAudioAlertPulseSoundData[percentVal] = soundKitID;
+-- Replaces the looping sound. Restarts the pulse so the change is audible immediately.
+function CombatAudioAlertUtil.SetPulseHealthSoundKit(soundKitID)
+	CombatAudioAlertPulseSoundKit = soundKitID;
 	CombatAudioAlertManager:UpdateHealthPulse();
 end
 

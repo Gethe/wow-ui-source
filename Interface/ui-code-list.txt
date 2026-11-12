@@ -1759,6 +1759,7 @@ Interface\AddOns\Blizzard_FrameXMLUtil\RenownRewardUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\RuneforgeUtil.lua
 Interface\AddOns\Blizzard_FrameXMLUtil\RuneforgeUtil.xml
 Interface\AddOns\Blizzard_FrameXMLUtil\TitleUtil.lua
+Interface\AddOns\Blizzard_FrameXMLUtil\WoWHack\DifficultyUtilOverrides.lua
 Interface\AddOns\Blizzard_FrameXML\AchievementDisplayFrame.lua
 Interface\AddOns\Blizzard_FrameXML\AchievementDisplayFrame.xml
 Interface\AddOns\Blizzard_FrameXML\ArchaeologyProgressBar.lua
@@ -1943,6 +1944,7 @@ Interface\AddOns\Blizzard_GameTooltip\WoWHack\GameTooltipWoWHackDressUpButton.lu
 Interface\AddOns\Blizzard_GameTooltip\WoWHack\GameTooltipWoWHackDressUpButton.xml
 Interface\AddOns\Blizzard_Game\Blizzard_Game.toc
 Interface\AddOns\Blizzard_Game\Camelot\EventImplementation.lua
+Interface\AddOns\Blizzard_Game\Camelot\EventImplementationUtils.lua
 Interface\AddOns\Blizzard_Game\Camelot\EventRouting.lua
 Interface\AddOns\Blizzard_Game\Camelot\Game.lua
 Interface\AddOns\Blizzard_Game\Camelot\Startup.lua
@@ -1955,6 +1957,7 @@ Interface\AddOns\Blizzard_Game\Classic\Game.lua
 Interface\AddOns\Blizzard_Game\Hardcore\EventImplementation.lua
 Interface\AddOns\Blizzard_Game\Hardcore\EventRouting.lua
 Interface\AddOns\Blizzard_Game\Mainline\EventImplementation.lua
+Interface\AddOns\Blizzard_Game\Mainline\EventImplementationUtils.lua
 Interface\AddOns\Blizzard_Game\Mainline\EventRouting.lua
 Interface\AddOns\Blizzard_Game\Mainline\Game.lua
 Interface\AddOns\Blizzard_Game\Mists\EventImplementation.lua
@@ -2010,6 +2013,9 @@ Interface\AddOns\Blizzard_GamepadActionBars\TargetActionBars\HostileTargetingAct
 Interface\AddOns\Blizzard_GamepadActionBars\TargetActionBars\Shared.lua
 Interface\AddOns\Blizzard_GamepadActionBars\TargetActionBars\ShortcutsActionBar.lua
 Interface\AddOns\Blizzard_GamepadActionBars\TargetActionBars\StaticOverrideActionBar.lua
+Interface\AddOns\Blizzard_GamepadInfoHUD\Blizzard_GamepadInfoHUD.toc
+Interface\AddOns\Blizzard_GamepadInfoHUD\InfoHUD.lua
+Interface\AddOns\Blizzard_GamepadInfoHUD\InfoHUD.xml
 Interface\AddOns\Blizzard_GamepadSharedUtilitySecure\Blizzard_GamepadSharedUtilitySecure.toc
 Interface\AddOns\Blizzard_GamepadSharedUtilitySecure\SecureBaseDialog.lua
 Interface\AddOns\Blizzard_GamepadSharedUtilitySecure\SecureBaseDialog.xml
@@ -2740,6 +2746,7 @@ Interface\AddOns\Blizzard_Minimap\Shared\ExternalEventURLMinimapButton.lua
 Interface\AddOns\Blizzard_Minimap\Shared\ExternalEventURLMinimapButton.xml
 Interface\AddOns\Blizzard_Minimap\Shared\MinimapButtonTemplate.lua
 Interface\AddOns\Blizzard_Minimap\Shared\MinimapButtonTemplate.xml
+Interface\AddOns\Blizzard_Minimap\WoWHack\InstanceDifficultyOverrides.lua
 Interface\AddOns\Blizzard_MirrorTimer\Blizzard_MirrorTimer.toc
 Interface\AddOns\Blizzard_MirrorTimer\Mainline\MirrorTimer.lua
 Interface\AddOns\Blizzard_MirrorTimer\Mainline\MirrorTimer.xml
@@ -2889,6 +2896,7 @@ Interface\AddOns\Blizzard_ObjectiveTracker\Blizzard_ScenarioObjectiveTracker.xml
 Interface\AddOns\Blizzard_ObjectiveTracker\Blizzard_WorldQuestObjectiveTracker.lua
 Interface\AddOns\Blizzard_ObjectiveTracker\Blizzard_WorldQuestObjectiveTracker.xml
 Interface\AddOns\Blizzard_ObjectiveTracker\Camelot\Blizzard_QuestObjectiveTrackerOverride.lua
+Interface\AddOns\Blizzard_ObjectiveTracker\WoWHack\Blizzard_AutoQuestPopUpTrackerOverride.lua
 Interface\AddOns\Blizzard_ObliterumUI\Blizzard_ObliterumUI.lua
 Interface\AddOns\Blizzard_ObliterumUI\Blizzard_ObliterumUI.toc
 Interface\AddOns\Blizzard_ObliterumUI\Blizzard_ObliterumUI.xml
@@ -3929,6 +3937,7 @@ Interface\AddOns\Blizzard_StaticPopup_Game\Mainline\GameDialog.lua
 Interface\AddOns\Blizzard_StaticPopup_Game\Mainline\GameDialogDefs.lua
 Interface\AddOns\Blizzard_StaticPopup_Game\Mainline\StaticPopupSpecial.xml
 Interface\AddOns\Blizzard_StaticPopup_Game\Mists\StaticPopupGlyphs.lua
+Interface\AddOns\Blizzard_StaticPopup_Game\Vanilla\GameDialogDefs.lua
 Interface\AddOns\Blizzard_StaticPopup_Game\Wrath\StaticPopupGlyphs.lua
 Interface\AddOns\Blizzard_StaticPopup_Glue\Blizzard_StaticPopup_Glue.toc
 Interface\AddOns\Blizzard_StaticPopup_Glue\Camelot\GlueDialogDefs.lua

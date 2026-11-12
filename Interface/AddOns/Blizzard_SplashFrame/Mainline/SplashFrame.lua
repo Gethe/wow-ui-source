@@ -16,6 +16,7 @@ function SplashFrameMixin:OnShow()
 	C_TalkingHead.SetConversationsDeferred(true);
 	AlertFrame:SetAlertsEnabled(false, "splashFrame");
 	C_SplashScreen.AcknowledgeSplash();
+	EventRegistry:TriggerEvent("SplashFrame.OnShow", self);
 end
 
 function SplashFrameMixin:OnHide()
@@ -30,6 +31,7 @@ function SplashFrameMixin:OnHide()
 	end
 
 	self.showingQuestDialog = nil;
+	EventRegistry:TriggerEvent("SplashFrame.OnHide", self);
 end
 
 function SplashFrameMixin:OnEvent(event, ...)

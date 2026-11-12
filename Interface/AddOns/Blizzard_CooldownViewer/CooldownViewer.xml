@@ -26,11 +26,6 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true"/>
-				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
-					<MaskedTextures>
-						<MaskedTexture childKey="Icon"/>
-					</MaskedTextures>
-				</MaskTexture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture atlas="UI-HUD-CoolDownManager-IconOverlay">
@@ -42,6 +37,12 @@
 				<Texture parentKey="OutOfRange" setAllPoints="true" atlas="UI-CooldownManager-OORshadow">
 					<Color r="1" g="1" b="1" a="0.5"/>
 				</Texture>
+				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="OutOfRange"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 		</Layers>
 		<Frames>
@@ -95,11 +96,6 @@
 		<Layers>
 			<Layer level="ARTWORK">
 				<Texture parentKey="Icon" setAllPoints="true"/>
-				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
-					<MaskedTextures>
-						<MaskedTexture childKey="Icon"/>
-					</MaskedTextures>
-				</MaskTexture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture atlas="UI-HUD-CoolDownManager-IconOverlay">
@@ -111,6 +107,12 @@
 				<Texture parentKey="OutOfRange" setAllPoints="true" atlas="UI-CooldownManager-OORshadow">
 					<Color r="1" g="1" b="1" a="0.5"/>
 				</Texture>
+				<MaskTexture atlas="UI-HUD-CoolDownManager-Mask" setAllPoints="true">
+					<MaskedTextures>
+						<MaskedTexture childKey="Icon"/>
+						<MaskedTexture childKey="OutOfRange"/>
+					</MaskedTextures>
+				</MaskTexture>
 			</Layer>
 		</Layers>
 		<Frames>

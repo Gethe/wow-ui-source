@@ -620,6 +620,7 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 		self:SetCameraZoomLevel(0);
 		self:SetModelDressState(true);
 		C_CharacterCreation.SetSelectedPreviewGearType(Enum.NewCharGear.Preview);
+		self.SelfFoundToggleButton:UpdateVisiblity();
 
 		if self:IsMode(CHAR_CREATE_MODE_CUSTOMIZE) then
 			self.BottomBackgroundOverlay.FadeIn:Play();
@@ -642,8 +643,6 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 
 			ClassTrialSpecs:SetClass(RaceAndClassFrame.selectedClassID, RaceAndClassFrame.selectedSexID);
 			ZoneChoiceFrame:Setup();
-
-			CharacterCreateSelfFoundButton:CheckSelfFoundButton()
 
 			if not RaceAndClassFrame.selectedRaceData.enabled then
 				self:AddNavBlocker(CHARACTER_CREATION_REQUIREMENTS_NEED_ACHIEVEMENT, HIGH_PRIORITY);
@@ -2355,6 +2354,9 @@ function CharacterCreateRaceAndClassMixin:RefreshSmartNavCustomJumps()
 	SmartNavigation_AddJumpNavigationOverride(bodyTypeButtons[1], SMART_NAV_INPUT_DIRECTION.LEFT, GetSelectedRaceClosure);
 	SmartNavigation_AddJumpNavigationOverride(bodyTypeButtons[2], SMART_NAV_INPUT_DIRECTION.RIGHT, SDToggleButton);
 
+	-- Self found toggle is stacked directly above the SD toggle
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(SDToggleButton, SMART_NAV_INPUT_DIRECTION.UP, SelfFoundToggleButton);
+
 	SmartNavigation_AddJumpNavigationOverride(bodyTypeButtons[1], SMART_NAV_INPUT_DIRECTION.DOWN, GetSelectedClassClosure);
 	SmartNavigation_AddJumpNavigationOverride(bodyTypeButtons[2], SMART_NAV_INPUT_DIRECTION.DOWN, GetSelectedClassClosure);
 
@@ -2644,7 +2646,7 @@ function CharacterCreateRaceAndClassMixin:GamepadFindButtonGroup(currentButton)
 		end
 	end
 
-	if currentButton == SDToggleButton then
+	if currentButton == SDToggleButton or currentButton == SelfFoundToggleButton then
 		return CHECKBOXTOGGLE_FRAME_GROUP;
 	end
 
@@ -3054,40 +3056,6 @@ function CharacterCreateRandomNameButtonMixin:NarrationGetName()
 	return self.simpleTooltipLine;
 end
 
-CharacterCreateSelfFoundButtonMixin = {};
-
-function CharacterCreateSelfFoundButtonMixin:OnClick()
-	if ( self:GetChecked() ) then
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
-	else
-		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
-	end
-	self:ToggleSelfFound(self)
-end
-
-function CharacterCreateSelfFoundButtonMixin:OnEnter()
-	GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
-	GlueTooltip:AddLine(SELF_FOUND_TOOLTIP_TOGGLE, 1.0, 0.78, 0.0, 1.0, true);
-	GlueTooltip:AddLine(SELF_FOUND_TOOLTIP_INFO, 1.0, 0.78, 0.0, 1.0, true)
-	GlueTooltip:Show();
-end
-
-function CharacterCreateSelfFoundButtonMixin:OnLeave()
-	GlueTooltip:Hide();
-end
-
-function CharacterCreateSelfFoundButtonMixin:ToggleSelfFound()
-	C_CharacterCreation.ToggleSelfFoundMode(self:GetChecked());
-end
-
-function CharacterCreateSelfFoundButtonMixin:CheckSelfFoundButton()
-	if (C_GameRules.IsSelfFoundAllowed()) then
-		CharacterCreateSelfFoundButton:Show();
-	else
-		CharacterCreateSelfFoundButton:Hide();
-	end
-end
-
 CharacterCreateClassTrialSpecsMixin = {};
 
 function CharacterCreateClassTrialSpecsMixin:OnLoad()
@@ -3314,5 +3282,41 @@ function CharCreateSDToggleMixin:OnLeave()
 end
 
 function CharCreateSDToggleMixin:NarrationGetName()
+	return self.Text:GetText();
+end
+
+CharCreateSelfFoundToggleMixin = {};
+
+function CharCreateSelfFoundToggleMixin:UpdateVisiblity()
+	self:SetShown(C_GameRules.IsSelfFoundAllowed());
+end
+
+function CharCreateSelfFoundToggleMixin:OnShow()
+end
+
+function CharCreateSelfFoundToggleMixin:OnClick()
+	local checked = self:GetChecked();
+
+	if checked then
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+	else
+		PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
+	end
+
+	C_CharacterCreation.ToggleSelfFoundMode(self:GetChecked());
+end
+
+function CharCreateSelfFoundToggleMixin:OnEnter()
+	GlueTooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GlueTooltip:AddLine(SELF_FOUND_TOOLTIP_TOGGLE, 1.0, 1.0, 1.0, 1.0, true);
+	GlueTooltip:AddLine(SELF_FOUND_TOOLTIP_INFO, 1.0, 0.78, 0.0, 1.0, true)
+	GlueTooltip:Show();
+end
+
+function CharCreateSelfFoundToggleMixin:OnLeave()
+	GlueTooltip:Hide();
+end
+
+function CharCreateSelfFoundToggleMixin:NarrationGetName()
 	return self.Text:GetText();
 end

@@ -139,7 +139,9 @@ function HouseExteriorOptionDropdownMixin:ShowOptions(selectedOptionID, options)
 				button:SetScript("OnClick", function(button, buttonName)
 					if not selected then
 						description:Pick(MenuInputContext.MouseButton, buttonName);
-						if not choiceData.isNoneOption then
+						if choiceData.onSelectSoundKitID then
+							PlaySound(choiceData.onSelectSoundKitID);
+						elseif not choiceData.isNoneOption then
 							PlaySound(SOUNDKIT.HOUSING_EXTERIOR_CUSTOMIZATION_DROPDOWN_SELECT_OPTION);
 						end
 					end

@@ -12,6 +12,7 @@ Shared\MinimapButtonTemplate.xml				[AllowLoadGameType classic, camelot]
 [Family]\MinimapConstants.lua			[AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
 [Game]\MinimapConstants.lua				[AllowLoadGameType camelot]
 [Family]\Minimap.lua
+WoWHack\InstanceDifficultyOverrides.lua	[AllowLoadGameType wowhack]
 [Game]\Minimap.lua								[AllowLoadGameType camelot]
 [Game]\MinimapInstanceDifficulty.lua	[AllowLoadGameType camelot]
 [Game]\MinimapZoneTextButton.lua	[AllowLoadGameType camelot]

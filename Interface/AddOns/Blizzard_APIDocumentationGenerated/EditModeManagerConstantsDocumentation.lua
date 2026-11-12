@@ -744,9 +744,9 @@ local EditModeManagerConstants =
 		{
 			Name = "EditModeSystem",
 			Type = "Enumeration",
-			NumValues = 31,
+			NumValues = 32,
 			MinValue = 0,
-			MaxValue = 30,
+			MaxValue = 31,
 			Fields =
 			{
 				{ Name = "ActionBar", Type = "EditModeSystem", EnumValue = 0 },
@@ -780,6 +780,7 @@ local EditModeManagerConstants =
 				{ Name = "LossOfControl", Type = "EditModeSystem", EnumValue = 28 },
 				{ Name = "SwingTimer", Type = "EditModeSystem", EnumValue = 29 },
 				{ Name = "GamepadMainActionBar", Type = "EditModeSystem", EnumValue = 30 },
+				{ Name = "GamepadInfoHud", Type = "EditModeSystem", EnumValue = 31 },
 			},
 		},
 		{

@@ -31,6 +31,7 @@ local HouseExteriorConstants =
 				{ Name = "isLocked", Type = "bool", Nilable = false },
 				{ Name = "isInvalid", Type = "bool", Nilable = false },
 				{ Name = "reasonString", Type = "cstring", Nilable = false },
+				{ Name = "onSelectSoundKitID", Type = "number", Nilable = true, Documentation = { "If set, a unique custom sound to play when selecting the house type instead of the default sound" } },
 			},
 		},
 		{

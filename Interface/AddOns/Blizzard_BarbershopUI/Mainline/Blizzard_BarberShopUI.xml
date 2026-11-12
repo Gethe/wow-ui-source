@@ -8,6 +8,9 @@
 	</Button>
 
 	<Frame name="BarberShopFrame" mixin="BarberShopMixin" inherits="TopLevelParentScaleFrameTemplate" toplevel="true" setAllPoints="true" enableKeyboard="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="disallowGamepadUnfocus" type="boolean" value="true"/>
+		</KeyValues>
 		<Layers>
 			<Layer level="OVERLAY">
 				<Texture parentKey="TopBackgroundOverlay" atlas="charactercreate-vignette-top">

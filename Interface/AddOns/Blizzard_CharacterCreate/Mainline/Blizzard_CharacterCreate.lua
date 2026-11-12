@@ -575,8 +575,6 @@ function CharacterCreateMixin:SetMode(mode, instantRotate)
 			ClassTrialSpecs:SetClass(RaceAndClassFrame.selectedClassID, RaceAndClassFrame.selectedSexID);
 			ZoneChoiceFrame:Setup();
 
-			CharacterCreateSelfFoundButton:CheckSelfFoundButton()
-
 			if not RaceAndClassFrame.selectedRaceData.enabled then
 				self:AddNavBlocker(CHARACTER_CREATION_REQUIREMENTS_NEED_ACHIEVEMENT, HIGH_PRIORITY);
 			end

@@ -137,6 +137,17 @@ local AreaPoiInfo =
 				{ Name = "hideTimerInTooltip", Type = "bool", Nilable = true },
 			},
 		},
+		{
+			Name = "MarkAreaPOISeen",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Marks the POI's current state as seen, so its unseen icon is no longer shown." },
+
+			Arguments =
+			{
+				{ Name = "areaPoiID", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =
@@ -176,6 +187,7 @@ local AreaPoiInfo =
 				{ Name = "isCurrentEvent", Type = "bool", Nilable = false },
 				{ Name = "isSuppressible", Type = "bool", Nilable = false },
 				{ Name = "isLocked", Type = "bool", Nilable = false, Default = false },
+				{ Name = "hasUnseenGlow", Type = "bool", Nilable = false, Default = false },
 			},
 		},
 	},

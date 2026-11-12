@@ -73,8 +73,16 @@ CombatAudioAlertConstants =
 	PARTY_HEALTH_UPDATE_MIN_SECONDS = 1;
 	PARTY_HEALTH_UPDATE_MAX_SECONDS = 5;
 
-	-- Tier used to preview the pulse volume when nothing is currently pulsing.
-	HEALTH_PULSE_SAMPLE_PERCENT = 50;
+	-- The actual pulse sound kit gets more intense as health drops, so we preview with a sample sound kit to give a consistent preview regardless of health.
+	HEALTH_PULSE_SAMPLE_SOUND_KIT = 380546;
+
+	-- At or above this health the real pulse is too quiet to judge, so the sample plays instead.
+	HEALTH_PULSE_SAMPLE_MIN_HEALTH_PERCENT = 50;
+
+	-- At this setting the pulse plays at any health.
+	HEALTH_PULSE_ALWAYS_PERCENT = 100;
+
+	-- How long the pulse volume preview plays.
 	HEALTH_PULSE_SAMPLE_SECONDS = 3;
 
 	-- Slider drags write their cvar on every step, so wait for the drag to settle before previewing it.

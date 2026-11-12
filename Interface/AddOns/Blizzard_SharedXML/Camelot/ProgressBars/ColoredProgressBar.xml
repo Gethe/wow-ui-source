@@ -12,7 +12,7 @@
 			</Frame>
 		</Frames>
 		<Layers>
-			<Layer level="BACKGROUND">
+			<Layer level="BACKGROUND" textureSubLevel="1">
 				<Texture atlas="common-stat-bar-BG" setAllPoints="true"/>
 			</Layer>
 			<Layer level="BORDER">

@@ -335,8 +335,8 @@ local function Register()
 			do
 				local function GetPulsePercentOptions()
 					local container = Settings.CreateControlTextContainer();
-					for index, percentInfo in CombatAudioAlertUtil.EnumeratePulseHealthPercentInfo() do
-						container:Add(index - 1, percentInfo.str);
+					for _, percentInfo in CombatAudioAlertUtil.EnumeratePulseHealthPercentInfo() do
+						container:Add(percentInfo.cvarVal, percentInfo.str);
 					end
 					return container:GetData();
 				end

@@ -3,11 +3,32 @@ ScribeCurrencyFrameMixin = {};
 
 local getScribeCurrencyIcon = TalentFrameUtil.GenerateTreeCurrencyDisplayCallback(14, 14);
 
+local DEFAULT_CURRENCY_FRAME_HEIGHT = 52;
+local CURRENCY_BACKGROUND_PADDING = 16;
+-- The frame is wider than the background by this amount (the left side is used by the tutorial highlight)
+local CURRENCY_FRAME_EXTRA_WIDTH = 20;
+-- The padding only applies when it would push the background past this width.
+local MIN_CURRENCY_BACKGROUND_WIDTH = 99;
+
+-- The frame is anchored on its right edge, so growing the width extends it to the left
+function ScribeCurrencyFrameMixin:UpdateWidth()
+	local textWidth = self.UnspentPointsCount:GetStringWidth();
+	local backgroundWidth = math.max(textWidth + (CURRENCY_BACKGROUND_PADDING * 2), MIN_CURRENCY_BACKGROUND_WIDTH);
+
+	self.UnspentPointsCount:SetWidth(textWidth);
+	self.CurrencyBackground:SetSize(backgroundWidth, DEFAULT_CURRENCY_FRAME_HEIGHT);
+	self:SetWidth(backgroundWidth + CURRENCY_FRAME_EXTRA_WIDTH);
+end
+
+function ScribeCurrencyFrameMixin:FormatDisplayText(quantity, currencyInfo)
+	return currencyInfo and (quantity .. " " .. getScribeCurrencyIcon(currencyInfo)) or quantity;
+end
+
 function ScribeCurrencyFrameMixin:Setup(currencyInfo)
 	local quantity = currencyInfo and currencyInfo.quantity or 0;
-	local displayText = currencyInfo and (quantity .. " " .. getScribeCurrencyIcon(currencyInfo)) or quantity;
-	self.UnspentPointsCount:SetText(displayText);
+	self.UnspentPointsCount:SetText(self:FormatDisplayText(quantity, currencyInfo));
 	self.traitCurrencyID = currencyInfo and currencyInfo.traitCurrencyID;
+	self:UpdateWidth();
 end
 
 function ScribeCurrencyFrameMixin:OnEnter()
@@ -60,7 +81,7 @@ function ScribeFrameMixin:OnLoad()
 		local classCard = self.classCardFramePool:Acquire();
 		if i == 1 then
 			firstClassCard = classCard;
-			classCard:SetPoint("TOPLEFT", self, "TOPLEFT", 7, -71);
+			classCard:SetPoint("TOPLEFT", self, "TOPLEFT", 12, -71);
 		else
 			classCard:SetPoint("TOPLEFT", lastClassCard, "TOPRIGHT", 1, 0);
 		end
@@ -193,6 +214,20 @@ end
 function ScribeFrameMixin:UpdateClassFrames()
 	for classCard in self.classCardFramePool:EnumerateActive() do
 		classCard:SetSelected(classCard:GetClassID() == self.currClassID);
+	end
+end
+
+function ScribeFrameMixin:UpdateProgressBarsShown()
+	local hasAnyRanks = false;
+	for classCard in self.classCardFramePool:EnumerateActive() do
+		if classCard:GetTotalActiveRanks() > 0 then
+			hasAnyRanks = true;
+			break;
+		end
+	end
+
+	for classCard in self.classCardFramePool:EnumerateActive() do
+		classCard.ClassInfoOverlay.ProgressBar:SetShown(hasAnyRanks);
 	end
 end
 

@@ -1264,15 +1264,26 @@ function TransmogCharacterMixin:SetupSlots()
 		-- Make sure we are selecting the same slot after refreshing our frames, if the slot still exists.
 		local slotFrameFound = false;
 		if self.selectedSlotData.transmogLocation then
-			local slotFrame = self:GetSlotFrame(self.selectedSlotData.transmogLocation:GetSlot(), self.selectedSlotData.transmogLocation:GetType());
+			local slot = self.selectedSlotData.transmogLocation:GetSlot();
+			local slotFrame = self:GetSlotFrame(slot, self.selectedSlotData.transmogLocation:GetType());
+
+			if not slotFrame then
+				-- Try to select the primary slot if this was the secondary slot that is now hidden
+				local linkedSlotsInfo = C_TransmogOutfitInfo.GetLinkedSlotInfo(slot);
+				if slot == linkedSlotsInfo.secondarySlotInfo.slot then
+					slotFrame = self:GetSlotFrame(linkedSlotsInfo.primarySlotInfo.slot, linkedSlotsInfo.primarySlotInfo.type);
+				end
+			end
+
 			if slotFrame then
 				slotFrameFound = true;
 				slotFrame:SetSelected(true);
+				self:SetSelectedSlotData(slotFrame.slotData);
 			end
 		end
 
 		if not slotFrameFound then
-			-- Whatever slot we were selecting is no longer present (split slot that is now hidden).
+			-- Whatever slot we were selecting is no longer present.
 			self:SetSelectedSlotData(nil);
 		end
 	end
@@ -2018,7 +2029,7 @@ function TransmogWardrobeItemsMixin:OnLoad()
 		else
 			PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_OFF);
 		end
-		C_TransmogOutfitInfo.SetSecondarySlotState(selectedSlotData.transmogLocation:GetSlot(), toggledOn);
+		C_TransmogOutfitInfo.SetSecondarySlotState(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.currentOptionInfo.type, toggledOn);
 		self.SecondaryAppearanceToggle.Text:SetFontObject(toggledOn and "GameFontHighlight" or "GameFontNormal");
 	end);
 
@@ -2189,7 +2200,7 @@ function TransmogWardrobeItemsMixin:RefreshActiveSlotTitle()
 		-- Use different names if slots are split.
 		if selectedSlotData.currentOptionInfo.type ~= Enum.TransmogOutfitSlotOption.None then
 			option = selectedSlotData.currentOptionInfo.name;
-		elseif C_TransmogOutfitInfo.GetSecondarySlotState(selectedSlotData.transmogLocation:GetSlot()) then
+		elseif C_TransmogOutfitInfo.GetSecondarySlotState(selectedSlotData.transmogLocation:GetSlot(), selectedSlotData.currentOptionInfo.type) then
 			if selectedSlotData.transmogLocation:GetSlot() == Enum.TransmogOutfitSlot.ShoulderRight then
 				slot = RIGHTSHOULDERSLOT;
 			elseif selectedSlotData.transmogLocation:GetSlot() == Enum.TransmogOutfitSlot.ShoulderLeft then
@@ -2417,7 +2428,7 @@ function TransmogWardrobeItemsMixin:RefreshSecondaryAppearanceToggle()
 	local hasSecondary = C_TransmogOutfitInfo.SlotHasSecondary(slot);
 	if hasSecondary then
 		self.SecondaryAppearanceToggle:Show();
-		local toggledOn = C_TransmogOutfitInfo.GetSecondarySlotState(slot);
+		local toggledOn = C_TransmogOutfitInfo.GetSecondarySlotState(slot, selectedSlotData.currentOptionInfo.type);
 		self.SecondaryAppearanceToggle.Checkbox:SetChecked(toggledOn);
 		self.SecondaryAppearanceToggle.Text:SetFontObject(toggledOn and "GameFontHighlight" or "GameFontNormal");
 	else

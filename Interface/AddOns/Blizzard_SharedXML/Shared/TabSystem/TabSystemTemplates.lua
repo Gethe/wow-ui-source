@@ -79,12 +79,6 @@ function TabSystemButtonArtMixin:SetTabWidth(width)
 	self:SetWidth(width);
 end
 
-function TabSystemButtonArtMixin:SetTabHeight(height)
-	for _, texture in ipairs(self.RotatedTextures) do
-		texture:SetHeight(height);
-	end
-end
-
 function TabSystemButtonArtMixin:IsForceDisabled()
 	-- Override in your derived Mixin.
 	return false, nil;
@@ -227,7 +221,6 @@ function TabSystemButtonMixin:UpdateTabWidth()
 	local width = sidesWidth + TabSideExtraSpacing;
 	local minTabWidth, maxTabWidth = self:GetTabSystem():GetTabWidthConstraints();
 	local textWidth = self.Text:GetWidth() + (self.textPadding or 0);
-	local height = self:GetHeight(); 
 
 	if width < textWidth then
 		width = textWidth + 10;
@@ -249,7 +242,6 @@ function TabSystemButtonMixin:UpdateTabWidth()
 	self.Text:SetWidth(textWidth or 0);
 
 	self:SetTabWidth(width);
-	self:SetTabHeight(height);
 end
 
 function TabSystemButtonMixin:IsSelected()

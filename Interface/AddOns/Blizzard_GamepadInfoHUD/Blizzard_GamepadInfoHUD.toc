@@ -1,0 +1,14 @@
+## Title: Blizzard_GamepadInfoHUD
+## AllowLoadGameType: camelot
+## Dep: Blizzard_Fonts_Shared
+## Dep: Blizzard_FrameXMLBase
+## Dep: Blizzard_Gamepad
+## Dep: Blizzard_GamepadSharedUtility
+## Dep: Blizzard_EditMode
+## Dep: Blizzard_SharedXML
+## Dep: Blizzard_SharedXMLBase
+## Dep: Blizzard_SocialToast
+## Dep: Blizzard_UIPanels_Game
+
+InfoHUD.lua
+InfoHUD.xml

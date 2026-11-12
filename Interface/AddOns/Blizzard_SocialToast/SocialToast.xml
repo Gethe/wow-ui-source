@@ -93,7 +93,7 @@
 
 	<ContainedAlertFrame name="ShardTransferImminentMinimizeButton" inherits="SocialToastTemplate" mixin="ShardTransferImminentMinimizeMixin">
 		<Size x="24" y="24"/>
-		<NormalTexture atlas="RedButton-Expand"/>
+		<NormalTexture atlas="RedButton-Condense"/>
 		<Layers>
 			<Layer level="BORDER">
 			</Layer>

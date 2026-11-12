@@ -30,6 +30,7 @@ local VoiceChat =
 		{
 			Name = "BeginLocalCapture",
 			Type = "Function",
+			HasRestrictions = true,
 			SecretArguments = "AllowedWhenUntainted",
 
 			Arguments =

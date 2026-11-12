@@ -118,6 +118,11 @@ function SubscriptionInterstitialFrameMixin:OnLoad()
 
 	self.SubscribeButton:SetScript("OnClick", OnSubscribeClick);
 	self.UpgradeButton:SetScript("OnClick", OnSubscribeClick);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		local cursorAnchor = CreateAnchor("RIGHT", self.UpgradeButton.ButtonText, "LEFT", 10, 0);
+		SmartNavigation_SetCustomCursorAnchorPointForFrame(self.UpgradeButton, cursorAnchor);
+	end
 end
 
 function SubscriptionInterstitialFrameMixin:CreateShadowOverlay()
@@ -130,6 +135,15 @@ end
 function SubscriptionInterstitialFrameMixin:OnShow()
 	self.cinematicIsShowing = nil;
 	EventRegistry:RegisterCallback("CinematicFrame.CinematicStarting", self.OnCinematicStarting, self);
+
+	if C_Glue.IsOnGlueScreen() then
+		-- Add Blocking Frame if on Glue screen
+		GlueParent_AddModalFrame(self);
+	else
+		if (InputUtil.IsGamepadUIEnabled()) then
+			GamepadMode.FrameControlsManager:FrameShown(self);
+		end
+	end
 end
 
 function SubscriptionInterstitialFrameMixin:OnHide()
@@ -146,6 +160,15 @@ function SubscriptionInterstitialFrameMixin:OnHide()
 		self.SubscribeButton:ClearClickState();
 		self.UpgradeButton:ClearClickState();
 	end
+
+	if C_Glue.IsOnGlueScreen() then
+		-- Remove Blocking Frame if on Glue screen
+		GlueParent_RemoveModalFrame(self);
+	else
+		if (InputUtil.IsGamepadUIEnabled()) then
+			GamepadMode.FrameControlsManager:FrameHidden(self);
+		end
+	end
 end
 
 function SubscriptionInterstitialFrameMixin:OnEvent(event, ...)
@@ -159,8 +182,7 @@ function SubscriptionInterstitialFrameMixin:ShowInterstitial(interstitialType)
 	self:SetInterstitialType(interstitialType);
 
 	if C_Glue.IsOnGlueScreen() then
-		-- Parented so it hides with character select; character select raises itself on click, so only a higher strata keeps this above it.
-		self:SetParent(CharacterSelect);
+		self:SetParent(GlueParent);
 		self:SetFrameStrata("DIALOG");
 		self:Show();
 	else

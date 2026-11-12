@@ -503,6 +503,16 @@ local ActionBarFrame =
 			},
 		},
 		{
+			Name = "GetWoWHackUltimateProgressPercent",
+			Type = "Function",
+			Documentation = { "Returns the WoWHack ultimate progress as a percentage from 0 to 100. Returns 0 outside of WoWHack." },
+
+			Returns =
+			{
+				{ Name = "percent", Type = "number", Nilable = false },
+			},
+		},
+		{
 			Name = "HasAction",
 			Type = "Function",
 			RequiresValidActionSlot = true,
@@ -1192,6 +1202,13 @@ local ActionBarFrame =
 			Type = "Event",
 			LiteralName = "PET_BAR_UPDATE",
 			SynchronousEvent = true,
+		},
+		{
+			Name = "UltimateProgressChanged",
+			Type = "Event",
+			LiteralName = "ULTIMATE_PROGRESS_CHANGED",
+			SynchronousEvent = true,
+			Documentation = { "Fires when the WoWHack ultimate progress value changes." },
 		},
 		{
 			Name = "UpdateBonusActionbar",

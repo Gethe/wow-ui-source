@@ -64,7 +64,7 @@ function ScribeClassCardMixin:UpdateStatusBar()
 	local totalActiveRanks = 0;
 	if treeNodes and configID then
 		for _i, nodeID in ipairs(treeNodes) do
-			local nodeInfo = C_Traits.GetNodeInfo(configID, nodeID);
+			local nodeInfo = self.TalentTree:GetNodeInfoWithGrants(nodeID);
 			if nodeInfo then
 				totalRanks = totalRanks + nodeInfo.maxRanks;
 				totalActiveRanks = totalActiveRanks + nodeInfo.activeRank;
@@ -72,13 +72,27 @@ function ScribeClassCardMixin:UpdateStatusBar()
 		end
 	end
 
-	self.ClassInfoOverlay.ProgressBar:SetStatusBarColor(0.63, 0.09, 0.09);
-	self.ClassInfoOverlay.ProgressBar:SetMinMaxValues(0, totalRanks);
-	self.ClassInfoOverlay.ProgressBar:SetValue(totalActiveRanks);
+	local progressBar = self.ClassInfoOverlay.ProgressBar;
+	progressBar:SetStatusBarColor(0.63, 0.09, 0.09);
+	progressBar:SetMinMaxValues(0, totalRanks);
+	progressBar:SetValue(totalActiveRanks);
 
-	self.ClassInfoOverlay.ProgressBar.Label:SetText(string.format(SCRIBE_PROGRESS_BAR_FORMAT, totalActiveRanks, totalRanks));
+	progressBar.Label:SetText(string.format(SCRIBE_PROGRESS_BAR_FORMAT, totalActiveRanks, totalRanks));
 
-	self.ClassInfoOverlay.ProgressBar.Spark:SetPoint("CENTER", self.ClassInfoOverlay.ProgressBar.BarTexture, "RIGHT", 0, 0);
+	local isFull = totalActiveRanks >= totalRanks;
+	progressBar.Spark:SetPoint("CENTER", progressBar.BarTexture, "RIGHT", 0, 0);
+	progressBar.Spark:SetShown(not isFull);
+
+	self.totalActiveRanks = totalActiveRanks;
+
+	local scribeFrame = self:GetParent();
+	if scribeFrame.UpdateProgressBarsShown then
+		scribeFrame:UpdateProgressBarsShown();
+	end
+end
+
+function ScribeClassCardMixin:GetTotalActiveRanks()
+	return self.totalActiveRanks or 0;
 end
 
 function ScribeClassCardMixin:UpdateTextures()
@@ -250,6 +264,49 @@ function ScribeClassTalentFrameMixin:SetTalentTreeID(treeID, forceUpdate)
 	TalentFrameBaseMixin.SetTalentTreeID(self, treeID, forceUpdate);
 
 	EventRegistry:TriggerEvent("ScribeClassTalentFrame.SetTreeID", treeID, self:GetConfigID());
+end
+
+function ScribeClassTalentFrameMixin:GetAndCacheNodeInfo(nodeID)
+	-- Overrides TalentFrameBaseMixin.
+	local nodeInfo = TalentFrameBaseMixin.GetAndCacheNodeInfo(self, nodeID);
+	return self:ApplyInactiveClassGrants(nodeInfo);
+end
+
+function ScribeClassTalentFrameMixin:GetNodeInfoWithGrants(nodeID)
+	local configID = self:GetConfigID();
+	return configID and self:ApplyInactiveClassGrants(C_Traits.GetNodeInfo(configID, nodeID)) or nil;
+end
+
+-- Spec based grants (i.e. a class's base spells) are only given for the current class, so the nodes
+-- of a deactivated class report no ranks. Treat those grants as applied so the tree shows what the class will provide.
+function ScribeClassTalentFrameMixin:ApplyInactiveClassGrants(nodeInfo)
+	if not nodeInfo or not nodeInfo.conditionIDs or nodeInfo.activeRank > 0 or self.classID == C_ScribeUI.GetCurrClassID() then
+		return nodeInfo;
+	end
+
+	local grantedRanks = 0;
+	for _i, condID in ipairs(nodeInfo.conditionIDs) do
+		local condInfo = self:GetAndCacheCondInfo(condID);
+		if condInfo and condInfo.type == Enum.TraitConditionType.Granted and condInfo.ranksGranted then
+			local isSpecGrant = condInfo.specSetID and not condInfo.questID and not condInfo.achievementID;
+			if isSpecGrant or condInfo.isMet then
+				grantedRanks = grantedRanks + condInfo.ranksGranted;
+			end
+		end
+	end
+
+	local addedRanks = math.min(nodeInfo.maxRanks, grantedRanks);
+	if addedRanks > 0 then
+		nodeInfo.activeRank = addedRanks;
+		nodeInfo.currentRank = nodeInfo.currentRank + addedRanks;
+
+		-- The tooltip evaluates the spell description from activeEntry.rank, so keep it in sync with the grant.
+		if nodeInfo.activeEntry then
+			nodeInfo.activeEntry.rank = nodeInfo.activeEntry.rank + addedRanks;
+		end
+	end
+
+	return nodeInfo;
 end
 
 function ScribeClassTalentFrameMixin:IsLocked()

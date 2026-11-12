@@ -348,7 +348,7 @@
 			<CheckButton name="SDToggleButton" mixin="CharCreateSDToggleMixin" hidden="true" inherits="UICheckButtonTemplate">
 				<Size x="30" y="30"/>
 				<Anchors>
-					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ForwardButton" relativePoint="TOPLEFT" x="20" y="10"/>
+					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ForwardButton" relativePoint="TOPLEFT" x="20" y="6"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK">
@@ -362,6 +362,28 @@
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
+					<OnShow method="OnShow"/>
+					<OnClick method="OnClick"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="SelfFoundToggleButton" parentKey="SelfFoundToggleButton" mixin="CharCreateSelfFoundToggleMixin" hidden="true" inherits="UICheckButtonTemplate">
+				<Size x="30" y="30"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" relativeTo="SDToggleButton" relativePoint="TOPLEFT" x="0" y="4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="Text" inherits="GameFontNormalMed2" justifyH="LEFT" text="SELF_FOUND">
+							<Size x ="180"/>
+							<Anchors>
+								<Anchor point="LEFT" x="30" y="0"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
 					<OnShow method="OnShow"/>
 					<OnClick method="OnClick"/>
 					<OnEnter method="OnEnter"/>
@@ -639,36 +661,6 @@
 							<OnEvent method="OnEvent"/>
 						</Scripts>
 					</Button>
-					<CheckButton name="CharacterCreateSelfFoundButton" inherits="UICheckButtonTemplate" mixin="CharacterCreateSelfFoundButtonMixin">
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Label" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="80" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString inherits="GlueFontNormalLarge" text="SELF_FOUND">
-									<Size>
-										<AbsDimension x="256" y="64"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOM" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="-23"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick method="OnClick"/>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
-					</CheckButton>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

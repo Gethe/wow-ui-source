@@ -1,22 +1,26 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\..\..\..\WoW\Data\Interface\AddOns\Blizzard_SharedXML\UI.xsd">
 
-	<Frame name="ScenarioTrackerStatLineTemplate" mixin="ScenarioTrackerStatLineMixin" virtual="true">
+	<Frame name="ScenarioTrackerStatLineTemplate" mixin="ScenarioTrackerStatLineMixin" inherits="TruncatedTooltipScriptTemplate" enableMouseMotion="true" virtual="true">
 		<Size x="210" y="5"/>
 		<Layers>
 			<Layer level="BORDER">
-				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT">
-					<Anchors>
-						<Anchor point="LEFT" x="20"/>
-					</Anchors>
-				</FontString>
-				<FontString parentKey="Value" inherits="GameFontHighlight" justifyH="RIGHT">
+				<FontString parentKey="Value" inherits="GameFontHighlight" justifyH="RIGHT" wordwrap="false">
 					<Anchors>
 						<Anchor point="RIGHT" x="-20"/>
 					</Anchors>
 				</FontString>
+				<FontString parentKey="Name" inherits="GameFontHighlight" justifyH="LEFT" wordwrap="false" maxLines="1">
+					<Anchors>
+						<Anchor point="LEFT" x="20"/>
+						<Anchor point="RIGHT" relativeKey="$parent.Value" relativePoint="LEFT" x="-6"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="ScenarioTrackerCharacterStatsBlockTemplate" mixin="ScenarioTrackerCharacterStatsBlockMixin" virtual="true" hidden="true">

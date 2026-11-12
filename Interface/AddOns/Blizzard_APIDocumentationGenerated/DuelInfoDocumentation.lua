@@ -7,6 +7,16 @@ local DuelInfo =
 
 	Functions =
 	{
+		{
+			Name = "GetDuelerInfo",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "duelerGuid", Type = "WOWGUID", Nilable = false },
+				{ Name = "realLevel", Type = "number", Nilable = false },
+			},
+		},
 	},
 
 	Events =

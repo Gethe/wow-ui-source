@@ -463,6 +463,8 @@ function ProfessionsCustomerOrderFormMixin:OnEvent(event, ...)
 					errorText = CRAFTING_ORDER_FAILED_TARGET_CANT_CRAFT;
 				elseif result == Enum.CraftingOrderResult.MaxOrdersReached then
 					errorText = PROFESSIONS_MAX_ORDERS_REACHED;
+				elseif result == Enum.CraftingOrderResult.ClassTrial then
+					errorText = CRAFTING_ORDER_CLASS_TRIAL;
 				else
 					errorText = PROFESSIONS_ORDER_PLACEMENT_FAILED;
 				end
@@ -1426,13 +1428,16 @@ function ProfessionsCustomerOrderFormMixin:UpdateListOrderButton()
 	if self.committed then
 		return;
 	end
-	
+
 	local listOrderButton = self.PaymentContainer.ListOrderButton;
 
 	local enabled = true;
 	local errorText;
 
-	if self.pendingOrderPlacement then
+	if C_ClassTrial.IsClassTrialCharacter() then
+		enabled = false;
+		errorText = CRAFTING_ORDER_CLASS_TRIAL;
+	elseif self.pendingOrderPlacement then
 		enabled = false;
 	elseif self.order.isRecraft and not self.order.skillLineAbilityID then
 		enabled = false;

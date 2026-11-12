@@ -1998,7 +1998,7 @@ function FriendsFrame_UpdateFriendButton(button, elementData)
 					infoText = GetOnlineInfoText(accountInfo.gameAccountInfo.clientProgram, accountInfo.rafLinkType, accountInfo.gameAccountInfo.areaName);
 				end
 
-					C_Texture.SetTitleIconTexture(button.gameIcon, accountInfo.gameAccountInfo.clientProgram, Enum.TitleIconVersion.Medium, accountInfo.gameAccountInfo.subIcon);
+					C_Texture.SetTitleIconTexture(button.gameIcon, accountInfo.gameAccountInfo.clientProgram, nil, accountInfo.gameAccountInfo.subIcon);
 
 				local fadeIcon = (accountInfo.gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (accountInfo.gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID);
 				if fadeIcon then

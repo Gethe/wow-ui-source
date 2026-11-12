@@ -112,8 +112,23 @@
 					<KeyValue key="defaultDeselectSound" value="SOUNDKIT.UI_CLASS_TALENT_NODE_REFUND" type="global"/>
 				</KeyValues>
 			</Frame>
+			<!-- Defined before ClassInfoOverlay so the progress bar can anchor to it -->
+			<Button parentKey="ActivateClassButton" inherits="UIPanelButtonTemplate" text="SCRIBE_SELECT_BUTTON_TEXT" propagateMouseInput="Motion" frameLevel="5500" motionScriptsWhileDisabled="true">
+				<Size x="150" y="22"/>
+				<Anchors>
+					<Anchor point="BOTTOM" x="0" y="16"/>
+				</Anchors>
+			</Button>
+
 			<!-- Doing this in a Frame not on the base so we can layer on top of TalentTree-->
 			<Frame parentKey="ClassInfoOverlay" setAllPoints="true" frameLevel="5000">
+				<Frames>
+					<StatusBar parentKey="ProgressBar" inherits="ScribeClassProgressBarTemplate" frameLevel="5500" hidden="true">
+						<Anchors>
+							<Anchor point="BOTTOM" relativeKey="$parent.$parent.ActivateClassButton" relativePoint="TOP" y="48"/>
+						</Anchors>
+					</StatusBar>
+				</Frames>
 				<Layers>
 					<Layer level="OVERLAY" textureSubLevel="0">
 						<Texture parentKey="Texture" setAllPoints="true">
@@ -126,29 +141,16 @@
 								<Anchor point="CENTER" y="-116"/>
 							</Anchors>
 						</FontString>
-						<FontString parentKey="ClassDesc" inherits="GameFontHighlight">
+						<FontString parentKey="ClassDesc" inherits="GameFontHighlight" justifyV="TOP">
 							<Size x="270"/>
 							<Anchors>
 								<Anchor point="TOP" relativeKey="$parent.ClassName" relativePoint="BOTTOM" y="-16"/>
+								<Anchor point="BOTTOM" relativeKey="$parent.ProgressBar" relativePoint="TOP" y="16"/>
 							</Anchors>
 						</FontString>
 					</Layer>
 				</Layers>
-				<Frames>
-					<StatusBar parentKey="ProgressBar" inherits="ScribeClassProgressBarTemplate" frameLevel="5500">
-						<Anchors>
-							<Anchor point="TOP" relativeKey="$parent.ClassDesc" relativePoint="BOTTOM" y="-16"/>
-						</Anchors>
-					</StatusBar>
-				</Frames>
 			</Frame>
-
-			<Button parentKey="ActivateClassButton" inherits="UIPanelButtonTemplate" text="SCRIBE_SELECT_BUTTON_TEXT" propagateMouseInput="Motion" frameLevel="5500" motionScriptsWhileDisabled="true">
-				<Size x="150" y="22"/>
-				<Anchors>
-					<Anchor point="BOTTOM" x="0" y="16"/>
-				</Anchors>
-			</Button>
 
 			<Frame parentKey="PreviewHoverController" inherits="HoverFadeVisibilityControllerTemplate" frameStrata="HIGH" frameLevel="5000" setAllPoints="true"/>
 		</Frames>

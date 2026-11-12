@@ -109,3 +109,21 @@ function PlayerSpellsFrameMixin:SetTab(tabID)
 
 	return BaseSetTab(self, tabID);
 end
+
+function PlayerSpellsFrameMixin:GetOpenSoundKit()
+	local tabID = self:GetTab();
+	if tabID == self.talentTabID then
+		return SOUNDKIT.TALENT_SCREEN_OPEN;
+	elseif tabID == self.spellBookTabID then
+		return SOUNDKIT.IG_SPELLBOOK_OPEN;
+	end
+end
+
+function PlayerSpellsFrameMixin:GetCloseSoundKit()
+	local tabID = self:GetTab();
+	if tabID == self.talentTabID then
+		return SOUNDKIT.TALENT_SCREEN_CLOSE;
+	elseif tabID == self.spellBookTabID then
+		return SOUNDKIT.IG_SPELLBOOK_CLOSE;
+	end
+end

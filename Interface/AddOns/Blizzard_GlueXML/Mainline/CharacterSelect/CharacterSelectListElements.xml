@@ -282,6 +282,38 @@
 									</Anchors>
 								</FontString>
 							</Layer>
+							<Layer level="OVERLAY">
+								<Texture parentKey="graveIcon" atlas="poi-graveyard-neutral" hidden="true">
+									<Size x="18" y="24"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.Name" relativePoint="RIGHT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame> 
+					<Frame name="SelfFoundIcon" parentKey="selfFoundIcon" hidden="true">
+						<Size x="44" y="44"/>
+						<Anchors>
+							<Anchor point="TOPLEFT" x="-18" y="-8"/>
+						</Anchors>
+						<Layers>
+							<Layer level="ARTWORK">
+								<Texture file="Interface\ICONS\UI_SelfFound">
+									<Size x="19" y="19"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="6" y="-5"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture file="Interface\Minimap\MiniMap-TrackingBorder">
+									<Size x="50" y="50"/>
+									<Anchors>
+										<Anchor point="TOPLEFT"/>
+									</Anchors>
+								</Texture>
+							</Layer>
 						</Layers>
 					</Frame>
 					<Button parentKey="NotificationButton" mixin="CharacterSelectListNotificationButtonMixin">

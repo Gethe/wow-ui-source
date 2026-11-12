@@ -85,6 +85,14 @@ function TargetFrameMixin:UpdateHealthBarVisuals(classification)
 	healthBarsContainer.HealthBarMask:SetPoint("TOPLEFT", -1, 9);
 end
 
+function TargetFrameMixin:CheckBattlePet()
+	local isBattlePet = UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit);
+	self.TargetFrameContent.TargetFrameContentMain.LevelBackgroundCircle:SetShown(not isBattlePet);
+	self.TargetFrameContent.TargetFrameContentMain.LevelText:SetShown(not isBattlePet);
+	-- Always hidden in Camelot
+	self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Hide();
+end
+
 --
 -- Target of Target Frame
 --

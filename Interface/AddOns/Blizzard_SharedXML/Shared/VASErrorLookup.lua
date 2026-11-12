@@ -100,7 +100,7 @@ local vasErrorData = {
 		msg = BLIZZARD_STORE_VAS_ERROR_MAX_CHARACTERS_ON_SERVER,
 	},
 	[Enum.VasTransactionPurchaseResult.DbNoMixedAlliance] = {
-		msg = CHAR_CREATE_PVP_TEAMS_VIOLATION,
+		msg = BLIZZARD_STORE_VAS_ERROR_PVP_TEAMS_VIOLATION,
 	},
 	[Enum.VasTransactionPurchaseResult.DbDuplicateCharacterName] = {
 		msg = BLIZZARD_STORE_VAS_ERROR_DUPLICATE_CHARACTER_NAME,

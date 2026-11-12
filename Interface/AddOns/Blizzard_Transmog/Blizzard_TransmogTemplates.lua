@@ -216,7 +216,23 @@ function TransmogSlotMixin:OnClick(buttonName)
 	elseif buttonName == "RightButton" then
 		if outfitSlotInfo.hasPending then
 			PlaySound(SOUNDKIT.UI_TRANSMOG_REVERTING_GEAR_SLOT);
-			C_TransmogOutfitInfo.RevertPendingTransmog(self.slotData.transmogLocation:GetSlot(), self.slotData.transmogLocation:GetType(), self.slotData.currentOptionInfo.type);
+			local slot = self.slotData.transmogLocation:GetSlot();
+			local type = self.slotData.transmogLocation:GetType();
+			local option = self.slotData.currentOptionInfo.type
+			C_TransmogOutfitInfo.RevertPendingTransmog(slot, type, option);
+
+			-- When reverting transmog on a slot, also revert the pending mog on a linked slot if it isnt active
+			local linkedSlotsInfo = C_TransmogOutfitInfo.GetLinkedSlotInfo(slot);
+			if linkedSlotsInfo and slot == linkedSlotsInfo.primarySlotInfo.slot and not C_TransmogOutfitInfo.GetSecondarySlotState(slot, option) then
+				C_TransmogOutfitInfo.RevertPendingTransmog(linkedSlotsInfo.secondarySlotInfo.slot, type, option);
+				local primaryOutfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(linkedSlotsInfo.primarySlotInfo.slot, linkedSlotsInfo.primarySlotInfo.type, option);
+				local secondaryOutfitSlotInfo = C_TransmogOutfitInfo.GetViewedOutfitSlotInfo(linkedSlotsInfo.secondarySlotInfo.slot, linkedSlotsInfo.secondarySlotInfo.type, option);
+				if primaryOutfitSlotInfo and secondaryOutfitSlotInfo and primaryOutfitSlotInfo.transmogID ~= secondaryOutfitSlotInfo.transmogID then
+					-- we've reverted the transmog on the main slot and the secondary slot is inactive, but the saved mogs are different, so it SHOULD be active, turn it on
+					C_TransmogOutfitInfo.SetSecondarySlotState(slot, option, true);
+					TransmogFrame.WardrobeCollection.TabContent.ItemsFrame:RefreshSecondaryAppearanceToggle();
+				end
+			end
 			self:OnSelect();
 		end
 	end
@@ -292,7 +308,7 @@ function TransmogSlotMixin:OnEnter()
 			local subtitle = nil;
 			if self.slotData.currentOptionInfo.type ~= Enum.TransmogOutfitSlotOption.None then
 				subtitle = self.slotData.currentOptionInfo.name;
-			elseif C_TransmogOutfitInfo.GetSecondarySlotState(slot) then
+			elseif C_TransmogOutfitInfo.GetSecondarySlotState(slot, self.slotData.currentOptionInfo.type) then
 				if slot == Enum.TransmogOutfitSlot.ShoulderRight then
 					title = RIGHTSHOULDERSLOT;
 				elseif slot == Enum.TransmogOutfitSlot.ShoulderLeft then

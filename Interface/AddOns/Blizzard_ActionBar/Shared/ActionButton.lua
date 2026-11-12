@@ -1110,9 +1110,17 @@ function ActionBarActionButtonMixin:SetTooltip()
 	end
 	if ( GameTooltip:SetAction(self.action) ) then
 		self.UpdateTooltip = self.SetTooltip;
+		if ( ActionBarActionButtonMixin.AddOverrideTooltipInfo(self) ) then
+			GameTooltip:Show();
+		end
 	else
 		self.UpdateTooltip = nil;
 	end
+end
+
+-- Overridden for various game flavors. Return true if lines were added so the tooltip is re-shown to resize.
+function ActionBarActionButtonMixin:AddOverrideTooltipInfo()
+	return false;
 end
 
 function ActionBarActionButtonMixin:CheckNeedsUpdate()
@@ -1499,6 +1507,8 @@ function ActionBarActionButtonMixin:OnEnter()
 	end
 
 	C_ActionBar.EnterActionButton(self.action);
+
+	EventRegistry:TriggerEvent("ActionButton.OnEnter", self);
 end
 
 function ActionBarActionButtonMixin:OnLeave()
@@ -1510,6 +1520,8 @@ function ActionBarActionButtonMixin:OnLeave()
 	end
 
 	C_ActionBar.LeaveActionButton(self.action);
+
+	EventRegistry:TriggerEvent("ActionButton.OnLeave", self);
 end
 
 -- Override for BaseActionButtonInfoMixin.

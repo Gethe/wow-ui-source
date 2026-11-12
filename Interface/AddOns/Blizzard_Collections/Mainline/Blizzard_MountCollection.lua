@@ -150,6 +150,7 @@ function MountJournal_OnLoad(self)
 
 	-- If there is only one filter setting available, hide filter
 	if C_CVar.GetCVarBool("onlyShowCollectedItemsInJournal") then
+		C_MountJournal.SetDefaultFilters();
 		self.FilterDropdown:Hide();
 	else
 		MountJournal_InitFilterButton(self);

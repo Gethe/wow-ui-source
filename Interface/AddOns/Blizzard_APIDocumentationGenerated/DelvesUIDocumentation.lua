@@ -456,6 +456,16 @@ local DelvesUI =
 			},
 		},
 		{
+			Name = "IsPartyLeaderInTaleInstance",
+			Type = "Function",
+			Documentation = { "Gets whether or not the party leader is currently in a tale instance/map." },
+
+			Returns =
+			{
+				{ Name = "result", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsTraitTreeForCompanion",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

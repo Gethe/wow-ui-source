@@ -874,8 +874,7 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 			rightManagedAuraOffset = levelFrameWidth;
 		end
 
-		self.AurasFrame.CrowdControlListFrame:SetPoint("LEFT", self.HealthBarsContainer, "RIGHT", 5 + rightManagedAuraOffset, 0);
-		self.AurasFrame.LossOfControlFrame:SetPoint("LEFT", self.HealthBarsContainer, "RIGHT", 5 + rightManagedAuraOffset, 0);
+		self:UpdateControlAnchors(rightManagedAuraOffset);
 	end
 
 	-- Level Frame
@@ -888,6 +887,24 @@ function NamePlateUnitFrameMixin:UpdateAnchors()
 			self.LevelFrame:SetPoint("CENTER", self.HealthBarsContainer.healthBar.bgTexture, "RIGHT", -11 * setupOptions.horizontalScale, 0);
 		end
 	end
+end
+
+function NamePlateUnitFrameMixin:UpdateControlAnchors(rightManagedAuraOffset)
+	local crowdControlListFrame = self.AurasFrame.CrowdControlListFrame;
+	local LossOfControlFrame = self.AurasFrame.LossOfControlFrame;
+	local levelFrame = self.PlayerLevelDiffFrame;
+	local spacing = 5 + rightManagedAuraOffset;
+
+	crowdControlListFrame:ClearAllPoints();
+
+	if levelFrame:IsShown() then
+		crowdControlListFrame:SetPoint("LEFT", levelFrame, "RIGHT", spacing, 0);
+		LossOfControlFrame:SetPoint("LEFT", levelFrame, "RIGHT", spacing, 0);
+		return;
+	end
+
+	crowdControlListFrame:SetPoint("LEFT", self.HealthBarsContainer, "RIGHT", spacing, 0);
+	LossOfControlFrame:SetPoint("LEFT", self.HealthBarsContainer, "RIGHT", spacing, 0);
 end
 
 function NamePlateUnitFrameMixin:SetExplicitValues(explicitValues)

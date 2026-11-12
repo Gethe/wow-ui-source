@@ -541,7 +541,7 @@ function FriendsListSocialCardMixin:InitializeGameIcon()
 	end
 
 	local gameAccountInfo = self.elementData.accountInfo.gameAccountInfo;
-	C_Texture.SetTitleIconTexture(gameIconHolder.Icon, gameAccountInfo.clientProgram, Enum.TitleIconVersion.Small, gameAccountInfo.subIcon);
+	C_Texture.SetTitleIconTexture(gameIconHolder.Icon, gameAccountInfo.clientProgram, nil, gameAccountInfo.subIcon);
 
 	local friendIsPlayingDifferentWowProject = FriendsListUtil.IsPlayingDifferentWoWProject(gameAccountInfo);
 	gameIconHolder.Icon:SetAlpha(friendIsPlayingDifferentWowProject and 0.6 or 1);

@@ -1,5 +1,6 @@
 local STAT_LINE_TEMPLATE = "ScenarioTrackerStatLineTemplate";
 local STAT_LINE_SPACING = 15;
+local STAT_LINE_VALUE_MAX_WIDTH = 100;
 local STAT_LIST_TOP_PADDING = 14;
 local STAT_LIST_BOTTOM_PADDING = 8;
 local STAT_LIST_RIGHT_PADDING = 4;
@@ -21,12 +22,19 @@ local CHARACTER_STAT_LIST_EVENTS = {
 
 ScenarioTrackerStatLineMixin = {};
 
+function ScenarioTrackerStatLineMixin:OnLoad()
+	self.truncatedTooltipScriptText = self.Name;
+end
+
 function ScenarioTrackerStatLineMixin:SetName(statName)
 	self.Name:SetText(statName);
 end
 
 function ScenarioTrackerStatLineMixin:SetValue(value)
+	-- Width 0 lets the string size to its text so the max can be applied.
+	self.Value:SetWidth(0);
 	self.Value:SetText(value);
+	self.Value:SetWidth(math.min(self.Value:GetUnboundedStringWidth(), STAT_LINE_VALUE_MAX_WIDTH));
 end
 
 ScenarioTrackerCharacterStatsBlockMixin = {};

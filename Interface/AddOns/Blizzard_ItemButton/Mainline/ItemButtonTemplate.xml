@@ -277,4 +277,12 @@
 			<OnEvent method="OnEvent"/>
 		</Scripts>
 	</Button>
+
+	<Frame name="ItemSlotDropStateTemplate" mixin="ItemSlotDropStateMixin" virtual="true">
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="6">
+				<Texture parentKey="DropStateTexture" setAllPoints="true" hidden="true"/>
+			</Layer>
+		</Layers>
+	</Frame>
  </Ui>

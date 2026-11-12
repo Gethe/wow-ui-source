@@ -327,7 +327,9 @@ function InterfaceOverrides.CreateQuestSettings(category, layout)
 end
 
 function InterfaceOverrides.CreateToastSettings(category, layout)
-	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(TOAST_SETTINGS_LABEL));
+	local sectionTooltip = nil;
+	local sectionNewTagID = "TOAST_SETTINGS_LABEL";
+	layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(TOAST_SETTINGS_LABEL, sectionTooltip, sectionNewTagID));
 
 	if C_CVar.GetCVar("enableLootToasts") then
 		-- Loot toasts

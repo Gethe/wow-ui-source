@@ -409,6 +409,7 @@ local TransmogOutfitInfo =
 			Arguments =
 			{
 				{ Name = "slot", Type = "TransmogOutfitSlot", Nilable = false },
+				{ Name = "option", Type = "TransmogOutfitSlotOption", Nilable = false },
 			},
 
 			Returns =
@@ -761,6 +762,7 @@ local TransmogOutfitInfo =
 			Arguments =
 			{
 				{ Name = "slot", Type = "TransmogOutfitSlot", Nilable = false },
+				{ Name = "option", Type = "TransmogOutfitSlotOption", Nilable = false },
 				{ Name = "state", Type = "bool", Nilable = false },
 			},
 		},

@@ -13,6 +13,8 @@ function BarberShopMixin:OnLoad()
 	CharCustomizeFrame:SetOptionsSpacingConfiguration(CharCustomizeFrame.Categories, optionsBottomFrame);
 
 	self.sexButtonPool = CreateFramePool("CHECKBUTTON", self.BodyTypes, "CharCustomizeBodyTypeButtonTemplate");
+
+	SmartNavigation_AddJumpNavigationOverride(self.SDToggleButton, SMART_NAV_INPUT_DIRECTION.DOWN, self.AcceptButton);
 end
 
 function BarberShopMixin:OnEvent(event, ...)

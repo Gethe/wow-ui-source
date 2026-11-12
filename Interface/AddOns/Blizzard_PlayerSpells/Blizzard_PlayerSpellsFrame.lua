@@ -20,6 +20,7 @@ function PlayerSpellsFrameMixin:OnLoad()
 		[PlayerSpellsUtil.FrameTabs.ClassTalents] = self.talentTabID,
 		[PlayerSpellsUtil.FrameTabs.SpellBook] = self.spellBookTabID,
 	};
+	self.tabIDToFrameTab = tInvert(self.frameTabsToTabID);
 
 	self.isMinimizingEnabled = true;
 	self.manualMinimizeEnabled = GetCVarBool("spellBookMinimize");
@@ -53,7 +54,7 @@ function PlayerSpellsFrameMixin:OnShow()
 	MultiActionBar_ShowAllGrids(ACTION_BUTTON_SHOW_GRID_REASON_SPELLCOLLECTION);
 	UpdateMicroButtons();
 	EventRegistry:TriggerEvent("PlayerSpellsFrame.OpenFrame");
-	PlaySound(SOUNDKIT.UI_CLASS_TALENT_OPEN_WINDOW);
+	PlaySound(self:GetOpenSoundKit());
 
 	-- This flag is intended for single-use only so reset it once the frame has been shown.
 	self.minimizedOnNextShow = false;
@@ -78,7 +79,7 @@ function PlayerSpellsFrameMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, PlayerSpellsFrameEvents);
 	FrameUtil.UnregisterFrameForEvents(self, PlayerSpellsFrameUnitEvents);
 
-	PlaySound(SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW);
+	PlaySound(self:GetCloseSoundKit());
 
 	self:ClearInspectUnit();
 
@@ -173,6 +174,9 @@ end
 function PlayerSpellsFrameMixin:SetTab(tabID)
 	TabSystemOwnerMixin.SetTab(self, tabID);
 
+	-- Must happen before any minimize evaluation below, as that can re-show the panel.
+	self:UpdateUIPanelMinimizeAttributes(self:GetCurrentFrameTab());
+
 	local canNewTabBeMinimized = self:DoesTabSupportMinimizedMode(tabID);
 	if self.isMinimized and not canNewTabBeMinimized then
 		self:ForceMaximize();
@@ -217,16 +221,31 @@ function PlayerSpellsFrameMixin:TrySetTab(frameTab)
 
 	local isTabAvailable = self:IsTabAvailable(tabID);
 	if isTabAvailable then
-		SetUIPanelAttribute(self, "area", self:AreaAttributeForTab(frameTab));
-
 		self:SetTab(tabID);
 	end
 
 	return isTabAvailable;
 end
 
+function PlayerSpellsFrameMixin:GetCurrentFrameTab()
+	return self.tabIDToFrameTab[self:GetTab()];
+end
+
+-- Expects a PlayerSpellsUtil.FrameTabs value
+function PlayerSpellsFrameMixin:UpdateUIPanelMinimizeAttributes(frameTab)
+	if not frameTab then
+		return;
+	end
+
+	local area = self:AreaAttributeForTab(frameTab);
+	SetUIPanelAttribute(self, "area", area);
+	-- Auto-minimizing can only land on a tab that supports minimized mode, so leave it disabled for
+	-- tabs that don't; otherwise the panel manager would swap away the tab the player asked for.
+	SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", area == "centerOrLeft");
+end
+
 function PlayerSpellsFrameMixin:AreaAttributeForTab(frameTab)
-	if self.isMinimizingEnabled then
+	if self.isMinimizingEnabled and self:DoesTabSupportMinimizedMode(self.frameTabsToTabID[frameTab]) then
 		return "centerOrLeft";
 	end
 
@@ -463,7 +482,7 @@ function PlayerSpellsFrameMixin:ShouldAutoMinimize()
 	end
 
 	-- Has external code requested the frame be minimized next time its opened.
-	return self:IsMinimizingEnabled() and self.minimizedOnNextShow;
+	return self:IsMinimizingEnabled() and self.minimizedOnNextShow and self:DoesTabSupportMinimizedMode(self:GetTab());
 end
 
 function PlayerSpellsFrameMixin:ShouldManuallyMinimize(tabID)
@@ -570,13 +589,7 @@ end
 function PlayerSpellsFrameMixin:SetMinimizingEnabled(enabled)
 	self.isMinimizingEnabled = enabled;
 
-	if enabled then
-		SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", true);
-		SetUIPanelAttribute(self, "area", "centerOrLeft");
-	else
-		SetUIPanelAttribute(self, "autoMinimizeWithOtherPanels", false);
-		SetUIPanelAttribute(self, "area", "center");
-	end
+	self:UpdateUIPanelMinimizeAttributes(self:GetCurrentFrameTab());
 end
 
 function PlayerSpellsFrameMixin:GetAssociatedMicroButtons()
@@ -662,6 +675,16 @@ function PlayerSpellsFrameMixin:IsAutoCastDropdownContextActionValid()
 		end
 	end
 	return false;
+end
+
+function PlayerSpellsFrameMixin:GetOpenSoundKit()
+	-- overriden in other game types
+	return SOUNDKIT.UI_CLASS_TALENT_OPEN_WINDOW;
+end
+
+function PlayerSpellsFrameMixin:GetCloseSoundKit()
+	-- overriden in other game types
+	return SOUNDKIT.UI_CLASS_TALENT_CLOSE_WINDOW;
 end
 
 local function IsPassiveFlyout(spellBookItemInfo)

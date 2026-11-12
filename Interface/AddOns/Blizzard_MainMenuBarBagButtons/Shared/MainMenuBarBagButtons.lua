@@ -53,6 +53,11 @@ function BaseBagSlotButtonMixin:BagSlotOnEvent(event, ...)
 		PaperDollItemSlotButton_Update(self);
 	elseif event == "INVENTORY_SEARCH_UPDATE" then
 		self:UpdateBagMatchesSearch();
+	elseif event == "BAG_SLOT_FLAGS_UPDATED" then
+		local bagID = ...;
+		if self:GetBagID() == bagID and self.UpdateBagFiltered then
+			self:UpdateBagFiltered();
+		end
 	else
 		PaperDollItemSlotButton_OnEvent(self, event, ...);
 	end
@@ -137,7 +142,7 @@ function BaseBagSlotButtonMixin:UpdateBagMatchesSearch()
 end
 
 function BaseBagSlotButtonMixin:UpdateBagButtonHighlight(containerFrame)
-	-- Gamepad bag buttons manage their own slot highlight.
+	-- Gamepad bag buttons don't use the slot highlight.
 	if self.UpdateBorderAtlases then
 		return;
 	end
@@ -217,9 +222,20 @@ local GAMEPAD_BAG_SLOT_BORDER_ATLASES = {
 		disabled = "BagSlotFrame_Collapsed_Disabled",
 		highlight = "BagSlotFrame_Collapsed_Hover",
 	},
+	empty = {
+		icon = "bags-item-slot-bag-default",
+		normal = "BagSlotFrame_Empty_Default",
+		pushed = "BagSlotFrame_Empty_Pushed",
+		highlight = "BagSlotFrame_Empty_Hover",
+	},
 };
 
 GamepadBagSlotMixin = {};
+
+function GamepadBagSlotMixin:OnLoad()
+	self:InitDropState();
+	self:UpdateItemCount();
+end
 
 function GamepadBagSlotMixin:HasBag()
 	if self:IsBackpack() or self:GetBagID() == KEYRING_CONTAINER then
@@ -231,19 +247,40 @@ end
 
 function GamepadBagSlotMixin:UpdateBorderAtlases()
 	local hasBag = self:HasBag();
-	local useCollapsed = hasBag and self.isCollapsed;
-	local atlases = useCollapsed and GAMEPAD_BAG_SLOT_BORDER_ATLASES.collapsed or GAMEPAD_BAG_SLOT_BORDER_ATLASES.expanded;
-	-- Empty slots keep the default normal atlas that UpdateTextures already applied.
-	if hasBag then
-		self:GetNormalTexture():SetAtlas(atlases.normal);
-		self:GetPushedTexture():SetAtlas(atlases.pushed);
-		self:GetDisabledTexture():SetAtlas(atlases.disabled);
-		self:GetHighlightTexture():SetAtlas(atlases.highlight);
+	local atlases;
+	if not hasBag then
+		atlases = GAMEPAD_BAG_SLOT_BORDER_ATLASES.empty;
+	elseif self.isCollapsed then
+		atlases = GAMEPAD_BAG_SLOT_BORDER_ATLASES.collapsed;
+	else
+		atlases = GAMEPAD_BAG_SLOT_BORDER_ATLASES.expanded;
 	end
 
-	self.SlotHighlightTexture:SetShown(not hasBag);
+	self:GetNormalTexture():SetAtlas(atlases.normal);
+	self:GetPushedTexture():SetAtlas(atlases.pushed);
+	self:GetHighlightTexture():SetAtlas(atlases.highlight);
+
+	if hasBag then
+		self:GetDisabledTexture():SetAtlas(atlases.disabled);
+	else
+		local useAtlasSize, filterMode, resetTexCoords = false, nil, true;
+		self.icon:SetAtlas(atlases.icon, useAtlasSize, filterMode, resetTexCoords);
+		self.icon:Show();
+	end
 
 	self:UpdateItemCount();
+	self:UpdateBagFiltered();
+end
+
+function GamepadBagSlotMixin:UpdateBagFiltered()
+	local bagID = self:GetBagID();
+	local isFiltered = false;
+	if self:HasBag() and ContainerFrame_CanContainerUseFilterMenu(bagID) then
+		local filterFlags = ContainerFrameSettingsManager:QueryFilterFlags(bagID);
+		isFiltered = filterFlags ~= 0;
+	end
+
+	self.BagFiltered:SetShown(isFiltered);
 end
 
 function GamepadBagSlotMixin:IsAmmunitionBag()
@@ -284,6 +321,21 @@ function GamepadBagSlotMixin:TryOpenBagMenu(button)
 	end
 
 	return true;
+end
+
+function GamepadBagSlotMixin:UpdateDropState()
+	local hasBag = self:HasBag();
+	local dropState = ItemSlotDropStateBagRules:GetBagSlotState(self:GetBagID(), hasBag);
+	local showWhenUnfocused = not hasBag and ItemSlotDropStateBagRules:IsBagOnCursor() and dropState == ItemSlotDropState.Permitted;
+	self:SetDropState(dropState, showWhenUnfocused);
+end
+
+function GamepadBagSlotMixin:OnDropStateEnter()
+	self:SetDropFocused(true);
+end
+
+function GamepadBagSlotMixin:OnDropStateLeave()
+	self:SetDropFocused(false);
 end
 
 GamepadBagBarMixin = {};
@@ -343,6 +395,12 @@ function GamepadBagBarMixin:OnLoad()
 		gamepadkeyRingButton.isCollapsed = true;
 		gamepadkeyRingButton:UpdateBorderAtlases();
 	end
+
+	EventRegistry:RegisterCallback("ItemSlotDropState.BagStatesUpdated", function()
+		for _, bagButton in ipairs(self.BagButtonArray) do
+			bagButton:UpdateDropState();
+		end
+	end, self);
 end
 
 GamepadBagSlotButtonMixin = CreateFromMixins(BaseBagSlotButtonMixin);
@@ -350,6 +408,7 @@ GamepadBagSlotButtonMixin = CreateFromMixins(BaseBagSlotButtonMixin);
 function GamepadBagSlotButtonMixin:BagSlotOnLoad()
 	-- We don't want to be registered to the MainMenuBarBagManager
 	self:RegisterEvent("ITEM_PUSH");
+	self:RegisterEvent("BAG_SLOT_FLAGS_UPDATED");
 
 	self:OnLoadInternal();
 end

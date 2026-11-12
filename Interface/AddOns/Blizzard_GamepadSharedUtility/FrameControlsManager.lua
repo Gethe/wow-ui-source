@@ -655,15 +655,28 @@ function GamepadFrameControlsManagerMixin:SetUIFocusState(shouldFocusUI)
 		end
 	else
 		if (self.isUIFocused) then
-			-- Close any popup menus when toggling the UI.
 			local currentActiveFrame = self.focusedFrame;
-			if (currentActiveFrame and currentActiveFrame.dismissOnUnfocus) then
-				if not SecureHelper.SecureCallOptionalFunction(currentActiveFrame, "SmartNavigationCloseHandler", currentActiveFrame) then
-					HideUIPanel(currentActiveFrame);
+			if currentActiveFrame then
+				-- If the active frame is parented to the current top level frame, also check that
+				-- the top level allows unfocusing.
+				local topLevelParent = GetAppropriateTopLevelParent();
+				local activeParent = currentActiveFrame;
+				while activeParent do
+					if activeParent == topLevelParent and activeParent.disallowGamepadUnfocus then
+						return;
+					end
+					activeParent = activeParent:GetParent();
 				end
 
-				if (GamepadMode.FrameControlsManager:IsFrameSuspended()) then
-					GamepadMode.FrameControlsManager:UnsuspendFrame();
+				-- Close any popup menus when toggling the UI.
+				if currentActiveFrame.dismissOnUnfocus then
+					if not SecureHelper.SecureCallOptionalFunction(currentActiveFrame, "SmartNavigationCloseHandler", currentActiveFrame) then
+						HideUIPanel(currentActiveFrame);
+					end
+
+					if (GamepadMode.FrameControlsManager:IsFrameSuspended()) then
+						GamepadMode.FrameControlsManager:UnsuspendFrame();
+					end
 				end
 			end
 

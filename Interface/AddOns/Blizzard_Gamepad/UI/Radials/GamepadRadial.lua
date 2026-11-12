@@ -19,6 +19,9 @@ function BasicSegmentHandler.Create(options)
 	return self;
 end
 
+function BasicSegmentHandler:Init()
+end
+
 function BasicSegmentHandler:Attach(segment)
 	if self.segment then
 		self:Detach();
@@ -46,6 +49,10 @@ end
 
 function BasicSegmentHandler:IsDown()
 	return self.isOpen and self.isOpen();
+end
+
+function BasicSegmentHandler:IsPulsing()
+	return false;
 end
 
 function BasicSegmentHandler:Trigger()
@@ -109,12 +116,25 @@ end
 
 function BasicSegmentHandler:SetIcon(icon)
 	local kind = type(icon);
-	local width, height = 38, 38;
+	local size = kind == "string" and 57 or 38;
+
+	self:SetIconForFrame(icon, self.segment.SegmentIcon, size, size);
+
+	local iconX, iconY = self.segment:GetIconOffset(kind);
+	self.segment.SegmentIcon:ClearAllPoints();
+	self.segment.SegmentIcon:SetPoint("CENTER", iconX, iconY);
+
+	local labelX, labelY = self.segment:GetIconLabelAnchor();
+	self.segment.IconLabel:ClearAllPoints();
+	self.segment.IconLabel:SetPoint("CENTER", self.segment.SegmentIcon, "CENTER", labelX, labelY);
+end
+
+function BasicSegmentHandler:SetIconForFrame(icon, frame, width, height)
+	local kind = type(icon);
 	local scale = 1.0;
 
 	if kind == "string" then
-		self.segment.SegmentIcon:SetAtlas(icon);
-		width, height = 57, 57;
+		frame:SetAtlas(icon);
 
 		-- If the atlas failed to load for whatever reason, its width/height is zero
 		local atlasInfo = C_Texture.GetAtlasInfo(icon);
@@ -124,21 +144,13 @@ function BasicSegmentHandler:SetIcon(icon)
 			height = atlasInfo.height;
 		end
 	elseif kind == "function" then
-		icon(self.segment.SegmentIcon);
+		icon(frame);
 	else
-		self.segment.SegmentIcon:SetTexture(icon or 132311);
+		frame:SetTexture(icon or 132311);
 	end
 
-	self.segment.SegmentIcon:SetScale(scale);
-	self.segment.SegmentIcon:SetSize(width, height);
-
-	local iconX, iconY = self.segment:GetIconOffset(kind);
-	self.segment.SegmentIcon:ClearAllPoints();
-	self.segment.SegmentIcon:SetPoint("CENTER", iconX, iconY);
-
-	local labelX, labelY = self.segment:GetIconLabelAnchor();
-	self.segment.IconLabel:ClearAllPoints();
-	self.segment.IconLabel:SetPoint("CENTER", self.segment.SegmentIcon, "CENTER", labelX, labelY);
+	frame:SetScale(scale);
+	frame:SetSize(width, height);
 end
 
 ------------------------------------------------------------
@@ -156,8 +168,21 @@ function MicroMenuButtonHandler.Create(button, options)
 	return self;
 end
 
+function MicroMenuButtonHandler:Init()
+	self.button:RegisterCallback("OnBeginPulse", self.OnBeginPulse, self);
+	self.button:RegisterCallback("OnEndPulse", self.OnEndPulse, self);
+
+	if self.button:IsPulsing() then
+		self:OnBeginPulse(self.button);
+	end
+end
+
 function MicroMenuButtonHandler:action()
 	self.button:Click("LeftButton");
+end
+
+function MicroMenuButtonHandler:IsPulsing()
+	return self.button:IsPulsing();
 end
 
 function MicroMenuButtonHandler:Attach(segment)
@@ -165,8 +190,6 @@ function MicroMenuButtonHandler:Attach(segment)
 
 	self.button:RegisterCallback("OnEnable", self.UpdateIcon, self);
 	self.button:RegisterCallback("OnDisable", self.UpdateIcon, self);
-	self.button:RegisterCallback("OnBeginPulse", self.OnBeginPulse, self);
-	self.button:RegisterCallback("OnEndPulse", self.OnEndPulse, self);
 	self.button:RegisterCallback("OnNewNotification", self.OnNewNotification, self);
 	self.button:RegisterCallback("OnDismissedNotification", self.OnDismissedNotification, self);
 
@@ -175,20 +198,18 @@ function MicroMenuButtonHandler:Attach(segment)
 	end
 
 	if self.button:IsPulsing() then
-		self:OnBeginPulse(self.button);
+		self:SetPulseEnabled(true);
 	end
 end
 
 function MicroMenuButtonHandler:Detach()
 	self.button:UnregisterCallback("OnEnable", self);
 	self.button:UnregisterCallback("OnDisable", self);
-	self.button:UnregisterCallback("OnBeginPulse", self);
-	self.button:UnregisterCallback("OnEndPulse", self);
 	self.button:UnregisterCallback("OnNewNotification", self);
 	self.button:UnregisterCallback("OnDismissedNotification", self);
 
 	self.segment.NotificationOverlay:Hide();
-	self:OnEndPulse(self.button);
+	self:SetPulseEnabled(false);
 
 	BasicSegmentHandler.Detach(self);
 end
@@ -215,15 +236,26 @@ function MicroMenuButtonHandler:OnDismissedNotification(button)
 end
 
 function MicroMenuButtonHandler:OnBeginPulse(button, duration)
-	if self.segment and button == self.button then
-		UIFrameFlash(self.segment.SegmentIcon, 1, 1, duration or -1, true, 0, 0, "microbutton");
+	if button == self.button then
+		self:SetPulseEnabled(true, duration);
+		self.radial:OnBeginSegmentPulse(self);
 	end
 end
 
 function MicroMenuButtonHandler:OnEndPulse(button)
-	if self.segment and button == self.button then
-		self.segment.SegmentIcon.showWhenDone = true;
-		UIFrameFlashStop(self.segment.SegmentIcon);
+	if button == self.button then
+		self:SetPulseEnabled(false);
+		self.radial:OnEndSegmentPulse(self);
+	end
+end
+
+function MicroMenuButtonHandler:SetPulseEnabled(enabled, duration)
+	if self.segment then
+		if enabled then
+			UIFrameFlash(self.segment.SegmentIcon, 1, 1, duration or -1, true, 0, 0, "microbutton");
+		elseif UIFrameIsFlashing(self.segment.SegmentIcon) then
+			UIFrameFlashStop(self.segment.SegmentIcon);
+		end
 	end
 end
 
@@ -411,12 +443,12 @@ function lfdMicroButtonHandler:Activate()
 	GameTooltip_SetDefaultAnchor(QueueStatusFrame, self.segment);
 	QueueStatusFrame:Show();
 
-	self.segment.radial.ContextActionSelector:SetMenuOptions(self.contextOptions);
+	self.radial.ContextActionSelector:SetMenuOptions(self.contextOptions);
 end
 
 function lfdMicroButtonHandler:Deactivate()
 	QueueStatusFrame:Hide();
-	self.segment.radial.ContextActionSelector:SetMenuOptions();
+	self.radial.ContextActionSelector:SetMenuOptions();
 end
 
 ------------------------------------------------------------
@@ -483,9 +515,18 @@ end
 ------------------------------------------------------------
 ---------------------- Gamepad Radial ----------------------
 ------------------------------------------------------------
-GamepadRadialMixin = {};
+GamepadRadialMixin = CreateFromMixins(CallbackRegistryMixin);
+
+GamepadRadialMixin:GenerateCallbackEvents({
+	"OnBeginSegmentPulse",
+	"OnEndSegmentPulse",
+});
 
 function GamepadRadialMixin:OnLoad()
+	CallbackRegistryMixin.OnLoad(self);
+
+	self.pulsingSegments = {};
+
 	for _, segment in ipairs(self.SegmentList) do
 		segment.radial = self;
 		self:PositionDisabledHighlight(segment);
@@ -839,6 +880,15 @@ function GamepadRadialMixin:InitializeRadialData()
 			},
 		},
 	};
+
+	for _, option in pairs(self.segmentOptions) do
+		option.radial = self;
+		option:Init();
+
+		if option:IsPulsing() then
+			self:OnBeginSegmentPulse(option);
+		end
+	end
 end
 
 function GamepadRadialMixin:FillSegmentData()
@@ -1033,6 +1083,23 @@ function GamepadRadialMixin:ProcessInput(x, y)
 			self:BeginSelection(buttonIndex);
 		end
 	end
+end
+
+function GamepadRadialMixin:OnBeginSegmentPulse(handler)
+	if not table.contains(self.pulsingSegments, handler) then
+		table.insert(self.pulsingSegments, handler);
+		self:TriggerEvent(self.Event.OnBeginSegmentPulse, handler);
+	end
+end
+
+function GamepadRadialMixin:OnEndSegmentPulse(handler)
+	if table.removevalue(self.pulsingSegments, handler) ~= 0 then
+		self:TriggerEvent(self.Event.OnEndSegmentPulse, handler);
+	end
+end
+
+function GamepadRadialMixin:GetPulsingSegments()
+	return self.pulsingSegments;
 end
 
 local function GamepadSendChat(chatText)

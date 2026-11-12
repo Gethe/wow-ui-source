@@ -1,3 +1,9 @@
+local SharedTradeCanShow = UnitPopupTradeButtonMixin.CanShow;
+
+function UnitPopupTradeButtonMixin:CanShow(contextData)
+	return not C_GameRules.IsGameRuleActive(Enum.GameRule.DisableTrading) and SharedTradeCanShow(self, contextData);
+end
+
 UnitPopupGlueInviteButtonMixin = CreateFromMixins(UnitPopupButtonBaseMixin);
 function UnitPopupGlueInviteButtonMixin:GetButtonName()
 	return "GLUE_INVITE";

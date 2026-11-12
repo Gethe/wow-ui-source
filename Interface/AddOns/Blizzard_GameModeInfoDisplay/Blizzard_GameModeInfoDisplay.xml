@@ -12,8 +12,8 @@
 					<Layer level="BORDER">
 						<Texture parentKey="Border" atlas="ui-frame-chamfered" setAllPoints="true">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-28" y="-16"/>
-								<Anchor point="BOTTOMRIGHT" x="29" y="1"/>
+								<Anchor point="TOPLEFT" x="-29" y="-15"/>
+								<Anchor point="BOTTOMRIGHT" x="31" y="1"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -26,7 +26,7 @@
 						</Texture>
 					</Layer>
 					<Layer level="ARTWORK">
-						<Texture parentKey="Logo" scale="0.7">
+						<Texture parentKey="Logo" scale="0.6">
 							<Anchors>
 								<Anchor point="CENTER" relativePoint="TOPLEFT" x="175" y="-70"/>
 							</Anchors>
@@ -85,9 +85,9 @@
 							</Anchors>
 							<Size x="220"/>
 						</FontString>
-						<Texture parentKey="RewardsBird" atlas="timerunning-infographic-rewards" useAtlasSize="true" scale="0.7">
+						<Texture parentKey="RewardsImage" atlas="timerunning-infographic-rewards" useAtlasSize="true" scale="0.7">
 							<Anchors>
-								<Anchor point="CENTER" x="222" y="-48"/>
+								<Anchor point="CENTER" x="222" y="-22"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -95,14 +95,14 @@
 				<Frames>
 					<Button parentKey="CloseButton" inherits="UIPanelCloseButton">
 						<Anchors>
-							<Anchor point="TOPRIGHT" x="2" y="-42"/>
+							<Anchor point="TOPRIGHT" relativeKey="$parent.Border" x="-13" y="-13"/>
 						</Anchors>
 					</Button>
 					<Button parentKey="PlayNowButton" inherits="GlueButtonSmallTemplate">
 						<Anchors>
 							<Anchor point="BOTTOM" x="0" y="25"/>
 						</Anchors>
-						<Size x="260" y="35"/>
+						<Size x="278" y="35"/>
 					</Button>
 				</Frames>
 			</Frame>

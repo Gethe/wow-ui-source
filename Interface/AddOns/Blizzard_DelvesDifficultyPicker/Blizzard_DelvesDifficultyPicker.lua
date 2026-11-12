@@ -637,6 +637,11 @@ function DelvesDifficultyPickerFrameMixin:CanEnterDelve()
 		end
 
 		if UnitInParty("player") and not UnitIsGroupLeader("player") then
+			if self.entranceType == Enum.TieredEntranceType.Tale then
+				-- Allow party members to join the leader if the leader is currently in the tale instance
+				return C_DelvesUI.IsPartyLeaderInTaleInstance();
+			end
+
 			return false;
 		end
 	end

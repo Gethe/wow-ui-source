@@ -2271,6 +2271,10 @@ function UnitPopupSetFocusButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupSetFocusButtonMixin:CanShow(contextData)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.FocusFrameDisabled) then
+		return false;
+	end
+
 	if InputUtil.IsGamepadUIEnabled() and (contextData.which == "TARGET") then
 		return not UnitIsFocus(contextData.which);
 	end
@@ -2288,6 +2292,10 @@ function UnitPopupClearFocusButtonMixin:OnClick(contextData)
 end
 
 function UnitPopupClearFocusButtonMixin:CanShow(contextData)
+	if C_GameRules.IsGameRuleActive(Enum.GameRule.FocusFrameDisabled) then
+		return false;
+	end
+
 	if not InputUtil.IsGamepadUIEnabled() and (contextData.which == "TARGET") then
 		return false;
 	end

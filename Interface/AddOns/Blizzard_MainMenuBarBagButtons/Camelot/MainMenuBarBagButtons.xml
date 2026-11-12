@@ -22,13 +22,23 @@
 		</Layers>
 	</ItemButton>
 	
-	<ItemButton name="GamepadBagSlotButtonTemplate" mixin="GamepadBagSlotMixin" virtual="true">
+	<ItemButton name="GamepadBagSlotButtonTemplate" mixin="GamepadBagSlotMixin" inherits="ItemSlotDropStateTemplate" virtual="true">
 		<Size x="37" y="37"/>
 		<KeyValues>
 			<KeyValue key="buttonContext" value="ButtonContext_OpenBagDropdownSettings" type="string"/>
 			<KeyValue key="normalAndPushedTextureWidth" value="37" type="number"/>
 			<KeyValue key="normalAndPushedTextureHeight" value="37" type="number"/>
 		</KeyValues>
+		<Layers>
+			<Layer level="OVERLAY" textureSubLevel="7">
+				<Texture parentKey="BagFiltered" atlas="BagFiltered" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
 		<DisabledTexture atlas="BagSlotFrame_Expanded_Disabled"/>
 		<Frames>
 			<DropdownButton parentKey="BagDropdownButton">
@@ -42,9 +52,11 @@
 			</DropdownButton>
 		</Frames>
 		<Scripts>
-			<OnLoad method="UpdateItemCount" inherit="append"/>
+			<OnLoad method="OnLoad" inherit="append"/>
 			<OnShow method="UpdateItemCount" inherit="append"/>
 			<OnEvent method="UpdateItemCount" inherit="append"/>
+			<OnEnter method="OnDropStateEnter" inherit="append"/>
+			<OnLeave method="OnDropStateLeave" inherit="append"/>
 		</Scripts>
 	</ItemButton>
 	

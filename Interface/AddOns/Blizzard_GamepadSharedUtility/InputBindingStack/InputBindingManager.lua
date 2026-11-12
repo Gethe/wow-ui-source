@@ -1,6 +1,10 @@
-GamepadSharedUtility.BindingStack.InputBindingManager = {};
+GamepadSharedUtility.BindingStack.InputBindingManager = CreateFromMixins(CallbackRegistryMixin);
 GamepadSharedUtility.InputBindingManager = GamepadSharedUtility.BindingStack.InputBindingManager; -- Shorter alias.
 local InputBindingManager = GamepadSharedUtility.InputBindingManager;
+
+InputBindingManager:GenerateCallbackEvents({
+	"CoreBindingsActiveChanged",
+});
 
 --[[
 	Rebinds all bindings in bindingsToReload to what it should be.
@@ -38,15 +42,13 @@ end
 local function CheckCoreBindingActive(bindingManager)
 	local newActive = bindingManager:IsOnlyCoreBindingSetActive();
 	if newActive ~= bindingManager.currentCoreBindingActive then
-		for _, value in ipairs(bindingManager.coreBindingListenerFunctions) do
-			value(newActive);
-		end
+		bindingManager:TriggerEvent(bindingManager.Event.CoreBindingsActiveChanged, newActive);
 		bindingManager.currentCoreBindingActive = newActive;
 	end
 end
 
 function InputBindingManager:BindToCoreBindingActive(functionToCall)
-	table.insert(self.coreBindingListenerFunctions, functionToCall);
+	return self:RegisterCallback(self.Event.CoreBindingsActiveChanged, functionToCall);
 end
 
 function InputBindingManager:IsOnlyCoreBindingSetActive()
@@ -75,6 +77,8 @@ end
 -----------------------------------------------------------------------------------
 
 function InputBindingManager:Init()
+	CallbackRegistryMixin.OnLoad(self);
+
 	self.coreSet = nil;
 	self.bindingSetStack = {};
 	self.type = "InputBindingManager";
@@ -82,7 +86,6 @@ function InputBindingManager:Init()
 	-- Table of which InputBindings are actively bound
 	self.activeBindings = {};
 
-	self.coreBindingListenerFunctions = {};
 	self.currentCoreBindingActive = true;
 	self.assumeCoreBindingsUsable = false;
 
@@ -240,7 +243,7 @@ function InputBindingManager:SetNewActiveKey(binding)
 	self.activeBindings[binding.key] = binding;
 end
 
---[[ 
+--[[
 	Dumps the binding stack into a string
 
 	return: String describing the InputBindingManager stack populated from core to top of the stack
@@ -288,3 +291,5 @@ if (InGlue()) then
 	local frontEndCoreSet = CreateAndInitFromMixin(GamepadSharedUtility.BindingStack.InputBindingSet, "GlueCore", GamepadSharedUtility.InputBindingManager);
 	InputBindingManager:SetCoreBindingSet(frontEndCoreSet);
 end
+
+return InputBindingManager;

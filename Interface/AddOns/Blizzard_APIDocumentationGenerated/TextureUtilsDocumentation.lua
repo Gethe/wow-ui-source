@@ -88,6 +88,21 @@ local TextureUtils =
 			},
 		},
 		{
+			Name = "GetBestTitleIconVersion",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
+			},
+		},
+		{
 			Name = "GetFilenameFromFileDataID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -141,7 +156,7 @@ local TextureUtils =
 			{
 				{ Name = "texture", Type = "SimpleTexture", Nilable = false },
 				{ Name = "titleID", Type = "string", Nilable = false },
-				{ Name = "version", Type = "TitleIconVersion", Nilable = false },
+				{ Name = "version", Type = "TitleIconVersion", Nilable = true, Documentation = { "Pass nil to automatically choose based on size of texture." } },
 				{ Name = "subIcon", Type = "string", Nilable = true },
 			},
 		},

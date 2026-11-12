@@ -114,6 +114,7 @@ NewSettings["12.1.5"] = {
 NewSettings["12.1.7"] = {
 	"voiceProvider",
 	"voiceUseDiscordSettings",
+	"TOAST_SETTINGS_LABEL", -- entire section is new
 };
 
 local function IsDiscordVoiceEnabled()

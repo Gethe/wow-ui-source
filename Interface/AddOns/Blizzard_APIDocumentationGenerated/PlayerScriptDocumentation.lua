@@ -436,7 +436,7 @@ local PlayerScript =
 
 			Returns =
 			{
-				{ Name = "result", Type = "number", Nilable = false },
+				{ Name = "result", Type = "number", Nilable = true },
 			},
 		},
 		{

@@ -1291,6 +1291,17 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 		},
 	},
 
+	[Enum.EditModeSystem.GamepadInfoHud] = {
+		settings = {},
+		anchorInfo = {
+			point = "BOTTOMRIGHT",
+			relativeTo = "UIParent",
+			relativePoint = "BOTTOMRIGHT",
+			offsetX = -36,
+			offsetY = 16,
+		},
+	},
+
 	[Enum.EditModeSystem.CastBar] = {
 		settings = EDIT_MODE_MODERN_SYSTEM_MAP[Enum.EditModeSystem.CastBar].settings,
 		anchorInfo = {
@@ -1432,8 +1443,8 @@ EDIT_MODE_GAMEPAD_SYSTEM_MAP =
 			point = "BOTTOMRIGHT",
 			relativeTo = "UIParent",
 			relativePoint = "BOTTOMRIGHT",
-			offsetX = -9,
-			offsetY = 9,
+			offsetX = -96,
+			offsetY = 96,
 		},
 	},
 

@@ -35,6 +35,7 @@ function PetJournal_OnLoad(self)
 
 	-- If there is only one filter setting available, hide filter
 	if C_CVar.GetCVarBool("onlyShowCollectedItemsInJournal") then
+		C_PetJournal.SetDefaultFilters();
 		self.FilterDropdown:Hide();
 	else
 		PetJournal_InitFilterDropdown(self);
@@ -46,6 +47,14 @@ function PetJournal_OnLoad(self)
 end
 
 function PetJournal_InitFilterDropdown(self)
+	self.FilterDropdown:SetIsDefaultCallback(function()
+		return C_PetJournal.IsUsingDefaultFilters();
+	end);
+	
+	self.FilterDropdown:SetDefaultCallback(function()
+		C_PetJournal.SetDefaultFilters();
+	end);
+
 	local function IsFamilyChecked(filterIndex) 
 		return C_PetJournal.IsPetTypeChecked(filterIndex)
 	end
@@ -85,16 +94,6 @@ function PetJournal_InitFilterDropdown(self)
 		[Enum.BattlePetSources.PetStore] = 2,
 		[Enum.BattlePetSources.Tcg] = 1,
 	};
-
-	self.FilterDropdown:SetIsDefaultCallback(function()
-		return PetJournalFilterDropdown_GetCollectedFilter() and PetJournalFilterDropdown_GetNotCollectedFilter();
-	end);
-	
-	self.FilterDropdown:SetDefaultCallback(function()
-		PetJournalFilterDropdown_SetCollectedFilter(true);
-		PetJournalFilterDropdown_SetNotCollectedFilter(true);
-	end);
-	
 
 	self.FilterDropdown:SetupMenu(function(dropdown, rootDescription)
 		rootDescription:SetTag("MENU_PET_COLLECTION_FILTER");
@@ -556,7 +555,7 @@ function PetJournalPetCard_OnClick(self, button)
 			local petLink = C_PetJournal.GetBattlePetLink(id);
 			ChatFrameUtil.InsertLink(petLink);
 		else
-			local petLink = C_PetJournal.GetNonBattlePetLinkByIndex(self.index);
+			local petLink = C_PetJournal.GetNonBattlePetLinkByIndex(PetJournalPetCard.petIndex);
 			ChatFrameUtil.InsertLink(petLink);
 		end
 	elseif button == "RightButton" then

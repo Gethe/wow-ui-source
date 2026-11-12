@@ -756,7 +756,7 @@ end
 
 function GameEvent.HandlePartyInviteRequest(_dispatcher, _event, ...)
 	FlashClientIcon();
-	local name, tank, healer, damage, isXRealm, allowMultipleRoles, inviterGuid, isQuestSessionActive = ...;
+	local name, tank, healer, damage, isXRealm, isXShard, allowMultipleRoles, inviterGuid, isQuestSessionActive = ...;
 	local _modifiedName, color, selfRelationship = SocialQueueUtil_GetRelationshipInfo(inviterGuid);
 	if selfRelationship then
 		name = color..name..FONT_COLOR_CODE_CLOSE;
@@ -765,7 +765,7 @@ function GameEvent.HandlePartyInviteRequest(_dispatcher, _event, ...)
 		StaticPopupSpecial_Show(LFGInvitePopup);
 		LFGInvitePopup_Update(name, tank, healer, damage, allowMultipleRoles, isQuestSessionActive);
 	else
-		local text = isXRealm and INVITATION_XREALM or INVITATION;
+		local text = GetPartyInviteString(isXRealm, isXShard);
 		text = string.format(text, name);
 		if WillAcceptInviteRemoveQueues() then
 			text = text.."\n\n"..ACCEPTING_INVITE_WILL_REMOVE_QUEUE;

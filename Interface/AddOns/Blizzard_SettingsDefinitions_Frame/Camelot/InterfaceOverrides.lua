@@ -72,6 +72,34 @@ function InterfaceOverrides.AdjustDisplaySettings(category)
 	-- Show Free Bag Space
 	Settings.SetupCVarCheckbox(category, "displayFreeBagSlots", DISPLAY_FREE_BAG_SLOTS, OPTION_TOOLTIP_DISPLAY_FREE_BAG_SLOTS);
 
+	if (C_GameRules.IsHardcoreActive()) then
+		do
+			-- What sort of messages to filter in the "HardcoreDeaths" channel
+			local function GetOptions()
+				local container = Settings.CreateControlTextContainer();
+				container:Add(0, HARDCORE_ANNOUNCE_DEATH_GUILD, OPTION_TOOLTIP_HARDCORE_ANNOUNCE_DEATH_DISPLAY1);
+				container:Add(1, HARDCORE_ANNOUNCE_DEATH_ALL, OPTION_TOOLTIP_HARDCORE_ANNOUNCE_DEATH_DISPLAY2);
+				return container:GetData();
+			end
+	
+			Settings.SetupCVarDropdown(category, "hardcoreDeathChatType", Settings.VarType.Number, GetOptions, HARDCORE_ANNOUNCE_DEATH, nil);
+		end
+		do
+			-- What sort of messages to announce as a raid-style warning
+			local function GetOptions()
+				local container = Settings.CreateControlTextContainer();
+				container:Add(0, NEVER, OPTION_TOOLTIP_HARDCORE_ANNOUNCE_DEATH_ALERT_DISPLAY1);
+				container:Add(1, HARDCORE_ANNOUNCE_DEATH_GUILD, OPTION_TOOLTIP_HARDCORE_ANNOUNCE_DEATH_ALERT_DISPLAY2);
+				container:Add(2, HARDCORE_ANNOUNCE_DEATH_ALL, OPTION_TOOLTIP_HARDCORE_ANNOUNCE_DEATH_ALERT_DISPLAY3);
+				return container:GetData();
+			end
+	
+			Settings.SetupCVarDropdown(category, "hardcoreDeathAlertType", Settings.VarType.Number, GetOptions, HARDCORE_ANNOUNCE_DEATH_ALERT, nil);
+		end
+
+		Settings.SetupCVarCheckbox(category, "showMaxLevelAnnouncements", SHOW_MAX_LEVEL_ANNOUNCEMENT, SHOW_MAX_LEVEL_ANNOUNCEMENT_TOOLTIP);
+	end
+
 end
 
 function InterfaceOverrides.CreateToastSettings(category, layout)

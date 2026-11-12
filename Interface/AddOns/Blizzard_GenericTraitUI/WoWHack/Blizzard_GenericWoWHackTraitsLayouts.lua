@@ -26,6 +26,8 @@ local WoWHackDefaultLayout = {
 		IconHeight = 14,
 	},
 	CurrencyBackgroundAtlas = "Talebound-Vendor-Talent-Point-Frame",
+	CurrencyBackgroundPadding = 16,
+	CurrencyBackgroundHeight = 52,
 	UseCurrencyTooltip = true,
 	PanOffset = { x = 0, y = 0 },
 	ButtonPurchaseFXIDs = { 150, 142, 143 },

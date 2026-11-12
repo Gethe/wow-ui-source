@@ -315,17 +315,6 @@ local MinimapFrameAPI =
 			{
 			},
 		},
-		{
-			Name = "UpdateMouseoverAtPoint",
-			Type = "Function",
-			SecretArguments = "AllowedWhenUntainted",
-
-			Arguments =
-			{
-				{ Name = "pointX", Type = "number", Nilable = false },
-				{ Name = "pointY", Type = "number", Nilable = false },
-			},
-		},
 	},
 
 	Events =

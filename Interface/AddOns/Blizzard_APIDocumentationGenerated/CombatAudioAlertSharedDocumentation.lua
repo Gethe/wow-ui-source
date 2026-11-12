@@ -146,9 +146,9 @@ local CombatAudioAlertShared =
 		{
 			Name = "CombatAudioAlertPulsePercentValues",
 			Type = "Enumeration",
-			NumValues = 10,
+			NumValues = 11,
 			MinValue = 0,
-			MaxValue = 9,
+			MaxValue = 10,
 			Fields =
 			{
 				{ Name = "Off", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 0 },
@@ -161,6 +161,7 @@ local CombatAudioAlertShared =
 				{ Name = "Under30Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 7 },
 				{ Name = "Under20Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 8 },
 				{ Name = "Under10Percent", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 9 },
+				{ Name = "AlwaysOn", Type = "CombatAudioAlertPulsePercentValues", EnumValue = 10 },
 			},
 		},
 		{

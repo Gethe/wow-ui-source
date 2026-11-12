@@ -504,3 +504,243 @@ function EnchantingItemButtonAnimMixin:GetItemLocation()
 	return nil;
 end
 
+ItemSlotDropState = EnumUtil.MakeEnum("None", "Permitted", "Restricted");
+
+-- Shows a gamepad-only overlay on an item slot for whether a cursor item can be dropped on it.
+-- Inherit ItemSlotDropStateTemplate (needs a DropStateTexture child), call InitDropState on load,
+-- then drive it with SetDropState (permitted/restricted) and SetDropFocused (hover or gamepad focus).
+ItemSlotDropStateMixin = {};
+
+function ItemSlotDropStateMixin:InitDropState()
+	self.dropState = ItemSlotDropState.None;
+	self.showDropStateWhenUnfocused = false;
+	self.dropFocused = false;
+end
+
+function ItemSlotDropStateMixin:SetDropState(dropState, showWhenUnfocused)
+	self.dropState = dropState;
+	self.showDropStateWhenUnfocused = showWhenUnfocused;
+	self:UpdateDropStateVisual();
+end
+
+function ItemSlotDropStateMixin:SetDropFocused(focused)
+	self.dropFocused = focused;
+	self:UpdateDropStateVisual();
+end
+
+function ItemSlotDropStateMixin:UpdateDropStateVisual()
+	local atlas = nil;
+	if self.dropState == ItemSlotDropState.Permitted then
+		if self.dropFocused then
+			atlas = "ItemSlotState_DropPermittedFocused";
+		elseif self.showDropStateWhenUnfocused then
+			atlas = "ItemSlotState_DropPermitted";
+		end
+	elseif self.dropState == ItemSlotDropState.Restricted and self.dropFocused then
+		atlas = "ItemSlotState_DropRestrictedFocused";
+	end
+
+	local dropStateTexture = self.DropStateTexture;
+	if atlas then
+		dropStateTexture:SetAtlas(atlas);
+	end
+	dropStateTexture:SetShown(atlas ~= nil);
+
+	-- The drop state replaces the gamepad focus highlight while shown.
+	if self.Highlight then
+		self.Highlight:SetShown(atlas == nil);
+	end
+end
+
+ItemSlotDropStateBagRules = {};
+
+local function GetEquippedBagIDForInventorySlot(inventorySlot)
+	for bagID = Enum.BagIndex.Bag_1, Enum.BagIndex.ReagentBag do
+		if C_Container.ContainerIDToInventoryID(bagID) == inventorySlot then
+			return bagID;
+		end
+	end
+
+	return nil;
+end
+
+local function BuildItemInfo(itemLocation)
+	local itemID = C_Item.GetItemID(itemLocation);
+	local classID, subclassID = select(6, C_Item.GetItemInfoInstant(itemID));
+	local isBag = C_Item.GetItemInventoryType(itemLocation) == Enum.InventoryType.IndexBagType;
+	local isCraftingReagent = select(17, C_Item.GetItemInfo(itemID));
+
+	return {
+		itemFamily = C_Item.GetItemFamily(itemID) or 0,
+		isBag = isBag,
+		isReagentBag = isBag and classID == Enum.ItemClass.Container and subclassID == Enum.ItemContainerSubclass.Reagent,
+		isCraftingReagent = isCraftingReagent,
+		isKey = classID == Enum.ItemClass.Key,
+	};
+end
+
+function ItemSlotDropStateBagRules:Init()
+	self.bagStates = {};
+	self.cursorInfo = nil;
+
+	EventRegistry:RegisterFrameEventAndCallback("CURSOR_CHANGED", self.Refresh, self);
+	EventRegistry:RegisterFrameEventAndCallback("BAG_UPDATE_DELAYED", self.Refresh, self);
+end
+
+function ItemSlotDropStateBagRules:BuildCursorInfo()
+	local cursorItemLocation = C_Cursor.GetCursorItem();
+	if not cursorItemLocation or not cursorItemLocation:IsValid() then
+		return nil;
+	end
+
+	local itemInfo = BuildItemInfo(cursorItemLocation);
+	local cursorInfo = { itemInfo = itemInfo };
+
+	if cursorItemLocation:IsBagAndSlot() then
+		cursorInfo.sourceContainerBagID = cursorItemLocation:GetBagAndSlot();
+	elseif itemInfo.isBag and cursorItemLocation:IsEquipmentSlot() then
+		local sourceBagID = GetEquippedBagIDForInventorySlot(cursorItemLocation:GetEquipmentSlot());
+		cursorInfo.sourceBagID = sourceBagID;
+		itemInfo.bagHasContents = sourceBagID and C_Container.GetContainerNumFreeSlots(sourceBagID) < C_Container.GetContainerNumSlots(sourceBagID);
+	end
+
+	return cursorInfo;
+end
+
+-- Bags with no specialization return this family; it holds any item.
+local BAG_FAMILY_GENERAL = 0;
+
+function ItemSlotDropStateBagRules:GetDropStateForBag(bagID, itemInfo, sourceBagID)
+	if bagID == sourceBagID then -- A bag can't be placed inside itself.
+		return ItemSlotDropState.Restricted;
+	elseif bagID == Enum.BagIndex.Keyring then -- The keyring returns the general family, so it can't go through the family check below.
+		return itemInfo.isKey and ItemSlotDropState.Permitted or ItemSlotDropState.Restricted;
+	elseif bagID == Enum.BagIndex.ReagentBag and not itemInfo.isCraftingReagent then -- The reagent bag returns the general family, so it can't go through the family check below.
+		return ItemSlotDropState.Restricted;
+	end
+
+	if itemInfo.isBag and itemInfo.bagHasContents then
+		return ItemSlotDropState.Restricted;
+	end
+
+	local _numFreeSlots, bagFamily = C_Container.GetContainerNumFreeSlots(bagID);
+	bagFamily = bagFamily or BAG_FAMILY_GENERAL;
+
+	if itemInfo.isBag then
+		-- A bag's item family describes what it holds, so bags only fit in general bags.
+		return (bagFamily == BAG_FAMILY_GENERAL) and ItemSlotDropState.Permitted or ItemSlotDropState.Restricted;
+	end
+
+	if bagFamily ~= BAG_FAMILY_GENERAL and bit.band(itemInfo.itemFamily, bagFamily) == 0 then
+		return ItemSlotDropState.Restricted;
+	end
+
+	return ItemSlotDropState.Permitted;
+end
+
+function ItemSlotDropStateBagRules:Refresh()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	local cursorInfo = self:BuildCursorInfo();
+	if not cursorInfo and not self.cursorInfo then
+		return;
+	end
+
+	self.cursorInfo = cursorInfo;
+	wipe(self.bagStates);
+
+	if cursorInfo then
+		for bagID = Enum.BagIndex.Backpack, Enum.BagIndex.ReagentBag do
+			self.bagStates[bagID] = self:GetDropStateForBag(bagID, cursorInfo.itemInfo, cursorInfo.sourceBagID);
+		end
+		self.bagStates[Enum.BagIndex.Keyring] = self:GetDropStateForBag(Enum.BagIndex.Keyring, cursorInfo.itemInfo, cursorInfo.sourceBagID);
+	end
+
+	EventRegistry:TriggerEvent("ItemSlotDropState.BagStatesUpdated");
+end
+
+function ItemSlotDropStateBagRules:IsItemOnCursor()
+	return self.cursorInfo ~= nil;
+end
+
+function ItemSlotDropStateBagRules:IsBagOnCursor()
+	return self.cursorInfo ~= nil and self.cursorInfo.itemInfo.isBag;
+end
+
+function ItemSlotDropStateBagRules:GetBagState(bagID)
+	return self.bagStates[bagID] or ItemSlotDropState.None;
+end
+
+function ItemSlotDropStateBagRules:GetContainerSlotBagState(bagID, slotID)
+	local bagState = self:GetBagState(bagID);
+	local cursorInfo = self.cursorInfo;
+	if bagState ~= ItemSlotDropState.Permitted or not cursorInfo then
+		return bagState;
+	end
+
+	local itemLocation = ItemLocation:CreateFromBagAndSlot(bagID, slotID);
+	if not C_Item.DoesItemExist(itemLocation) then
+		return bagState;
+	end
+
+	-- The occupant takes the cursor item's old slot, so it has to fit there.
+	local occupantInfo = BuildItemInfo(itemLocation);
+	if cursorInfo.sourceBagID then
+		local isReagentBagSlot = cursorInfo.sourceBagID == Enum.BagIndex.ReagentBag;
+		if not occupantInfo.isBag or occupantInfo.isReagentBag ~= isReagentBagSlot then
+			return ItemSlotDropState.Restricted;
+		end
+	elseif cursorInfo.sourceContainerBagID and cursorInfo.sourceContainerBagID ~= bagID then
+		return self:GetDropStateForBag(cursorInfo.sourceContainerBagID, occupantInfo);
+	end
+
+	return bagState;
+end
+
+function ItemSlotDropStateBagRules:GetBagSlotState(bagID, hasBag)
+	local cursorInfo = self.cursorInfo;
+	if not cursorInfo then
+		return ItemSlotDropState.None;
+	end
+
+	if cursorInfo.itemInfo.isBag then
+		if bagID == Enum.BagIndex.Backpack then
+			return self:GetBagState(bagID);
+		end
+
+		if bagID == Enum.BagIndex.Keyring then
+			return ItemSlotDropState.Restricted;
+		end
+
+		local isReagentBagSlot = bagID == Enum.BagIndex.ReagentBag;
+		if isReagentBagSlot ~= cursorInfo.itemInfo.isReagentBag then
+			return ItemSlotDropState.Restricted;
+		end
+
+		-- The equipped bag moves into the container slot the cursor bag came from, transferring all items if possible.
+		if hasBag and cursorInfo.sourceContainerBagID then
+			local equippedLocation = ItemLocation:CreateFromEquipmentSlot(C_Container.ContainerIDToInventoryID(bagID));
+			local equippedInfo = BuildItemInfo(equippedLocation);
+			return self:GetDropStateForBag(cursorInfo.sourceContainerBagID, equippedInfo, bagID);
+		end
+
+		return ItemSlotDropState.Permitted;
+	end
+
+	if not hasBag then
+		return ItemSlotDropState.Restricted;
+	end
+
+	local bagState = self:GetBagState(bagID);
+	-- The keyring's free slot count is unreliable, so it is excluded from the full check.
+	if bagState == ItemSlotDropState.Permitted and bagID ~= Enum.BagIndex.Keyring and C_Container.GetContainerNumFreeSlots(bagID) == 0 then
+		return ItemSlotDropState.Restricted;
+	end
+
+	return bagState;
+end
+
+ItemSlotDropStateBagRules:Init();
+

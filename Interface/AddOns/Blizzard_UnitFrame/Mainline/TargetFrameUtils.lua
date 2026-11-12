@@ -17,7 +17,3 @@ function GetBossPortraitFrameData(unit, classification)
 
 	return nil;
 end
-
-function ShouldShowBattlePetIcon()
-	return true;
-end

@@ -506,9 +506,6 @@ function CharacterSelectListCharacterMixin:SetSelectedState(isSelected)
 
 	-- Gamepad overrides
 	if InputUtil.IsGamepadUIEnabled() then
-		local showVersion = not CharacterSelect.undeleting;
-		self.InnerContent.Text.LastVersion:SetShown(showVersion);
-
 		local showFactionSelected = not (CharacterSelect.isMovingCharacter or CharacterSelect.undeleting or CharacterSelect.pendingUndeleteGuid);
 		self.InnerContent.FactionEmblemSelected:SetShown(isSelected and showFactionSelected);
 	end
@@ -921,6 +918,13 @@ function CharacterSelectListCharacterInnerContentMixin:UpdateCharacterDisplayInf
 			mailSenders = characterInfo.mailSenders;
 			local showMailNotification = mailSenders and #mailSenders >= 1;
 			self.NotificationButton:SetHasMail(showMailNotification, mailSenders);
+
+			local deathIcon = self.Text.graveIcon;
+			deathIcon:SetShown(C_GameRules.IsHardcoreActive() and characterInfo.isGhost);
+			local textWidth = math.min(nameText:GetUnboundedStringWidth(), nameText:GetWidth());
+			deathIcon:ClearAllPoints();
+			deathIcon:SetPoint("LEFT", nameText, "LEFT", textWidth + 2, 2);
+			self.selfFoundIcon:SetShown(C_GameRules.IsSelfFoundAllowed() and characterInfo.isCharacterSelfFound);
 		end
 
 		if surnamesEnabled and characterInfo.isLocked then

@@ -551,36 +551,6 @@
 							<KeyValue key="tooltipYOffset" value="-9" type="number"/>
 						</KeyValues>
 					</Button>
-					<CheckButton name="CharacterCreateSelfFoundButton" inherits="UICheckButtonTemplate" mixin="CharacterCreateSelfFoundButtonMixin">
-						<Anchors>
-							<Anchor point="CENTER" relativeKey="$parent.Label" relativePoint="RIGHT">
-								<Offset>
-									<AbsDimension x="80" y="0"/>
-								</Offset>
-							</Anchor>
-						</Anchors>
-						<Layers>
-							<Layer level="BACKGROUND">
-								<FontString inherits="GlueFontNormalLarge" text="SELF_FOUND">
-									<Size>
-										<AbsDimension x="256" y="64"/>
-									</Size>
-									<Anchors>
-										<Anchor point="BOTTOM" relativePoint="TOP">
-											<Offset>
-												<AbsDimension x="0" y="-23"/>
-											</Offset>
-										</Anchor>
-									</Anchors>
-								</FontString>
-							</Layer>
-						</Layers>
-						<Scripts>
-							<OnClick method="OnClick"/>
-							<OnEnter method="OnEnter"/>
-							<OnLeave method="OnLeave"/>
-						</Scripts>
-					</CheckButton>
 				</Frames>
 				<Scripts>
 					<OnLoad method="OnLoad"/>

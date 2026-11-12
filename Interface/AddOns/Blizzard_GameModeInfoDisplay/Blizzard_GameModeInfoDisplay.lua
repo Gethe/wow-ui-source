@@ -91,7 +91,7 @@ function GameModeInfoDisplayMixin:OnShow()
 	self.InfoPanel.QuestsBullet:SetAtlas(gameModeAtlasSettings.bullet, true);
 	self.InfoPanel.ItemsBullet:SetAtlas(gameModeAtlasSettings.bullet, true);
 	self.InfoPanel.RewardsBullet:SetAtlas(gameModeAtlasSettings.bullet, true);
-	self.InfoPanel.RewardsBird:SetAtlas(gameModeAtlasSettings.rewards, true);
+	self.InfoPanel.RewardsImage:SetAtlas(gameModeAtlasSettings.rewards, true);
 
 	topDescription:SetText(gameModeAtlasSettings.topDescription);
 	self.InfoPanel.QuestsHeader:SetText(gameModeAtlasSettings.questsHeader);

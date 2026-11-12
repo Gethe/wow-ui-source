@@ -5,6 +5,7 @@ local ExpertDecorModeShownEvents =
 	"HOUSING_EXPERT_MODE_HOVERED_TARGET_CHANGED",
 	"HOUSING_DECOR_PRECISION_MANIPULATION_STATUS_CHANGED",
 	"HOUSING_DECOR_PRECISION_MANIPULATION_EVENT",
+	"HOUSING_DECOR_PLACE_FAILURE",
 	"UPDATE_BINDINGS",
 };
 
@@ -63,6 +64,13 @@ function HouseEditorExpertDecorModeMixin:OnEvent(event, ...)
 	elseif event == "HOUSING_DECOR_PRECISION_MANIPULATION_STATUS_CHANGED" then
 		self.isManipulating = ...;
 		self:UpdateShownInstructions();
+	elseif event == "HOUSING_DECOR_PLACE_FAILURE" then
+		local result = ...;
+		local errStr = HousingResultToErrorText[result];
+		if errStr then
+			UIErrorsFrame:AddExternalErrorMessage(errStr);
+		end
+		PlaySound(SOUNDKIT.HOUSING_INVALID_PLACEMENT);
 	elseif event == "UPDATE_BINDINGS" then
 		self:UpdateKeybinds();
 	elseif event == "HOUSING_DECOR_PRECISION_MANIPULATION_EVENT" then

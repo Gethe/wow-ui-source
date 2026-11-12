@@ -4,7 +4,7 @@
 GameDialogDefsUtil.lua
 GameDialogDefs.lua
 [Family]\GameDialogDefs.lua
-[Game]\GameDialogDefs.lua [AllowLoadGameType camelot]
+[Game]\GameDialogDefs.lua [AllowLoadGameType camelot, vanilla]
 
 GameDialog.lua
 [Family]\GameDialog.lua

@@ -1578,6 +1578,8 @@ EditModeSettingDisplayInfoManager.systemSettingDisplayInfo = {
 			type = Enum.EditModeSettingDisplayType.Checkbox,
 		},
 	},
+
+	[Enum.EditModeSystem.GamepadInfoHud] = {},
 };
 
 local DefaultSettingDisplayInfo = {};

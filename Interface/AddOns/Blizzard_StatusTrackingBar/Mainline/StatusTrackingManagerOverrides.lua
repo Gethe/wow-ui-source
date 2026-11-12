@@ -36,7 +36,8 @@ function StatusTrackingManagerMixin:CanShowBar(barIndex)
 	elseif barIndex == StatusTrackingBarInfo.BarsEnum.HouseFavor then
 		return C_Housing.GetTrackedHouseGuid();
 	elseif barIndex == StatusTrackingBarInfo.BarsEnum.GameModeExp then
-		return GameRulesUtil.ShowGameModeExperienceBar();
+		-- Intentionally hidden for now; kept so it can be re-enabled later.
+		return false;
 	end
 
 	return false;
