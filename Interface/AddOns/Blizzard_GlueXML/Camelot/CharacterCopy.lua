@@ -37,6 +37,14 @@ StaticPopupDialogs["COPY_KEY_BINDINGS"] = {
 	end,
 }
 
+StaticPopupDialogs["COPY_IN_PROGRESS"] = {
+	text = COPY_IN_PROGRESS,
+	button1 = nil,
+	button2 = nil,
+	ignoreKeys = true,
+	spinner = true,
+}
+
 function CopyCharacterFromLive()
 	if ( not IsGMClient() ) then
 		CopyAccountCharacterFromLive(CopyCharacterFrame_GetSelectedRegionID(), CopyCharacterFrame.SelectedIndex);

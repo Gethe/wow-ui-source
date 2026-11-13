@@ -86,6 +86,18 @@ function ProfessionsRecipeListMixin:OnLoad()
 					ProfessionsRecipeListRecipeMixin.OnEnter(button);
 					EventRegistry:TriggerEvent("ProfessionsDebug.CraftingRecipeListRecipeEntered", button, elementData.recipeInfo);
 				end);
+
+				button:SetScript("OnShow", function()
+					EventRegistry:RegisterCallback("ProfessionsRecipeListMixin.Event.RefreshCraftableCount", function()
+						button:SetCraftableCount(self.hideCraftableCount);
+					end, button);
+				end);
+
+				button:SetScript("OnHide", function()
+					EventRegistry:RegisterCallback("ProfessionsRecipeListMixin.Event.RefreshCraftableCount", function()
+						button:SetCraftableCount(self.hideCraftableCount);
+					end, button);
+				end);
 			end
 			factory("ProfessionsRecipeListRecipeTemplate", Initializer);
 		elseif elementData.isDivider then
@@ -333,8 +345,21 @@ function ProfessionsRecipeListRecipeMixin:Init(node, hideCraftableCount)
 		rightFrame = frame;
 		rightFramesWidth = rightFramesWidth + frame:GetWidth();
 	end
+
+	self:SetCraftableCount(hideCraftableCount);
 	
-	local count = C_TradeSkillUI.GetCraftableCount(recipeInfo.recipeID);
+	local padding = 10;
+	local countWidth = hasCount and self.Count:GetStringWidth() or 0;
+	local width = self:GetWidth() - (rightFramesWidth + countWidth + padding + self.SkillUps:GetWidth());
+	self.Label:SetWidth(self:GetWidth());
+	self.Label:SetWidth(math.min(width, self.Label:GetStringWidth()));
+end
+
+function ProfessionsRecipeListRecipeMixin:SetCraftableCount(hideCraftableCount)
+	local elementData = self:GetElementData();
+	local recipeID = elementData.data.recipeInfo.recipeID;
+
+	local count = C_TradeSkillUI.GetCraftableCount(recipeID);
 	local hasCount = count > 0;
 	if hasCount and not hideCraftableCount then
 		self.Count:SetFormattedText(" [%d] ", count);
@@ -342,12 +367,6 @@ function ProfessionsRecipeListRecipeMixin:Init(node, hideCraftableCount)
 	else
 		self.Count:Hide();
 	end
-
-	local padding = 10;
-	local countWidth = hasCount and self.Count:GetStringWidth() or 0;
-	local width = self:GetWidth() - (rightFramesWidth + countWidth + padding + self.SkillUps:GetWidth());
-	self.Label:SetWidth(self:GetWidth());
-	self.Label:SetWidth(math.min(width, self.Label:GetStringWidth()));
 end
 
 function ProfessionsRecipeListRecipeMixin:SetLabelFontColors(color)

@@ -14,6 +14,7 @@ function ToyBox_OnLoad(self)
 
 	-- If there is only one filter setting available, hide filter
 	if C_CVar.GetCVarBool("onlyShowCollectedItemsInJournal") then
+		C_ToyBoxInfo.SetDefaultFilters();
 		self.FilterDropdown:Hide();
 
 		-- Move search bar over to previous filter position
