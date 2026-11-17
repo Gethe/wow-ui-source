@@ -4,7 +4,7 @@ TutorialManager.IsDebugging = false;
 TutorialManager.NPE_AchievementID = 14287;
 function TutorialManager:Initialize()
 	EventRegistry:RegisterFrameEventAndCallback("SETTINGS_LOADED", self.OnSettingsLoaded, self);
-	EventRegistry:RegisterFrameEventAndCallback("CVAR_UPDATE", self.OnCVARsUpdated, self);	
+	EventRegistry:RegisterFrameEventAndCallback("CVAR_UPDATE", self.OnCVARsUpdated, self);
 	self:Begin();
 end
 
@@ -49,13 +49,9 @@ end
 function TutorialManager:OnSettingsLoaded(cvar, value)
 	EventRegistry:TriggerEvent("TutorialManager.TutorialsInit");
 	local tutorialsSetting = Settings.GetSetting("showTutorials");
-	local isActive = tutorialsSetting and tutorialsSetting:GetValue() or false;
-	if isActive == self.IsActive then
-		-- Begin() may have already announced this state; only re-broadcast on an actual transition.
-		return;
-	end
-	self.IsActive = isActive;
+	self.IsActive = tutorialsSetting and tutorialsSetting:GetValue() or false;
 	if self.IsActive then
+		-- Always re-broadcast: dependents like Blizzard_Tutorials load after Begin() and rely on this one.
 		EventRegistry:TriggerEvent("TutorialManager.TutorialsEnabled");
 	else
 		self:DebugLog("TUTORIAL MANAGER DISABLED");
@@ -68,7 +64,7 @@ end
 
 function TutorialManager:CanShutdownTutorial()
 	-- player is trying to shut the NPE Tutorial off
-	local _, _, _, completed = GetAchievementInfo(self.NPE_AchievementID);			
+	local _, _, _, completed = GetAchievementInfo(self.NPE_AchievementID);
 	return completed; -- they can  ONLY do that if the achievement is completed
 end
 
@@ -80,8 +76,8 @@ function TutorialManager:OnCVARsUpdated(cvar, value)
 		end
 		self.IsActive = isActive;
 		if self.IsActive then
-			self:Begin();			
-		else	
+			self:Begin();
+		else
 			if self:CanShutdownTutorial() then
 				self:Shutdown();
 			end
@@ -140,7 +136,7 @@ function TutorialManager:Finished(tutorialKey)
 	local tutorial = self:GetTutorial(tutorialKey);
 	if tutorial then
 		tutorial:Complete();
-		
+
 		TutorialQueue:NotifyDone(tutorial);
 	end
 end
@@ -162,6 +158,8 @@ end
 function TutorialManager:AddWatcher(tutorialInstance, autoStart, optionalOverrideKey, args)
 	if tutorialInstance and (tutorialInstance:Name() or optionalOverrideKey) then
 		local key = optionalOverrideKey or tutorialInstance:Name();
+		-- Replacing a watcher without stopping it leaves the old instance registered for events.
+		self:StopWatcher(key);
 		self.Watchers[key] = tutorialInstance;
 		self:DebugLog("  ADD WATCHER: "..key);
 		if tutorialInstance.OnAdded then

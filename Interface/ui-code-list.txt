@@ -4034,6 +4034,7 @@ Interface\AddOns\Blizzard_Tutorials\Blizzard_Tutorials_Managed.xml
 Interface\AddOns\Blizzard_Tutorials\Blizzard_Tutorials_PerksProgram.lua
 Interface\AddOns\Blizzard_Tutorials\Blizzard_Tutorials_Professions.lua
 Interface\AddOns\Blizzard_Tutorials\Blizzard_Tutorials_RPE.lua
+Interface\AddOns\Blizzard_Tutorials\Camelot\Blizzard_TutorialsOverrides.lua
 Interface\AddOns\Blizzard_Tutorials\StateMachineTutorialUtil.lua
 Interface\AddOns\Blizzard_Tutorials\StateMachineUtil.lua
 Interface\AddOns\Blizzard_UIErrorsFrame\Blizzard_UIErrorsFrame.toc

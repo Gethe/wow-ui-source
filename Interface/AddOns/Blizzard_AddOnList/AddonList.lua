@@ -661,7 +661,7 @@ function AddonListMixin:OnShow()
 				end
 			end
 		else
-			local text = UnitName("player");
+			local text = NameUtil.FormatUnitNameForDisplay("player");
 			local guid = UnitGUID("player");
 			rootDescription:CreateRadio(text, IsSelected, SetSelected, guid);
 		end

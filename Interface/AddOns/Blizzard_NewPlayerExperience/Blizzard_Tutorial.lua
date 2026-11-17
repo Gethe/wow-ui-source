@@ -20,29 +20,26 @@ function NewPlayerExperience:OnTutorialsEnabled()
 		-- Guard against a duplicate TutorialsEnabled broadcast re-running TutorialLogic:Begin().
 		return;
 	end
-	self.IsActive = true;
 
+	-- The early-outs below don't Shutdown: TutorialLogic never began, and its Shutdown would remove same-named GameTutorials tutorials.
 	local _, _, _, completed = GetAchievementInfo(TutorialManager.NPE_AchievementID);
 	if ( completed == true ) then
 		-- we have completed the NPE at least once, check to see if Tutorials are on
 		local showTutorials = GetCVarBool("showTutorials");
 		if ( not showTutorials ) then
-			-- Tutorials are off, just Shutdown
-			self:Shutdown();
 			return;
 		end
 	else
 		-- this player does not have the achievement, but they also aren't elligible
 		if not C_PlayerInfo.IsPlayerEligibleForNPEv2() then
-			self:Shutdown();
 			return;
 		end
 	end
 
 	if not TutorialLogic:IsNPEAllowed() then
-		self:Shutdown();
 		return;
 	end
+	self.IsActive = true;
 
 	Dispatcher:RegisterEvent("PLAYER_LEVEL_UP", self);
 	HelpTip:SetHelpTipsEnabled("NPEv2", false);

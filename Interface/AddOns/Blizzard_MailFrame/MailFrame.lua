@@ -1320,7 +1320,7 @@ function SendMailFrame_Update()
 	end
 
 	-- Enable or disable C.O.D. depending on whether or not there's an item to send
-	if ( itemCount > 0 ) then
+	if ( itemCount > 0 and C_Mail.IsCODEnabled()) then
 		SendMailCODButton:Enable();
 		SendMailCODButtonText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
 
@@ -1709,4 +1709,19 @@ end
 
 function OpenAllMailMixin:IsItemFailed(itemID)
 	return self.failedItemIDs and self.failedItemIDs[itemID];
+end
+
+
+SendMailCODButtonMixin = {}
+
+function SendMailCODButtonMixin:OnEnter()
+	if ( not C_Mail.IsCODEnabled() ) then
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+		GameTooltip:SetText(COD_DISABLED, RED_FONT_COLOR:GetRGB());
+		GameTooltip:Show();
+	end
+end
+
+function SendMailCODButtonMixin:OnLeave()
+	GameTooltip:Hide();
 end

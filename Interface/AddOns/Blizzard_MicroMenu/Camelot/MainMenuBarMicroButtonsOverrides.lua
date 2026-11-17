@@ -2,6 +2,15 @@ function CollectionsMicroButton_CanAlertBeShown()
 	return false;
 end;
 
+-- Camelot has no talent tutorial, so the micro button helptip must not wait for it.
+function PlayerSpellsMicroButtonMixin:HasPlayerCompletedTalentTutorial()
+	return true;
+end
+
+function MainMenuMicroButton_GetPlayerSpellsAlertButtons()
+	return { TalentMicroButton, SpellbookMicroButton };
+end
+
 -- Ranks in the legacy adventure tree lower the level at which the player can start spending talents.
 function PlayerSpellsMicroButtonMixin:GetTalentUnlockLevel()
 	local defaultUnlockLevel = Constants.LevelConstsExposed.MIN_TALENT_LEVEL;

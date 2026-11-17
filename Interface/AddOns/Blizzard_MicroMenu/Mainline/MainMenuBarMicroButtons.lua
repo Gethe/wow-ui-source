@@ -241,8 +241,15 @@ function MicroButtonPulseStop(self)
 end
 
 --Alerts
+-- Override in game types that split talents and spellbook into separate micro buttons.
+function MainMenuMicroButton_GetPlayerSpellsAlertButtons()
+	return { PlayerSpellsMicroButton };
+end
+
 function MainMenuMicroButton_Init()
-	g_microButtonAlertPriority = { CollectionsMicroButton, ProfessionMicroButton, PlayerSpellsMicroButton, EJMicroButton, GuildMicroButton };
+	g_microButtonAlertPriority = { CollectionsMicroButton, ProfessionMicroButton };
+	tAppendAll(g_microButtonAlertPriority, MainMenuMicroButton_GetPlayerSpellsAlertButtons());
+	tAppendAll(g_microButtonAlertPriority, { EJMicroButton, GuildMicroButton });
 end
 
 function MainMenuMicroButton_SetAlertsEnabled(enabled, reason)
@@ -828,7 +835,7 @@ function PlayerSpellsMicroButtonMixin:GetAnyPvpTalentAlert()
 end
 
 function PlayerSpellsMicroButtonMixin:ShouldShowSpellBookAlert()
-	if self.talentOnly then
+	if self.talentsOnly then
 		return false;
 	end
 
