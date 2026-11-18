@@ -8,6 +8,7 @@ local EncodingUtilConstants =
 			Values =
 			{
 				{ Name = "EncodingDecompressSizeLimit", Type = "size", Value = 104857600 },
+				{ Name = "EncodingDeserializeSizeLimit", Type = "size", Value = 104857600 },
 				{ Name = "EncodingStackSizeLimit", Type = "number", Value = 100 },
 			},
 		},
