@@ -903,6 +903,21 @@ local TradeSkillUI =
 			},
 		},
 		{
+			Name = "HasNoReagentCost",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "recipeID", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "hasNoReagentCost", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsEnchantTargetValid",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

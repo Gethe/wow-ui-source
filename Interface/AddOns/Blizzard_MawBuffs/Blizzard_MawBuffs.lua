@@ -1,9 +1,7 @@
 local MAW_BUFF_MAX_DISPLAY = 44;
 
 function ShouldShowMawBuffs()
-	local auraData = C_UnitAuras.GetAuraDataByIndex("player", 1, "MAW");
-	local hasMawBuff = auraData and auraData.icon;
-	return IsInJailersTower() or hasMawBuff or C_GameRules.IsWoWHack() or false;
+	return IsInJailersTower() or C_MawBuffs.HasAnyMawBuffs() or C_GameRules.IsWoWHack();
 end
 
 MawBuffsContainerMixin = {};
@@ -22,9 +20,9 @@ function MawBuffsContainerMixin:OnEvent(event, ...)
 		self:Update();
 	elseif event == "GLOBAL_MOUSE_DOWN" then
 		if self.List:IsShown() then
-			if (self:IsMouseOver() or self.List:IsMouseOver() or (PlayerChoiceFrame and PlayerChoiceFrame:IsShown()))  then 
-				return; 
-			end 
+			if (self:IsMouseOver() or self.List:IsMouseOver() or (PlayerChoiceFrame and PlayerChoiceFrame:IsShown()))  then
+				return;
+			end
 
 			self:UpdateListState(false);
 		end
@@ -45,7 +43,7 @@ function MawBuffsContainerMixin:Update()
 	local mawBuffs = {};
 	local totalCount = 0;
 	for i=1, MAW_BUFF_MAX_DISPLAY do
-		local auraData = C_UnitAuras.GetAuraDataByIndex("player", i, "MAW");
+		local auraData = C_MawBuffs.GetMawBuff(i);
 		if auraData and auraData.icon then
 			if auraData.applications == 0 then
 				auraData.applications = 1;
@@ -116,15 +114,15 @@ function MawBuffsContainerMixin:UpdateHelptip()
 			useParentStrata = true,
 		};
 		 HelpTip:Show(self, selectLocationHelpTipInfo)
-	else 
+	else
 		HelpTip:Hide(self, JAILERS_TOWER_BUFFS_TUTORIAL);
 	end
-end 
+end
 
-function MawBuffsContainerMixin:UpdateListState(shouldShow) 
-	self:SetEnabled(not shouldShow); 
-	self.List:SetShown(shouldShow and self.buffCount > 0); 
-end 
+function MawBuffsContainerMixin:UpdateListState(shouldShow)
+	self:SetEnabled(not shouldShow);
+	self.List:SetShown(shouldShow and self.buffCount > 0);
+end
 
 function MawBuffsContainerMixin:OnClick()
 	self.List:SetShown(not self.List:IsShown());
@@ -134,11 +132,11 @@ end
 
 function MawBuffsContainerMixin:HighlightBuffAndShow(spellID, maxStacks)
 	self.List:HighlightBuffAndShow(spellID, maxStacks)
-end 
+end
 
 function MawBuffsContainerMixin:HideBuffHighlight(spellID)
 	self.List:HideBuffHighlight(spellID)
-end 
+end
 
 MawBuffsListMixin = {};
 
@@ -171,29 +169,29 @@ function MawBuffsListMixin:OnHide()
 end
 
 function MawBuffsListMixin:HighlightBuffAndShow(spellID, maxStackCount)
-	if(not spellID or not maxStackCount or not self.buffPool) then 
+	if(not spellID or not maxStackCount or not self.buffPool) then
 		return;
-	end 
+	end
 	for mawBuff in self.buffPool:EnumerateActive() do
-		if(mawBuff.spellID == spellID and mawBuff.count < maxStackCount) then 
-			if( not self:IsShown()) then 
-				self:Show(); 
+		if(mawBuff.spellID == spellID and mawBuff.count < maxStackCount) then
+			if( not self:IsShown()) then
+				self:Show();
 			end
-			mawBuff.HighlightBorder:Show(); 
-			return; 
-		end 
+			mawBuff.HighlightBorder:Show();
+			return;
+		end
 	end
 end
 
 function MawBuffsListMixin:HideBuffHighlight(spellID)
-	if(not spellID or not self.buffPool) then 
+	if(not spellID or not self.buffPool) then
 		return;
-	end 
+	end
 
 	for mawBuff in self.buffPool:EnumerateActive() do
-		if(mawBuff.spellID == spellID) then 
-			mawBuff.HighlightBorder:Hide(); 
-		end 
+		if(mawBuff.spellID == spellID) then
+			mawBuff.HighlightBorder:Hide();
+		end
 	end
 end
 
@@ -279,25 +277,27 @@ function MawBuffMixin:SetBuffInfo(buffInfo)
 end
 
 function MawBuffMixin:OnEnter()
-	self:RefreshTooltip(); 
-end 
+	self:RefreshTooltip();
+end
 
 function MawBuffMixin:RefreshTooltip()
 	GameTooltip:SetOwner(self, "ANCHOR_LEFT");
-	GameTooltip:SetUnitAura("player", self.slot, "MAW");
+	GameTooltip:SetMawBuff(self.slot);
 
 	GameTooltip:Show();
-	self.HighlightBorder:Show(); 
+	self.HighlightBorder:Show();
 end
 
 function MawBuffMixin:OnClick()
+	EventRegistry:TriggerEvent("MawBuffMixin.OnClick", self);
+
 	if (IsModifiedClick("CHATLINK")) then
-		ChatFrameUtil.InsertLink(GetMawPowerLinkBySpellID(self.spellID));
+		ChatFrameUtil.InsertLink(C_Spell.GetMawPowerLinkBySpellID(self.spellID));
 		return;
 	end
 end
 
 function MawBuffMixin:OnLeave()
-	GameTooltip_Hide(); 
-	self.HighlightBorder:Hide(); 
+	GameTooltip_Hide();
+	self.HighlightBorder:Hide();
 end

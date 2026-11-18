@@ -80,6 +80,9 @@ local CharacterSelectNavBarEvents = {
 function CharacterSelectNavBarMixin:OnLoad()
 	FrameUtil.RegisterFrameForEvents(self, CharacterSelectNavBarEvents);
 
+	local cursorRotation = 270;
+	SmartNavigation_SetClampedCursorRotationForFrame(self, cursorRotation);
+
 	local function NavBarButtonSetup(newButton, label, controlCallback, passNavBarToCallback)
 		newButton:SetText(label);
 		newButton:SetWidth(newButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
@@ -205,7 +208,6 @@ function CharacterSelectNavBarMixin:TrySetUpGameModeButton()
 
 	self:UpdateSelectedGameMode();
 	self.GameModeButton:SetWidth(self.GameModeButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
-	SmartNavigation_UseVerticalCursorForFrame(self.GameModeButton);
 	self.ButtonTray:Layout();
 end
 
@@ -233,8 +235,6 @@ function CharacterSelectNavBarMixin:TrySetUpStoreButton()
 		self.PlunderstoreButton:SetScript("OnLeave", function()
 			GetAppropriateTooltip():Hide();
 		end);
-
-		SmartNavigation_UseVerticalCursorForFrame(self.PlunderstoreButton);
 	else
 		self.StoreButton = self:AddButton(nil, ToggleStoreUI);
 
@@ -254,7 +254,6 @@ function CharacterSelectNavBarMixin:TrySetUpStoreButton()
 		local highlight = false;
 		self.StoreButton:formatButtonTextCallback(enabled, highlight);
 		self.StoreButton:SetWidth(self.StoreButton:GetTextWidth() + CharacterSelectNavBarMixin.NavBarButtonWidthBuffer);
-		SmartNavigation_UseVerticalCursorForFrame(self.StoreButton);
 		
 		self.StoreButton.TutorialBadge:ClearAllPoints();
 		self.StoreButton.TutorialBadge:SetPoint("CENTER", self.StoreButton:GetFontString(), "LEFT", -10, 0);
@@ -267,7 +266,6 @@ function CharacterSelectNavBarMixin:TrySetUpMenuButton()
 	end
 
 	self.MenuButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_MENU, GlueMenuFrameUtil.ShowMenu);
-	SmartNavigation_UseVerticalCursorForFrame(self.MenuButton);
 
 	-- Menu button should not trigger focus replay narration, as it opens the game menu which has contextual narration.
 	self.MenuButton.NarrationShouldIgnoreFocusReplay = function()
@@ -286,7 +284,6 @@ function CharacterSelectNavBarMixin:TrySetUpRealmsButton()
 
 	local realmsCallback = GenerateFlatClosure(CharacterSelectUtil.ChangeRealm);
 	self.RealmsButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_REALMS, realmsCallback);
-	SmartNavigation_UseVerticalCursorForFrame(self.RealmsButton);
 end
 
 function CharacterSelectNavBarMixin:TrySetUpSuperDistrictsButton()
@@ -296,7 +293,6 @@ function CharacterSelectNavBarMixin:TrySetUpSuperDistrictsButton()
 
 	local superDistrictsCallback = GenerateFlatClosure(CharacterSelectUtil.ChangeSuperDistrict);
 	self.SuperDistrictsButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_SUPER_DISTRICTS, superDistrictsCallback);
-	SmartNavigation_UseVerticalCursorForFrame(self.SuperDistrictsButton);
 end
 
 function CharacterSelectNavBarMixin:TrySetUpCampsButton()
@@ -305,7 +301,6 @@ function CharacterSelectNavBarMixin:TrySetUpCampsButton()
 	end
 
 	self.CampsButton = self:AddButton(CHARACTER_SELECT_NAV_BAR_CAMPS, ToggleCollections);
-	SmartNavigation_UseVerticalCursorForFrame(self.CampsButton);
 	local function OnCollectionsHide()
 		UpdateButtonStatesForCollections(false);
 	end

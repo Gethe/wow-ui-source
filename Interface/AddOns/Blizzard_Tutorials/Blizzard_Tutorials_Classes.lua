@@ -1,5 +1,11 @@
 
-local function IsTalentTutorialEnabled()
+-- Overridden by game types that split talents into their own micro button.
+function GetTalentMicroButton()
+	return PlayerSpellsMicroButton;
+end
+
+-- Overridden by game types that don't show the talent tutorial.
+function IsTalentTutorialEnabled()
 	if GetCVarBool("hideTalentTutorials") then
 		return false;
 	end
@@ -11,12 +17,17 @@ local function IsTalentTutorialEnabled()
 	return true;
 end
 
+-- Overridden by game types without a starter build loadout.
+function IsStarterTalentTutorialEnabled()
+	return true;
+end
+
 function AddSpecAndTalentTutorials()
 	if Kiosk.IsEnabled() then
 		return;
 	end
 
-	if not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP) then
+	if IsStarterTalentTutorialEnabled() and not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_TALENT_STARTER_HELP) then
 		TutorialManager:AddWatcher(Class_StarterTalentWatcher:new(), true);
 	end
 
@@ -80,13 +91,13 @@ function Class_ChangeSpec:OnBegin()
 	EventRegistry:RegisterCallback("PlayerSpellsFrame.SpecFrame.ActivateSpec", self.EnableHelp, self);
 	C_Timer.After(0.1, function()
 		self:ShowSpecButtonPointer();
-	end);			
+	end);
 end
 
 function Class_ChangeSpec:ShowSpecButtonPointer()
 	self:HidePointerTutorials();
-	self:ShowPointerTutorial(NPEV2_SPEC_TUTORIAL_GOSSIP_CLOSED, "DOWN", PlayerSpellsMicroButton, 0, 10, nil, "DOWN");
-	MicroButtonPulse(PlayerSpellsMicroButton);
+	self:ShowPointerTutorial(NPEV2_SPEC_TUTORIAL_GOSSIP_CLOSED, "DOWN", GetTalentMicroButton(), 0, 10, nil, "DOWN");
+	MicroButtonPulse(GetTalentMicroButton());
 end
 
 function Class_ChangeSpec:EvaluateTalentFrame()
@@ -133,7 +144,7 @@ function Class_ChangeSpec:OnComplete()
 	self:CleanUpCallbacks();
 
 	self:EnableHelp(false);
-	MicroButtonPulseStop(PlayerSpellsMicroButton);
+	MicroButtonPulseStop(GetTalentMicroButton());
 	self:HidePointerTutorials();
 	TutorialManager:RemoveTutorial(self:Name());
 end
@@ -184,7 +195,7 @@ function Class_ChangeSpec_NPE:OnBegin()
 	else
 		C_Timer.After(0.1, function()
 			self:ShowSpecButtonPointer();
-		end);			
+		end);
 	end
 end
 
@@ -384,7 +395,7 @@ function Class_StarterTalentWatcher:EvaluateTalentFrame()
 		if self.Timer then
 			self.Timer:Cancel();
 		end
-				
+
 		if PlayerSpellsFrame.TalentsFrame:IsShown() then
 			self.Timer = C_Timer.NewTimer(30, function() self:ShowStarterTalentsHelp(GetTalentLoadoutDropdown()) end);
 		else
@@ -392,7 +403,7 @@ function Class_StarterTalentWatcher:EvaluateTalentFrame()
 		end
 	else
 		self:HideStarterTalentsHelp();
-	end	
+	end
 end
 
 function Class_StarterTalentWatcher:ShowStarterTalentsHelp(dropdown)
@@ -457,7 +468,7 @@ function Class_StarterTalentWatcher:StartWatching()
 	end
 end
 
-function Class_StarterTalentWatcher:StopWatching()	
+function Class_StarterTalentWatcher:StopWatching()
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.CloseFrame", self);
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.TalentTab.Show", self);
 	EventRegistry:UnregisterCallback("PlayerSpellsFrame.SpecFrame.Show", self);

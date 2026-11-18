@@ -429,6 +429,11 @@ function HelpTipTemplateMixin:Close()
 		if self.acknowledged and info.onAcknowledgeCallback then
 			info.onAcknowledgeCallback(info.callbackArg);
 		end
+
+		-- Clear the OnUpdate script to prevent it from running after the
+		-- HelpTip is closed for edge cases where we're being closed within
+		-- another frame's OnUpdate.
+		self:SetScript("OnUpdate", nil);
 	end
 
 	if self:IsShown() then

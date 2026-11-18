@@ -1,6 +1,6 @@
 local PROJECT_IMPL_REQUIRED = "Add implementation in UnitPopupUtils.lua";
 
-UnitPopupSharedUtil = { }; 
+UnitPopupSharedUtil = { };
 
 function UnitPopupSharedUtil.GetBNetIDAccount(contextData)
 	return nil;
@@ -10,12 +10,12 @@ function UnitPopupSharedUtil.GetGUID(contextData)
 	if contextData.guid then
 		return contextData.guid;
 	end
-	
+
 	local unit = contextData.unit;
 	if unit then
 		return UnitGUID(unit);
 	end
-	
+
 	local accountInfo = contextData.accountInfo;
 	if not accountInfo then
 		return nil;
@@ -25,7 +25,7 @@ function UnitPopupSharedUtil.GetGUID(contextData)
 end
 
 function UnitPopupSharedUtil.GetBNetAccountInfo(contextData)
-	return nil; 
+	return nil;
 end
 
 function UnitPopupSharedUtil.GetIsMobile(contextData)
@@ -33,7 +33,7 @@ function UnitPopupSharedUtil.GetIsMobile(contextData)
 	if isMobile ~= nil then
 		return isMobile;
 	end
-	
+
 	local accountInfo = contextData.accountInfo;
 	if not accountInfo then
 		return false;
@@ -48,7 +48,7 @@ function UnitPopupSharedUtil.GetIsMobile(contextData)
 end
 
 function UnitPopupSharedUtil.TryCreatePlayerLocation(contextData)
-	return nil; 
+	return nil;
 end
 
 function UnitPopupSharedUtil.IsValidPlayerLocation(playerLocation)
@@ -59,24 +59,19 @@ function UnitPopupSharedUtil.IsSameServer(contextData, playerLocation)
 	if playerLocation then
 		return C_PlayerInfo.UnitIsSameServer(playerLocation);
 	end
-	
+
 	local accountInfo = contextData.accountInfo;
 	if not accountInfo then
 		return false;
 	end
 
-	local realmName = accountInfo.gameAccountInfo.realmName;
-	if not realmName then
-		return false;
-	end
-
-	return realmName == GetRealmName();
+	return C_BattleNet.IsGameAccountOnSameRealm(accountInfo.gameAccountInfo.gameAccountID);
 end
 
 function UnitPopupSharedUtil.IsSameServerFromSelf(contextData)
 	local playerLocation = UnitPopupSharedUtil.TryCreatePlayerLocation(contextData);
 	return UnitPopupSharedUtil.IsSameServer(contextData, playerLocation);
-end		
+end
 
 function UnitPopupSharedUtil.HasBattleTag()
 	if not BNFeaturesEnabledAndConnected() then
@@ -101,7 +96,7 @@ function UnitPopupSharedUtil.IsPlayerOffline(contextData)
 	if contextData.isOffline then
 		return true;
 	end
-	
+
 	local clubMemberInfo = contextData.clubMemberInfo;
 	if clubMemberInfo then
 		local presence = clubMemberInfo.presence;
@@ -137,7 +132,7 @@ function UnitPopupSharedUtil.GetIsLocalPlayer(contextData)
 	if contextData.isSelf then
 		return true;
 	end
-	
+
 	local clubMemberInfo = contextData.clubMemberInfo;
 	if clubMemberInfo and clubMemberInfo.isSelf then
 		return true;
@@ -170,7 +165,7 @@ end
 
 function UnitPopupSharedUtil.IsBNetFriend(contextData)
 	error(PROJECT_IMPL_REQUIRED);
-	return nil; 
+	return nil;
 end
 
 function UnitPopupSharedUtil.IsFriendshipUpgrade(contextData, requestedFriendLevel)
@@ -184,14 +179,14 @@ end
 
 function UnitPopupSharedUtil.CanAddBNetFriend(contextData, isLocalPlayer, haveBattleTag, isPlayer, requestedFriendLevel)
 	error(PROJECT_IMPL_REQUIRED);
-	return nil; 
+	return nil;
 end
 
 function UnitPopupSharedUtil.IsEnabled(contextData, unitPopupButton)
 	assertsafe(contextData);
 	if not unitPopupButton then
-		return false; 
-	end 
+		return false;
+	end
 
 	if unitPopupButton:IsUninteractable() then
 		return false;
@@ -209,13 +204,13 @@ function UnitPopupSharedUtil.IsEnabled(contextData, unitPopupButton)
 		return false;
 	end
 
-	if unitPopupButton:IsDisabled(contextData) then 
-		return false; 
-	end 
+	if unitPopupButton:IsDisabled(contextData) then
+		return false;
+	end
 
-	if not unitPopupButton:IsEnabled(contextData) then 
-		return false; 
-	end 
+	if not unitPopupButton:IsEnabled(contextData) then
+		return false;
+	end
 
 	return true;
 end
@@ -233,7 +228,7 @@ function UnitPopupSharedUtil.TryBNInvite(contextData)
 	end
 
 	FriendsFrame_InviteOrRequestToJoin(playerGuid, gameAccountID);
-	return true; 
+	return true;
 end
 
 function UnitPopupSharedUtil.TryInvite(contextData, inviteType, fullname)
@@ -245,25 +240,25 @@ function UnitPopupSharedUtil.CreateUnitPopupReport(reportType, playerName, playe
 	if not reportInfo then
 		return;
 	end
-	
+
 	reportInfo:SetReportTarget(playerGUID);
-	ReportFrame:InitiateReport(reportInfo, playerName, playerLocation); 
+	ReportFrame:InitiateReport(reportInfo, playerName, playerLocation);
 end
 
 function UnitPopupSharedUtil.CreateUnitPopupReportPet(reportType, playerName, petGUID)
 	local reportInfo = ReportInfo:CreatePetReportInfo(reportType, petGUID);
-	if not reportInfo then 
+	if not reportInfo then
 		return;
-	end		
-	
-	ReportFrame:InitiateReport(reportInfo, playerName, playerLocation); 
+	end
+
+	ReportFrame:InitiateReport(reportInfo, playerName, playerLocation);
 end
 
 function UnitPopupSharedUtil.GetFullPlayerName(contextData)
-	return nil; 
-end		
+	return nil;
+end
 
 function UnitPopupSharedUtil.HasLFGRestrictions()
 	error(PROJECT_IMPL_REQUIRED);
-	return nil; 
+	return nil;
 end

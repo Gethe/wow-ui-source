@@ -15,7 +15,7 @@
 			</Layer>
 		</Layers>
 		<Frames>
-			<Frame parentKey="TreeTopBranchesFrame" frameStrata="HIGH" fixedFrameStrata="true" hidden="true">
+			<Frame parentKey="TreeTopBranchesFrame" hidden="true">
 				<Size x="45" y="45"/>
 				<Anchors>
 					<Anchor point="CENTER" x="-8" y="11"/>

@@ -208,16 +208,6 @@ function GamepadMode.OpenRadial()
 		return;
 	end
 
-	if (IsInCinematicScene() and CanCancelScene()) then
-		CancelScene();
-		return;
-	end
-
-	if (InCinematic()) then
-		StopCinematic();
-		return;
-	end
-
 	GamepadRadial:SetShown(not GamepadRadial:IsShown());
 end
 

@@ -53,7 +53,7 @@ local function RefreshCachedCurrencyInfo()
 		return nil;
 	end
 
-	currencyInfo.renownCurrency = C_MajorFactions.GetCurrentRenownLevel(Constants.LegacyConsts.LEGACY_REWARD_TRACK_FACTION_ID);
+	currencyInfo.renownCurrency = C_LegacySystem.GetCurrentLegacyPoints();
 	cachedCurrencyInfo = currencyInfo;
 
 	return currencyInfo;

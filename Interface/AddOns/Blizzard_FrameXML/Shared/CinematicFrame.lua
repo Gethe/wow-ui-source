@@ -88,6 +88,13 @@ end
 function CinematicFrame_SetupGamepad(self)
 	self.binding = GamepadMode.CreateBindingGroup("CinematicFrameBindings");
 	self.binding:BlockEverything();
+	self.binding:BlockKeys({
+		GAMEPAD_MENU_RIGHT,
+		GAMEPAD_STICK_LEFT_PRESS,
+		GAMEPAD_STICK_RIGHT_PRESS,
+		GAMEPAD_TRIGGER_LEFT,
+		GAMEPAD_TRIGGER_RIGHT,
+	})
 	self.binding:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, function()
 		CinematicFrameCloseDialogConfirmButton:Click();
 	end);
@@ -104,17 +111,28 @@ function CinematicFrame_SetupGamepad(self)
 	CinematicFrameCloseDialog.FocusGamepad = function()
 		GamepadMode.SetGamepadIconShown(self.confirmIcon, true);
 		GamepadMode.SetGamepadIconShown(self.resumeIcon, true);
-		GamepadMode.ActivateBindingGroup(self.binding);
+		local alwaysOnTop = true;
+		GamepadMode.ActivateBindingGroup(self.binding, alwaysOnTop);
+
+		GamepadMode.FrameControlsManager:DismissOnUnfocus(CinematicFrameCloseDialog);
 	end
 
 	CinematicFrameCloseDialog.UnfocusGamepad = function()
 		GamepadMode.DeactivateBindingGroup(self.binding);
 		GamepadMode.SetGamepadIconShown(self.confirmIcon, false);
 		GamepadMode.SetGamepadIconShown(self.resumeIcon, false);
+
+		GamepadMode.FrameControlsManager:DisableDismissOnUnfocus(CinematicFrameCloseDialog);
+	end
+
+	-- This close handler is used to handle custom dismiss on unfocus from FCM.
+	CinematicFrameCloseDialog.SmartNavigationCloseHandler = function()
+		self.closeDialog:Hide();
+		return true;
 	end
 end
 
-function CinematicFrame_OnEvent(self, event, ...)	
+function CinematicFrame_OnEvent(self, event, ...)
 	if ( event == "CINEMATIC_START" ) then
 		local canBeCancelled, forcedAspectRatio = ...;
 		EventRegistry:TriggerEvent("CinematicFrame.CinematicStarting");

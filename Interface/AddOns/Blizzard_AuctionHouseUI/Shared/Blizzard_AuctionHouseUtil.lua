@@ -657,6 +657,7 @@ local AuctionHouseErrorToErrorText = {
 	[Enum.AuctionHouseError.LootItem] = ERR_AUCTION_LOOT_ITEM,
 	[Enum.AuctionHouseError.DoubleBid] = ERR_AUCTION_DOUBLE_BID,
 	[Enum.AuctionHouseError.ItemBoundToAccountUntilEquip] = ERR_NOT_SAME_ACCOUNT,
+	[Enum.AuctionHouseError.SelfFound] = ERR_PLAYER_IS_SELF_FOUND_CANNOT_USE_AUCTION_HOUSE,
 };
 
 function AuctionHouseUtil.GetErrorText(auctionHouseError)

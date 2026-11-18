@@ -644,7 +644,7 @@ local FailValidationTooltips = {
 	[FailValidationReason.RecraftOptionalReagentLimit] = PROFESSIONS_UNIQUE_EQUIP_LIMITATION_DISC,
 };
 
-function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInfo, transaction, isRuneforging, countMax)
+function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInfo, transaction, hasNoReagentCost, countMax)
 	if not currentRecipeInfo.craftable or currentRecipeInfo.disabled then
 		return FailValidationReason.Disabled;
 	end
@@ -665,7 +665,7 @@ function ProfessionsCraftingPageMixin:ValidateCraftRequirements(currentRecipeInf
 		return FailValidationReason.DependentReagentMissing;
 	end
 
-	if not isRuneforging and countMax <= 0 then
+	if not hasNoReagentCost and countMax <= 0 then
 		return FailValidationReason.InsufficientReagents;
 	end
 	
@@ -718,9 +718,10 @@ function ProfessionsCraftingPageMixin:ValidateControls(skipConstrainCount)
 
 		local transaction = self.SchematicForm:GetTransaction();
 		local isEnchant = transaction:IsRecipeType(Enum.TradeskillRecipeType.Enchant);
+		local hasNoReagentCost = C_TradeSkillUI.HasNoReagentCost(currentRecipeInfo.recipeID);
 
 		local canCreateMultiple = currentRecipeInfo.canCreateMultiple and 
-			not isRuneforging and
+			not hasNoReagentCost and
 			not transaction:HasRecraftAllocation() and
 			(not isEnchant or DoesEnchantTargetSupportStacks(transaction));
 
@@ -798,7 +799,7 @@ function ProfessionsCraftingPageMixin:ValidateControls(skipConstrainCount)
 		end
 
 		if enabled then
-			local failValidationReason = self:ValidateCraftRequirements(currentRecipeInfo, transaction, isRuneforging, countMax);
+			local failValidationReason = self:ValidateCraftRequirements(currentRecipeInfo, transaction, hasNoReagentCost, countMax);
 			enabled = failValidationReason == nil;
 			self:SetCreateButtonTooltipText(FailValidationTooltips[failValidationReason]);
 		end

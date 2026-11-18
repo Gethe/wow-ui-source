@@ -74,6 +74,12 @@ GenericTraitUtil.AddFrameLayoutInfo(1261, {
 	OnLeaveDisplayCallback = function()
 		EventRegistry:TriggerEvent("PlayerChoiceOption.OnOptionLeave");
 	end,
+	OnConfigCommittedCallback = function(configID)
+		C_WoWHackCharacterStats.AddPendingStatPointsFromConfig(configID);
+	end,
+	OnConfigCommitFailedCallback = function(_configID)
+		C_WoWHackCharacterStats.ClearPendingStatPoints();
+	end,
 	OnShowCallback = function()
 		EventRegistry:TriggerEvent("OutfitterFrame.Opened");
 	end,

@@ -3,12 +3,28 @@ local LegacyConstants =
 	Tables =
 	{
 		{
+			Name = "LegacyRewardFlags",
+			Type = "Enumeration",
+			NumValues = 3,
+			MinValue = 1,
+			MaxValue = 4,
+			Fields =
+			{
+				{ Name = "Milestone", Type = "LegacyRewardFlags", EnumValue = 1 },
+				{ Name = "Capstone", Type = "LegacyRewardFlags", EnumValue = 2 },
+				{ Name = "Hidden", Type = "LegacyRewardFlags", EnumValue = 4 },
+			},
+		},
+		{
 			Name = "LegacyConsts",
 			Type = "Constants",
 			Values =
 			{
 				{ Name = "LEGACY_REWARD_TRACK_FACTION_ID", Type = "number", Value = 2802 },
 				{ Name = "LEGACY_POINTS_TRAIT_CURRENCY_ID", Type = "number", Value = 4225 },
+				{ Name = "LEGACY_REWARD_MAX_LEGACY_POINTS", Type = "number", Value = 90 },
+				{ Name = "LEGACY_REWARD_TEXTURE_KIT_ID", Type = "number", Value = 5578 },
+				{ Name = "LEGACY_REWARD_GLOBAL_COLOR_ID", Type = "number", Value = 296 },
 				{ Name = "LEGACY_TREE_PROFESSIONS_ID", Type = "number", Value = 1187 },
 				{ Name = "LEGACY_TREE_ADVENTURE_ID", Type = "number", Value = 1188 },
 				{ Name = "LEGACY_TREE_PROGRESSION_ID", Type = "number", Value = 1189 },

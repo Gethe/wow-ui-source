@@ -814,6 +814,7 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 		if self.hasEnteredWorld then
 			ChatConfigCategory_UpdateEnabled();
 			ChatConfig_UpdateChatSettings();
+			ChatConfigChannelSettings_UpdateAvailableChannels();
 		end
 	elseif event == "CHAT_REGIONAL_STATUS_CHANGED" then
 		if ChatConfigChannelSettings:IsVisible() then
@@ -822,6 +823,8 @@ function ChatConfigFrame_OnEvent(self, event, ...)
 	elseif event == "CHAT_DISABLED_CHANGE_FAILED" then
 		local disabled = ...;
 		ChatConfigFrame_OnChatDisabledChanged(disabled);
+	elseif event == "CHAT_MSG_CHANNEL_NOTICE" then
+		ChatConfigChannelSettings_UpdateAvailableChannels();
 	end
 end
 
@@ -2239,6 +2242,7 @@ function ChatConfig_RefreshCurrentChatCategory(preserveCategorySelection)
 	--elseif _G[CHAT_CONFIG_CATEGORIES[2]]:IsShown() then
 	elseif _G[CHAT_CONFIG_CATEGORIES[3]]:IsShown() then
 		ChatConfigChannelSettings_UpdateCheckboxes();
+		ChatConfigChannelSettings_UpdateAvailableChannels();
 	elseif _G[CHAT_CONFIG_CATEGORIES[4]]:IsShown() then
 		ChatConfigOtherSettings_UpdateCheckboxes();
 	end
@@ -2264,6 +2268,12 @@ end
 function ChatConfigChannelSettings_OnShow()
 	ChatConfigChannelSettings_UpdateCheckboxes();
 	UpdateDefaultButtons(false);
+	ChatConfigChannelSettings_UpdateAvailableChannels();
+end
+
+function ChatConfigChannelSettings_UpdateAvailableChannels()
+	CreateAvailableChatChannelList(ChatConfigChannelSettings, EnumerateServerChannels());
+	ChatConfig_CreateBoxes(ChatConfigChannelSettingsAvailable, CHAT_CONFIG_AVAILABLE_CHANNEL_LIST, "ChatConfigTextBoxTemplateWithButton", AVAILABLE_CHANNELS);
 end
 
 local ChannelTypeFormat = "CHANNEL%d";
@@ -2668,4 +2678,100 @@ end
 
 function TextToSpeechCharacterSpecificButtonMixin:OnHide()
 	GameTooltip_Hide();
+end
+
+CHAT_CONFIG_AVAILABLE_CHANNEL_LIST = {};
+
+function CreateAvailableChatChannelList(self, ...)
+	local channelName;
+	local count = 1;
+	CHAT_CONFIG_AVAILABLE_CHANNEL_LIST = {};
+	for i=1, select("#", ...), 1 do
+		channelName = select(i, ...);
+		-- If not in the channel, add it to the list.
+		if (GetChannelName(channelName) == 0) then
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count] = {};
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].text = channelName;
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].channelName = channelName;
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].type = "CHANNEL_"..channelName;
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].buttonText = CHAT_JOIN;
+			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].buttonFunc = function (self)
+					SlashCmdList["JOIN"](CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[self:GetParent():GetID()].channelName); 
+				end;
+			count = count+1;
+		end
+	end
+end
+
+-- Like ChatConfig_CreateCheckboxes, but without the checkboxes.
+function ChatConfig_CreateBoxes(frame, boxTable, boxTemplate, title)
+	local boxNameString = frame:GetName().."Box";
+	local boxName, box;
+	local width, height;
+	local padding = 8;
+	local text;
+	local boxFontString;
+	
+	frame.boxTable = boxTable;
+	if ( title ) then
+		_G[frame:GetName().."Title"]:SetText(title);
+	end
+	for index, value in ipairs(boxTable) do
+		--If no box then create it
+		boxName = boxNameString..index;
+		box = _G[boxName];
+		if ( not box ) then
+			box = CreateFrame("Frame", boxName, frame, boxTemplate);
+			box:SetID(index);
+		end
+		if ( not width ) then
+			width = box:GetWidth();
+			height = box:GetHeight();
+		end
+		if ( index > 1 ) then
+			box:SetPoint("TOPLEFT", boxNameString..(index-1), "BOTTOMLEFT", 0, 0);
+		else
+			box:SetPoint("TOPLEFT", frame, "TOPLEFT", 4, -4);
+		end
+		if ( value.text ) then
+			text = value.text;
+		else
+			text = _G[value.type];
+		end
+		if ( value.buttonText ) then
+			box.Button:SetText(value.buttonText);
+		end
+		if ( value.buttonFunc ) then
+			box.Button:SetScript("OnClick", value.buttonFunc);
+		end
+		box.type = value.type;
+		boxFontString = _G[boxName.."Text"];
+		boxFontString:SetText(text);
+		boxFontString:SetMaxLines(1);
+		if ( value.maxWidth ) then
+			boxFontString:SetWidth(0);
+			if ( boxFontString:GetWidth() > value.maxWidth ) then
+				boxFontString:SetWidth(value.maxWidth);
+			end
+		end
+		box:Show();
+	end
+	
+	for index = #boxTable + 1, Constants.ChatFrameConstants.MaxChatChannels do
+		boxName = boxNameString..index;
+		box = _G[boxName];
+		if box then
+			box:Hide();
+		end
+	end
+	
+	--Set Parent frame dimensions
+	if ( #boxTable > 0 ) then
+		frame:SetWidth(width+padding);
+		frame:SetHeight(#boxTable*height+padding);
+		frame:Show();
+	else
+		frame:Hide();
+	end
 end

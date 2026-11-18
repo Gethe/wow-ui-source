@@ -8,6 +8,22 @@ local WoWHackCharacterStats =
 	Functions =
 	{
 		{
+			Name = "AddPendingStatPointsFromConfig",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Call right after C_Traits.CommitConfig succeeds. Predicts stat point increases from the config's staged purchases until the server updates the stat auras." },
+
+			Arguments =
+			{
+				{ Name = "configID", Type = "number", Nilable = false },
+			},
+		},
+		{
+			Name = "ClearPendingStatPoints",
+			Type = "Function",
+			Documentation = { "Discards predicted stat point increases, e.g. when a trait commit fails." },
+		},
+		{
 			Name = "GetStatPointsBySpellID",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",
@@ -42,6 +58,13 @@ local WoWHackCharacterStats =
 
 	Events =
 	{
+		{
+			Name = "WoWHackStatPointsChanged",
+			Type = "Event",
+			LiteralName = "WOW_HACK_STAT_POINTS_CHANGED",
+			UniqueEvent = true,
+			Documentation = { "Fires when the points on a WoWHack stat aura change. These auras are hidden from UNIT_AURA." },
+		},
 	},
 
 	Tables =

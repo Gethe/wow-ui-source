@@ -21,12 +21,12 @@ function DoesClientThinkTheCharacterIsEligibleForHCT(characterID)
 	local errors = {};
 
 	if characterInfo then
-		if characterInfo.mailSenders then
-			CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbHasMail, #characterInfo.mailSenders == 0);
-		end
+		local superDistrictInfos = C_CharacterServices.GetHardcoreTransferSuperDistrictDestinations(characterInfo.guid);
+		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not TableIsEmpty(superDistrictInfos));
 
-		CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbCharLocked, not characterInfo.hasVasRevoked);
-		CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbUnderMinLevelReq, characterInfo.experienceLevel >= 10);
+		local isLocked = characterInfo.hasVasRevoked or characterInfo.vasServiceInProgress or IsCharacterVASLocked(characterInfo.guid);
+		CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbCharLocked, not isLocked);
+
 		CheckAddVASErrorCode(errors, Enum.VasTransactionPurchaseResult.DbHasNewPlayerExperienceRestriction, not IsCharacterNPERestricted(characterInfo.guid));
 		CheckAddVASErrorString(errors, BLIZZARD_STORE_VAS_ERROR_CHARACTER_INELIGIBLE_FOR_THIS_SERVICE, not IsCharacterVASRestricted(characterInfo.guid, Enum.ValueAddedServiceType.HardcoreCharacterTransfer));
 

@@ -20,12 +20,12 @@
 					<Layer level="ARTWORK">
 						<FontString parentKey="CurrentSeasonField" inherits="GameFontNormalMed2" justifyH="CENTER">
 							<Anchors>
-								<Anchor point="TOP" x="0" y="-20"/>
+								<Anchor point="TOP" x="0" y="-8"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="CurrentRankField" inherits="GameFontHighlightLarge" justifyH="CENTER">
 							<Anchors>
-								<Anchor point="TOP" relativeKey="$parent.CurrentSeasonField" relativePoint="BOTTOM" x="0" y="10"/>
+								<Anchor point="TOP" relativeKey="$parent.CurrentSeasonField" relativePoint="BOTTOM" x="0" y="-10"/>
 							</Anchors>
 						</FontString>
 						<FontString parentKey="CurrentRankProgressField" inherits="GameFontNormal" justifyH="CENTER">

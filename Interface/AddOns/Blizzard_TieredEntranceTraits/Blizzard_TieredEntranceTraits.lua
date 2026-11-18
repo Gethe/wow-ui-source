@@ -108,7 +108,7 @@ end
 function TieredEntranceTraitsContainerMixin:SetMawAuras()
 	local spells = {};
 	for i = 1, MAW_BUFF_MAX_DISPLAY do
-		local auraData = C_UnitAuras.GetAuraDataByIndex("player", i, "MAW");
+		local auraData = C_MawBuffs.GetMawBuff(i);
 		if auraData and auraData.spellId then
 			table.insert(spells, auraData.spellId);
 		end

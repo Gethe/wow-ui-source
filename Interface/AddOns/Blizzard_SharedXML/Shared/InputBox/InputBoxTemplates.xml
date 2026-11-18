@@ -206,7 +206,7 @@
 	</EditBox>
 
 	<!-- NarrationSearchBoxMixin overrides NarrationEditBoxMixin inherited from InputBoxScriptTemplate. -->
-	<EditBox name="SearchBoxTemplate" mixin="NarrationSearchBoxMixin" inherits="InputBoxInstructionsTemplate" autoFocus="false" virtual="true">
+	<EditBox name="SearchBoxTemplate" mixin="NarrationSearchBoxMixin, SearchBoxGamepadMixin" inherits="InputBoxInstructionsTemplate" autoFocus="false" virtual="true">
 		<KeyValues>
 			<KeyValue key="instructionText" value="SEARCH" type="global"/>
 		</KeyValues>

@@ -1464,7 +1464,7 @@ function Professions.CanTrackRecipe(recipeInfo)
 		return false;
 	end
 
-	if C_TradeSkillUI.IsRuneforging() then
+	if C_TradeSkillUI.HasNoReagentCost(recipeInfo.recipeID) then
 		return false;
 	end
 

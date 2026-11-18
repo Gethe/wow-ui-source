@@ -29,7 +29,7 @@ SecureHelper:RegisterKey("smartNavigationIgnoredDontPropagate", SecureHelper.Coe
 SecureHelper:RegisterKey("smartNavMaintainPreviousButtonOnScroll", SecureHelper.CoerceToBoolean);
 SecureHelper:RegisterKey("smartNavigationNonCollapsingScrollBoxElement", SecureHelper.CoerceToBoolean);
 SecureHelper:RegisterKey("smartNavigationProxyTarget", function(v) return v; end);
-SecureHelper:RegisterKey("smartNavigationVerticalCursor", SecureHelper.CoerceToBoolean);
+SecureHelper:RegisterKey("smartNavigationCursorDegrees", tonumber);
 
 for _, direction in pairs(SMART_NAV_INPUT_DIRECTION) do
 	SecureHelper:RegisterKey("smartNavigationDirectionBufferThreshold-"..direction.dirKey, tonumber);
@@ -235,7 +235,7 @@ function SmartNavigation_ResetData(frame, recurse)
 	SecureHelper:SetSecureValue(frame, "smartNavigationFocusKey", nil);
 	SecureHelper:SetSecureValue(frame, "smartNavigationIgnoredContainerFrame", nil);
 	SecureHelper:SetSecureValue(frame, "smartNavigationNonCollapsingScrollBoxElement", nil);
-	SecureHelper:SetSecureValue(frame, "smartNavigationVerticalCursor", nil);
+	SecureHelper:SetSecureValue(frame, "smartNavigationCursorDegrees", nil);
 	SecureHelper:SetSecureValue(frame, "smartNavMaintainPreviousButtonOnScroll", nil);
 
 	SmartNavigation_ClearIgnoreStatus(frame);
@@ -598,8 +598,9 @@ function SmartNavigation_CallOutgoingDirNavigationCallbacks(button, direction)
 	end
 end
 
-function SmartNavigation_UseVerticalCursorForFrame(inFrame)
-	SecureHelper:SetSecureValue(inFrame, "smartNavigationVerticalCursor", true);
+-- Rotation is clockwise in degrees and is inherited by descendants within the active navigation panel unless they specify their own value.
+function SmartNavigation_SetClampedCursorRotationForFrame(inFrame, degrees)
+	SecureHelper:SetSecureValue(inFrame, "smartNavigationCursorDegrees", degrees);
 end
 
 return Utility;

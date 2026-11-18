@@ -382,7 +382,7 @@ function SmallCatalogShopBYOBCardMixin:OnEnter()
 		tooltip:SetOwner(self, "ANCHOR_NONE");
 		tooltip:ClearAllPoints();
 		tooltip:SetPoint("BOTTOMLEFT", self, "TOPRIGHT", -15, -16);
-		GameTooltip_AddNormalLine(tooltip, CATALOG_SHOP_BYOB_ALREADY_OWNED);
+		GameTooltip_AddNormalLine(tooltip, self.productInfo.purchaseEligibilityText);
 		tooltip:Show();
 	end
 end

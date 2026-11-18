@@ -11,7 +11,7 @@ local LuaLocaleContextAPI =
 			Name = "CompareStrings",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Compares two UTF-8 strings using the options specified on a collator." },
 
 			Arguments =
@@ -30,7 +30,7 @@ local LuaLocaleContextAPI =
 			Name = "FindBreaks",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Opens a break iterator for locating text boundaries in the context locale." },
 
 			Arguments =
@@ -48,7 +48,7 @@ local LuaLocaleContextAPI =
 			Name = "FindStringMatches",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Creates a string search iterator using a collator and returns every match position." },
 
 			Arguments =
@@ -84,7 +84,7 @@ local LuaLocaleContextAPI =
 			Name = "FormatCurrency",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats a double as a localized currency value using the provided ISO 4217 currency code." },
 
 			Arguments =
@@ -102,7 +102,7 @@ local LuaLocaleContextAPI =
 			Name = "FormatDate",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats Unix time as localized date text using locale date patterns, symbols, style, and optional time zone." },
 
 			Arguments =
@@ -121,7 +121,7 @@ local LuaLocaleContextAPI =
 			Name = "FormatDateTime",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats Unix time as localized date and time text using locale patterns, symbols, styles, and optional time zone." },
 
 			Arguments =
@@ -159,7 +159,7 @@ local LuaLocaleContextAPI =
 			Name = "FormatTime",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Formats Unix time as localized time text using locale time patterns, symbols, style, and optional time zone." },
 
 			Arguments =
@@ -178,7 +178,7 @@ local LuaLocaleContextAPI =
 			Name = "GetCurrencyName",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the display name for a currency in the context locale." },
 
 			Arguments =
@@ -196,7 +196,7 @@ local LuaLocaleContextAPI =
 			Name = "GetDisplayName",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Gets a display name suitable for the specified locale." },
 
 			Arguments =
@@ -227,7 +227,7 @@ local LuaLocaleContextAPI =
 			Name = "GetSortKey",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Transforms a string into a collation sort key." },
 
 			Arguments =
@@ -245,7 +245,7 @@ local LuaLocaleContextAPI =
 			Name = "Length",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Counts character break boundaries in UTF-8 text." },
 
 			Arguments =
@@ -262,7 +262,7 @@ local LuaLocaleContextAPI =
 			Name = "ParseCurrency",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Parses an entire localized currency string into a double amount and ISO 4217 currency code." },
 
 			Arguments =
@@ -279,7 +279,7 @@ local LuaLocaleContextAPI =
 			Name = "ParseNumber",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Parses an entire localized number string into a double using the selected non-currency number formatter." },
 
 			Arguments =
@@ -297,7 +297,7 @@ local LuaLocaleContextAPI =
 			Name = "SelectPlural",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Returns the keyword of the first plural rule that applies to a number." },
 
 			Arguments =
@@ -382,7 +382,7 @@ local LuaLocaleContextAPI =
 			Name = "TransformLocale",
 			Type = "Function",
 			MayReturnNothing = true,
-			SecretArguments = "AllowedWhenTainted",
+			SecretArguments = "AllowedWhenUntainted",
 			Documentation = { "Applies a locale transform to the context locale and returns the transformed locale string." },
 
 			Arguments =

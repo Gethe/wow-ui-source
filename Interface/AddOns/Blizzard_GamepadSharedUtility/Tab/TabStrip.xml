@@ -1,0 +1,16 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\Blizzard_SharedXML\UI.xsd">
+	<Frame name="GamepadTabStripTemplate" mixin="GamepadTabStripMixin" inherits="TabSystemTemplate" virtual="true">
+		<KeyValues>
+			<KeyValue key="tabTemplate" value="TabSystemTopButtonTemplate" type="string"/>
+			<KeyValue key="spacing" value="4" type="number"/>
+		</KeyValues>
+		<Frames>
+			<Frame parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

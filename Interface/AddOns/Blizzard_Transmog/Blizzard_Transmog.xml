@@ -124,6 +124,9 @@
 						</Frames>
 					</Frame>
 					<Button parentKey="PurchaseOutfitButton" motionScriptsWhileDisabled="true">
+						<KeyValues>
+							<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+						</KeyValues>
 						<Size x="287" y="41"/>
 						<Anchors>
 							<Anchor point="TOP" relativeKey="$parent.OutfitList" relativePoint="BOTTOM" x="-3" y="-10"/>
@@ -151,6 +154,9 @@
 						<HighlightTexture parentKey="HighlightTexture" atlas="common-button-tertiary-normal" alphaMode="ADD"/>
 					</Button>
 					<Button parentKey="SaveOutfitButton" inherits="SharedButtonTemplate" text="TRANSMOG_SAVE_OUTFIT">
+						<KeyValues>
+							<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+						</KeyValues>
 						<Size x="128" y="28"/>
 						<Anchors>
 							<Anchor point="BOTTOMLEFT" x="9" y="14"/>
@@ -521,16 +527,40 @@
 									<DropdownButton parentKey="FilterButton" inherits="WowStyle1FilterDropdownTemplate">
 										<KeyValues>
 											<KeyValue key="resizeToText" type="boolean" value="false"/>
+											<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 										</KeyValues>
 										<Anchors>
 											<Anchor point="TOPRIGHT" x="-29" y="-24"/>
 										</Anchors>
 									</DropdownButton>
+									<Frame parentKey="DropdownIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+										<KeyValues>
+											<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+											<KeyValue key="useDropShadow" value="true" type="boolean"/>
+										</KeyValues>
+										<Size x="30" y="30"/>
+										<Anchors>
+											<Anchor point="RIGHT" relativeKey="$parent.FilterButton" relativePoint="LEFT" x="-3" y="1" />
+										</Anchors>
+									</Frame>
 									<EditBox parentKey="SearchBox" inherits="TransmogSearchBoxTemplate">
+										<KeyValues>
+											<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+										</KeyValues>
 										<Anchors>
 											<Anchor point="TOPRIGHT" relativeKey="$parent.FilterButton" relativePoint="TOPLEFT" x="-10" y="1"/>
 										</Anchors>
 									</EditBox>
+									<Frame parentKey="SearchBoxIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+										<KeyValues>
+											<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_LEFT" type="global"/>
+											<KeyValue key="useDropShadow" value="true" type="boolean"/>
+										</KeyValues>
+										<Size x="30" y="30"/>
+										<Anchors>
+											<Anchor point="RIGHT" relativeKey="$parent.SearchBox" relativePoint="LEFT" x="-3" y="1" />
+										</Anchors>
+									</Frame>
 									<DropdownButton parentKey="WeaponDropdown" inherits="WowStyle1DropdownTemplate">
 										<Anchors>
 											<Anchor point="TOPRIGHT" x="-31" y="-106"/>
@@ -574,9 +604,20 @@
 													<KeyValue key="bottomPadding" value="3" type="number"/>
 													<KeyValue key="prevPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
 													<KeyValue key="nextPageSound" value="SOUNDKIT.UI_TRANSMOG_PAGE_TURN" type="global"/>
+													<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 												</KeyValues>
 												<Anchors>
 													<Anchor point="BOTTOM" x="0" y="5"/>
+												</Anchors>
+											</Frame>
+											<Frame parentKey="PagingIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+												<KeyValues>
+													<KeyValue key="mappedButtonKey" value="GAMEPAD_STICK_LEFT_VERTICAL" type="global"/>
+													<KeyValue key="useDropShadow" value="true" type="boolean"/>
+												</KeyValues>
+												<Size x="45" y="45"/>
+												<Anchors>
+													<Anchor point="RIGHT" relativeKey="$parent.PagingControls" relativePoint="LEFT" x="5" y="5" />
 												</Anchors>
 											</Frame>
 										</Frames>
@@ -665,6 +706,16 @@
 													<Anchor point="BOTTOM" x="0" y="5"/>
 												</Anchors>
 											</Frame>
+											<Frame parentKey="PagingIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+												<KeyValues>
+													<KeyValue key="mappedButtonKey" value="GAMEPAD_STICK_LEFT_VERTICAL" type="global"/>
+													<KeyValue key="useDropShadow" value="true" type="boolean"/>
+												</KeyValues>
+												<Size x="45" y="45"/>
+												<Anchors>
+													<Anchor point="RIGHT" relativeKey="$parent.PagingControls" relativePoint="LEFT" x="5" y="5" />
+												</Anchors>
+											</Frame>
 										</Frames>
 									</Frame>
 								</Frames>
@@ -720,6 +771,16 @@
 												</KeyValues>
 												<Anchors>
 													<Anchor point="BOTTOM" x="0" y="5"/>
+												</Anchors>
+											</Frame>
+											<Frame parentKey="PagingIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+												<KeyValues>
+													<KeyValue key="mappedButtonKey" value="GAMEPAD_STICK_LEFT_VERTICAL" type="global"/>
+													<KeyValue key="useDropShadow" value="true" type="boolean"/>
+												</KeyValues>
+												<Size x="45" y="45"/>
+												<Anchors>
+													<Anchor point="RIGHT" relativeKey="$parent.PagingControls" relativePoint="LEFT" x="5" y="5" />
 												</Anchors>
 											</Frame>
 										</Frames>
@@ -803,6 +864,16 @@
 											<Anchor point="LEFT" relativeKey="$parent.ApplyButton" relativePoint="RIGHT" x="10" y="0"/>
 										</Anchors>
 									</Button>
+									<Frame parentKey="GamepadUndoButton" inherits="InputIconTextureFrameTemplate" hidden="true">
+										<KeyValues>
+											<KeyValue key="mappedButtonKey" value="GAMEPAD_FACE_TOP" type="global"/>
+											<KeyValue key="useDropShadow" value="true" type="boolean"/>
+										</KeyValues>
+										<Size x="30" y="30"/>
+										<Anchors>
+											<Anchor point="LEFT" relativeKey="$parent.ApplyButton" relativePoint="RIGHT" x="10" y="0"/>
+										</Anchors>
+									</Frame>
 								</Frames>
 								<Scripts>
 									<OnLoad method="OnLoad"/>

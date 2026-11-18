@@ -755,6 +755,10 @@ function TransmogAppearanceSlotMixin:GetCurrentIcons()
 	return transmogIcons;
 end
 
+function TransmogAppearanceSlotMixin:OnSmartNavSelect()
+	self:Click();
+end
+
 
 TransmogSlotFlyoutDropdownMixin = CreateFromMixins(ButtonStateBehaviorMixin);
 TransmogSlotFlyoutLayoutData = {
@@ -808,6 +812,10 @@ function TransmogSlotFlyoutDropdownMixin:OnMenuOpened(menu)
 
 	self:SetNormalAtlas("transmog-button-pullup-open", TextureKitConstants.UseAtlasSize);
 	HelpTip:HideAllSystem("TransmogCharacter");
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self:LockHighlight();
+	end
 end
 
 -- Overridden.
@@ -815,6 +823,10 @@ function TransmogSlotFlyoutDropdownMixin:OnMenuClosed(menu, closeReason)
 	DropdownButtonMixin.OnMenuClosed(self, menu, closeReason);
 
 	self:SetNormalAtlas("transmog-button-pullup", TextureKitConstants.UseAtlasSize);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self:UnlockHighlight();
+	end
 end
 
 function TransmogSlotFlyoutDropdownMixin:InitTransmogFlyout(slotPosition)

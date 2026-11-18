@@ -258,8 +258,15 @@ function MicroButtonPulseStop(self)
 end
 
 --Alerts
+-- Override in game types that split talents and spellbook into separate micro buttons.
+function MainMenuMicroButton_GetPlayerSpellsAlertButtons()
+	return { PlayerSpellsMicroButton };
+end
+
 function MainMenuMicroButton_Init()
-	g_microButtonAlertPriority = { CollectionsMicroButton, ProfessionMicroButton, PlayerSpellsMicroButton, EJMicroButton, GuildMicroButton };
+	g_microButtonAlertPriority = { CollectionsMicroButton, ProfessionMicroButton };
+	tAppendAll(g_microButtonAlertPriority, MainMenuMicroButton_GetPlayerSpellsAlertButtons());
+	tAppendAll(g_microButtonAlertPriority, { EJMicroButton, GuildMicroButton });
 end
 
 function MainMenuMicroButton_SetAlertsEnabled(enabled, reason)
@@ -869,7 +876,7 @@ function PlayerSpellsMicroButtonMixin:GetAnyPvpTalentAlert()
 end
 
 function PlayerSpellsMicroButtonMixin:ShouldShowSpellBookAlert()
-	if self.talentOnly then
+	if self.talentsOnly then
 		return false;
 	end
 
@@ -1142,6 +1149,7 @@ function LegacyMicroButtonMixin:OnLoad()
 	self:RegisterEvent("UPDATE_BINDINGS");
 	self:RegisterEvent("ACHIEVEMENT_EARNED");
 	self:RegisterEvent("MAJOR_FACTION_RENOWN_LEVEL_CHANGED");
+	self:RegisterEvent("TRAIT_TREE_CURRENCY_INFO_UPDATED");
 
 	EventRegistry:RegisterCallback("Legacy.UnviewedChallengesUpdated", self.UpdateNotificationIcon, self);
 
@@ -1149,8 +1157,8 @@ function LegacyMicroButtonMixin:OnLoad()
 end
 
 function LegacyMicroButtonMixin:IsLegacySystemUnlocked()
-	local renownLevel = C_MajorFactions.GetCurrentRenownLevel(Constants.LegacyConsts.LEGACY_REWARD_TRACK_FACTION_ID);
-	return renownLevel > 0;
+	local currentLegacyPoints = C_LegacySystem.GetCurrentLegacyPoints();
+	return currentLegacyPoints > 0;
 end
 
 function LegacyMicroButtonMixin:OnClick(button, down)
@@ -1162,9 +1170,12 @@ end
 function LegacyMicroButtonMixin:OnEvent(event, ...)
 	if ( event == "UPDATE_BINDINGS" ) then
 		self.tooltipText = MicroButtonTooltipText(LEGACY_BUTTON, "TOGGLELEGACYSYSTEM");
-	elseif ( event == "MAJOR_FACTION_RENOWN_LEVEL_CHANGED" ) then
-		local majorFactionID = ...;
-		if majorFactionID == Constants.LegacyConsts.LEGACY_REWARD_TRACK_FACTION_ID then
+	elseif ( event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" ) then
+		local treeID = ...;
+		-- Test whether the treeID passed in a TRAIT_TREE_CURRENCY_INFO_UPDATED event is for the
+		-- Legacy System's TraitCurrency. Just check for one of the Trees that depend on the
+		-- LEGACY_POINTS_TRAIT_CURRENCY_ID TraitCurrency.
+		if treeID and (treeID == Constants.LegacyConsts.LEGACY_TREE_PROFESSIONS_ID) then
 			UpdateMicroButtons();
 		end
 	else

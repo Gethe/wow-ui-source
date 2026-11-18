@@ -100,6 +100,11 @@ function InputPromptLegendMixin:ApplyWideStyle()
 	self.promptContainerFrame.backgroundBorder:Hide();
 end
 
+function InputPromptLegendMixin:HideBackgroundArt()
+	self.promptContainerFrame.backgroundBorder:Hide();
+	self.promptContainerFrame.backgroundSlot:Hide();
+end
+
 function InputPromptLegendMixin:RefreshWithPromptedBindings(promptedBindings)
 	-- We might be removing a prompt by omitting it from this list, so hide everything first.
 	for _, frame in pairs(self.promptFrames) do
@@ -107,6 +112,8 @@ function InputPromptLegendMixin:RefreshWithPromptedBindings(promptedBindings)
 	end
 
 	-- Attempt to re-use frames that we have previously generated.
+	local orderedPromptFrames = {};
+	local includedPromptFrames = {};
 	for _, promptedBinding in ipairs(promptedBindings) do
 		local template = promptedBinding:GetInputIconTemplate();
 		local keys = promptedBinding:GetDisplayKeys();
@@ -114,7 +121,12 @@ function InputPromptLegendMixin:RefreshWithPromptedBindings(promptedBindings)
 		local showEnabled = promptedBinding:IsFooterConditionMet();
 		local divider = GAMEPAD_PROMPT_DIVIDER_SLASH;
 
-		local promptFrame = self:GetOrCreatePromptFrameUsingTemplateAndInputs(template.name, keys, divider);
+		local isHoldPrompt = promptedBinding:IsFooterHoldPrompt();
+		local promptFrame = self:GetOrCreatePromptFrameUsingTemplateAndInputs(template.name, keys, divider, isHoldPrompt);
+		if not includedPromptFrames[promptFrame] then
+			includedPromptFrames[promptFrame] = true;
+			table.insert(orderedPromptFrames, promptFrame);
+		end
 		promptedBinding.promptFrame = promptFrame;
 		promptFrame:SetPromptText(label);
 		promptFrame:SetIsHoldAction(promptedBinding:IsFooterHoldPrompt());
@@ -128,7 +140,7 @@ function InputPromptLegendMixin:RefreshWithPromptedBindings(promptedBindings)
 		promptFrame:Show();
 	end
 
-	self:ApplyDefaultPromptPositioning();
+	self:ApplyDefaultPromptPositioning(orderedPromptFrames);
 end
 
 --[[
@@ -141,7 +153,7 @@ end
 
 	dividerType - The type of divider to be used in the template, if applicable.
 ]]
-function InputPromptLegendMixin:GetOrCreatePromptFrameUsingTemplateAndInputs(templateName, inputKeys, dividerType)
+function InputPromptLegendMixin:GetOrCreatePromptFrameUsingTemplateAndInputs(templateName, inputKeys, dividerType, isHoldPrompt)
 	-- Format the key for the prompt that is associated with this template, inputKey, and divider combo
 	local promptKey = templateName;
 	for _, value in ipairs(inputKeys) do
@@ -150,6 +162,10 @@ function InputPromptLegendMixin:GetOrCreatePromptFrameUsingTemplateAndInputs(tem
 
 	if (dividerType) then
 		promptKey = promptKey .. dividerType;
+	end
+
+	if isHoldPrompt ~= nil then
+		promptKey = promptKey .. (isHoldPrompt and "Hold" or "Tap");
 	end
 
 	-- Using the formatted key, get the associated prompt frame if one exists.
@@ -247,7 +263,7 @@ end
 	applies formatting that either places the prompts in a horizontal line or wraps around the legend
 	width if one is specified using the SetLegendWidth function.
 ]]
-function InputPromptLegendMixin:ApplyDefaultPromptPositioning()
+function InputPromptLegendMixin:ApplyDefaultPromptPositioning(orderedPromptFrames)
 	local ICON_SIZE = 24; -- The height and width of an icon appearing in a legend prompt
 	local STANDARD_PROMPT_PADDING = 15;
 	local STANDARD_PROMPT_BETWEEN_ROW_PADDING = 11;
@@ -262,8 +278,8 @@ function InputPromptLegendMixin:ApplyDefaultPromptPositioning()
 	local rowHeightOffset = -LEGEND_BACKGROUND_PADDING;
 	local isFirstPrompt = true;
 
-	for index, value in ipairs(self.promptFramesAddOrder) do
-		local promptFrame = self.promptFrames[value];
+	for index, value in ipairs(orderedPromptFrames or self.promptFramesAddOrder) do
+		local promptFrame = orderedPromptFrames and value or self.promptFrames[value];
 
 		if promptFrame:IsShown() then
 			if isFirstPrompt then

@@ -165,7 +165,11 @@ function TabSystemButtonMixin:Init(tabID, tabText, tabIcon)
 	self.tabIcon = tabIcon;
 
 	if tabIcon then
-		self.Icon:SetTexture(tabIcon);
+		if type(tabIcon) == "string" and C_Texture.GetAtlasInfo(tabIcon) then
+			self.Icon:SetAtlas(tabIcon);
+		else
+			self.Icon:SetTexture(tabIcon);
+		end
 		self.Icon:Show();
 		self.IconMask:Show();
 		self:SetSquareMode(true);
@@ -185,6 +189,10 @@ end
 
 function TabSystemButtonMixin:UpdateTabText()
 	local tabText = self:GetTabText();
+	if not tabText then
+		return;
+	end
+
 	local text = not self:IsForceDisabled() and tabText or DISABLED_FONT_COLOR:WrapTextInColorCode(tabText);
 	self.Text:SetText(text);
 end
@@ -347,4 +355,10 @@ function TabSystemMixin:PlayTabSelectSound()
 	if self.tabSelectSound then
 		PlaySound(self.tabSelectSound);
 	end
+end
+
+function TabSystemMixin:AddIconTab(icon, tooltipText)
+	local tabID = self:AddTab(nil, icon);
+	self:GetTabButton(tabID):SetTooltipText(tooltipText);
+	return tabID;
 end

@@ -589,6 +589,7 @@ do
 		SetQuestPartyProgress = "GetQuestPartyProgress",
 		SetHyperlink = "GetHyperlink",
 		SetUnitAura = "GetUnitAura",
+		SetMawBuff = "GetMawBuff",
 		SetUnitBuff = "GetUnitBuff",
 		SetUnitDebuff = "GetUnitDebuff",
 		SetMinimapMouseover = "GetMinimapMouseover",

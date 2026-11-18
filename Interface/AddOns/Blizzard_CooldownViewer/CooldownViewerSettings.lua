@@ -832,6 +832,7 @@ function CooldownViewerSettingsMixin:OnLoad()
 	self:SetSerializer(CreateFromMixins(CooldownViewerDataStoreSerializationMixin));
 
 	self:SetupTabs();
+	self:RegisterForTransitions();
 	self:SetupEventHandlers();
 	self:SetupSettingsMenu();
 	self:SetupPanelButtons();
@@ -899,6 +900,25 @@ function CooldownViewerSettingsMixin:MarkTabsSeen()
 			tabButton:MarkSeen();
 		end
 	end
+end
+
+function CooldownViewerSettingsMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+end
+
+function CooldownViewerSettingsMixin:SetupGamepad()
+	self.gamepadFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "CooldownViewerSettingsFooter");
+	self.gamepadFooter:AddPromptedBinding(self.SearchBox:SetupGamepadSearch());
+	self.gamepadFooter:Finalize();
+end
+
+function CooldownViewerSettingsMixin:FocusGamepad()
+	self.gamepadFooter:ShowAndActivateBindings();
+end
+
+function CooldownViewerSettingsMixin:UnfocusGamepad()
+	self.gamepadFooter:HideAndDeactivateBindings();
 end
 
 function CooldownViewerSettingsMixin:UpdateGroupBuffsTabState()

@@ -473,7 +473,7 @@ function PersonalGrowingResourceDisplayMixin:UpdateHealth()
 	-- The -13 value is how large a player's initial barrier will be when they log in
 	-- for the very first time.
 	local widthRatio = math.min(1, unmodifiedMaxHealth / self.maxHealthCap);
-	local containerWidth = math.max(1, widthRatio * self.barMaxWidth - 13);
+	local containerWidth = math.max(1, widthRatio * self.barMaxWidth);
 
 	self.previousHealth = currentHealth;
 	self.maxHealthLossPercent = maxHealthLossPercent;

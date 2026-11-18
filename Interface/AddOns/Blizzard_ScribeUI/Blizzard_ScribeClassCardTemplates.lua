@@ -280,7 +280,16 @@ end
 -- Spec based grants (i.e. a class's base spells) are only given for the current class, so the nodes
 -- of a deactivated class report no ranks. Treat those grants as applied so the tree shows what the class will provide.
 function ScribeClassTalentFrameMixin:ApplyInactiveClassGrants(nodeInfo)
-	if not nodeInfo or not nodeInfo.conditionIDs or nodeInfo.activeRank > 0 or self.classID == C_ScribeUI.GetCurrClassID() then
+	if not nodeInfo or self.classID == C_ScribeUI.GetCurrClassID() then
+		return nodeInfo;
+	end
+
+	-- Edge requirements ignore the faux grants, but a deactivated class can't be edited so its purchases are still valid.
+	if (nodeInfo.ranksPurchased or 0) > 0 then
+		nodeInfo.meetsEdgeRequirements = true;
+	end
+
+	if not nodeInfo.conditionIDs or nodeInfo.activeRank > 0 then
 		return nodeInfo;
 	end
 
@@ -303,6 +312,12 @@ function ScribeClassTalentFrameMixin:ApplyInactiveClassGrants(nodeInfo)
 		-- The tooltip evaluates the spell description from activeEntry.rank, so keep it in sync with the grant.
 		if nodeInfo.activeEntry then
 			nodeInfo.activeEntry.rank = nodeInfo.activeEntry.rank + addedRanks;
+		end
+
+		if nodeInfo.visibleEdges and nodeInfo.activeRank >= nodeInfo.maxRanks then
+			for _i, edgeInfo in ipairs(nodeInfo.visibleEdges) do
+				edgeInfo.isActive = true;
+			end
 		end
 	end
 

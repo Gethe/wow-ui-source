@@ -332,7 +332,7 @@ local function AddBankTabSettingsToTooltip(tooltip, depositFlags)
 	elseif FlagsUtil.IsSet(depositFlags, Enum.BagSlotFlags.ExpansionLegacy) then
 		GameTooltip_AddNormalLine(tooltip, BANK_TAB_EXPANSION_ASSIGNMENT:format(BANK_TAB_EXPANSION_FILTER_LEGACY));
 	end
-	
+
 	local filterList = ContainerFrameUtil_ConvertFilterFlagsToList(depositFlags);
 	if filterList then
 		local wrapText = true;
@@ -501,7 +501,7 @@ end
 
 function BankPanelItemButtonMixin:GetBankType()
 	return self.bankType;
-end 
+end
 
 function BankPanelItemButtonMixin:Init(bankType, bankTabID, containerSlotID)
 	self:SetBankType(bankType);
@@ -727,12 +727,12 @@ function BankPanelMixin:Clean()
 		return;
 	end
 
-	local hasItemSlots = self.itemButtonPool:GetNumActive() > 0;
-	if hasItemSlots then
-		self:RefreshAllItemsForSelectedTab();
-	else
-		-- Newly purchased bank tabs may need to have item slots generated
+	-- A newly purchased bank tab's slots can arrive after the tab was displayed
+	local slotCountChanged = self:GetNumSlotsForSelectedTab() ~= self.numGeneratedSlots;
+	if slotCountChanged then
 		self:GenerateItemSlotsForSelectedTab();
+	else
+		self:RefreshAllItemsForSelectedTab();
 	end
 
 	self.isDirty = false;
@@ -897,7 +897,7 @@ function BankPanelMixin:RefreshBankPanel()
 	if noTabSelected then
 		return;
 	end
-		
+
 	self:SetHeaderEnabled(true);
 	self:SetItemDisplayEnabled(true);
 	self:SetMoneyFrameEnabled(true);
@@ -990,7 +990,7 @@ function BankPanelMixin:RefreshBankTabs()
 				else
 					newBankTab:SetPoint("TOPLEFT", lastBankTab, "BOTTOMLEFT", 0, -17);
 				end
-				
+
 				newBankTab:Init(bankTabData);
 				newBankTab:Show();
 				lastBankTab = newBankTab;
@@ -1023,7 +1023,7 @@ function BankPanelMixin:GenerateAndPlaceOnePageOfItemButtons(numColumns, totalSl
 	for containerSlotID = slotIDOffset + 1, slotIDOffset + totalSlots do
 		if (ignorePages or (containerSlotID > neededOffsetToReachPage and containerSlotID <= maximumOffsetForPage)) then
 			local button = self.itemButtonPool:Acquire();
-				
+
 			local needNewRow = (containerSlotID % numColumns) == 1;
 			if isFirstButton then
 				local xOffset, yOffset = firstButtonXOffset, -63;
@@ -1050,7 +1050,7 @@ function BankPanelMixin:GenerateAndPlaceOnePageOfItemButtons(numColumns, totalSl
 				end
 				button:SetPoint("TOPLEFT", lastCreatedButton, "TOPRIGHT", xOffset, yOffset);
 			end
-			
+
 			button:Init(self.bankType, bagID, containerSlotID - slotIDOffset);
 			button:Show();
 
@@ -1073,8 +1073,21 @@ function BankPanelMixin:GetMaximumTotalSlotsPerPage()
 	return self.maximumTotalSlotsPerPage or DEFAULT_MAXIMUM_TOTAL_SLOTS_PER_PAGE;
 end
 
+function BankPanelMixin:GetNumSlotsForSelectedTab()
+	if not self.selectedTabID or self.selectedTabID == PURCHASE_TAB_ID then
+		return 0;
+	end
+
+	if C_Bank.ShouldUsePlayerBagsInBank() then
+		return self:GetTotalSlotsInAllTabs();
+	end
+
+	return C_Container.GetContainerNumSlots(self.selectedTabID);
+end
+
 function BankPanelMixin:GenerateItemSlotsForSelectedTab()
 	self.itemButtonPool:ReleaseAll();
+	self.numGeneratedSlots = self:GetNumSlotsForSelectedTab();
 
 	if not self.selectedTabID or self.selectedTabID == PURCHASE_TAB_ID then
 		EventRegistry:TriggerEvent("BankPanelMixin.PageInfoChanged", 1);
@@ -1497,7 +1510,7 @@ function BankPanelTabSettingsMenuMixin:OnNewBankTabSelected(tabID)
 	if not self:IsShown() or tabID == PURCHASE_TAB_ID then
 		return;
 	end
-	
+
 	self:SetSelectedTab(tabID);
 end
 
@@ -1822,7 +1835,7 @@ function BankCleanUpConfirmationPopupMixin:OnLoad()
 		StaticPopupSpecial_Hide(self);
 	end);
 
-	self.HidePopupCheckbox.Checkbox:SetScript("OnShow", function(self) 
+	self.HidePopupCheckbox.Checkbox:SetScript("OnShow", function(self)
 		BankPanelCheckboxMixin.OnShow(self);
 
 		-- The player may click the checkbox but then re-enable the popup in the same play session, so let's just refresh it in the OnShow

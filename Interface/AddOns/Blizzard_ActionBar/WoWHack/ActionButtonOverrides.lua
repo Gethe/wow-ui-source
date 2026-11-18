@@ -33,6 +33,7 @@ local function UpdateUltimateProgress(self)
 	local progressSwipe = ultimateDecoration.ProgressSwipe;
 	local percent = IsWoWHackUltimateAction(self.action) and C_ActionBar.GetWoWHackUltimateProgressPercent() or 100;
 	ultimateDecoration.ProgressText:SetText(PERCENTAGE_STRING:format(math.floor(percent)));
+	self:UpdateUltimateReadyState(percent >= 100);
 	if percent >= 100 then
 		progressSwipe:Hide();
 		return;
@@ -67,6 +68,9 @@ local function PlayUltimateUseAnimation(self)
 	ultimateDecoration.UseBurstFrame.Anim:Play();
 end
 
+-- Above the button art, below SpellTypeIconOverlay (+100).
+local ULTIMATE_BRANCHES_FRAME_LEVEL_OFFSET = 10;
+
 local function InitializeUltimateDecoration(self)
 	local ultimateDecoration = CreateFrame("Frame", nil, self, "WoWHackUltimateButtonDecorationTemplate");
 	self.ultimateDecoration = ultimateDecoration;
@@ -79,6 +83,11 @@ local function InitializeUltimateDecoration(self)
 	ultimateDecoration.IntroFrame:SetFrameLevel(ultimateDecoration:GetFrameLevel());
 	ultimateDecoration.ReadyLoopFrame:SetFrameLevel(ultimateDecoration:GetFrameLevel());
 	ultimateDecoration.UseBurstFrame:SetFrameLevel(ultimateDecoration:GetFrameLevel() + 1);
+
+	-- Lives on the button (not the LOW-strata decoration) so the branches draw over the button art.
+	local treeTopBranchesFrame = ultimateDecoration.TreeTopBranchesFrame;
+	treeTopBranchesFrame:SetParent(self);
+	treeTopBranchesFrame:SetFrameLevel(self:GetFrameLevel() + ULTIMATE_BRANCHES_FRAME_LEVEL_OFFSET);
 
 	-- Lives on the button (not the LOW-strata decoration) so it draws over the icon, clipped by the same mask.
 	local progressSwipe = self:CreateTexture(nil, "ARTWORK", nil, 3);
@@ -163,7 +172,7 @@ EventUtil.RegisterOnceFrameEventAndCallback("PLAYER_ENTERING_WORLD", function()
 	InitializeWoWHackUltimateActionBar();
 end);
 
-function BaseActionButtonMixin:UpdateUltimateReadyState(isUsable, notEnoughMana)
+function BaseActionButtonMixin:UpdateUltimateReadyState(isProgressReady)
 	local ultimateDecoration = self.ultimateDecoration;
 	if not ultimateDecoration then
 		return;
@@ -174,15 +183,15 @@ function BaseActionButtonMixin:UpdateUltimateReadyState(isUsable, notEnoughMana)
 		return;
 	end
 
-	if isUsable == nil or notEnoughMana == nil then
-		isUsable, notEnoughMana = C_ActionBar.IsUsableAction(self.action);
+	if isProgressReady == nil then
+		isProgressReady = C_ActionBar.GetWoWHackUltimateProgressPercent() >= 100;
 	end
 
 	local cooldownInfo = C_ActionBar.GetActionCooldown(self.action);
 	local chargeInfo = C_ActionBar.GetActionCharges(self.action);
 	local lossOfControlInfo = C_ActionBar.GetActionLossOfControlCooldownInfo(self.action);
 	local hasCharge = not chargeInfo or chargeInfo.maxCharges == 0 or chargeInfo.currentCharges > 0;
-	local isReady = isUsable and not notEnoughMana and hasCharge and not cooldownInfo.isActive and not lossOfControlInfo.isActive;
+	local isReady = isProgressReady and hasCharge and not cooldownInfo.isActive and not lossOfControlInfo.isActive;
 	ultimateDecoration.isReady = isReady;
 	if ultimateDecoration.UseBurstFrame.Anim:IsPlaying() or not ultimateDecoration:IsVisible()  then
 		StopUltimateReadyAnimations(ultimateDecoration);
@@ -416,14 +425,6 @@ function ActionBarActionButtonMixin:AddOverrideTooltipInfo()
 	local percent = math.floor(C_ActionBar.GetWoWHackUltimateProgressPercent());
 	GameTooltip:AddLine(WOWHACK_ULTIMATE_PROGRESS:format(percent), HIGHLIGHT_FONT_COLOR:GetRGB());
 	return true;
-end
-
-local actionButtonUpdateUsable = ActionBarActionButtonMixin.UpdateUsable;
-function ActionBarActionButtonMixin:UpdateUsable(action, isUsable, notEnoughMana, isLevelLinkLocked)
-	actionButtonUpdateUsable(self, action, isUsable, notEnoughMana, isLevelLinkLocked);
-	if self.UpdateUltimateReadyState then
-		self:UpdateUltimateReadyState(isUsable, notEnoughMana);
-	end
 end
 
 local actionButtonUpdateCooldown = ActionButton_UpdateCooldown;

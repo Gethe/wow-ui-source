@@ -1649,8 +1649,11 @@
 	- Footer with confirmation buttons
 *******************************************************************************
 -->
-	<Frame name="IconSelectorPopupFrameTemplate" mixin="IconSelectorPopupFrameTemplateMixin" virtual="true">
+	<Frame name="IconSelectorPopupFrameTemplate" mixin="IconSelectorPopupFrameTemplateMixin" inherits="GamepadBaseDialogTemplate, FocusFramesInterfaceTemplate" virtual="true">
 		<Size x="525" y="495"/>
+		<KeyValues>
+			<KeyValue key="layoutType" value="DialogFrameTemplate" type="string"/>
+		</KeyValues>
 		<!--
 		editBoxHeaderText: text to be used for font string just above edit box.
 		-->
@@ -1822,6 +1825,16 @@
 							<Anchor point="TOPRIGHT" x="-44" y="-68"/>
 						</Anchors>
 					</DropdownButton>
+					<Frame parentKey="DropdownIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="22" y="22"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativeKey="$parent.IconTypeDropdown" relativePoint="LEFT" x="-5" y="1" />
+						</Anchors>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame parentKey="IconSelector" inherits="ScrollBoxSelectorTemplate" frameStrata="HIGH">

@@ -551,6 +551,15 @@ local VoiceChat =
 			},
 		},
 		{
+			Name = "IsPartyLeaderInVoiceChat",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isPartyLeaderInVoiceChat", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsPlayerUsingVoice",
 			Type = "Function",
 			SecretArguments = "AllowedWhenUntainted",

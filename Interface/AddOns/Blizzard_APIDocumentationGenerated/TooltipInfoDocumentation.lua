@@ -583,6 +583,23 @@ local TooltipInfo =
 			},
 		},
 		{
+			Name = "GetMawBuff",
+			Type = "Function",
+			MayReturnNothing = true,
+			SecretArguments = "AllowedWhenUntainted",
+			Documentation = { "Returns tooltip data for the player's MAW buff at the given index." },
+
+			Arguments =
+			{
+				{ Name = "index", Type = "luaIndex", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "data", Type = "TooltipData", Nilable = false },
+			},
+		},
+		{
 			Name = "GetMerchantCostItem",
 			Type = "Function",
 			MayReturnNothing = true,

@@ -286,8 +286,8 @@
 							</KeyValues>
 							<Size x="140" y="62"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.ConfirmText" x="17" y="-12"/>
-								<Anchor point="TOPLEFT" relativeKey="$parent.ConfirmText" x="-17" y="12"/>
+								<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Text" x="17" y="-12"/>
+								<Anchor point="TOPLEFT" relativeKey="$parent.Text" x="-17" y="12"/>
 							</Anchors>
 						</Texture>
 					</Layer>
@@ -296,7 +296,7 @@
 					<ItemButton parentKey="Item" propagateMouseInput="Both">
 						<Size x="37" y="37"/>
 						<Anchors>
-							<Anchor point="RIGHT" relativeKey="$parent.ConfirmText" relativePoint="LEFT" x="-10" y="0"/>
+							<Anchor point="RIGHT" relativeKey="$parent.Text" relativePoint="LEFT" x="-10" y="0"/>
 						</Anchors>
 					</ItemButton>
 				</Frames>

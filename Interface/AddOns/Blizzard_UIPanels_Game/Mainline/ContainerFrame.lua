@@ -2903,7 +2903,6 @@ function ContainerFrameCombinedBagsMixin:OnShow()
 		RunNextFrame(function()
 			if self:IsShown() then
 				SmartNavigation:RefreshButtonGroups(self); -- Do it one frame later to avoid race conditions when opened another panel's show.
-				self:ApplySmartNavOverrideForLeftmostButton();
 			end
 		end);
 	end
@@ -3625,41 +3624,8 @@ function ContainerFrameCombinedBagsMixin:SetupGamepad()
 	self.gamepadFooter:Finalize();
 end
 
-function ContainerFrameCombinedBagsMixin:ApplySmartNavOverrideForLeftmostButton()
-	local gamepadBagButton = GamepadBagBar and GamepadBagBar:GetBagButton(BACKPACK_CONTAINER);
-	if not gamepadBagButton then
-		return;
-	end
-
-	local leftmostButton = self.Items[1];
-	if not leftmostButton then
-		return
-	end
-
-	local buttonX, buttonY = leftmostButton:GetCenter();
-	for _, button in ipairs(self.Items) do
-		local testX, testY = button:GetCenter();
-		if testX ~= nil and buttonX ~= nil then
-			if testX < buttonX then
-				leftmostButton = button;
-				buttonX = testX;
-				buttonY = testY;
-			elseif testX == buttonX then
-				if testY > buttonY then
-					leftmostButton = button;
-					buttonX = testX;
-					buttonY = testY;
-				end
-			end
-		end
-	end
-	if leftmostButton ~= gamepadBagButton then
-		SmartNavigation_AddJumpNavigationOverride(leftmostButton, SMART_NAV_INPUT_DIRECTION.UP, self.PortraitButton);
-	end
-end
-
 function ContainerFrameCombinedBagsMixin:SmartNavPanelInfoAdded(panelInfo)
-	assert(InputUtil.IsGamepadUIEnabled(), "FindTopLeftButton called outside gamepad mode!");
+	assert(InputUtil.IsGamepadUIEnabled(), "SmartNavPanelInfoAdded called outside gamepad mode!");
 	SmartNavigation:SetUseGridNavigation(self, true);
 	SmartNavigation:SetWrapping(self, true);
 	SmartNavigation:SetGridHeightCompensation(self, true);

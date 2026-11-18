@@ -610,7 +610,11 @@ end
 function WorldMapMixin:FocusDetails()
 	self:ClearBindings();
 	SmartNavigation:RefreshButtonGroups(self);
+
+	-- Clear the cached target so SelectFirstButton doesn't restore a released pooled quest button.
+	SmartNavigation:ClearLastTarget(self);
 	SmartNavigation:SelectFirstButton();
+
 	SmartNavigation:EnterFocusGroup(QUEST_FOCUS); -- Details needs to be tracked as its own state, but intentionally does not have its own focus group.
 	self.currentFocus = DETAILS_FOCUS;
 	SmartNavigation:ActivateBinding();

@@ -18,3 +18,4 @@ Blizzard_TutorialSupertrack.lua
 Blizzard_Tutorials_Managed.lua
 Blizzard_Tutorials_Managed.xml
 Blizzard_Tutorials.lua
+[Game]/Blizzard_TutorialsOverrides.lua		[AllowLoadGameType camelot]

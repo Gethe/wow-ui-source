@@ -664,6 +664,9 @@ function TruncatedTooltipFontStringMixin:OnEnterInternal(owner)
 		local tooltip = GetAppropriateTooltip();
 		tooltip:SetOwner(owner or self, "ANCHOR_RIGHT");
 		local r, g, b, a = self:GetTextColor();
+		if self.tooltipTextColor then
+			r, g, b, a = self.tooltipTextColor:GetRGBA();
+		end
 		local wordwrap = true;
 		tooltip:SetText(self:GetText(), r, g, b, a, wordwrap);
 		tooltip:Show();
@@ -1706,8 +1709,6 @@ end
 
 local IconSelectorPopupFramesShown = 0;
 
-local ICON_SELECTOR_SUBSECTION = "IconSelectorSection";
-
 function IconSelectorPopupFrameTemplateMixin:OnLoad()
 	local function IconButtonInitializer(button, selectionIndex, icon)
 		button:SetIconTexture(icon);
@@ -1747,6 +1748,11 @@ function IconSelectorPopupFrameTemplateMixin:OnShow()
 	self.BorderBox.IconSelectorEditBox:SetIconSelector(self);
 
 	self:UpdateStateFromCursorType();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.oldButton = SmartNavigation:GetCurrentButton();
+		GamepadMode.FrameControlsManager:HandlePopupShown(self);
+	end
 end
 
 -- Usually overridden by inheriting frame.
@@ -1756,8 +1762,7 @@ function IconSelectorPopupFrameTemplateMixin:OnHide()
 	self:UnregisterEvent("GLOBAL_MOUSE_UP");
 
 	if InputUtil.IsGamepadUIEnabled() then
-		self.iconSelectorFooter:HideAndDeactivateBindings();
-		SmartNavigation:LeaveFocusGroup();
+		GamepadMode.FrameControlsManager:HandlePopupHide(self);
 		if self.oldButton then
 			SmartNavigation:SelectButton(self.oldButton);
 			self.oldButton = nil;
@@ -1850,7 +1855,13 @@ end
 
 function IconSelectorPopupFrameTemplateMixin:SetSelectedIconText()
 	if ( self:GetSelectedIndex() ) then
-		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_CLICK);
+		if InputUtil.IsMKBUIEnabled() then
+			self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_CLICK);
+		else
+			local iconAtlas = InputIconTextureSetUtility.GetNormalActiveInputIconButtonTexture(GAMEPAD_STICK_RIGHT_PRESS);
+			local icon = CreateAtlasMarkup(iconAtlas, 35, 35, 0, 5);
+			self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_GAMEPAD:format(icon));
+		end
 		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetFontObject(GameFontHighlightSmall);
 	else
 		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_NOTINLIST);
@@ -1922,24 +1933,22 @@ function IconSelectorPopupFrameTemplateMixin:ExitIconSelector()
 	self:Hide();
 end
 
---[[
-	Specifying a focus group owner frame will update the active frame to the focus group owner and then focus the group.
-	If not specified, the current SmartNav focused frame will be used.
-	
-	Specifying a return button will use the specified value as the button to return to. If not specified, the current 
-	SmartNav button will be used.
-]]
-function IconSelectorPopupFrameTemplateMixin:GiveGamepadFocus(optionalFocusGroupOwnerFrame, optionalReturnButton)
-	if (optionalReturnButton) then
+-- Optionally override the button to restore when this popup closes.
+function IconSelectorPopupFrameTemplateMixin:GiveGamepadFocus(_optionalFocusGroupOwnerFrame, optionalReturnButton)
+	if optionalReturnButton then
 		self.oldButton = optionalReturnButton;
-	else
-		self.oldButton = SmartNavigation:GetCurrentButton();
 	end
 
-	SmartNavigation:EnterFocusGroup(ICON_SELECTOR_SUBSECTION, optionalFocusGroupOwnerFrame);
+	self:SelectCurrentIconForGamepad();
+end
+
+function IconSelectorPopupFrameTemplateMixin:SelectCurrentIconForGamepad()
 	local currentIndex = self:GetSelectedIndex();
 
 	if currentIndex then
+		self.IconSelector:ScrollToElementDataIndex(currentIndex, ScrollBoxConstants.AlignCenter, 0, true);
+		SmartNavigation:RefreshButtonGroups();
+
 		local firstButton = nil;
 		for button in self.IconSelector:EnumerateButtons() do
 			if button:GetSelectionIndex() == currentIndex then
@@ -1952,20 +1961,45 @@ function IconSelectorPopupFrameTemplateMixin:GiveGamepadFocus(optionalFocusGroup
 			SmartNavigation:SelectButton(firstButton);
 		end
 	end
+end
+
+function IconSelectorPopupFrameTemplateMixin:FocusGamepad()
 	self.iconSelectorFooter:ShowAndActivateBindings();
+
+	SmartNavigation:SetScrollFrameForFrame(self, self.IconSelector.ScrollBox);
+	GamepadScrollBarHint:SetOwner(self.IconSelector.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+	self:SelectCurrentIconForGamepad();
+end
+
+function IconSelectorPopupFrameTemplateMixin:UnfocusGamepad()
+	self.iconSelectorFooter:HideAndDeactivateBindings();
+	SmartNavigation:SetScrollFrameForFrame(self, nil);
+	GamepadScrollBarHint:Hide();
 end
 
 function IconSelectorPopupFrameTemplateMixin:SetupGamepad()
-	SmartNavigation_MarkFrameSubSection(self, ICON_SELECTOR_SUBSECTION);
-	
+	local function OpenFilterDropdown()
+		self.BorderBox.IconTypeDropdown:OpenMenu();
+	end
+
+	local function ViewIconInList()
+		self.BorderBox.SelectedIconArea.SelectedIconButton:Click();
+	end
+
 	local selectIcon =  GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, GenerateClosure(SmartNavigation.Click, SmartNavigation), ACTION_LABEL_SELECT);
+	local viewInList = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, ViewIconInList, FRAME_ACTION_VIEW_ICON_IN_LIST);
 	local confirmSelection = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.ConfirmIcon, self), FRAME_ACTION_CONFIRM);
 	local exitSelection = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.ExitIconSelector, self), FRAME_ACTION_EXIT);
+	local openFilter = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, OpenFilterDropdown, nil);
+	openFilter:SetCustomPromptFrame(self.BorderBox.DropdownIcon);
 
 	self.iconSelectorFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "IconSelectorFooter");
 	self.iconSelectorFooter:AddPromptedBinding(selectIcon);
+	self.iconSelectorFooter:AddPromptedBinding(viewInList);
 	self.iconSelectorFooter:AddPromptedBinding(confirmSelection);
 	self.iconSelectorFooter:AddPromptedBinding(exitSelection);
+	self.iconSelectorFooter:AddPromptedBinding(openFilter);
 	self.iconSelectorFooter:Finalize();
 end
 
@@ -2005,11 +2039,16 @@ function SelectedIconButtonMixin:GetIconTexture()
 end
 
 function SelectedIconButtonMixin:OnClick()
-	if ( self:GetIconSelectorPopupFrame():GetSelectedIndex() == nil ) then
+	local popupFrame = self:GetIconSelectorPopupFrame();
+	if ( popupFrame:GetSelectedIndex() == nil ) then
 		return;
 	end
 
-	self:GetIconSelectorPopupFrame().IconSelector:ScrollToSelectedIndex();
+	if InputUtil.IsGamepadUIEnabled() then
+		popupFrame:SelectCurrentIconForGamepad();
+	else
+		popupFrame.IconSelector:ScrollToSelectedIndex();
+	end
 end
 
 function SelectedIconButtonMixin:GetIconSelectorPopupFrame()

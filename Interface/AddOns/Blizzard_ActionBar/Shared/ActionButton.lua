@@ -1218,6 +1218,11 @@ function ActionBarActionButtonMixin:PlaySpellCastAnim(actionButtonCastType, prog
 		return;
 	end
 
+	-- Re-running Setup on a playing anim restarts it, which flickers on buttons that refresh often (Single-Button Assistant).
+	if (progressToCurrentElapsed and self.actionButtonCastType == actionButtonCastType and self.SpellCastAnimFrame.Fill.CastingAnim:IsPlaying()) then
+		return;
+	end
+
 	self.cooldown:SetSwipeColor(0, 0, 0, 0);
 	self.hideCooldownFrame = true;
 	self:ClearInterruptDisplay();
@@ -1420,12 +1425,12 @@ function ActionBarActionButtonMixin:TriggerSecureClick(button, down)
 	SecureActionButton_OnClick(self, button, down, isKeyPress, isSecureAction);
 end
 
-function ActionBarActionButtonMixin:HandleInsufficientResourceFlash(down) 
+function ActionBarActionButtonMixin:HandleInsufficientResourceFlash(down)
 	if down and C_GameRules.IsGameRuleActive(Enum.GameRule.FlashActionButtonOnInsufficientResource) and self.action then
 		if IsActionLackingRequirements(self.action) then
 			if not self.InsufficientResourceFlash:IsShown() then
 				self.InsufficientResourceFlash:Show();
-				C_Timer.After(0.5, function() 
+				C_Timer.After(0.5, function()
 					self.InsufficientResourceFlash:Hide();
 				end);
 			end
@@ -1870,8 +1875,6 @@ function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType, progressT
 	local castingAnim = self.Fill.CastingAnim;
 	local finishCastAnim = self.EndBurst.FinishCastAnim;
 
-	local castingAnimCurrentElapsed = castingAnim:GetElapsed();
-
 	castingAnim:Stop();
 	finishCastAnim:Stop();
 	self:SetupAnimAtlases(isChannelCast);
@@ -1886,8 +1889,9 @@ function ActionButtonCastingAnimFrameMixin:Setup(actionButtonCastType, progressT
 
 	castingAnim.CastFillTranslation:SetDuration(totalTimeInSeconds);
 
-	if (progressToCurrentElapsed) then
-		castingAnim:Play(false, castingAnimCurrentElapsed);
+	if (progressToCurrentElapsed and startTime) then
+		local castElapsed = GetTime() - (startTime / 1000);
+		castingAnim:Play(false, castElapsed);
 	else
 		castingAnim:Play();
 	end

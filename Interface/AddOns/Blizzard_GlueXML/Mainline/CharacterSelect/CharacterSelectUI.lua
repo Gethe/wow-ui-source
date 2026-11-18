@@ -53,7 +53,6 @@ function CharacterSelectUIMixin:OnLoad()
 	end
 	self.VisibilityToggleButton:SetScript("OnClick", VisibilityToggleOnClick);
 
-	self.LoadedOverlayFrameCharacterIDs = {};
 	self.CharacterHeaderFramePool = CreateFramePool("BUTTON", self, "CharacterHeaderFrameTemplate", nil);
 	self.CharacterFooterFramePool = CreateFramePool("FRAME", self.VisibilityFramesContainer, "CharacterFooterFrameTemplate", nil);
 	self.headerFrames = {};
@@ -412,26 +411,18 @@ function CharacterSelectUIMixin:ShowModelFFX()
 	self:ReleaseCharacterOverlayFrames();
 end
 
-
 function CharacterSelectUIMixin:SetupCharacterOverlayFrames()
 	if self.MapScene:IsShown() and not self.FadeInBackground:IsShown() then
 		self:ReleaseCharacterOverlayFrames();
-		if #self.LoadedOverlayFrameCharacterIDs > 0 then
-			for _, characterID in ipairs(self.LoadedOverlayFrameCharacterIDs) do
-				self:SetupOverlayFrameForCharacter(characterID);
-			end
-			self.LoadedOverlayFrameCharacterIDs = {};
-		else
-			local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
-			local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
-				return CharacterSelectListUtil.ContainsCharacterID(selectedCharacterID, elementData);
-			end);
+		local selectedCharacterID = CharacterSelectListUtil.GetCharIDFromIndex(CharacterSelect.selectedIndex);
+		local elementData = CharacterSelectCharacterFrame.ScrollBox:FindElementDataByPredicate(function(elementData)
+			return CharacterSelectListUtil.ContainsCharacterID(selectedCharacterID, elementData);
+		end);
 
-			if elementData and elementData.isGroup then
-				for _, childElementData in ipairs(elementData.characterData) do
-					if not childElementData.isEmpty then
-						self:SetupOverlayFrameForCharacter(childElementData.characterID);
-					end
+		if elementData and elementData.isGroup then
+			for _, childElementData in ipairs(elementData.characterData) do
+				if not childElementData.isEmpty then
+					self:SetupOverlayFrameForCharacter(childElementData.characterID);
 				end
 			end
 		end
@@ -519,9 +510,7 @@ function CharacterSelectUIMixin:SetupOverlayFrameForCharacter(characterID)
 end
 
 function CharacterSelectUIMixin:MapSceneModelLoaded(characterID)
-	if self.FadeInBackground:IsShown() then
-		table.insert(self.LoadedOverlayFrameCharacterIDs, characterID);
-	else
+	if not self.FadeInBackground:IsShown() then
 		self:SetupOverlayFrameForCharacter(characterID);
 	end
 end

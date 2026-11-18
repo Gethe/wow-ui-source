@@ -228,17 +228,29 @@ for _, key in ipairs({"Generic", "Letters"}) do
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Active, "gamepad-xbox1-stick-l3-focus");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Disabled, "gamepad-xbox1-stick-l3-disabled");
 
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Normal, "gamepad-xbox1-stick-l-updown-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Hover, "gamepad-xbox1-stick-l-updown-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Pressed, "gamepad-xbox1-stick-l-updown-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Active, "gamepad-xbox1-stick-l-updown-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Disabled, "gamepad-xbox1-stick-l-updown-disabled");
+
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Normal, "gamepad-xbox1-stick-leftright-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Hover, "gamepad-xbox1-stick-leftright-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Pressed, "gamepad-xbox1-stick-leftright-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Active, "gamepad-xbox1-stick-leftright-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Disabled, "gamepad-xbox1-stick-leftright-disabled");
+
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Normal, "gamepad-xbox1-stick-updown-normal");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Hover, "gamepad-xbox1-stick-updown-over");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Pressed, "gamepad-xbox1-stick-updown-down");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Active, "gamepad-xbox1-stick-updown-focus");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Disabled, "gamepad-xbox1-stick-updown-disabled");
 
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Normal, "gamepad-xbox1-stickr-leftright-normal");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Hover, "gamepad-xbox1-stickr-leftright-over");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Pressed, "gamepad-xbox1-stickr-leftright-down");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Active, "gamepad-xbox1-stickr-leftright-focus");
-	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Disabled, "gamepad-xbox1-stickr-leftright-disabled");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Normal, "gamepad-xbox1-stick-r-leftright-normal");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Hover, "gamepad-xbox1-stick-r-leftright-over");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Pressed, "gamepad-xbox1-stick-r-leftright-down");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Active, "gamepad-xbox1-stick-r-leftright-focus");
+	iconSet:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_HORIZONTAL, InputIconTextureState.Disabled, "gamepad-xbox1-stick-r-leftright-disabled");
 
 	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Normal, "gamepad-xbox1-menu-normal");
 	iconSet:SetInputIconTextureForKey(GAMEPAD_MENU_RIGHT, InputIconTextureState.Hover, "gamepad-xbox1-menu-over");
@@ -374,6 +386,18 @@ do
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Pressed, "gamepad-ps-stickl3-down");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Active, "gamepad-ps-stickl3-focus");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Disabled, "gamepad-ps-stickl3-disabled");
+
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Normal, "gamepad-ps-stickl-updown-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Hover, "gamepad-ps-stickl-updown-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Pressed, "gamepad-ps-stickl-updown-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Active, "gamepad-ps-stickl-updown-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Disabled, "gamepad-ps-stickl-updown-disabled");
+
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Normal, "gamepad-ps-stickl-leftright-normal");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Hover, "gamepad-ps-stickl-leftright-over");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Pressed, "gamepad-ps-stickl-leftright-down");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Active, "gamepad-ps-stickl-leftright-focus");
+	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Disabled, "gamepad-ps-stickl-leftright-disabled");
 
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Normal, "gamepad-ps-stickr-updown-normal");
 	shapes:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Hover, "gamepad-ps-stickr-updown-over");
@@ -521,6 +545,18 @@ do
 	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-l3-pressed");
 	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Active, "gamepad-switch-128x-stick-l3-selected");
 	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_PRESS, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-l3-disabled");
+
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Normal, "gamepad-switch-128x-stick-l-updown-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Hover, "gamepad-switch-128x-stick-l-updown-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-l-updown-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Active, "gamepad-switch-128x-stick-l-updown-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_VERTICAL, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-l-updown-disabled");
+
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Normal, "gamepad-switch-128x-stick-l-leftright-normal");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Hover, "gamepad-switch-128x-stick-l-leftright-hover");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Pressed, "gamepad-switch-128x-stick-l-leftright-pressed");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Active, "gamepad-switch-128x-stick-l-leftright-selected");
+	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_LEFT_HORIZONTAL, InputIconTextureState.Disabled, "gamepad-switch-128x-stick-l-leftright-disabled");
 
 	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Normal, "gamepad-switch-128x-stick-r-updown-normal");
 	reverse:SetInputIconTextureForKey(GAMEPAD_STICK_RIGHT_VERTICAL, InputIconTextureState.Hover, "gamepad-switch-128x-stick-r-updown-hover");

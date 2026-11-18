@@ -12,7 +12,8 @@ function GameTutorials:OnTutorialsInit()
 end
 
 function GameTutorials:OnTutorialsEnabled()
-	if C_AddOns.IsAddOnLoaded("Blizzard_NewPlayerExperience") then
+	-- NPE can be loaded but shut down (e.g. achievement already earned), so check that it's actually running.
+	if NewPlayerExperience and NewPlayerExperience:GetIsActive() then
 		return;
 	end
 
@@ -20,7 +21,7 @@ function GameTutorials:OnTutorialsEnabled()
 	AddFrameTutorials(); --Misc tutorials
 	AddDragonridingTutorials();
 	AddPerksProgramTutorials();
-	
+
 
 	if CanShowProfessionEquipmentTutorial() then
 		TutorialManager:AddTutorial(Class_EquipProfessionGear:new());

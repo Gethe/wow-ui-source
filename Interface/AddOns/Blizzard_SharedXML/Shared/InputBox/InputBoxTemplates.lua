@@ -210,6 +210,64 @@ function SearchBoxTemplateClearButton_OnClick(self)
 	SearchBoxTemplate_ClearText(self:GetParent());
 end
 
+SearchBoxGamepadMixin = {};
+
+-- Gamepad only. Returns the binding that focuses the search box; add it to the owning frame's footer.
+function SearchBoxGamepadMixin:SetupGamepadSearch()
+	local icon = CreateFrame("Frame", nil, self:GetParent(), "InputIconTextureFrameTemplate");
+	icon:SetInputKey(GAMEPAD_MENU_LEFT);
+	icon:SetSize(22, 22);
+	icon:SetPoint("RIGHT", self, "LEFT", -7, 0);
+	icon:Hide();
+
+	local function ClearText()
+		self:SetText("");
+		self:SetFocus();
+	end
+
+	local function HasText()
+		return self:GetText() ~= "";
+	end
+
+	local function Back()
+		self:ClearFocus();
+	end
+
+	local clear = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, ClearText, NARRATION_OBJECT_CLEAR_BUTTON);
+	clear:AddCondition(HasText);
+	local back = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, Back, BACK);
+	local unfocusSearch = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, Back, nil);
+	unfocusSearch:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.NEVER);
+
+	local footerName = (self:GetParentKey() or "") .. "GamepadSearchFooter";
+	local footer = GamepadSharedUtility.CreatePromptedBindingFooter(self:GetParent(), footerName);
+	footer:AddStandardSelectPrompt(SEARCH);
+	footer:AddPromptedBinding(clear);
+	footer:AddPromptedBinding(back);
+	footer:AddPromptedBinding(unfocusSearch);
+	footer:Finalize();
+
+	SmartNavigation_MarkFrameIgnored(self.clearButton);
+
+	self:HookScript("OnEditFocusGained", function()
+		GamepadMode.FrameControlsManager:SuspendFrame();
+		GamepadMode.FrameControlsManager:FrameShown(self);
+		footer:ShowAndActivateBindings();
+	end);
+
+	self:HookScript("OnEditFocusLost", function()
+		footer:HideAndDeactivateBindings();
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+		GamepadMode.FrameControlsManager:UnsuspendFrame();
+	end);
+
+	GamepadMode.FrameControlsManager:DisableFrameFocusPagingWhenFocused(self);
+
+	local enterSearchBox = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, GenerateClosure(self.SetFocus, self), nil);
+	enterSearchBox:SetCustomPromptFrame(icon);
+	return enterSearchBox;
+end
+
 ClearButtonMixin = {};
 
 function ClearButtonMixin:OnEnter()

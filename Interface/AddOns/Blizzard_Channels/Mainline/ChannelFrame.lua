@@ -45,6 +45,7 @@ do
 		self:RegisterEvent("VOICE_CHAT_CHANNEL_TRANSCRIBING_CHANGED");
 		self:RegisterEvent("VOICE_CHAT_ERROR");
 		self:RegisterEvent("GROUP_FORMED");
+		self:RegisterEvent("GROUP_JOINED");
 		self:RegisterEvent("GROUP_LEFT");
 		self:RegisterEvent("CLUB_ADDED");
 		self:RegisterEvent("CLUB_REMOVED");
@@ -354,6 +355,8 @@ function ChannelFrameMixin:OnEvent(event, ...)
 		self:OnVoiceChatError(...);
 	elseif event == "GROUP_FORMED" then
 		self:OnGroupFormed(...);
+	elseif event == "GROUP_JOINED" then
+		self:OnGroupJoined(...);
 	elseif event == "GROUP_LEFT" then
 		self:OnGroupLeft(...);
 	elseif event == "LFG_LIST_ACTIVE_ENTRY_UPDATE" then
@@ -898,6 +901,18 @@ function ChannelFrameMixin:OnGroupFormed(partyCategory, partyGUID)
 	self:TryPromptGroupVoiceChat();
 end
 
+function ChannelFrameMixin:OnGroupJoined(partyCategory, partyGUID)
+	if partyCategory ~= LE_PARTY_CATEGORY_HOME then
+		return;
+	end
+
+	-- Active LFG listings will already cause the voice chat prompt to come up, but in this case
+	-- we only want to pop it if there is no LFG listing AND the party leader is in voice chat.
+	if not C_LFGList.HasActiveEntryInfo() and C_VoiceChat.IsPartyLeaderInVoiceChat() then
+		self:TryPromptGroupVoiceChat();
+	end
+end
+
 function ChannelFrameMixin:OnLFGListActiveEntryUpdate()
 	if C_LFGList.HasActiveEntryInfo() then
 		self:UnregisterEvent("LFG_LIST_ACTIVE_ENTRY_UPDATE");
@@ -911,9 +926,14 @@ function ChannelFrameMixin:TryPromptGroupVoiceChat()
 	end
 
 	local activeEntryInfo = C_LFGList.GetActiveEntryInfo();
-	local voiceMode = activeEntryInfo and activeEntryInfo.voiceMode;
-	if voiceMode ~= Enum.LFGEntryVoiceMode.Discord and voiceMode ~= Enum.LFGEntryVoiceMode.Legacy then
-		return;
+	local partyLeaderInVoice = C_VoiceChat.IsPartyLeaderInVoiceChat();
+
+	-- A leader already in voice is reason enough to prompt; otherwise the listing has to ask for voice.
+	if not partyLeaderInVoice then
+		local voiceMode = activeEntryInfo and activeEntryInfo.voiceMode;
+		if voiceMode ~= Enum.LFGEntryVoiceMode.Discord and voiceMode ~= Enum.LFGEntryVoiceMode.Legacy then
+			return;
+		end
 	end
 
 	if UnitIsGroupLeader("player") then

@@ -4,10 +4,14 @@ local STAT_LINE_ENTRIES = WoWHackCharacterStats.Entries;
 local CHARACTER_STAT_LIST_EVENTS = {
 	"UNIT_MAXHEALTH",
 	"UNIT_MAXPOWER",
+	"PLAYER_DAMAGE_DONE_MODS",
+	-- Aura-point stats (crit damage, guard, absorb, evade) are hidden from UNIT_AURA.
+	"WOW_HACK_STAT_POINTS_CHANGED",
 };
 
 local CHARACTER_STAT_LIST_UNIT_EVENTS = {
 	"UNIT_STATS",
+	"UNIT_ATTACK_POWER",
 };
 
 CharacterStatListMixin = CreateFromMixins(CharacterSheetListMixin);

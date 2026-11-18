@@ -66,6 +66,8 @@ function GenericTraitFrameMixin:ApplyLayout(layoutInfo)
 	self:SetCardTemplateCallback(layoutInfo.CardTemplateCallback or nil);
 	self.OnEnterDisplayCallback = layoutInfo.OnEnterDisplayCallback;
 	self.OnLeaveDisplayCallback = layoutInfo.OnLeaveDisplayCallback;
+	self.OnConfigCommittedCallback = layoutInfo.OnConfigCommittedCallback;
+	self.OnConfigCommitFailedCallback = layoutInfo.OnConfigCommitFailedCallback;
 	self.OnShowCallback = layoutInfo.OnShowCallback;
 	self.OnHideCallback = layoutInfo.OnHideCallback;
 	self.hideUndiscoveredNodes = not not layoutInfo.HideUndiscoveredNodes;
@@ -126,7 +128,23 @@ function GenericTraitFrameMixin:OnEvent(event, ...)
 
 	if event == "TRAIT_SYSTEM_NPC_CLOSED" then
 		HideUIPanel(self);
+	elseif event == "CONFIG_COMMIT_FAILED" then
+		local configID = ...;
+		if self.OnConfigCommitFailedCallback and configID == self:GetConfigID() then
+			self.OnConfigCommitFailedCallback(configID);
+		end
 	end
+end
+
+function GenericTraitFrameMixin:CommitConfigInternal()
+	-- Overrides TalentFrameBaseMixin.
+
+	local success = TalentFrameBaseMixin.CommitConfigInternal(self);
+	if success and self.OnConfigCommittedCallback then
+		self.OnConfigCommittedCallback(self:GetConfigID());
+	end
+
+	return success;
 end
 
 function GenericTraitFrameMixin:SetConfigIDBySystemID(systemID)

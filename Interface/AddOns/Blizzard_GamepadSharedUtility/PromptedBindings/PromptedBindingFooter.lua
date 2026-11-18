@@ -31,6 +31,8 @@ local KEYS_IN_SORT_ORDER =
 	GAMEPAD_SHOULDER_LEFT,
 	GAMEPAD_SHOULDER_RIGHT,
 	GAMEPAD_STICK_LEFT,
+	GAMEPAD_STICK_LEFT_VERTICAL,
+	GAMEPAD_STICK_LEFT_HORIZONTAL,
 	GAMEPAD_STICK_LEFT_PRESS,
 	GAMEPAD_STICK_RIGHT,
 	GAMEPAD_STICK_RIGHT_VERTICAL,
@@ -51,6 +53,7 @@ function PromptedBindingFooterMixin:Init(parentFrame, debugName)
 	self.xOffset = 0;
 	self.yOffset = 0;
 	self.disallowButtonContexts = false;
+	self.hideBackgroundArt = false;
 
 	self.promptedBindings = {};
 	self.promptedBindingsByKey = {};
@@ -158,6 +161,10 @@ function PromptedBindingFooterMixin:SetCustomAnchor(anchor)
 	self.customAnchor = anchor;
 end
 
+function PromptedBindingFooterMixin:SetBackgroundArtHidden()
+	self.hideBackgroundArt = true;
+end
+
 -- Call this after adding all required prompted bindings to the footer. This generates the visual data and begins listening for refresh events.
 function PromptedBindingFooterMixin:Finalize()
 	self:GeneratePromptedBindingsByKey();
@@ -219,26 +226,39 @@ function PromptedBindingFooterMixin:IsBindingGroupRequired()
 	return false;
 end
 
-function PromptedBindingFooterMixin:GetPromptedBindingToDisplayForKey(key)
+function PromptedBindingFooterMixin:GetPromptedBindingsToDisplayForKey(key)
 	local bindingsForKey = self.promptedBindingsByKey[key];
 	if bindingsForKey then
-		-- Iterate through the list of binds using this key, which is already sorted by highest priority.
+		local foundBindingsByType = {};
+		local foundBindings = {};
+
+		-- Allow one footer-hold prompt and one prompt without a footer hold per key, preserving priority within each type.
 		for _, promptedBinding in ipairs(bindingsForKey) do
-			-- The first one that is valid will always be what we want to show.
-			if promptedBinding:IsAnyConditionMet() then
-				return promptedBinding;
+			local isHoldPrompt = promptedBinding:IsFooterHoldPrompt();
+			if not foundBindingsByType[isHoldPrompt] and promptedBinding:IsAnyConditionMet() then
+				foundBindingsByType[isHoldPrompt] = promptedBinding;
 			end
 		end
 
-		-- If none are available, again going by priority find the first one that should show while unavailable.
+		-- If a prompt type has no available binding, fall back to its first always-visible entry.
 		for _, promptedBinding in ipairs(bindingsForKey) do
-			if promptedBinding:IsAnyBindingAlwaysVisible() then
-				return promptedBinding;
+			local isHoldPrompt = promptedBinding:IsFooterHoldPrompt();
+			if not foundBindingsByType[isHoldPrompt] and promptedBinding:IsAnyBindingAlwaysVisible() then
+				foundBindingsByType[isHoldPrompt] = promptedBinding;
 			end
 		end
+
+		-- Display the tap prompt before the hold prompt for the same key.
+		for _, isHoldPrompt in ipairs({ false, true }) do
+			if foundBindingsByType[isHoldPrompt] then
+				table.insert(foundBindings, foundBindingsByType[isHoldPrompt]);
+			end
+		end
+
+		return foundBindings;
 	end
 
-	return nil;
+	return {};
 end
 
 -- If the input legend was repositioned manually, this can be called to reset its default anchoring.
@@ -261,6 +281,10 @@ function PromptedBindingFooterMixin:ApplyInputLegendAttachment()
 		if self.overflowType == PromptedBindingFooterMixin.OVERFLOW_TYPE.WRAP then
 			self.inputLegend:SetLegendWidth(self.parentFrame:GetWidth());
 		end
+
+		if self.hideBackgroundArt then
+			self.inputLegend:HideBackgroundArt();
+		end
 	end
 end
 
@@ -268,8 +292,7 @@ function PromptedBindingFooterMixin:RefreshPromptedBindingsActive()
 	self.promptedBindingsActive = {};
 
 	for _, key in ipairs(KEYS_IN_SORT_ORDER) do
-		local foundBinding = self:GetPromptedBindingToDisplayForKey(key);
-		if foundBinding then
+		for _, foundBinding in ipairs(self:GetPromptedBindingsToDisplayForKey(key)) do
 			table.insert(self.promptedBindingsActive, foundBinding);
 		end
 	end
@@ -280,31 +303,29 @@ function PromptedBindingFooterMixin:RefreshInputLegend()
 	if not self.inputLegend then
 		self.inputLegend = InputPromptLegends.CreateInputLegend(self.parentFrame, self.debugName .. "inputLegend", self.useWideBackground);
 		self:ApplyInputLegendAttachment();
-
-		-- TODO(mwinkler):
-		-- This is only needed so that the `InputLegend` uses the order that we desire since it orders items based on frame creation and
-		-- frames get reused if they already exist inside the `InputLegend` map.
-		-- Find a better way to provide a sort order to the `InputLegend` when it applies the frame positioning.
-		for _, key in ipairs(KEYS_IN_SORT_ORDER) do
-			local promptedBindings = self.promptedBindingsByKey[key]; -- Use a lookup because values in this table will not be iterated in sort order.
-			if promptedBindings then
-				local promptedBinding = promptedBindings[1];
-				local template = promptedBinding:GetInputIconTemplate();
-				if template then
-					self.inputLegend:GetOrCreatePromptFrameUsingTemplateAndInputs(template.name,
-																				  promptedBinding:GetDisplayKeys(),
-																				  GAMEPAD_PROMPT_DIVIDER_SLASH);
-				end
-			end
-		end
 	end
 
 	local promptedBindingsInFooter = {};
+	local holdFooterPrompts = {};
+	local backFooterPrompts = {};
 	for _, promptedBinding in ipairs(self.promptedBindingsActive) do
 		local showInFooter = promptedBinding:ShouldShowFooterBinding();
 		if showInFooter then
-			table.insert(promptedBindingsInFooter, promptedBinding);
+			if promptedBinding:GetKeyForIndex(1) == GAMEPAD_FACE_RIGHT then
+				table.insert(backFooterPrompts, promptedBinding);
+			elseif promptedBinding:IsFooterHoldPrompt() then
+				table.insert(holdFooterPrompts, promptedBinding);
+			else
+				table.insert(promptedBindingsInFooter, promptedBinding);
+			end
 		end
+	end
+	-- Keep key order within each group: taps first, holds next, and back prompts always last.
+	for _, promptedBinding in ipairs(holdFooterPrompts) do
+		table.insert(promptedBindingsInFooter, promptedBinding);
+	end
+	for _, promptedBinding in ipairs(backFooterPrompts) do
+		table.insert(promptedBindingsInFooter, promptedBinding);
 	end
 	self.inputLegend:RefreshWithPromptedBindings(promptedBindingsInFooter);
 
@@ -344,9 +365,9 @@ function PromptedBindingFooterMixin:RefreshBindingGroup()
 					up and down events).
 				]]
 				self.bindings:AddFunctionBinding(key,
-												 GenerateClosure(promptedBinding.TriggerBinding, promptedBinding, index),
-												 GAMEPAD_BUTTON_ANY_DOWN_OR_UP,
-												 GenerateFlatClosure(promptedBinding.OnOverbound, promptedBinding, index));
+					GenerateClosure(promptedBinding.TriggerBinding, promptedBinding, index),
+					GAMEPAD_BUTTON_ANY_DOWN_OR_UP,
+					GenerateFlatClosure(promptedBinding.OnOverbound, promptedBinding, index));
 			end
 		end
 	end
@@ -419,6 +440,7 @@ function GamepadSharedUtility.ShowSuspendFooterOnFrame(frame)
 	local xOffset = 0;
 	local yOffset = 0;
 	local customAnchor;
+	local hideBackgroundArt = false;
 
 	if copyFooter then
 		parentFrame = copyFooter.parentFrame;
@@ -427,6 +449,7 @@ function GamepadSharedUtility.ShowSuspendFooterOnFrame(frame)
 		xOffset = copyFooter.xOffset;
 		yOffset = copyFooter.yOffset;
 		customAnchor = copyFooter.customAnchor;
+		hideBackgroundArt = copyFooter.hideBackgroundArt;
 	end
 
 	footer:SetParentFrame(parentFrame);
@@ -434,6 +457,7 @@ function GamepadSharedUtility.ShowSuspendFooterOnFrame(frame)
 	footer:SetOverflowType(overflowType);
 	footer:SetAnchorOffsets(xOffset, yOffset);
 	footer:SetCustomAnchor(customAnchor);
+	footer:SetBackgroundArtHidden(hideBackgroundArt);
 	footer:ApplyInputLegendAttachment();
 	footer:ShowAndActivateBindings();
 end

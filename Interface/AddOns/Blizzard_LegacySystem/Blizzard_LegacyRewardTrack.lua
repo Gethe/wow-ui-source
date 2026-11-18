@@ -26,18 +26,25 @@ end
 
 function LegacyRewardTrackPageMixin:RefreshPoints(currencyInfo)
 	self.Points:SetText(currencyInfo.renownCurrency);
+
+	-- Earning points can unlock rewards and move the progress bar while the page is already open;
+	-- force the track to re-render instead of waiting for the next OnShow.
+	if self:IsShown() and self:Refresh() then
+		local progressFrame = self.LegacyRewardProgressFrame;
+		progressFrame:SetSelection(progressFrame.selectedIndex, true);
+	end
 end
 
 function LegacyRewardTrackPageMixin:IsScrollingTrack()
-	return #self.renownLevelsInfo > MAX_STATIC_ITEMS;
+	return #self.rewardTrackLevelsInfo > MAX_STATIC_ITEMS;
 end
 
 function LegacyRewardTrackPageMixin:SetupRewardTrack()
-	self.renownLevelsInfo = C_MajorFactions.GetRenownLevels(self.majorFactionData.factionID);
-	self.maxLevel = self.majorFactionData.maxLevel;
+	self.rewardTrackLevelsInfo = C_LegacySystem.GetLegacyRewardTrackLevels();
+	self.maxLevel = self.legacySystemData.maxLevel;
 
-	for level, levelInfo in ipairs(self.renownLevelsInfo) do
-		levelInfo.rewardInfo = C_MajorFactions.GetRenownRewardsForLevel(self.majorFactionData.factionID, levelInfo.level);
+	for level, levelInfo in ipairs(self.rewardTrackLevelsInfo) do
+		levelInfo.rewardInfo = C_LegacySystem.GetLegacyRewardTrackRewardsForLevel(levelInfo.level);
 	end
 
 	self:GamepadSetupRewardTrack_Pre();
@@ -45,7 +52,7 @@ function LegacyRewardTrackPageMixin:SetupRewardTrack()
 	local isScrollingTrack = self:IsScrollingTrack() and InputUtil.IsMKBUIEnabled();
 	local progressFrame = self.LegacyRewardProgressFrame;
 	progressFrame:SetCenteringEnabled(isScrollingTrack);
-	progressFrame:Init(self.renownLevelsInfo, self.majorFactionData.paragonInfo);
+	progressFrame:Init(self.rewardTrackLevelsInfo);
 	progressFrame.LeftButton:SetShown(isScrollingTrack);
 	progressFrame.RightButton:SetShown(isScrollingTrack);
 	progressFrame.JumpLeftButton:SetShown(isScrollingTrack);
@@ -159,37 +166,29 @@ function LegacyRewardTrackPageMixin:SelectLevel(level, forceRefresh)
 end
 
 function LegacyRewardTrackPageMixin:GetLevels()
-	local renownLevel = C_MajorFactions.GetCurrentRenownLevel(self.majorFactionData.factionID);
-	self.actualLevel = renownLevel;
+	local legacyPoints = C_LegacySystem.GetCurrentLegacyPoints();
+	self.actualLevel = legacyPoints;
 	self.displayLevel = self.actualLevel;
 end
 
 function LegacyRewardTrackPageMixin:Refresh()
-	-- Can be nil if faction data isn't available yet.
-	self.majorFactionData = C_MajorFactions.GetMajorFactionData(Constants.LegacyConsts.LEGACY_REWARD_TRACK_FACTION_ID);
-	if not self.majorFactionData then
-		return false;
-	end
+	self.legacySystemData = C_LegacySystem.GetLegacyRewardTrackData();
 
 	self:GetLevels();
 
 	self:SetupRewardTrack();
-	if self.majorFactionData.isUnlocked and not C_MajorFactions.IsMajorFactionHiddenFromExpansionPage(self.majorFactionData.factionID) then
-		self:SetupProgressDetails();
-	end
+	self:SetupProgressDetails();
 	return true;
 end
 
 function LegacyRewardTrackPageMixin:SetupProgressDetails()
-	local level = self.majorFactionData.renownLevel;
-	local threshold = self.majorFactionData.renownLevelThreshold;
-	local progress = self.majorFactionData.renownReputationEarned;
+	local level = self.legacySystemData.renownLevel;
 
 	local thresholdLevel = 0;
 	local progressToNextLevel = level;
 	local nextLevelThresholdDifference = 100;
 	local lastThreshold = 0;
-	for i, levelInfo in ipairs(self.renownLevelsInfo) do
+	for i, levelInfo in ipairs(self.rewardTrackLevelsInfo) do
 		if level >= levelInfo.level then
 			thresholdLevel = i;
 			progressToNextLevel = progressToNextLevel - (levelInfo.level - lastThreshold);

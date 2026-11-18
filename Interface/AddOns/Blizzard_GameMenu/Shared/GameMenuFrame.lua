@@ -213,6 +213,7 @@ function GameMenuFrameMixin:InitButtons()
 	if C_GameRules.IsRewardsShopEnabled() then
 		local function ShowRewards()
 			self:CloseMenu();
+			CatalogShopFrame.isRewardsShopInteraction = true;
 			CatalogShopFrame.shoppingSessionUUIDStr = C_CatalogShop.OpenCatalogShopInteractionFromRewards();
 			ToggleStoreUI();
 		end

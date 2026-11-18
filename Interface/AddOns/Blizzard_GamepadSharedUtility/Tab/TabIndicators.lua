@@ -49,6 +49,14 @@ function GamepadTabIndicatorsMixin:SetUpTabs(inTabs, reverse)
 	end
 end
 
+function GamepadTabIndicatorsMixin:SetUpTabSystem(tabSystem)
+	self.tabSystem = tabSystem;
+	self:SetUpTabs(tabSystem.tabs);
+
+	hooksecurefunc(tabSystem, "SetTabVisuallySelected", GenerateClosure(self.UpdateTabVisibility, self));
+	hooksecurefunc(tabSystem, "SetTabEnabled", GenerateClosure(self.UpdateTabIndicators, self));
+end
+
 function GamepadTabIndicatorsMixin:UpdateTabVisibility()
 	table.wipe(self.visibleTabs);
 
@@ -60,11 +68,13 @@ function GamepadTabIndicatorsMixin:UpdateTabVisibility()
 		activeIndex = PanelTemplates_GetSelectedTab(self:GetParent());
 	end
 
+	local activeTab = self.tabSystem and self.tabSystem:GetTabButton(self.tabSystem.selectedTabID);
+
 	for _ , tab in ipairs(self.tabs) do
 		if tab:IsVisible() then
 			table.insert(self.visibleTabs, tab);
 
-			if (tab:GetID() == activeIndex) then
+			if (tab == activeTab or tab:GetID() == activeIndex) then
 				self.currentIndex = #self.visibleTabs;
 			end
 		end
@@ -110,6 +120,10 @@ function GamepadTabIndicatorsMixin:ClickCurrentTab()
 	end
 end
 
+local function IsTabDisabled(tab)
+	return tab.isDisabled or (tab.IsForceDisabled and tab:IsForceDisabled());
+end
+
 function GamepadTabIndicatorsMixin:Tab(inOffset)
 	local maxTabs = #self.visibleTabs;
 	if maxTabs == 0 then
@@ -126,7 +140,7 @@ function GamepadTabIndicatorsMixin:Tab(inOffset)
 			return;
 		end
 
-		if (self.visibleTabs[newIndex].isDisabled) then
+		if IsTabDisabled(self.visibleTabs[newIndex]) then
 			if inOffset > 0 then
 				newIndex = newIndex + 1;
 			else
@@ -151,13 +165,13 @@ function GamepadTabIndicatorsMixin:UpdateTabIndicators()
 	local lastLeft = true;
 	local lastRight = true;
 	for i = self.currentIndex - 1, 1, -1 do
-		if not self.visibleTabs[i].isDisabled then
+		if not IsTabDisabled(self.visibleTabs[i]) then
 			lastLeft = false;
 			break;
 		end
 	end
 	for i = self.currentIndex + 1, #self.visibleTabs, 1 do
-		if not self.visibleTabs[i].isDisabled then
+		if not IsTabDisabled(self.visibleTabs[i]) then
 			lastRight = false;
 			break;
 		end

@@ -18,6 +18,12 @@ local CHARACTER_STAT_LIST_EVENTS = {
 	"UNIT_MAXPOWER",
 	"UNIT_STATS",
 	"PLAYER_DAMAGE_DONE_MODS",
+	-- Aura-point stats (crit damage, guard, absorb, evade) are hidden from UNIT_AURA.
+	"WOW_HACK_STAT_POINTS_CHANGED",
+};
+
+local CHARACTER_STAT_LIST_UNIT_EVENTS = {
+	"UNIT_ATTACK_POWER",
 };
 
 ScenarioTrackerStatLineMixin = {};
@@ -53,6 +59,10 @@ function ScenarioTrackerCharacterStatsBlockMixin:OnLoad()
 		-- Registers delta changes from player choice
 		EventRegistry:RegisterCallback("PlayerChoiceOption.OnOptionEnter", self.SetStatDeltas, self);
 		EventRegistry:RegisterCallback("PlayerChoiceOption.OnOptionLeave", self.ClearStatDeltas, self);
+
+		-- The outfitter overlaps the tracker at low resolutions.
+		EventRegistry:RegisterCallback("OutfitterFrame.Opened", self.RaiseAboveOutfitter, self);
+		EventRegistry:RegisterCallback("OutfitterFrame.Closed", self.ResetFrameStrata, self);
 	end
 
 	self.Header:SetText(PAPERDOLL_SIDEBAR_STATS);
@@ -61,15 +71,25 @@ end
 
 function ScenarioTrackerCharacterStatsBlockMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CHARACTER_STAT_LIST_EVENTS);
+	FrameUtil.RegisterFrameForUnitEvents(self, CHARACTER_STAT_LIST_UNIT_EVENTS, "player");
 	self:UpdateStats();
 end
 
 function ScenarioTrackerCharacterStatsBlockMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, CHARACTER_STAT_LIST_EVENTS);
+	FrameUtil.UnregisterFrameForEvents(self, CHARACTER_STAT_LIST_UNIT_EVENTS);
 end
 
 function ScenarioTrackerCharacterStatsBlockMixin:OnEvent(_event)
 	self:UpdateStats();
+end
+
+function ScenarioTrackerCharacterStatsBlockMixin:RaiseAboveOutfitter()
+	self:SetFrameStrata("HIGH");
+end
+
+function ScenarioTrackerCharacterStatsBlockMixin:ResetFrameStrata()
+	self:SetFrameStrata(self:GetParent():GetFrameStrata());
 end
 
 function ScenarioTrackerCharacterStatsBlockMixin:InitStatLines()

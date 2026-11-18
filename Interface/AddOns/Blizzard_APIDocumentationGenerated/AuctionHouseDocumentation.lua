@@ -1360,6 +1360,12 @@ local AuctionHouse =
 			SynchronousEvent = true,
 		},
 		{
+			Name = "CommodityPriceUnavailableSelfFound",
+			Type = "Event",
+			LiteralName = "COMMODITY_PRICE_UNAVAILABLE_SELF_FOUND",
+			SynchronousEvent = true,
+		},
+		{
 			Name = "CommodityPriceUpdated",
 			Type = "Event",
 			LiteralName = "COMMODITY_PRICE_UPDATED",

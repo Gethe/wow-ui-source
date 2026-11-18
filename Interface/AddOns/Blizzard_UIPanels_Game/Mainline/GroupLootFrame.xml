@@ -385,7 +385,18 @@
 			<Frame parentKey="NeedRollAnim" hidden="true">
 				<Size x="128" y="128"/>
 				<Anchors>
+					<!--
+					Previous attempted anchoring:
 					<Anchor point="CENTER" relativeKey="$parent.LootButtonContainer.NeedButton" x="5" y="0"/>
+
+					NOTE: This is broken and will never work, reverting to what it actually is in practice to prevent errors.
+					This is a base template, it cannot lookup relative keys that don't exist yet, the LootButtonContainer is defined
+					in the MKB or Gamepad specific frames. So, to do something like this, it actually needs to set up this relationship
+					in an OnLoad.
+
+					Falling back to what was happening in practice which is that the anim would be anchored to the parent with the given offset.
+					 -->
+					<Anchor point="CENTER" x="5"/>
 				</Anchors>
 				<Layers>
 					<Layer level="ARTWORK" textureSubLevel="1">
@@ -542,7 +553,7 @@
 						<NormalTexture atlas="lootroll-toast-icon-transmog-up"/>
 						<HighlightTexture atlas="lootroll-toast-icon-transmog-highlight" alphaMode="ADD"/>
 						<PushedTexture atlas="lootroll-toast-icon-transmog-down"/>
-					</Button>	
+					</Button>
 				</Frames>
 			</Frame>
 		</Frames>

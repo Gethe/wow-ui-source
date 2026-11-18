@@ -204,12 +204,12 @@
 					<Anchor point="BOTTOMLEFT" relativeKey="$parent.ScrollBox" relativePoint="BOTTOMRIGHT" x="5" y="4"/>
 				</Anchors>
 			</EventFrame>
-			
+
 			<Frame parentKey="LoadingSpinner" hidden="true" inherits="SpinnerTemplate">
 				<Size x="60" y="60"/>
 				<Anchors>
-					<!-- We're anchoring the spinner to the background art, which is part of the CharacterFrame -->
-					<Anchor point="CENTER" relativeKey="$parent.$parent.Background"/>
+					<!-- The spinner should be centered in the left panel, and not move if the UI is expanded. -->
+					<Anchor point="CENTER" relativeTo="CharacterFrameLeftPaneHost"/>
 				</Anchors>
 			</Frame>
 		</Frames>

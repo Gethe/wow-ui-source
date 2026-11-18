@@ -24,6 +24,26 @@ function CatalogShopMixin:HideRewardsShop()
 	self:Hide();
 end
 
+-- Default portrait is a 62x62 texture anchored TOPLEFT(-5, 7) of PortraitContainer.
+local DEFAULT_PORTRAIT_SIZE = 62;
+local DEFAULT_PORTRAIT_OFFSET_X, DEFAULT_PORTRAIT_OFFSET_Y = -5, 7;
+-- Smaller (90% scale) and re-centered on the same spot as the default portrait above.
+local REWARDS_SHOP_PORTRAIT_SIZE = 56;
+local REWARDS_SHOP_PORTRAIT_OFFSET_X, REWARDS_SHOP_PORTRAIT_OFFSET_Y = -3, 6;
+
+function CatalogShopMixin:UpdatePortrait()
+	local portrait = self:GetPortrait();
+	if self.isRewardsShopInteraction then
+		portrait:SetSize(REWARDS_SHOP_PORTRAIT_SIZE, REWARDS_SHOP_PORTRAIT_SIZE);
+		portrait:SetPoint("TOPLEFT", self.PortraitContainer, "TOPLEFT", REWARDS_SHOP_PORTRAIT_OFFSET_X, REWARDS_SHOP_PORTRAIT_OFFSET_Y);
+		self:SetPortraitToAsset("Interface\\Icons\\inv_misc_azsharacoin2");
+	else
+		portrait:SetSize(DEFAULT_PORTRAIT_SIZE, DEFAULT_PORTRAIT_SIZE);
+		portrait:SetPoint("TOPLEFT", self.PortraitContainer, "TOPLEFT", DEFAULT_PORTRAIT_OFFSET_X, DEFAULT_PORTRAIT_OFFSET_Y);
+		self:SetPortraitToAsset("Interface\\Icons\\UI_Shop");
+	end
+end
+
 function CatalogShopMixin.GetBaseProductInfo(productID)
 	if productID == CHARACTER_TRANSFER_FACTION_BUNDLE_PRODUCT_ID then
 		-- TODO fix this C_StoreSecure call
@@ -65,7 +85,7 @@ function CatalogShopMixin:OnLoad_CatalogShop()
 	EventRegistry:RegisterCallback("CatalogShop.OnNoProductsSelected", self.OnNoProductsSelected, self);
 	EventRegistry:RegisterCallback("CatalogShop.OnCategorySelected", self.OnCategorySelected, self);
 
-	self:SetPortraitToAsset("Interface\\Icons\\UI_Shop");
+	self:UpdatePortrait();
 	self:SetTitle(BLIZZARD_STORE);
 
 	if ( C_Glue.IsOnGlueScreen() ) then
@@ -474,6 +494,7 @@ end
 function CatalogShopMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, CATALOG_SHOP_DYNAMIC_EVENTS);
 
+	self:UpdatePortrait();
 	self:HideUnavailableScreen();
 	self:ShowLoadingScreen();
 	self:SetAttribute("isshown", true);
@@ -530,7 +551,8 @@ function CatalogShopMixin:OnHide()
 	end
 
 	C_CatalogShop.CloseCatalogShopInteraction();
-	if wasRewardsShopInteraction then
+	-- C_PlayerInteractionManager isn't available on the glue screen, and there's no real interaction to clear when opened from the escape/character select menu rewards button.
+	if wasRewardsShopInteraction and not C_Glue.IsOnGlueScreen() then
 		C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.RewardsShop);
 	end
 	SimpleCheckout:Hide();
@@ -1251,7 +1273,7 @@ function CatalogShopProductDetailsFrameMixin:UpdateState()
 
 		local priceBYOBString = string.format(CATALOG_SHOP_BYOB_PRICE_FORMAT, totalQuantity, selectedProductInfo.price);
 		self.ButtonContainer.BYOBButton:SetText(priceBYOBString);
-		self.ButtonContainer.BYOBButton:SetEligible(selectedProductInfo.purchaseEligibility == Enum.CatalogShopPurchaseEligibility.Eligible);
+		self.ButtonContainer.BYOBButton:SetProductInfo(selectedProductInfo);
 	else
 		if selectedProductInfo.isVCProduct then
 			self.ButtonContainer.PurchaseButton:SetText(selectedProductInfo.price.." "..CatalogShopUtil.GetVCMarkupByProductInfo(selectedProductInfo));

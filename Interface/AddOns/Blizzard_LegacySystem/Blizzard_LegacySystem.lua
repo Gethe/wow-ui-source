@@ -16,6 +16,8 @@ function LegacySystemFrameMixin:OnLoad()
 
 	self:RegisterForTransitions();
 
+	self:RegisterEvent("TRAIT_TREE_CURRENCY_INFO_UPDATED");
+
 	 self:SelectPage(1);
 end
 
@@ -63,6 +65,18 @@ function LegacySystemFrameMixin:OnHide()
 		EventRegistry:UnregisterCallback("Legacy.RefreshChallenges", self);
 
 		SmartNavigation:UnregisterCallback("SelectedButtonUpdated", self);
+	end
+end
+
+function LegacySystemFrameMixin:OnEvent(event, ...)
+	if ( event == "TRAIT_TREE_CURRENCY_INFO_UPDATED" ) then
+		local treeID = ...;
+		-- Test whether the treeID passed in a TRAIT_TREE_CURRENCY_INFO_UPDATED event is for the
+		-- Legacy System's TraitCurrency. Just check for one of the Trees that depend on the
+		-- LEGACY_POINTS_TRAIT_CURRENCY_ID TraitCurrency.
+		if treeID and (treeID == Constants.LegacyConsts.LEGACY_TREE_PROFESSIONS_ID) then
+			LegacySystem.UpdateCurrencyInfo();
+		end
 	end
 end
 

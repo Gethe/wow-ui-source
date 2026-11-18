@@ -161,6 +161,9 @@
 	</Frame>
 
 	<Button name="TransmogAppearanceSlotTemplate" mixin="TransmogAppearanceSlotMixin" motionScriptsWhileDisabled="true" registerForClicks="LeftButtonUp, RightButtonUp" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_TransmogAppearanceSlot" type="string"/>
+		</KeyValues>
 		<Size x="59" y="59"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -201,6 +204,7 @@
 				<KeyValues>
 					<KeyValue key="shortSideLength" type="number" value="19"/>
 					<KeyValue key="longSideLength" type="number" value="43"/>
+					<KeyValue key="smartNavigationIgnored" type="boolean" value="true"/>
 				</KeyValues>
 				<HighlightTexture parentKey="HighlightTexture" atlas="transmog-button-pullup" useAtlasSize="true">
 					<Anchors>
@@ -860,6 +864,9 @@
 	</Button>
 
 	<DressUpModel name="TransmogItemModelTemplate" mixin="TransmogItemModelMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_TransmogItemModel" type="string"/>
+		</KeyValues>
 		<Size x="100" y="132"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -1097,6 +1104,9 @@
 	</DressUpModel>
 
 	<DressUpModel name="TransmogSetBaseModelTemplate" mixin="TransmogSetBaseModelMixin" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_TransmogSetModel" type="string"/>
+		</KeyValues>
 		<Size x="178" y="218"/>
 		<Layers>
 			<Layer level="BACKGROUND">

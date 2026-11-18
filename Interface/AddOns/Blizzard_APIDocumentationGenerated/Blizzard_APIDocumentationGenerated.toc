@@ -191,6 +191,7 @@ KeyBindingsDocumentation.lua
 LFGInfoDocumentation.lua
 LFGListInfoDocumentation.lua
 LFGListRolesDocumentation.lua
+LegacySystemDocumentation.lua
 LegendaryCraftingDocumentation.lua
 LevelLinkDocumentation.lua
 LevelSquishDocumentation.lua
@@ -222,6 +223,7 @@ MailInfoDocumentation.lua
 MajorFactionsDocumentation.lua
 MapExplorationDocumentation.lua
 MapDocumentation.lua
+MawBuffsDocumentation.lua
 MerchantFrameDocumentation.lua
 MinimapDocumentation.lua
 MinimapFrameAPIDocumentation.lua

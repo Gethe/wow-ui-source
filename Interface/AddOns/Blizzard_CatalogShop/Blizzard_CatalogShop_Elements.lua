@@ -379,9 +379,10 @@ CatalogShopBYOBButtonMixin = {};
 function CatalogShopBYOBButtonMixin:OnLoad()
 end
 
-function CatalogShopBYOBButtonMixin:SetEligible(isEligible)
+function CatalogShopBYOBButtonMixin:SetProductInfo(productInfo)
+	local isEligible = productInfo.purchaseEligibility == Enum.CatalogShopPurchaseEligibility.Eligible;
 	self:SetEnabled(isEligible);
-	self.ineligibleTooltipText = (not isEligible) and CATALOG_SHOP_BYOB_NOT_ELIGIBLE or nil;
+	self.ineligibleTooltipText = productInfo.purchaseEligibilityText;
 end
 
 function CatalogShopBYOBButtonMixin:OnEnter()

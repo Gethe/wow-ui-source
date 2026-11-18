@@ -1383,6 +1383,7 @@ function CharacterSelectRewardsButtonMixin:OnClick()
 	SetCVar("hasClickedGlueRewardsButton", true);
 	self:UpdateGlow();
 
+	CatalogShopFrame.isRewardsShopInteraction = true;
 	CatalogShopFrame.shoppingSessionUUIDStr = C_CatalogShop.OpenCatalogShopInteractionFromRewards();
 	CharacterSelect_ToggleStoreUI();
 end

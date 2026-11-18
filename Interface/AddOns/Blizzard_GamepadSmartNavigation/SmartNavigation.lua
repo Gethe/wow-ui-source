@@ -769,20 +769,28 @@ function SmartNavigationMixin:SetPosition(inX, inY)
 	self:SetPoint("RIGHT", UIParent, "BOTTOMLEFT", inX, inY);
 end
 
+local function GetInheritedCursorRotation(button, activePanel)
+	local rotationFrame = button;
+	while rotationFrame and rotationFrame.smartNavigationCursorDegrees == nil do
+		-- Include the active panel's rotation value, but do not inherit from ancestors above it
+		if rotationFrame == activePanel then
+			break;
+		end
+		rotationFrame = rotationFrame:GetParent();
+	end
+
+	return rotationFrame and rotationFrame.smartNavigationCursorDegrees or 0;
+end
+
 function SmartNavigationMixin:UpdateCursorPosition()
-	if (not self.currentButton) then
+	local button = self.currentButton;
+	if not button then
 		return;
 	end
 
-	-- Default to horizontal cursor
-	self:SetCursorArtHorizontal();
-
-	if (self.currentButton.smartNavigationVerticalCursor) then
-		self:SetCursorArtVerical();
-		self:ClearAllPoints();
-		self:SetPoint("TOP", self.currentButton, "BOTTOM", 0, 0);
-		return;
-	end
+	local activePanel = self.activeInfo and self.activeInfo.frame;
+	local cursorRotation = GetInheritedCursorRotation(button, activePanel);
+	self:SetClampedCursorRotationForFrame(cursorRotation);
 
 	local customCursorAnchor = SmartNavigation_GetCustomCursorAnchorPointForFrame(self.currentButton);
 	if customCursorAnchor then
@@ -795,15 +803,28 @@ function SmartNavigationMixin:UpdateCursorPosition()
 	local yOffset = self.cursorOffsetY;
 
 	-- Use custom offsets if they have been set for the button
-	if (self.currentButton.customSmartNavOffsetX) then
-		xOffset = self.currentButton.customSmartNavOffsetX;
+	if (button.customSmartNavOffsetX) then
+		xOffset = button.customSmartNavOffsetX;
 	end
-	if (self.currentButton.customSmartNavOffsetY) then
-		yOffset = self.currentButton.customSmartNavOffsetY;
+	if (button.customSmartNavOffsetY) then
+		yOffset = button.customSmartNavOffsetY;
+	end
+
+	local point, relativePoint = "RIGHT", "LEFT";
+
+	if cursorRotation == 90 then
+		point, relativePoint = "BOTTOM", "TOP";
+		xOffset, yOffset = yOffset, -xOffset;
+	elseif cursorRotation == 180 then
+		point, relativePoint = "LEFT", "RIGHT";
+		xOffset, yOffset = -xOffset, -yOffset;
+	elseif cursorRotation == 270 then
+		point, relativePoint = "TOP", "BOTTOM";
+		xOffset, yOffset = -yOffset, xOffset;
 	end
 
 	self:ClearAllPoints();
-	self:SetPoint("RIGHT", self.currentButton, "LEFT", xOffset, yOffset);
+	self:SetPoint(point, button, relativePoint, xOffset, yOffset);
 
 	-- The cursor may not be showing yet, depending on how we got here
 	self:ShowCursor(false);
@@ -948,9 +969,9 @@ end
 
 function SmartNavigationMixin:SelectFirstButton(forceReselect)
 	if self.activeInfo then
-		if self.activeInfo.lastButton then
+		if self.activeInfo.lastButton and self:IsButtonValid(self.activeInfo.lastButton) then
 			self:SelectButton(self.activeInfo.lastButton, forceReselect);
-		elseif self.activeInfo.targetButton then
+		elseif self.activeInfo.targetButton and self:IsButtonValid(self.activeInfo.targetButton) then
 			self:SelectButton(self.activeInfo.targetButton, forceReselect);
 		else
 			self:SelectButton(self:FindTopLeftButton(self.activeInfo), forceReselect);
@@ -1337,11 +1358,13 @@ function SmartNavigationMixin:UpdateGrid(inPanelInfo)
 
 	if not inPanelInfo.useGrid then
 		inPanelInfo.grid = nil;
+		inPanelInfo.gridRowEdges = nil;
 		return;
 	end
 
 	local activeGroup = self:GetActiveGroup(inPanelInfo);
 	inPanelInfo.grid = {};
+	inPanelInfo.gridRowEdges = {};
 	local sortedButtons = {};
 
 	if activeGroup then
@@ -1380,6 +1403,17 @@ function SmartNavigationMixin:UpdateGrid(inPanelInfo)
 		end
 
 		lastX = currentX;
+	end
+
+	for x, column in ipairs(inPanelInfo.grid) do
+		for row = 1, #column do
+			local rowEdges = inPanelInfo.gridRowEdges[row];
+			if rowEdges then
+				rowEdges.lastColumn = x;
+			else
+				inPanelInfo.gridRowEdges[row] = { firstColumn = x, lastColumn = x };
+			end
+		end
 	end
 end
 
@@ -1429,27 +1463,22 @@ function SmartNavigationMixin:GetButtonInDirectionGrid(inButton, inDirection)
 
 	if panelInfo.isWrapping then
 		if not nextButton and #grid > 0 then
-			local maxGridX = #grid;
+			-- First row is bottom row if gridHeightCompensate is true, top if not.
+			local row = panelInfo.gridHeightCompensate and (#grid[currentX] - currentY + 1) or currentY;
+			local rowEdges = panelInfo.gridRowEdges[row];
 
 			if inDirection:IsEqualTo(SMART_NAV_INPUT_DIRECTION.UP) then
 				nextX = currentX;
-				local currentColumn = grid[nextX];
-				nextY = #currentColumn;
+				nextY = #grid[nextX];
 			elseif inDirection:IsEqualTo(SMART_NAV_INPUT_DIRECTION.DOWN) then
 				nextX = currentX;
 				nextY = 1;
 			elseif inDirection:IsEqualTo(SMART_NAV_INPUT_DIRECTION.RIGHT) then
-				nextX = currentX + 1;
-				if nextX > maxGridX then
-					nextX = 1;
-				end
-				local newColumn = grid[nextX];
+				nextX = rowEdges.firstColumn;
+				nextY = currentY;
 			elseif inDirection:IsEqualTo(SMART_NAV_INPUT_DIRECTION.LEFT) then
-				nextX = currentX - 1;
-				if nextX < 1 then
-					nextX = maxGridX;
-				end
-				local newColumn = grid[nextX];
+				nextX = rowEdges.lastColumn;
+				nextY = currentY;
 			end
 
 			nextX = math.clamp(nextX, 1, #grid);
@@ -1991,10 +2020,6 @@ function SmartNavigationMixin:ClearOverrideIconAtlas()
 	self.Pointer.Icon.Cursor:SetAtlas("gamepad-largecursor", true);
 end
 
-function SmartNavigationMixin:SetCursorArtHorizontal()
-	SetClampedTextureRotation(self.Pointer.Icon.Cursor, 0);
-end
-
-function SmartNavigationMixin:SetCursorArtVerical()
-	SetClampedTextureRotation(self.Pointer.Icon.Cursor, 270);
+function SmartNavigationMixin:SetClampedCursorRotationForFrame(degree)
+	SetClampedTextureRotation(self.Pointer.Icon.Cursor, degree);
 end

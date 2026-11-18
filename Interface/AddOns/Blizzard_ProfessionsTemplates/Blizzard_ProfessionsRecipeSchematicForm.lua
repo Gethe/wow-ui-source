@@ -82,7 +82,8 @@ local ProfessionsRecipeFormEvents =
 	"TRACKED_RECIPE_UPDATE",
 	"TRADE_SKILL_ITEM_UPDATE",
 	"CRAFTING_DETAILS_UPDATE",
-	"TRADE_SKILL_FAVORITES_CHANGED"
+	"TRADE_SKILL_FAVORITES_CHANGED",
+	"PLAYER_TALENT_UPDATE"
 };
 
 function ProfessionsRecipeSchematicFormMixin:OnLoad()
@@ -244,6 +245,10 @@ function ProfessionsRecipeSchematicFormMixin:OnEvent(event, ...)
 			self.FavoriteButton:SetChecked(isFavorite);
 			self.FavoriteButton:SetIsFavorite(isFavorite);
 		end
+	elseif event == "PLAYER_TALENT_UPDATE" then
+		self:Init(self.currentRecipeInfo);
+
+		EventRegistry:TriggerEvent("ProfessionsRecipeListMixin.Event.RefreshCraftableCount");
 	end
 end
 

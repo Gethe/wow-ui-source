@@ -30,7 +30,7 @@
 
 	<Frame name="SpellTypeIconOverlaySmallManaPipTemplate" inherits="SpellTypeIconOverlayManaPipTemplate" scale="0.5" virtual="true"/>
 
-	<Frame name="SpellTypeIconOverlayTemplate" mixin="SpellTypeIconOverlayMixin" virtual="true" frameStrata="HIGH" fixedFrameStrata="true" frameLevel="6">
+	<Frame name="SpellTypeIconOverlayTemplate" mixin="SpellTypeIconOverlayMixin" virtual="true" frameLevel="6">
 		<Size x="1" y="1"/>
 		<KeyValues>
 			<KeyValue key="useSmallPips" value="true" type="boolean"/>

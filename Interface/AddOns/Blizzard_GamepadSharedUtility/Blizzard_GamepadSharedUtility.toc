@@ -31,6 +31,10 @@ InputBindingStack\BindingSetFactory.lua
 Tab\TabIndicators.lua
 Tab\TabIndicators.xml
 
+# Tab Strip
+Tab\TabStrip.lua
+Tab\TabStrip.xml
+
 # Page Indicators
 Page\PageIndicators.lua
 Page\PageIndicators.xml

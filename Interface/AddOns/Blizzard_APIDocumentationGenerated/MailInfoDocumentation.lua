@@ -48,6 +48,15 @@ local MailInfo =
 			},
 		},
 		{
+			Name = "IsCODEnabled",
+			Type = "Function",
+
+			Returns =
+			{
+				{ Name = "isCODEnabled", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "IsCommandPending",
 			Type = "Function",
 

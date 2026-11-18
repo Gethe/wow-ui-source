@@ -109,6 +109,12 @@ TransmogFrameMixin = {
 	};
 };
 
+local OUTFIT_FOCUS = "Outfit";
+local CHARACTER_FOCUS = "Character";
+local WARDROBE_FOCUS = "Wardrobe";
+local GAMEPAD_ROTATION_SPEED = 300;
+local GAMEPAD_ZOOM_SPEED = 10;
+
 function TransmogFrameMixin:OnLoad()
 	self:SetPortraitAtlasRaw("transmog-icon-ui");
 	self:SetTitle(TRANSMOGRIFY);
@@ -172,6 +178,10 @@ function TransmogFrameMixin:OnHide()
 	C_TransmogOutfitInfo.ClearAllPendingSituations();
 
 	C_PlayerInteractionManager.ClearInteraction(Enum.PlayerInteractionType.Transmogrifier);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.currentFocus = nil;
+	end
 end
 
 function TransmogFrameMixin:OnEvent(event, ...)
@@ -333,7 +343,7 @@ function TransmogFrameMixin:UpdateCostDisplay()
 	-- Always show 0 copper.
 	MoneyFrame_Update(self.OutfitCollection.MoneyFrame.Money, cost or 0, true);
 	self.OutfitCollection.SaveOutfitButton:SetEnabled(canApply);
-	self.CharacterPreview.ClearAllPendingButton:SetShown(canClear);
+	self.CharacterPreview.ClearAllPendingButton:SetShown(canClear and InputUtil.IsMKBUIEnabled());
 
 	if canApply and not C_TransmogOutfitInfo.IsUsableDiscountAvailable() then
 		local offsetX = 10;
@@ -341,6 +351,12 @@ function TransmogFrameMixin:UpdateCostDisplay()
 		GlowEmitterFactory:Show(self.OutfitCollection.SaveOutfitButton, GlowEmitterMixin.Anims.NPE_RedButton_GreenGlow, offsetX, offsetY);
 	else
 		GlowEmitterFactory:Hide(self.OutfitCollection.SaveOutfitButton);
+	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.outfitsFooter:Refresh();
+		self.characterPreviewFooter:Refresh();
+		self.wardrobeFooter:Refresh();
 	end
 end
 
@@ -381,10 +397,18 @@ function TransmogFrameMixin:NavigateSection(x, y, directionHandlers)
 	end
 
 	local directionHandler;
-	if x >= INPUT_THRESHOLD then
-		directionHandler = directionHandlers.right;
-	elseif x <= -INPUT_THRESHOLD then
-		directionHandler = directionHandlers.left;
+	if math.abs(x) >= math.abs(y) then
+		if x >= INPUT_THRESHOLD then
+			directionHandler = directionHandlers.right;
+		elseif x <= -INPUT_THRESHOLD then
+			directionHandler = directionHandlers.left;
+		end
+	else
+		if y >= INPUT_THRESHOLD then
+			directionHandler = directionHandlers.up;
+		elseif y <= -INPUT_THRESHOLD then
+			directionHandler = directionHandlers.down;
+		end
 	end
 
 	if directionHandler then
@@ -407,13 +431,133 @@ end
 
 function TransmogFrameMixin:GetNavigationSections()
 	return {
-		self.OutfitCollection,
-		self.CharacterPreview,
-		self.WardrobeCollection,
+		{ frame = self.OutfitCollection, focusKey = OUTFIT_FOCUS },
+		{ frame = self.CharacterPreview, focusKey = CHARACTER_FOCUS },
+		{ frame = self.WardrobeCollection, focusKey = WARDROBE_FOCUS },
 	};
 end
 
-function TransmogFrameMixin:NavigateHorizontalSection(direction)
+function TransmogFrameMixin:FocusSection(sectionIndex, isStickNavigation, direction)
+	local sections = self:GetNavigationSections();
+	local section = sections[sectionIndex];
+	if not section or not section.frame:IsShown() then
+		return;
+	end
+
+	local initialButton = self.returnSlotButton or section.frame:GetFirstButtonForSection(isStickNavigation, direction);
+	if not initialButton then
+		return;
+	end
+
+	self:ClearSectionBindings();
+
+	self.currentFocus = section.focusKey;
+	SmartNavigation:EnterFocusGroup(section.focusKey, nil, initialButton, nil);
+	SmartNavigation:SelectButton(initialButton);
+	self.returnSlotButton = nil;
+
+	if section.focusKey == OUTFIT_FOCUS then
+		self.outfitsFooter:ShowAndActivateBindings();
+		local outfitList = self.OutfitCollection.OutfitList;
+		SmartNavigation:SetScrollFrameForFrame(self, outfitList.ScrollBox);
+		GamepadScrollBarHint:SetOwner(outfitList.ScrollBar.Track.Thumb, "CENTER");
+		GamepadScrollBarHint:Show();
+	elseif section.focusKey == CHARACTER_FOCUS then
+		self.characterPreviewFooter:ShowAndActivateBindings();
+		self.cameraFooter:ShowAndActivateBindings();
+		GamepadMode.ActivateBindingGroup(self.cameraBindings);
+	elseif section.focusKey == WARDROBE_FOCUS then
+		self.wardrobeFooter:ShowAndActivateBindings();
+		self.TabIndicators:Show();
+		self:RefreshTabIndicators();
+		self:SetWardrobePageIconsShown(true);
+	end
+end
+
+function TransmogFrameMixin:UpdatePagedContentNavigation(pagedContent, tabID)
+	local wardrobe = self.WardrobeCollection;
+	local function NavigatePage(button, direction)
+		if SmartNavigation:GetActiveFrame() ~= self or not self:IsWardrobeFocused()
+			or TabSystemOwnerMixin.GetTab(wardrobe) ~= tabID then
+			return;
+		end
+
+		local currentX, currentY = button:GetCenter();
+		if not currentX or not currentY then
+			return;
+		end
+
+		for _, otherButton in ipairs(pagedContent:GetFrames()) do
+			local _, otherY = otherButton:GetCenter();
+			if otherButton ~= button and otherButton:IsShown() and otherY then
+				if direction == SMART_NAV_INPUT_DIRECTION.DOWN and otherY < currentY - 1 then
+					return;
+				elseif direction == SMART_NAV_INPUT_DIRECTION.UP and otherY > currentY + 1 then
+					return;
+				end
+			end
+		end
+
+		local pagingControls = pagedContent.PagingControls;
+		local currentPage = pagingControls:GetCurrentPage();
+		local maxPages = pagingControls:GetMaxPages();
+		if (direction == SMART_NAV_INPUT_DIRECTION.DOWN and currentPage >= maxPages)
+			or (direction == SMART_NAV_INPUT_DIRECTION.UP and currentPage <= 1) then
+			return;
+		end
+
+		if direction == SMART_NAV_INPUT_DIRECTION.DOWN then
+			pagingControls:NextPage();
+		else
+			pagingControls:PreviousPage();
+		end
+
+		SmartNavigation:RefreshButtonGroups();
+
+		-- Keep the horizontal position when possible
+		local targetButton;
+		local targetRowY;
+		local targetButtonX;
+		local targetFrames = pagedContent:GetFrames();
+		for _, targetFrame in ipairs(targetFrames) do
+			local targetX, targetY = targetFrame:GetCenter();
+			if targetFrame:IsShown() and targetX and targetY then
+				local isEdgeRow = not targetRowY
+					or (direction == SMART_NAV_INPUT_DIRECTION.DOWN and targetY > targetRowY)
+					or (direction == SMART_NAV_INPUT_DIRECTION.UP and targetY < targetRowY);
+				if isEdgeRow then
+					targetRowY = targetY;
+					targetButton = targetFrame;
+					targetButtonX = targetX;
+				elseif targetY == targetRowY and math.abs(targetX - currentX) < math.abs(targetButtonX - currentX) then
+					targetButton = targetFrame;
+					targetButtonX = targetX;
+				end
+			end
+		end
+
+		if targetButton then
+			SmartNavigation:SelectButton(targetButton);
+		end
+
+		return true;
+	end
+
+	for _, button in ipairs(pagedContent:GetFrames()) do
+		SmartNavigation_AddJumpNavigationOverride(button, SMART_NAV_INPUT_DIRECTION.DOWN, function()
+			return NavigatePage(button, SMART_NAV_INPUT_DIRECTION.DOWN);
+		end);
+		SmartNavigation_AddJumpNavigationOverride(button, SMART_NAV_INPUT_DIRECTION.UP, function()
+			return NavigatePage(button, SMART_NAV_INPUT_DIRECTION.UP);
+		end);
+	end
+end
+
+function TransmogFrameMixin:NavigateHorizontalSection(direction, isStickNavigation)
+	if SmartNavigation:GetActiveFrame() ~= self then
+		return;
+	end
+
 	local currentButton = SmartNavigation:GetCurrentButton();
 	if not currentButton then
 		return;
@@ -422,7 +566,7 @@ function TransmogFrameMixin:NavigateHorizontalSection(direction)
 	local navigationSections = self:GetNavigationSections();
 	local currentSectionIndex;
 	for index, section in ipairs(navigationSections) do
-		if IsDescendantOf(currentButton, section) then
+		if IsDescendantOf(currentButton, section.frame) then
 			currentSectionIndex = index;
 			break;
 		end
@@ -437,23 +581,114 @@ function TransmogFrameMixin:NavigateHorizontalSection(direction)
 		return;
 	end
 	
-	local navigateTo = navigationSections[sectionIndex]:GetFirstButtonForSection();
-	if not navigateTo then
+	self:FocusSection(sectionIndex, isStickNavigation, direction);
+end
+
+function TransmogFrameMixin:NavigateVerticalSection(direction)
+	if SmartNavigation:GetActiveFrame() ~= self then
 		return;
 	end
 
-	SmartNavigation:SelectButton(nil);
-	SmartNavigation:SelectButton(navigateTo);
+	local currentButton = SmartNavigation:GetCurrentButton();
+	if not currentButton then
+		return;
+	end
+
+	local focusedSectionKey;
+	for _, section in ipairs(self:GetNavigationSections()) do
+		if IsDescendantOf(currentButton, section.frame) then
+			focusedSectionKey = section.focusKey;
+			break;
+		end
+	end
+
+	if focusedSectionKey == OUTFIT_FOCUS then
+		local outfitList = self.OutfitCollection.OutfitList.ScrollBox;
+		local dataProvider = outfitList:GetDataProvider();
+		local elementIndex = direction > 0 and 1 or dataProvider:GetSize();
+		local elementData = dataProvider:Find(elementIndex);
+		if not elementData then
+			return;
+		end
+
+		local alignment = direction > 0 and ScrollBoxConstants.AlignBegin or ScrollBoxConstants.AlignEnd;
+		outfitList:ScrollToElementData(elementData, alignment);
+		RunNextFrame(function()
+			if SmartNavigation:GetActiveFrame() ~= self or not self:IsOutfitFocused() then
+				return;
+			end
+
+			local outfitFrame = outfitList:FindFrame(elementData);
+			local outfitButton = outfitFrame and outfitFrame.OutfitButton;
+			if outfitButton and outfitButton:IsShown() then
+				SmartNavigation:SelectButton(outfitButton);
+			end
+		end);
+		return;
+	end
+
+	-- Vertical paging only applies to the wardrobe grid tabs.
+	if focusedSectionKey ~= WARDROBE_FOCUS then
+		return;
+	end
+
+	local wardrobe = self.WardrobeCollection;
+	local currentTab = TabSystemOwnerMixin.GetTab(wardrobe);
+	local pagedContent;
+	if currentTab == wardrobe.itemsTabID then
+		pagedContent = wardrobe.TabContent.ItemsFrame.PagedContent;
+	elseif currentTab == wardrobe.setsTabID then
+		pagedContent = wardrobe.TabContent.SetsFrame.PagedContent;
+	elseif currentTab == wardrobe.customSetsTabID then
+		pagedContent = wardrobe.TabContent.CustomSetsFrame.PagedContent;
+	else
+		return;
+	end
+
+	local pagingControls = pagedContent.PagingControls;
+	if direction > 0 then
+		pagingControls:PreviousPage();
+	else
+		pagingControls:NextPage();
+	end
+end
+
+function TransmogFrameMixin:NavigatePreviousSection(isStickNavigation)
+	local direction = -1;
+	self:NavigateHorizontalSection(direction, isStickNavigation);
+end
+
+function TransmogFrameMixin:NavigateNextSection(isStickNavigation)
+	local direction = 1;
+	self:NavigateHorizontalSection(direction, isStickNavigation);
+end
+
+function TransmogFrameMixin:NavigateUp()
+	local direction = 1;
+	self:NavigateVerticalSection(direction);
+end
+
+function TransmogFrameMixin:NavigateDown()
+	local direction = -1;
+	self:NavigateVerticalSection(direction);
 end
 
 function TransmogFrameMixin:SetUpNavigation()
 	local TransmogFrameSectionHandlers = {
 		left = function()
-			self:NavigateHorizontalSection(-1);
+			self:NavigatePreviousSection(true);
 		end,
 
 		right = function()
-			self:NavigateHorizontalSection(1);
+			self:NavigateNextSection(true);
+		end,
+
+		up = function()
+			self:NavigateUp();
+		end,
+
+		down = function()
+			self:NavigateDown();
 		end,
 	};
 
@@ -488,55 +723,733 @@ function TransmogFrameMixin:RefreshTabIndicators()
 	end
 end
 
-function TransmogFrameMixin:SetUpGamepad()
+function TransmogFrameMixin:SetWardrobePageIconsShown(show)
+	self.WardrobeCollection.TabContent.ItemsFrame.PagedContent.PagingIcon:SetShown(show);
+	self.WardrobeCollection.TabContent.SetsFrame.PagedContent.PagingIcon:SetShown(show);
+	self.WardrobeCollection.TabContent.CustomSetsFrame.PagedContent.PagingIcon:SetShown(show);
+end
+
+function TransmogFrameMixin:SetUpCursorRotation()
+	-- North facing cursor for bottom slots
+	SmartNavigation_SetClampedCursorRotationForFrame(self.CharacterPreview.BottomSlots, 270);
+
+	-- West facing cursor for right slots
+	SmartNavigation_SetClampedCursorRotationForFrame(self.CharacterPreview.RightSlots, 180);
+end
+
+function TransmogFrameMixin:SetUpOutfitBindings()
+	local function CanChangeNameOrIcon()
+		if SmartNavigation:GetCurrentButtonContext() ~= "ButtonContext_TransmogOutfitButton" or C_TransmogOutfitInfo.InTransmogEvent() then
+			return false;
+		end
+
+		local currentButton = SmartNavigation:GetCurrentButton();
+		local element = currentButton and currentButton:GetParent();
+		return element ~= nil and element.OpenEditPopup ~= nil;
+	end
+
 	local function ChangeNameOrIcon()
-		local element = SmartNavigation:GetCurrentButton():GetParent();
-		if element and element.OpenEditPopup and not C_TransmogOutfitInfo.InTransmogEvent() then
-			element:OpenEditPopup();
+		if not CanChangeNameOrIcon() then
+			return;
+		end
+
+		GamepadMode.FrameControlsManager:SuspendFrame();
+
+		local currentButton = SmartNavigation:GetCurrentButton();
+		local element = currentButton:GetParent();
+		element:OpenEditPopup();
+	end
+
+	local function CanPurchaseSlot()
+		return self.OutfitCollection.PurchaseOutfitButton:IsEnabled();
+	end
+
+	local function PurchaseSlot()
+		if CanPurchaseSlot() then
+			self.OutfitCollection.PurchaseOutfitButton:Click();
 		end
 	end
-	local changeNameOrIconAction = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, ChangeNameOrIcon, TRANSMOG_EDIT_OUTFIT_SLOT);
-	changeNameOrIconAction:AddButtonContext("ButtonContext_TransmogOutfitButton");
-	changeNameOrIconAction:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
 
-	self.transmogFrameFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "ClassTalentsFrameFooter");
-	self.transmogFrameFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
-	self.transmogFrameFooter:AddStandardSelectPrompt();
-	self.transmogFrameFooter:AddPromptedBinding(changeNameOrIconAction);
-	self.transmogFrameFooter:Finalize();
+	local function CanUsePurchaseSlotBinding()
+		return CanChangeNameOrIcon() or CanPurchaseSlot();
+	end
 
-	local pagedContent = self.WardrobeCollection.TabContent.ItemsFrame.PagedContent;
-	pagedContent:RegisterCallback(PagedContentFrameBaseMixin.Event.OnUpdate, function()
-		SmartNavigation:RefreshButtonGroups();
-	end, self);
+	local function CanBindOutfit()
+		return SmartNavigation:GetCurrentButtonContext() == "ButtonContext_TransmogOutfitButton";
+	end
+
+	local function BindOutfit()
+		local currentButton = SmartNavigation:GetCurrentButton();
+		if not currentButton or not CanBindOutfit() then
+			return;
+		end
+
+		local outfitID;
+		if currentButton == self.OutfitCollection.ShowEquippedGearSpellFrame.Button then
+			outfitID = 0;
+		else
+			local element = currentButton:GetParent();
+			local elementData = element and element:GetElementData();
+			outfitID = elementData and elementData.outfitID;
+		end
+		
+		if outfitID then
+			GamepadMode.FrameControlsManager:SuspendFrame();
+			GamepadActionBarEditFrame:BindOutfit(outfitID);
+		end
+	end
+
+	local function CanSaveOutfit()
+		return self.OutfitCollection.SaveOutfitButton:IsEnabled();
+	end
+
+	local function SaveOutfit()
+		if CanSaveOutfit() then
+			self.OutfitCollection.SaveOutfitButton:Click();
+		end
+	end
+
+	local function CanUseOutfitBinding()
+		return CanBindOutfit() or CanSaveOutfit();
+	end
+
+	local holdTime = 0.5;
+	local function ToggleOutfitLock()
+		local currentButton = SmartNavigation:GetCurrentButton();
+		if not currentButton then
+			return;
+		end
+
+		if currentButton == self.OutfitCollection.ShowEquippedGearSpellFrame.Button then
+			if currentButton:IsShown() and currentButton:IsEnabled() then
+				currentButton:Click("RightButton");
+			end
+			return;
+		end
+
+		local outfitFrame = currentButton:GetParent();
+		local outfitIcon = outfitFrame and outfitFrame.OutfitIcon;
+		if outfitIcon and outfitIcon:IsShown() and outfitIcon:IsEnabled() then
+			outfitIcon:Click("RightButton");
+		end
+	end
+
+	local toggleOutfitLock = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_BOTTOM, holdTime,
+		GenerateClosure(SmartNavigation.Click, SmartNavigation), ToggleOutfitLock, FRAME_ACTION_TOGGLE_OUTFIT_LOCK);
+	toggleOutfitLock:AddButtonContext("ButtonContext_TransmogOutfitButton");
+	toggleOutfitLock:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local purchaseSlot = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_TOP, holdTime, nil, nil, TRANSMOG_PURCHASE_OUTFIT_SLOT);
+	purchaseSlot:AddCondition(CanPurchaseSlot);
+
+	local purchaseSlotIcon = GamepadMode.AddGamepadIconToButton(self.OutfitCollection.PurchaseOutfitButton, GAMEPAD_FACE_TOP, { isHoldAction = true, });
+	local purchaseSlotIconBinding = purchaseSlot:AddCustomPromptBinding({
+		conditions = { CanUsePurchaseSlotBinding },
+		frame = purchaseSlotIcon,
+	});
+	purchaseSlot:AddCustomPromptHoldFunction(purchaseSlotIconBinding, {
+		holdTime = holdTime,
+		onTap = ChangeNameOrIcon,
+		onHeld = PurchaseSlot,
+	});
+
+	local changeNameOrIconAction = GamepadSharedUtility.CreateExtensiblePromptedBinding(GAMEPAD_FACE_TOP, "ChangeNameOrIcon");
+	changeNameOrIconAction:AddFooterBinding({
+		label = TRANSMOG_EDIT_OUTFIT_SLOT,
+		buttonContexts = { "ButtonContext_TransmogOutfitButton" },
+		conditions = { CanChangeNameOrIcon },
+	});
+
+	local saveOutfit = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, holdTime, nil, nil, TRANSMOG_SAVE_OUTFIT);
+	saveOutfit:AddCondition(CanSaveOutfit);
+
+	local saveOutfitIcon = GamepadMode.AddGamepadIconToButton(self.OutfitCollection.SaveOutfitButton, GAMEPAD_FACE_LEFT, { isHoldAction = true });
+	local saveOutfitIconBinding = saveOutfit:AddCustomPromptBinding({
+		conditions = { CanUseOutfitBinding },
+		frame = saveOutfitIcon,
+	});
+	saveOutfit:AddCustomPromptHoldFunction(saveOutfitIconBinding, {
+		holdTime = holdTime,
+		onTap = BindOutfit,
+		onHeld = SaveOutfit,
+	});
+
+	local bindPrompt = GamepadSharedUtility.CreateExtensiblePromptedBinding(GAMEPAD_FACE_LEFT, "BindOutfitPrompt");
+	bindPrompt:AddFooterBinding({
+		label = CONTEXT_ACTION_LABEL_BIND_TO_GAMEPAD_ACTION_BAR,
+		buttonContexts = { "ButtonContext_TransmogOutfitButton" },
+	});
+
+	self.outfitsFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "TransmogOutfitsFooter");
+	self.outfitsFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
+	self.outfitsFooter:AddStandardSelectPrompt();
+	self.outfitsFooter:AddPromptedBinding(toggleOutfitLock);
+	self.outfitsFooter:AddPromptedBinding(changeNameOrIconAction);
+	self.outfitsFooter:AddPromptedBinding(saveOutfit);
+	self.outfitsFooter:AddPromptedBinding(bindPrompt);
+	self.outfitsFooter:AddPromptedBinding(purchaseSlot);
+	self.outfitsFooter:Finalize();
+end
+
+function TransmogFrameMixin:SetUpCharacterPreviewBindings()
+	local function OpenSlotSettings()
+		local currentButton = SmartNavigation:GetCurrentButton();
+
+		if currentButton and currentButton.FlyoutDropdown then
+			currentButton.FlyoutDropdown:OpenMenu();
+		end
+	end
+
+	local function CanOpenSlotSettings()
+		local currentButton = SmartNavigation:GetCurrentButton();
+		return currentButton and currentButton.FlyoutDropdown and currentButton.FlyoutDropdown:IsShown();
+	end
+
+	local function UndoSlotChanges()
+		local currentButton = SmartNavigation:GetCurrentButton();
+		if not currentButton then
+			return;
+		end
+
+		currentButton:OnClick("RightButton");
+	end
+
+	local function CanUndoSlotChanges()
+		local currentButton = SmartNavigation:GetCurrentButton();
+		local outfitSlotInfo = currentButton:GetSlotInfo();
+
+		return outfitSlotInfo and outfitSlotInfo.hasPending;
+	end
+
+	local function UndoAllChanges()
+		self.CharacterPreview.ClearAllPendingButton:Click();
+	end
+
+	local function CanUndoAllChanges()
+		local cost = C_TransmogOutfitInfo.GetPendingTransmogCost();
+		return cost and cost > 0;
+	end
+
+	local function CanSaveOutfit()
+		return self.OutfitCollection.SaveOutfitButton:IsEnabled();
+	end
+
+	local function SaveOutfit()
+		if CanSaveOutfit() then
+			self.OutfitCollection.SaveOutfitButton:Click();
+		end
+	end
+
+	local function CanUseSaveorSettingsBinding()
+		return CanOpenSlotSettings() or CanSaveOutfit();
+	end
+
+	local function Select()
+		local currentButton = SmartNavigation:GetCurrentButton();
+		if not currentButton then
+			return;
+		end
+
+		-- Focus Wardrobe section and select currently assigned appearance for slot
+		if currentButton.buttonContext == "ButtonContext_TransmogAppearanceSlot" then
+			currentButton:OnSelect();
+			self:NavigateNextSection(false);
+
+			local itemsFrame = self.WardrobeCollection.TabContent.ItemsFrame;
+			local slotInfo = currentButton:GetSlotInfo();
+			local targetButton;
+			if slotInfo then
+				if slotInfo.displayType == Enum.TransmogOutfitDisplayType.Unassigned then
+					targetButton = itemsFrame.DisplayTypes.DisplayTypeUnassignedButton;
+				elseif slotInfo.displayType == Enum.TransmogOutfitDisplayType.Equipped then
+					targetButton = itemsFrame.DisplayTypes.DisplayTypeEquippedButton;
+				else
+					targetButton = itemsFrame:PageToTransmogID(slotInfo.transmogID);
+				end
+			end
+
+			if targetButton and targetButton:IsShown() then
+				SmartNavigation:RefreshButtonGroups();
+				SmartNavigation:SelectButton(targetButton);
+			end
+			self.returnSlotButton = currentButton;
+			self.wardrobeFooter:Refresh();
+			return;
+		end
+
+		currentButton:Click();
+	end
+
+	local holdTime = 0.5;
+	local undoAllChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_TOP, holdTime, UndoSlotChanges, UndoAllChanges, TRANSMOGRIFY_CLEAR_ALL_PENDING);
+	undoAllChanges:AddCondition(CanUndoAllChanges);
+	undoAllChanges:AddButtonContext("ButtonContext_TransmogAppearanceSlot");
+
+	local undoSlotChanges = GamepadSharedUtility.CreateExtensiblePromptedBinding(GAMEPAD_FACE_TOP, "UndoSlotChanges");
+	undoSlotChanges:AddFooterBinding({
+		label = RESET,
+		buttonContexts = { "ButtonContext_TransmogAppearanceSlot" },
+		conditions = { CanUndoSlotChanges },
+	});
+
+	local saveOutfit = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, holdTime, nil, nil, TRANSMOG_SAVE_OUTFIT);
+	saveOutfit:AddCondition(CanSaveOutfit);
+
+	local saveOutfitIcon = GamepadMode.AddGamepadIconToButton(self.OutfitCollection.SaveOutfitButton, GAMEPAD_FACE_LEFT, { isHoldAction = true });
+	local saveOutfitIconBinding = saveOutfit:AddCustomPromptBinding({
+		conditions = { CanUseSaveorSettingsBinding },
+		frame = saveOutfitIcon,
+	});
+	saveOutfit:AddCustomPromptHoldFunction(saveOutfitIconBinding, {
+		holdTime = holdTime,
+		onTap = OpenSlotSettings,
+		onHeld = SaveOutfit,
+	});
+
+	local slotSettings = GamepadSharedUtility.CreateExtensiblePromptedBinding(GAMEPAD_FACE_LEFT, "SlotSettingsPrompt");
+	slotSettings:AddFooterBinding({
+		label = SETTINGS,
+		conditions = { CanOpenSlotSettings },
+	});
+
+	local select = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, Select, ACTION_LABEL_SELECT);
+
+	self.characterPreviewFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "TransmogCharacterPreviewFooter");
+	self.characterPreviewFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
+	self.characterPreviewFooter:AddPromptedBinding(select);
+	self.characterPreviewFooter:AddPromptedBinding(saveOutfit);
+	self.characterPreviewFooter:AddPromptedBinding(slotSettings);
+	self.characterPreviewFooter:AddPromptedBinding(undoAllChanges);
+	self.characterPreviewFooter:AddPromptedBinding(undoSlotChanges);
+
+	local footerAnchor = CreateAnchor("TOPLEFT", self.CharacterPreview, "BOTTOMLEFT");
+	self.characterPreviewFooter:SetCustomAnchor(footerAnchor);
+	self.characterPreviewFooter:Finalize();
+end
+
+function TransmogFrameMixin:SetUpWardrobeBindings()
+	local function CanUndoAllChanges()
+		local cost = C_TransmogOutfitInfo.GetPendingTransmogCost();
+		return cost and cost > 0;
+	end
+
+	local function CanOpenMoreMenu()
+		local currentTab = TabSystemOwnerMixin.GetTab(self.WardrobeCollection);
+		if currentTab == self.WardrobeCollection.situationsTabID then
+			return false;
+		end
+
+		local buttonContext = SmartNavigation:GetCurrentButtonContext();
+		return buttonContext == "ButtonContext_TransmogItemModel" or buttonContext == "ButtonContext_TransmogSetModel";
+	end
+
+	local function OpenMoreMenu()
+		if not CanOpenMoreMenu() then
+			return;
+		end
+
+		local currentButton = SmartNavigation:GetCurrentButton();
+		currentButton:OnMouseUp("RightButton");
+	end
+
+	local function CanUndoSituationChanges()
+		return TabSystemOwnerMixin.GetTab(self.WardrobeCollection) == self.WardrobeCollection.situationsTabID
+			and C_TransmogOutfitInfo.HasPendingOutfitSituations();
+	end
+
+	local function CanUndo()
+		local currentTab = TabSystemOwnerMixin.GetTab(self.WardrobeCollection);
+		if currentTab == self.WardrobeCollection.situationsTabID then
+			return CanUndoSituationChanges();
+		end
+
+		return CanUndoAllChanges();
+	end
+
+	local function CanUseTopFaceBinding()
+		return CanOpenMoreMenu() or CanUndo();
+	end
+
+	local function UndoAllChanges()
+		if not CanUndo() then
+			return;
+		end
+
+		local currentTab = TabSystemOwnerMixin.GetTab(self.WardrobeCollection);
+		if currentTab == self.WardrobeCollection.situationsTabID then
+			self.WardrobeCollection.TabContent.SituationsFrame.UndoButton:Click();
+			return;
+		end
+
+		if CanUndoAllChanges() then
+			self.CharacterPreview.ClearAllPendingButton:Click();
+		end
+	end
+
+	local function CanSaveOutfit()
+		local currentTab = TabSystemOwnerMixin.GetTab(self.WardrobeCollection);
+		if currentTab == self.WardrobeCollection.situationsTabID then
+			return false;
+		end
+
+		return self.OutfitCollection.SaveOutfitButton:IsEnabled();
+	end
+
+	local function SaveOutfit()
+		if CanSaveOutfit() then
+			self.OutfitCollection.SaveOutfitButton:Click();
+		end
+	end
+
+	local function Back()
+		if self.returnSlotButton then
+			self:NavigatePreviousSection(false);
+			return;
+		end
+
+		self.CloseButton:Click();
+	end
+
+	local function CanApplySituationChanges()
+		local applyButton = self.WardrobeCollection.TabContent.SituationsFrame.ApplyButton;
+		return TabSystemOwnerMixin.GetTab(self.WardrobeCollection) == self.WardrobeCollection.situationsTabID
+			and applyButton:IsShown() and applyButton:IsEnabled();
+	end
+
+	local function ApplySituationChanges()
+		if CanApplySituationChanges() then
+			self.WardrobeCollection.TabContent.SituationsFrame.ApplyButton:Click();
+		end
+	end
+
+	local function OpenFilterDropdown()
+		self.WardrobeCollection.TabContent.ItemsFrame.FilterButton:OpenMenu();
+	end
+
+	local holdTime = 0.5;
+	local undoAllChanges = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_TOP, holdTime, nil, nil, TRANSMOGRIFY_CLEAR_ALL_PENDING);
+	undoAllChanges:AddCondition(CanUndo);
+	undoAllChanges:SetLabelFunction(function()
+		if TabSystemOwnerMixin.GetTab(self.WardrobeCollection) == self.WardrobeCollection.situationsTabID then
+			return TRANSMOG_SITUATIONS_UNDO;
+		end
+
+		return TRANSMOGRIFY_CLEAR_ALL_PENDING;
+	end);
+
+	local undoAllChangesIconBinding = undoAllChanges:AddCustomPromptBinding({
+		frame = self.WardrobeCollection.TabContent.SituationsFrame.GamepadUndoButton,
+		conditions = { CanUseTopFaceBinding },
+		-- Input eligibility is shared, but this icon belongs only to situation undo.
+		visibilityType = function()
+			return CanUndoSituationChanges() and PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE
+				or PromptedBindingMixin.VISIBILITY_TYPE.NEVER;
+		end,
+	});
+	undoAllChanges:AddCustomPromptHoldFunction(undoAllChangesIconBinding, {
+		holdTime = holdTime,
+		onTap = OpenMoreMenu,
+		onHeld = UndoAllChanges,
+	});
+
+	local moreAction = GamepadSharedUtility.CreateExtensiblePromptedBinding(GAMEPAD_FACE_TOP, "MoreAction");
+	moreAction:AddFooterBinding({
+		label = CONTEXT_ACTION_LABEL_MORE_ACTIONS,
+		buttonContexts = { "ButtonContext_TransmogItemModel", "ButtonContext_TransmogSetModel" },
+		conditions = { CanOpenMoreMenu },
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+	});
+
+	local saveOutfit = GamepadSharedUtility.CreateTapOrHoldPromptedBinding(GAMEPAD_FACE_LEFT, holdTime, nil, nil, TRANSMOG_SAVE_OUTFIT);
+	saveOutfit:AddCondition(CanSaveOutfit);
+	saveOutfit:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local saveOutfitIcon = GamepadMode.AddGamepadIconToButton(self.OutfitCollection.SaveOutfitButton, GAMEPAD_FACE_LEFT, { isHoldAction = true });
+	local saveOutfitIconBinding = saveOutfit:AddCustomPromptBinding({
+		conditions = { CanSaveOutfit },
+		frame = saveOutfitIcon,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+	});
+	saveOutfit:AddCustomPromptHoldFunction(saveOutfitIconBinding, {
+		holdTime = holdTime,
+		onHeld = SaveOutfit,
+	});
+
+	local applySituationChanges = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, ApplySituationChanges, TRANSMOG_SITUATIONS_APPLY, "ApplySituationChanges");
+	applySituationChanges:AddFooterBinding({
+		label = TRANSMOG_SITUATIONS_APPLY,
+		conditions = { CanApplySituationChanges },
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+	});
+
+	local applySituationChangesIcon = GamepadMode.AddGamepadIconToButton(self.WardrobeCollection.TabContent.SituationsFrame.ApplyButton, GAMEPAD_FACE_LEFT);
+	applySituationChanges:AddCustomPromptBinding({
+		conditions = { CanApplySituationChanges },
+		frame = applySituationChangesIcon,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+	});
+
+	local back = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, Back);
+	back:SetLabelFunction(function()
+		if self.returnSlotButton then
+			return FRAME_ACTION_BACK;
+		end
+
+		return FRAME_ACTION_CLOSE;
+	end);
+
+	local openDropdown = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, OpenFilterDropdown,  nil);
+	openDropdown:SetCustomPromptFrame(self.WardrobeCollection.TabContent.ItemsFrame.DropdownIcon);
+
+	local focusSearch = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, function() self.WardrobeCollection.TabContent.ItemsFrame.SearchBox:SetFocus(); end,  nil);
+	focusSearch:SetCustomPromptFrame(self.WardrobeCollection.TabContent.ItemsFrame.SearchBoxIcon);
+
+	self.wardrobeFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "TransmogWardrobeFooter");
+	self.wardrobeFooter:AddStandardSelectPrompt();
+	self.wardrobeFooter:AddPromptedBinding(back);
+	self.wardrobeFooter:AddPromptedBinding(undoAllChanges);
+	self.wardrobeFooter:AddPromptedBinding(moreAction);
+	self.wardrobeFooter:AddPromptedBinding(saveOutfit);
+	self.wardrobeFooter:AddPromptedBinding(applySituationChanges);
+	self.wardrobeFooter:AddPromptedBinding(openDropdown);
+	self.wardrobeFooter:AddPromptedBinding(focusSearch);
+	self.wardrobeFooter:SetAlignmentType(PromptedBindingFooterMixin.ALIGNMENT_TYPE.RIGHT);
+	self.wardrobeFooter:Finalize();
+end
+
+function TransmogFrameMixin:SetUpCameraBindings()
+	local function Reset()
+		self.CharacterPreview.ModelScene:Reset();
+	end
+
+	self.cameraBindings = GamepadMode.CreateBindingGroup("CameraBindings");
+	self.cameraBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.CharacterPreview.SetZoomAndRotateSpeeds, self.CharacterPreview));
+	self.cameraBindings:AddFunctionBinding(GAMEPAD_STICK_RIGHT_PRESS, Reset);
+
+	local rotateCamera = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_HORIZONTAL, nil, ACTION_LABEL_ROTATE);
+	local zoomCamera = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_VERTICAL, nil, FRAME_ACTION_ZOOM);
+	local resetCamera = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, nil, RESET_CAMERA);	
+
+	self.cameraFooter = GamepadSharedUtility.CreatePromptedBindingFooter(self, "TransmogCameraFooter");
+	self.cameraFooter:AddPromptedBinding(rotateCamera);
+	self.cameraFooter:AddPromptedBinding(zoomCamera);
+	self.cameraFooter:AddPromptedBinding(resetCamera);
+
+	local footerAnchor = CreateAnchor("TOPRIGHT", self.CharacterPreview, "TOPRIGHT", -20, -5);
+	self.cameraFooter:SetCustomAnchor(footerAnchor);
+	self.cameraFooter:SetBackgroundArtHidden(true);
+	self.cameraFooter:Finalize();
+end
+
+function TransmogFrameMixin:SetUpSearch()
+	local searchBox = self.WardrobeCollection.TabContent.ItemsFrame.SearchBox;
+
+	local function ClearText()
+		searchBox:SetText("");
+		searchBox:SetFocus();
+	end
+
+	local function HasText()
+		return searchBox:GetText() ~= "";
+	end
+
+	local function Back()
+		searchBox:ClearFocus();
+	end
+
+	local clear = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, ClearText, NARRATION_OBJECT_CLEAR_BUTTON);
+	clear:AddCondition(HasText);
+
+	local back = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, Back, BACK);
+
+	local unfocusSearch = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, Back, nil);
+	unfocusSearch:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.NEVER);
+
+	local search = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, Back, SEARCH);
+	search:AddCondition(HasText);
+
+	local searchBoxFooter = GamepadSharedUtility.CreatePromptedBindingFooter(searchBox, "TransmogSearchBoxFooter");
+	searchBoxFooter:AddPromptedBinding(search);
+	searchBoxFooter:AddPromptedBinding(clear);
+	searchBoxFooter:AddPromptedBinding(back);
+	searchBoxFooter:AddPromptedBinding(unfocusSearch);
+	searchBoxFooter:Finalize();
+	searchBoxFooter.inputLegend:SetFrameStrata("HIGH");
+
+	local function OnSearchBoxFocusGained()
+		GamepadMode.FrameControlsManager:SuspendFrame();
+		GamepadMode.FrameControlsManager:FrameShown(searchBox);
+		searchBoxFooter:ShowAndActivateBindings();
+	end
+
+	local function OnSearchBoxFocusLost()
+		searchBoxFooter:HideAndDeactivateBindings();
+		GamepadMode.FrameControlsManager:FrameHidden(searchBox);
+		GamepadMode.FrameControlsManager:UnsuspendFrame();
+	end
+
+	local function OnTextChanged()
+		searchBoxFooter:Refresh();
+	end
+
+	SmartNavigation_MarkFrameIgnored(searchBox.clearButton);
+	searchBox:HookScript("OnEditFocusGained", OnSearchBoxFocusGained);
+	searchBox:HookScript("OnEditFocusLost", OnSearchBoxFocusLost);
+	searchBox:HookScript("OnTextChanged", OnTextChanged);
+end
+
+function TransmogFrameMixin:SetUpGamepad()
+	self.currentFocus = nil;
+	for _, section in ipairs(self:GetNavigationSections()) do
+		SmartNavigation_MarkFrameSubSection(section.frame, section.focusKey);
+	end
+
+	local function RegisterPagedContentNavigation(pagedContent, tabID)
+		pagedContent:RegisterCallback(PagedContentFrameBaseMixin.Event.OnUpdate, function()
+			self:UpdatePagedContentNavigation(pagedContent, tabID);
+			SmartNavigation:RefreshButtonGroups();
+		end, self);
+		self:UpdatePagedContentNavigation(pagedContent, tabID);
+	end
+
+	RegisterPagedContentNavigation(self.WardrobeCollection.TabContent.ItemsFrame.PagedContent, self.WardrobeCollection.itemsTabID);
+	RegisterPagedContentNavigation(self.WardrobeCollection.TabContent.CustomSetsFrame.PagedContent, self.WardrobeCollection.customSetsTabID);
+
+	self:SetUpOutfitBindings();
+	self:SetUpCharacterPreviewBindings();
+	self:SetUpCameraBindings();
+	self:SetUpWardrobeBindings();
 
 	self:SetUpNavigation();
 	self:SetUpTabbing();
+	self:SetUpCursorRotation();
+	self:SetUpSearch();
+end
+
+function TransmogFrameMixin:FocusOutfit()
+	local sectionIndex = 1;
+	self:FocusSection(sectionIndex);
+end
+
+function TransmogFrameMixin:FocusCharacter()
+	local sectionIndex = 2;
+	self:FocusSection(sectionIndex);
+end
+
+function TransmogFrameMixin:FocusWardrobe()
+	local sectionIndex = 3;
+	self:FocusSection(sectionIndex);
+end
+
+function TransmogFrameMixin:IsOutfitFocused()
+	return self.currentFocus == OUTFIT_FOCUS;
+end
+
+function TransmogFrameMixin:IsCharacterFocused()
+	return self.currentFocus == CHARACTER_FOCUS;
+end
+
+function TransmogFrameMixin:IsWardrobeFocused()
+	return self.currentFocus == WARDROBE_FOCUS;
+end
+
+function TransmogFrameMixin:ClearSectionBindings()
+	self.outfitsFooter:HideAndDeactivateBindings();
+	self.characterPreviewFooter:HideAndDeactivateBindings();
+	self.cameraFooter:HideAndDeactivateBindings();
+	self.wardrobeFooter:HideAndDeactivateBindings();
+	GamepadMode.DeactivateBindingGroup(self.cameraBindings);
+	self.CharacterPreview:SetZoomAndRotateSpeeds(0, 0);
+
+	GamepadScrollBarHint:Hide();
+	SmartNavigation:SetScrollFrameForFrame(self, nil);
+	self.TabIndicators:Hide();
+	self:SetWardrobePageIconsShown(false);
+end
+
+function TransmogFrameMixin:ClearBindings()
+	self:ClearSectionBindings();
+	GamepadMode.DeactivateBindingGroup(self.navigateTransmogFrameSection);
+
+	SmartNavigation:UnregisterCallback("HitRightEdge", self);
+	SmartNavigation:UnregisterCallback("HitLeftEdge", self);
 end
 
 function TransmogFrameMixin:FocusGamepad()
-	self.transmogFrameFooter:ShowAndActivateBindings();
 	GamepadMode.ActivateBindingGroup(self.navigateTransmogFrameSection);
+	SmartNavigation:RegisterCallback("HitLeftEdge", self.NavigatePreviousSection, self, false);
+	SmartNavigation:RegisterCallback("HitRightEdge", self.NavigateNextSection, self, false);
+	self.waitingForStickReset = false;
 
-	SmartNavigation:SetScrollFrameForFrame(self, self.OutfitCollection.OutfitList.ScrollBox);
-	GamepadScrollBarHint:SetOwner(self.OutfitCollection.OutfitList.ScrollBar.Track.Thumb, "CENTER");
-	GamepadScrollBarHint:Show();
+	local sectionIndexToRestore;
+	for sectionIndex, section in ipairs(self:GetNavigationSections()) do
+		if section.focusKey == self.currentFocus then
+			sectionIndexToRestore = sectionIndex;
+			break;
+		end
+	end
 
-	self.TabIndicators:Show();
-	self:RefreshTabIndicators();
+	if sectionIndexToRestore then
+		self:FocusSection(sectionIndexToRestore);
+	else
+		self:FocusOutfit();
+	end
 end
 
 function TransmogFrameMixin:UnfocusGamepad()
-	self.transmogFrameFooter:HideAndDeactivateBindings();
-	GamepadMode.DeactivateBindingGroup(self.navigateTransmogFrameSection);
+	self:ClearBindings();
+end
 
-	self.TabIndicators:Hide();
-	GamepadScrollBarHint:Hide();
+function TransmogFrameMixin:SetUpPagingArt(tabContentFrame)
+	local pagingControls = tabContentFrame.PagedContent.PagingControls;
+	local prevPageButton = pagingControls.PrevPageButton;
+	local nextPageButton = pagingControls.NextPageButton;
+
+	pagingControls:ClearAllPoints();
+	pagingControls:SetPoint("BOTTOMRIGHT", tabContentFrame.PagedContent, "BOTTOMRIGHT", 0, 5);
+
+	prevPageButton:SetNormalAtlas("ui-journeys-delve-arrow-big-left");
+	prevPageButton:SetHighlightAtlas("ui-journeys-delve-arrow-big-left", "ADD");
+	prevPageButton:SetDisabledAtlas("ui-journeys-delve-arrow-big-left-disable");
+	prevPageButton:SetPushedAtlas("ui-journeys-delve-arrow-big-left-pressed");
+	prevPageButton:GetNormalTexture():SetRotation(math.pi / 2);
+	prevPageButton:GetHighlightTexture():SetRotation(math.pi / 2);
+	prevPageButton:GetDisabledTexture():SetRotation(math.pi / 2);
+	prevPageButton:GetPushedTexture():SetRotation(math.pi / 2);
+	prevPageButton:SetWidth(20);
+
+	nextPageButton:SetNormalAtlas("ui-journeys-delve-arrow-big-left");
+	nextPageButton:SetHighlightAtlas("ui-journeys-delve-arrow-big-left", "ADD");
+	nextPageButton:SetDisabledAtlas("ui-journeys-delve-arrow-big-left-disable");
+	nextPageButton:SetPushedAtlas("ui-journeys-delve-arrow-big-left-pressed");
+	nextPageButton:GetNormalTexture():SetRotation(-math.pi / 2);
+	nextPageButton:GetHighlightTexture():SetRotation(-math.pi / 2);
+	nextPageButton:GetDisabledTexture():SetRotation(-math.pi / 2);
+	nextPageButton:GetPushedTexture():SetRotation(-math.pi / 2);
+	nextPageButton:SetWidth(20);
 end
 
 function TransmogFrameMixin:InitializeGamepad()
 	-- Hide unnecessary TransmogFrame elements for gamepad.
 	self.CloseButton:Hide();
+	self.CharacterPreview.ModelScene.ControlFrame:Hide();
+
+	local situationsFrame = self.WardrobeCollection.TabContent.SituationsFrame;
+	situationsFrame.UndoButton:ClearAllPoints();
+	situationsFrame.UndoButton:SetPoint("LEFT", situationsFrame.GamepadUndoButton, "RIGHT");
+
+	local itemsFrame = self.WardrobeCollection.TabContent.ItemsFrame;
+	itemsFrame.FilterButton:SetHeight(25);
+	itemsFrame.FilterButton:ClearAllPoints();
+	itemsFrame.FilterButton:SetPoint("TOPRIGHT", itemsFrame, "TOPRIGHT", -45, -24);
+
+	itemsFrame.SearchBox:SetSize(385, 25);
+	itemsFrame.SearchBox:ClearAllPoints();
+	itemsFrame.SearchBox:SetPoint("RIGHT", itemsFrame.DropdownIcon, "LEFT", -3, 0);
+
+	self:SetUpPagingArt(itemsFrame);
+	self:SetUpPagingArt(self.WardrobeCollection.TabContent.SetsFrame);
+	self:SetUpPagingArt(self.WardrobeCollection.TabContent.CustomSetsFrame);
 end
 
 function TransmogFrameMixin:RegisterForTransitions()
@@ -585,6 +1498,12 @@ function TransmogOutfitCollectionMixin:OnLoad()
 
 	view:SetElementInitializer("TransmogOutfitEntryTemplate", function(frame, elementData)
 		frame:Init(elementData);
+
+		local function SelectEntry()
+			frame:SelectEntry();
+		end
+		frame.OutfitButton.OnSmartNavSelect = SelectEntry;
+		frame.OutfitIcon.OnSmartNavSelect = SelectEntry;
 	end);
 
 	local padTop = 8;
@@ -855,13 +1774,26 @@ function TransmogOutfitCollectionMixin:SetCostModifierTooltip(tooltip)
 	self.costModifierTooltip = tooltip;
 end
 
-function TransmogOutfitCollectionMixin:GetFirstButtonForSection()
-	if self.SaveOutfitButton:IsEnabled() then
-		return self.SaveOutfitButton;
-	end
+function TransmogOutfitCollectionMixin:GetCurrentlyViewedOutfitEntry()
+	local viewedOutfitID = C_TransmogOutfitInfo.GetCurrentlyViewedOutfitID();
+	local outfitButtons = self.OutfitList.ScrollBox;
+	local selectedOutfit;
 
-	local outfitButtons = self.OutfitList.ScrollBox:GetFrames();
-	return outfitButtons and outfitButtons[1] and outfitButtons[1].OutfitButton;
+	outfitButtons:ForEachFrame(function(frame)
+		local elementData = frame:GetElementData();
+		if elementData and elementData.outfitID == viewedOutfitID then
+			selectedOutfit = frame;
+			return;
+		end
+	end);
+
+	return selectedOutfit;
+end
+
+function TransmogOutfitCollectionMixin:GetFirstButtonForSection()
+	local outfitButtons = self.OutfitList.ScrollBox;
+	local selectedOutfit = self:GetCurrentlyViewedOutfitEntry() or outfitButtons[1];
+	return selectedOutfit and selectedOutfit.OutfitButton;
 end
 
 function TransmogOutfitCollectionMixin:RefreshSmartNavJumps()
@@ -869,8 +1801,8 @@ function TransmogOutfitCollectionMixin:RefreshSmartNavJumps()
 
 	-- Clear previous overrides
 	for _, frame in ipairs(scrollBox:GetFrames()) do
-		SmartNavigation_ClearJumpNavigationOverridesInDirection(frame.OutfitButton, SMART_NAV_INPUT_DIRECTION.DOWN);
-		SmartNavigation_ClearJumpNavigationOverridesInDirection(frame.OutfitIcon, SMART_NAV_INPUT_DIRECTION.DOWN);
+		-- Cross-section navigation is handled by HitRightEdge so the focus group changes with the selection.
+		SmartNavigation_ClearJumpNavigationOverridesInDirection(frame.OutfitButton, SMART_NAV_INPUT_DIRECTION.RIGHT);
 	end
 	SmartNavigation_ClearJumpNavigationOverridesInDirection(self.PurchaseOutfitButton, SMART_NAV_INPUT_DIRECTION.UP);
 
@@ -891,10 +1823,6 @@ function TransmogOutfitCollectionMixin:RefreshSmartNavJumps()
 	if not lastFrame then
 		return;
 	end
-
-	SmartNavigation_AddJumpNavigationOverride(lastFrame.OutfitButton, SMART_NAV_INPUT_DIRECTION.DOWN, self.PurchaseOutfitButton);
-	SmartNavigation_AddJumpNavigationOverride(lastFrame.OutfitIcon, SMART_NAV_INPUT_DIRECTION.DOWN, self.PurchaseOutfitButton);
-	SmartNavigation_AddJumpNavigationOverride(self.PurchaseOutfitButton, SMART_NAV_INPUT_DIRECTION.UP, lastFrame.OutfitButton);
 end
 
 ShowEquippedGearSpellFrameMixin = {};
@@ -908,6 +1836,8 @@ function ShowEquippedGearSpellFrameMixin:OnLoad()
 	self.Button.Icon:ClearAllPoints();
 	self.Button.Icon:SetSize(36, 36);
 	self.Button.Icon:SetPoint("CENTER");
+
+	self.Button.buttonContext = "ButtonContext_TransmogOutfitButton";
 
 	self.Button:ClearPushedTexture();
 	self.Button:SetHighlightAtlas("transmog-outfit-spellframe", "ADD");
@@ -956,7 +1886,13 @@ function TransmogOutfitPopupMixin:OnShow()
 		self.BorderBox.SelectedIconArea.SelectedIconButton:SetIconTexture(icon);
 
 		-- Index is not yet set, but we know if an icon in IconSelector was selected it was in the list, so set directly.
-		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_CLICK);
+		if InputUtil.IsMKBUIEnabled() then
+			self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_CLICK);
+		else
+			local iconAtlas = InputIconTextureSetUtility.GetNormalActiveInputIconButtonTexture(GAMEPAD_STICK_RIGHT_PRESS);
+			local inputIcon = CreateAtlasMarkup(iconAtlas, 35, 35, 0, 5);
+			self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetText(ICON_SELECTION_GAMEPAD:format(inputIcon));
+		end
 		self.BorderBox.SelectedIconArea.SelectedIconText.SelectedIconDescription:SetFontObject(GameFontHighlightSmall);
 	end
 	self.IconSelector:SetSelectedCallback(OnIconSelected);
@@ -1166,12 +2102,6 @@ function TransmogCharacterMixin:OnShow()
 	self:RefreshHideIgnoredToggle();
 	self:RefreshSheatheWeaponToggle();
 	self:RefreshPreviewedWeaponToggle();
-
-	if InputUtil.IsGamepadUIEnabled() then
-		local controlFrame = self.ModelScene.ControlFrame;
-		controlFrame:UpdateLayout();
-		controlFrame:Show();
-	end
 end
 
 function TransmogCharacterMixin:OnHide()
@@ -1290,6 +2220,13 @@ function TransmogCharacterMixin:SetupSlots()
 end
 
 function TransmogCharacterMixin:SetupSlotSection(groupData)
+	-- The bottom group contains weapon appearances and their illusions.
+	-- WoWHack's weapons are handled differently, so we skip the bottom group for them
+	-- and disallow transmogging them.
+	if C_GameRules.IsWoWHack() and groupData.position == Enum.TransmogOutfitSlotPosition.Bottom then
+		return;
+	end
+
 	local parentFrame;
 	if groupData.position == Enum.TransmogOutfitSlotPosition.Left then
 		parentFrame = self.LeftSlots;
@@ -1578,25 +2515,39 @@ function TransmogCharacterMixin:RefreshSelectedSlot()
 end
 
 function TransmogCharacterMixin:RefreshSmartNavJumps()
-	-- Clear previous overrides
 	local leftSlotButtons = self.LeftSlots:GetLayoutChildren();
+	local rightSlotButtons = self.RightSlots:GetLayoutChildren();
+	local bottomSlotButtons = self.BottomSlots:GetLayoutChildren();
+
+	-- Clear previous overrides
 	for _, button in ipairs(leftSlotButtons) do
 		SmartNavigation_ClearJumpNavigationOverrides(button);
 	end
-
-	local bottomSlotButtons = self.BottomSlots:GetLayoutChildren();
+	
 	for _, button in ipairs(bottomSlotButtons) do
+		SmartNavigation_ClearJumpNavigationOverrides(button);
+	end
+
+	for _, button in ipairs(rightSlotButtons) do
 		SmartNavigation_ClearJumpNavigationOverrides(button);
 	end
 
 	-- Add slot jump overrides
 	local lastLeftSlotButton = leftSlotButtons[#leftSlotButtons];
-	SmartNavigation_AddJumpNavigationOverride(lastLeftSlotButton, SMART_NAV_INPUT_DIRECTION.DOWN, TransmogFrame.OutfitCollection.PurchaseOutfitButton)
-
+	local firstBottomSlotButton = bottomSlotButtons[1];
 	local lastBottomSlotButton = bottomSlotButtons[#bottomSlotButtons];
-	local rightSlotButtons = self.RightSlots:GetLayoutChildren();
-	local lastRightSlotButton = rightSlotButtons[#rightSlotButtons]
-	SmartNavigation_AddJumpNavigationOverride(lastBottomSlotButton, SMART_NAV_INPUT_DIRECTION.RIGHT, lastRightSlotButton)
+	
+	local lastRightSlotButton = rightSlotButtons[#rightSlotButtons];
+
+	SmartNavigation_AddJumpNavigationOverride(lastBottomSlotButton, SMART_NAV_INPUT_DIRECTION.RIGHT, lastRightSlotButton);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(lastLeftSlotButton, SMART_NAV_INPUT_DIRECTION.DOWN, firstBottomSlotButton);
+
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(leftSlotButtons[2], SMART_NAV_INPUT_DIRECTION.RIGHT, rightSlotButtons[1]);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(leftSlotButtons[3], SMART_NAV_INPUT_DIRECTION.RIGHT, rightSlotButtons[2]);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(leftSlotButtons[4], SMART_NAV_INPUT_DIRECTION.RIGHT, rightSlotButtons[3]);
+	SmartNavigation_AddBidirectionalJumpNavigationOverride(leftSlotButtons[5], SMART_NAV_INPUT_DIRECTION.RIGHT, rightSlotButtons[4]);
+	SmartNavigation_AddJumpNavigationOverride(leftSlotButtons[6], SMART_NAV_INPUT_DIRECTION.RIGHT, rightSlotButtons[4]);
+	SmartNavigation_AddJumpNavigationOverride(bottomSlotButtons[2], SMART_NAV_INPUT_DIRECTION.UP, lastLeftSlotButton);
 end
 
 function TransmogCharacterMixin:SetInitialSelectedSlot()
@@ -1762,9 +2713,34 @@ function TransmogCharacterMixin:GetItemTransmogInfoList()
 	return actor:GetItemTransmogInfoList();
 end
 
-function TransmogCharacterMixin:GetFirstButtonForSection()
-	local leftSlotButtons = self.LeftSlots:GetLayoutChildren();
-	return leftSlotButtons and leftSlotButtons[1];
+function TransmogCharacterMixin:GetFirstButtonForSection(isStickNavigation, direction)
+	local slots = self.LeftSlots;
+	-- D-pad entry from the wardrobe should land on the adjacent side of the character preview
+	if isStickNavigation == false and direction and direction < 0 then
+		slots = self.RightSlots;
+	end
+
+	local slotButtons = slots:GetLayoutChildren();
+	return slotButtons and slotButtons[1];
+end
+
+function TransmogCharacterMixin:SetZoomAndRotateSpeeds(rotation, zoom)
+	self.rotationSpeed = rotation * GAMEPAD_ROTATION_SPEED;
+	self.zoomSpeed = zoom * GAMEPAD_ZOOM_SPEED;
+
+	if rotation ~= 0 or zoom ~= 0 then
+		self:SetScript("OnUpdate", self.OnUpdate);
+	else
+		self:SetScript("OnUpdate", nil);
+	end
+end
+
+function TransmogCharacterMixin:OnUpdate(elapsed)
+	local camera = self.ModelScene:GetActiveCamera();
+	if camera then
+		camera:AdjustYaw(self.rotationSpeed * elapsed, 0);
+		camera:ZoomBy(self.zoomSpeed * elapsed);
+	end
 end
 
 TransmogWardrobeMixin = {
@@ -1873,6 +2849,7 @@ function TransmogWardrobeMixin:SetTab(tabID)
 		local targetButton = self:GetFirstButtonForTab();
 		SmartNavigation:SelectButton(targetButton);
 
+		TransmogFrame.wardrobeFooter:Refresh();
 		TransmogFrame:RefreshTabIndicators();
 	end
 end
@@ -2891,7 +3868,7 @@ function TransmogWardrobeItemsMixin:PageToTransmogID(transmogID)
 		return;
 	end
 
-	self.PagedContent:GoToElementByPredicate(function(elementData)
+	return self.PagedContent:GoToElementByPredicate(function(elementData)
 		if self.transmogLocation:IsAppearance() then
 			local mustBeUsable = true;
 			local sourceID = self:GetAnAppearanceSourceFromVisual(elementData.appearanceInfo.visualID, mustBeUsable);
@@ -3503,4 +4480,8 @@ function TransmogWardrobeSituationsMixin:Refresh()
 	local hasPending = C_TransmogOutfitInfo.HasPendingOutfitSituations();
 	self.ApplyButton:SetEnabled(hasPending and (situationsAreValid or not situationsEnabled));
 	self.UndoButton:SetShown(hasPending);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		TransmogFrame.wardrobeFooter:Refresh();
+	end
 end

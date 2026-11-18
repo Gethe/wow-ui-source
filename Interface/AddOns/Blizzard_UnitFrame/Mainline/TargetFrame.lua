@@ -376,6 +376,8 @@ function TargetFrameMixin:CheckBattlePet()
 		local petType = UnitBattlePetType(self.unit);
 		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:SetTexture("Interface\\TargetingFrame\\PetBadge-"..PET_TYPE_SUFFIX[petType]);
 		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Show();
+	else
+		self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Hide();
 	end
 end
 

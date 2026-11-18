@@ -23,6 +23,12 @@ function BindingGroupMixin:Init(bindingGroupName)
 	self.nextFunctionId = 1;
 end
 
+local function AssertValidKeyNameForBinding(keyNameOrNames)
+	for _, key in ipairs(keyNameOrNames) do
+		assert(key[1] ~= "<", "Binding must use a valid key");
+	end
+end
+
 --[[
 	Button bindings attempt to find the named button frame in LUA and call "OnClick" on it.
 ]]
@@ -30,6 +36,8 @@ function BindingGroupMixin:AddButtonBinding(keyNameOrNames, buttonFrameName, opt
 	if type(keyNameOrNames) ~= "table" then
 		keyNameOrNames = {keyNameOrNames};
 	end
+
+	AssertValidKeyNameForBinding(keyNameOrNames);
 
 	self:RemoveKeys(keyNameOrNames);
 
@@ -54,6 +62,8 @@ function BindingGroupMixin:AddFunctionBinding(keyNameOrNames, functionToBind, op
 	if type(keyNameOrNames) ~= "table" then
 		keyNameOrNames = {keyNameOrNames};
 	end
+
+	AssertValidKeyNameForBinding(keyNameOrNames);
 
 	self:RemoveKeys(keyNameOrNames);
 
@@ -140,7 +150,6 @@ function BindingGroupMixin:BlockEverything()
 		GAMEPAD_FACE_BOTTOM
 	});
 	self:BlockKeysWithoutModifiers({
-		GAMEPAD_STICK_LEFT,
 		GAMEPAD_SHOULDER_LEFT,
 		GAMEPAD_SHOULDER_RIGHT
 	});

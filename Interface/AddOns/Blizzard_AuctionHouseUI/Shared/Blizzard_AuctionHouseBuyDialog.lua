@@ -89,6 +89,7 @@ local AUCTION_HOUSE_BUY_DIALOG_EVENTS = {
 	"COMMODITY_PRICE_UNAVAILABLE",
 	"COMMODITY_PURCHASE_SUCCEEDED",
 	"COMMODITY_PURCHASE_FAILED",
+	"COMMODITY_PRICE_UNAVAILABLE_SELF_FOUND",
 };
 
 local BuyState = EnumUtil.MakeEnum(
@@ -97,7 +98,8 @@ local BuyState = EnumUtil.MakeEnum(
 	"PriceUpdated",
 	"PriceUnavailable",
 	"Purchasing",
-	"Waiting"
+	"Waiting",
+	"PriceUnavailableSelfFound"
 );
 
 function AuctionHouseBuyDialogMixin:OnShow()
@@ -155,6 +157,8 @@ function AuctionHouseBuyDialogMixin:OnEvent(event, ...)
 		end
 	elseif event == "COMMODITY_PRICE_UNAVAILABLE" then
 		self:SetState(BuyState.PriceUnavailable);
+	elseif event == "COMMODITY_PRICE_UNAVAILABLE_SELF_FOUND" then
+		self:SetState(BuyState.PriceUnavailableSelfFound);
 	elseif event == "COMMODITY_PURCHASE_SUCCEEDED" then
 		PlaySound(SOUNDKIT.LOOT_WINDOW_COIN_SOUND);
 		self:Hide();
@@ -194,6 +198,16 @@ function AuctionHouseBuyDialogMixin:SetState(buyState)
 		okayShown = true;
 		dialogHeight = 85;
 		notificationText = AUCTION_HOUSE_DIALOG_PRICE_UNAVAILABLE;
+		notificationFontObject = GameFontNormal;
+
+		local topOffset = 20;
+		local bottomOffset = self.OkayButton:GetTop() - self:GetBottom();
+		local yOffset = (dialogHeight - (bottomOffset + topOffset)) / 2;
+		notificationAnchor = { "CENTER", self.OkayButton, "TOP", 0, yOffset };
+	elseif buyState == BuyState.PriceUnavailableSelfFound then
+		okayShown = true;
+		dialogHeight = 85;
+		notificationText = ERR_PLAYER_IS_SELF_FOUND_CANNOT_USE_AUCTION_HOUSE;
 		notificationFontObject = GameFontNormal;
 
 		local topOffset = 20;

@@ -105,7 +105,7 @@ function FriendsListUtil.GetGameAccountPartyInviteRestriction(gameAccountInfo)
 		end
 	end
 
-	local hasValidRealmID = gameAccountInfo.realmID ~= 0;
+	local hasValidRealmID = gameAccountInfo.hasRealmInfo;
 	if not hasValidRealmID then
 		return BattleNetFriendPartyInviteRestrictionType.MissingRealmInfo;
 	end
@@ -161,7 +161,7 @@ local function IsBattleNetFriendGameAccountInfoValidDirectInviteTarget(friendGam
 		return false;
 	end
 
-	local hasValidRealmID = friendGameAccountInfo.realmID ~= 0;
+	local hasValidRealmID = friendGameAccountInfo.hasRealmInfo;
 	if not hasValidRealmID then
 		return false;
 	end
