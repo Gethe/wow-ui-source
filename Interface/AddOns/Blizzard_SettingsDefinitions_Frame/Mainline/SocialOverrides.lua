@@ -1,7 +1,3 @@
-SocialOverrides = {}
-
-function SocialOverrides.AdjustSocialSettings(category)
-end
 
 function SocialOverrides.CreateCensorMessagesSetting(category)
 		local cvar = "excludedCensorSources";

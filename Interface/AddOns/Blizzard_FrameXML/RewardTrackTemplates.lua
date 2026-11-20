@@ -27,6 +27,12 @@ function RewardTrackFrameMixin:OnLoad()
 	self.LeftButton:SetPoint("RIGHT", self, "LEFT", self.LeftButton.direction * (self.rewardButtonXOffset or defaultTrackButtonXOffset), self.rewardButtonYOffset or defaultTrackButtonYOffset);
 	self.RightButton:ClearAllPoints();
 	self.RightButton:SetPoint("LEFT", self, "RIGHT", self.RightButton.direction * (self.rewardButtonXOffset or defaultTrackButtonXOffset), self.rewardButtonYOffset or defaultTrackButtonYOffset);
+
+	-- RefreshView enables these once SetSelection has set an offset.
+	self.LeftButton:Disable();
+	self.RightButton:Disable();
+	self.JumpLeftButton:Disable();
+	self.JumpRightButton:Disable();
 end
 
 function RewardTrackFrameMixin:OnHide()

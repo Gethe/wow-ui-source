@@ -142,6 +142,8 @@
 			<KeyValue key="declineButtonXOffset" value="5" type="number"/>
 			<KeyValue key="declineButtonYOffset" value="3" type="number"/>
 
+			<KeyValue key="buttonContext" value="ButtonContext_FriendRequestsListCard" type="string"/>
+
 			<!-- For the text lines on the card -->
 			<KeyValue key="lineSpacing" value="4" type="number"/>
 		</KeyValues>

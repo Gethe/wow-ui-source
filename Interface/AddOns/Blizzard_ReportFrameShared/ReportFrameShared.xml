@@ -18,11 +18,12 @@
 			<OnLeave method="OnLeave"/>
 		</Scripts>
 	</CheckButton>
-	<Frame name="SharedReportFrameTemplate" inherits="ResizeLayoutFrame" hidden="true" toplevel="true" enableMouse="true" frameStrata="DIALOG" virtual="true">
+	<Frame name="SharedReportFrameTemplate" inherits="ResizeLayoutFrame, FocusFramesInterfaceTemplate" hidden="true" toplevel="true" enableMouse="true" frameStrata="DIALOG" virtual="true">
 		<KeyValues>
 			<KeyValue key="fixedWidth" value="400" type="number"/>
 			<KeyValue key="minimumHeight" value="190" type="number"/>
 			<KeyValue key="bottomPadding" value="30" type="number"/>
+			<KeyValue key="layoutType" type="string" value="DialogFrameTemplate"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="TOP" y="-70"/>
@@ -121,6 +122,10 @@
 					<OnEnter method="OnEnter"/>
 					<OnLeave method="OnLeave"/>
 				</Scripts>
+			</Button>
+			<Button parentKey="GamepadCancelButton" inherits="UIPanelButtonTemplate" motionScriptsWhileDisabled="true" text="CANCEL" hidden="true">
+				<Size x="140" y="25"/>
+				<!--Anchored dynamically in SharedReportFrameMixin:UpdateGamepadButtons-->
 			</Button>
 			<Frame parentKey="ScreenshotReportingFrame" hidden="true">
 				<Size x="350" y="210"/>

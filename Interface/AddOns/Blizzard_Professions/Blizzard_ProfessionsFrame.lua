@@ -1147,7 +1147,8 @@ end
 function ProfessionsMixin:FocusGamepad()
 	self.TabIndicators:Show();
 
-	if self.selectedGamepadTabID then
+	local visibleTabs = self.TabIndicators.visibleTabs;
+	if self.selectedGamepadTabID and visibleTabs and self.selectedGamepadTabID <= #visibleTabs then
 		self.TabIndicators:SetCurrentIndex(self.selectedGamepadTabID);
 		self.TabIndicators:UpdateTabIndicators();
 	end

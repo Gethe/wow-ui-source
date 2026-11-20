@@ -10,7 +10,7 @@
 ## Dep: Blizzard_PingUI [AllowLoadGameType mainline]
 ## Dep: Blizzard_ColorPickerFrame
 ## Dep: Blizzard_ManagedFrameSystem
-## Dep: Blizzard_StatusTrayManager [AllowLoadGameType mainline]
+## Dep: Blizzard_StatusTrayManager
 
 [Family]\BuilderSpenderFrame.lua		[AllowLoadGameType mainline]
 [Family]\BuilderSpenderFrame.xml		[AllowLoadGameType mainline]

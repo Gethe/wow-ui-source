@@ -665,10 +665,9 @@ function ChatFrameEditBoxMixin:UpdateHeader()
 		end
 		self:UpdateHeader();
 		return;
-	elseif ( type == "WHISPER" ) then
-		header:SetFormattedText(CHAT_WHISPER_SEND, tellTarget);
-	elseif ( type == "BN_WHISPER" ) then
-		header:SetFormattedText(CHAT_BN_WHISPER_SEND, tellTarget);
+	elseif ( type == "WHISPER" or type == "BN_WHISPER" ) then
+		local displayName = ChatFrameUtil.GetWhisperDisplayName(type, tellTarget, nil, self.chatFrame);
+		header:SetFormattedText(type == "WHISPER" and CHAT_WHISPER_SEND or CHAT_BN_WHISPER_SEND, displayName);
 	elseif ( type == "EMOTE" ) then
 		header:SetFormattedText(CHAT_EMOTE_SEND, UnitName("player"));
 	elseif ( type == "CHANNEL" ) then

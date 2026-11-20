@@ -43,6 +43,10 @@ function FriendsFriendsButtonMixin:SetSelected(selected)
 	end
 end
 
+function FriendsFriendsButtonMixin:OnSmartNavSelect()
+	self:Click();
+end
+
 FriendsFriendsFrameMixin = CreateFromMixins(SocialUIScrollableElementExtentPreviewerMixin);
 
 function FriendsFriendsFrameMixin:OnLoad()
@@ -65,6 +69,7 @@ function FriendsFriendsFrameMixin:OnLoad()
 
 	self:InitializeScrollBox();
 	self:InitializeDropdown();
+	self:RegisterForTransitions();
 end
 
 function FriendsFriendsFrameMixin:InitializeDropdown()
@@ -122,6 +127,10 @@ function FriendsFriendsFrameMixin:OnEvent(event)
 			end
 			self.WaitFrame:Hide();
 			self:Update();
+
+			if InputUtil.IsGamepadUIEnabled() and SmartNavigation:GetActiveFrame() == self then
+				SmartNavigation:SelectFirstButton();
+			end
 		end
 	elseif event == "BN_DISCONNECTED" then
 		self:Close();
@@ -158,11 +167,19 @@ function FriendsFriendsFrameMixin:OnShow()
 		CreateViewRadio(rootDescription, FRIENDS_FRIENDS_CHOICE_POTENTIAL, FriendsFriendsViewType.Potential);
 		CreateViewRadio(rootDescription, FRIENDS_FRIENDS_CHOICE_MUTUAL, FriendsFriendsViewType.Mutual);
 	end);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
 end
 
 function FriendsFriendsFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
 	EventRegistry:UnregisterCallback("TextSizeManager.OnTextScaleUpdated", self);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
 end
 
 function FriendsFriendsFrameMixin:OnFriendsFriendsTextScaleUpdated()
@@ -208,6 +225,10 @@ function FriendsFriendsFrameMixin:SetSelection(friendID)
 		self.SendRequestButton:Enable();
 	else
 		self.SendRequestButton:Disable();
+	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.footer:Refresh();
 	end
 end
 
@@ -262,13 +283,70 @@ function FriendsFriendsFrameMixin:Open(bnetIDAccount)
 		return;
 	end
 
-	self.Title:SetFormattedText(FRIENDS_FRIENDS_HEADER, FRIENDS_BNET_NAME_COLOR_CODE .. accountInfo.accountName .. FONT_COLOR_CODE_CLOSE);
+	self.Title:SetFormattedText(FRIENDS_FRIENDS_HEADER, FRIENDS_BNET_NAME_COLOR_CODE .. BNet_GetNameForDisplayByFriendLevel(accountInfo.accountName, accountInfo.friendLevel) .. FONT_COLOR_CODE_CLOSE);
 	self.bnetIDAccount = accountInfo.bnetAccountID;
 	self.FriendsDropdown:Disable();
 	self:Reset();
 	self.WaitFrame:Show();
 	StaticPopupSpecial_Show(self);
 	BNRequestFOFInfo(accountInfo.bnetAccountID);
+end
+
+function FriendsFriendsFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitGamepad, self));
+end
+
+function FriendsFriendsFrameMixin:SetupGamepad()
+	local function SendRequest()
+		self.SendRequestButton:Click();
+	end
+
+	local function CanSendRequest()
+		local currentButton = SmartNavigation:GetCurrentButton();
+		return currentButton and currentButton:IsEnabled() and self.SendRequestButton:IsEnabled();
+	end
+
+	local function OpenDropdown()
+		self.FriendsDropdown:OpenMenu();
+	end
+
+	local sendRequest = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, SendRequest, SEND_REQUEST);
+	sendRequest:AddCondition(CanSendRequest);
+
+	local openDropdown = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, OpenDropdown, nil);
+	openDropdown:SetCustomPromptFrame(self.DropdownIcon);
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self);
+	self.footer:AddPromptedBinding(sendRequest);
+	self.footer:AddPromptedBinding(openDropdown);
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+end
+
+function FriendsFriendsFrameMixin:InitGamepad()
+	self.SendRequestButton:Hide();
+	self.CloseButton:Hide();
+
+	self.FriendsDropdown:ClearAllPoints();
+	self.FriendsDropdown:SetPoint("TOPLEFT", self.Title, "BOTTOMLEFT", 26, -5);
+end
+
+function FriendsFriendsFrameMixin:FocusGamepad()
+	self.footer:ShowAndActivateBindings();
+	SmartNavigation:SelectFirstButton();
+
+	SmartNavigation:SetScrollFrameForFrame(self, self.ScrollBox);
+	GamepadScrollBarHint:SetOwner(self.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+end
+
+function FriendsFriendsFrameMixin:UnfocusGamepad()
+	self.footer:HideAndDeactivateBindings();
+
+	SmartNavigation:SetScrollFrameForFrame(self, nil);
+	GamepadScrollBarHint:Hide();
 end
 
 function FriendsFriendsFrame_Show(bnetIDAccount)

@@ -177,7 +177,8 @@ end
 function SocialQueueUtil_GetRelationshipInfo(guid, missingNameFallback, clubId)
 	local accountInfo = C_BattleNet.GetAccountInfoByGUID(guid);
 	if accountInfo then
-		return accountInfo.accountName, FRIENDS_BNET_NAME_COLOR_CODE, "bnfriend", GetBNPlayerLink(accountInfo.accountName, accountInfo.accountName, accountInfo.bnetAccountID, 0, 0, 0);
+		local displayName = BNet_GetNameForDisplayByFriendLevel(accountInfo.accountName, accountInfo.friendLevel);
+		return displayName, FRIENDS_BNET_NAME_COLOR_CODE, "bnfriend", GetBNPlayerLink(accountInfo.accountName, displayName, accountInfo.bnetAccountID, 0, 0, 0);
 	end
 
 	local name, normalizedRealmName = select(6, GetPlayerInfoByGUID(guid));

@@ -13,6 +13,7 @@ Blizzard_NamePlateHealthBar.lua
 Blizzard_NamePlateCastingBar.lua
 Blizzard_NamePlateCastingBar.xml
 Blizzard_NamePlateClassificationFrame.lua
+[Game]/Blizzard_NamePlateClassificationFrameOverrides.lua [AllowLoadGameType camelot]
 Blizzard_NamePlateRaidTarget.lua
 Blizzard_NamePlateUnitFrame.lua
 Blizzard_NamePlateBase.lua

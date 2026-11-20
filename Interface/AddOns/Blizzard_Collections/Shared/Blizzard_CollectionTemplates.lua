@@ -159,12 +159,14 @@ function CollectionsCountTemplateMixin:UpdateDisplayStyle(displayStyle)
 end
 
 function CollectionsJournal_SearchBox_OnLoad(self)
+	local xLeftOffset = (InputUtil.IsGamepadUIEnabled() and  40) or 15;
+
 	self:ClearAllPoints();
 	if not C_CVar.GetCVarBool("onlyShowCollectedItemsInJournal") then
-		self:SetPoint("TOPLEFT", self:GetParent().LeftInset, 15, -9);
+		self:SetPoint("TOPLEFT", self:GetParent().LeftInset, xLeftOffset, -9);
 	else
 		-- If the FilterDropdown is hidden, take up the whole leftInset space
-		self:SetPoint("TOPLEFT", self:GetParent().LeftInset, 15, -9);
+		self:SetPoint("TOPLEFT", self:GetParent().LeftInset, xLeftOffset, -9);
 		self:SetPoint("TOPRIGHT", self:GetParent().LeftInset, -10, -9);
 	end
 end

@@ -327,7 +327,7 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 			return true;
 		end
 
-		local coloredName = ChatFrameUtil.GetDecoratedSenderName(event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, discordInfo);
+		local coloredName = ChatFrameUtil.GetDecoratedSenderNameForFrame(self, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, discordInfo);
 
 		local channelLength = strlen(arg4);
 		local infoType = type;
@@ -556,7 +556,15 @@ function ChatFrameMixin:MessageEventHandler(event, ...)
 			local msgTime = time();
 			local playerName, lineID, bnetIDAccount = arg2, arg11, arg13;
 
-			local function MessageFormatter(msg)
+			local function MessageFormatter(msg, refreshSenderName, maskFrame)
+				maskFrame = maskFrame or self;
+				msg = ChatFrameUtil.GetMaskedMessageDisplayText(type, msg or arg1, arg12, maskFrame);
+
+				local coloredName = coloredName;
+				if refreshSenderName then
+					coloredName = ChatFrameUtil.GetDecoratedSenderNameForFrame(maskFrame, event, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12, arg13, arg14, discordInfo);
+				end
+
 				local fontHeight = select(2, FCF_GetChatWindowInfo(self:GetID()));
 				if ( fontHeight == 0 ) then
 					--fontHeight will be 0 if it's still at the default (14)

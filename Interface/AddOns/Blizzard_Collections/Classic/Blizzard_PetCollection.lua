@@ -7,6 +7,270 @@ local HEAL_PET_SPELL = 125439;
 local SUMMON_RANDOM_FAVORITE_PET_SPELL = 243819;
 local BATTLEPETS_SUPPORTED = GetClassicExpansionLevel() >= LE_EXPANSION_MISTS_OF_PANDARIA;
 
+CompanionListButtonMixin = {}
+
+function CompanionListButtonMixin:OnSmartNavSelect()
+	self.HighlightTexture:Hide();
+	self:Click();
+end
+
+function CompanionListButtonMixin:OnGamepadReleased()
+	SmartNavigation_ClearJumpNavigationOverrides(self.dragButton);
+
+	local button = SmartNavigation:GetCurrentButton();
+	if button == self then
+		-- Ensure `OnLeave` gets called before the frame is re-used.
+		SmartNavigation:SelectButton(nil);
+	end
+end
+
+PetJournalMixin = {}
+
+function PetJournalMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+end
+
+function PetJournalMixin:SetupGamepadFooter()
+	local function SummonButtonEnabled()
+		return PetJournal.SummonButton:IsEnabled();
+	end
+	local function SummonButtonClick()
+		PetJournal.SummonButton:Click();
+	end
+	local function SummonButtonLabel()
+		return PetJournal.SummonButton:GetText();
+	end
+
+	local summonBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, "PetJournal_Summon_PromptedBinding");
+	summonBinding:AddFooterBinding({
+		label = SummonButtonLabel,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_CompanionListButton",
+		conditions = { SummonButtonEnabled, },
+	});
+	summonBinding:AddFooterFunction({
+		bindingFunctions = SummonButtonClick,
+	})
+
+	local function PetIsOwned()
+		local button = SmartNavigation:GetCurrentButton();
+		return button.owned;
+	end
+	local function PetCreateCtxMenu()
+		local button = SmartNavigation:GetCurrentButton();
+		PetJournal_ShowPetDropdown(button, button.index);
+	end
+
+	local ctxMenuBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, "PetJournal_CtxMenu_PromptedBinding");
+	ctxMenuBinding:AddFooterBinding({
+		label = CONTEXT_ACTION_LABEL_MORE_ACTIONS,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_CompanionListButton",
+		conditions = { PetIsOwned, },
+	});
+	ctxMenuBinding:AddFooterFunction({
+		bindingFunctions = PetCreateCtxMenu,
+	})
+
+	local function BindPetToActionBar()
+		local button = SmartNavigation:GetCurrentButton();
+		GamepadActionBarEditFrame:BindCompanionPet(button.petID);
+	end
+
+	local bindBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, "PetJournal_Bind_PromptedBinding");
+	bindBinding:AddFooterBinding({
+		label = CONTEXT_ACTION_LABEL_BIND_TO_GAMEPAD_ACTION_BAR,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_CompanionListButton",
+		conditions = { PetIsOwned, },
+	});
+	bindBinding:AddFooterFunction({
+		bindingFunctions = BindPetToActionBar,
+	})
+
+	local function FocusSearchBox()
+		local searchBox = PetJournal.searchBox;
+		if searchBox.GamepadFocusIcon:IsShown() then
+			SmartNavigation:SelectButton(searchBox);
+			searchBox:SetFocus();
+		end
+	end
+	local function ShouldShowFocusSearchBox()
+		local button = SmartNavigation:GetCurrentButton();
+		return button ~= PetJournal.searchBox;
+	end
+
+	local focusSearchBox = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, FocusSearchBox, nil);
+	focusSearchBox:SetCustomPromptFrame(PetJournal.searchBox.GamepadFocusIcon);
+	focusSearchBox:AddCondition(ShouldShowFocusSearchBox);
+	focusSearchBox:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local petRotateBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_HORIZONTAL, "PetJournal_Rot_PromptedBinding");
+	petRotateBinding:AddFooterBinding({
+		label = ACTION_LABEL_ROTATE,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_PetModelScene",
+	})
+
+	local petFooter = GamepadSharedUtility.CreatePromptedBindingFooter(CollectionsJournal, "Collections_Pet");
+	petFooter:AddPromptedBinding(summonBinding);
+	petFooter:AddPromptedBinding(ctxMenuBinding);
+	petFooter:AddPromptedBinding(bindBinding);
+	petFooter:AddPromptedBinding(focusSearchBox);
+	petFooter:AddPromptedBinding(petRotateBinding);
+	petFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
+	petFooter:Finalize();
+
+	return petFooter;
+end
+
+function PetJournalMixin:RotatePet(inX, inY)
+	local rotSpeed = (inX ~= 0 and inX) or nil;
+	local zoomSpeed = nil;
+
+	PetJournalPetCard.modelScene:AdjustCameraGamepad(rotSpeed, zoomSpeed);
+end
+
+function PetJournalMixin:SetupGamepad()
+	self.footer = self:SetupGamepadFooter();
+
+	self.cameraBindings = GamepadMode.CreateBindingGroup("PetJournalBindings");
+	self.cameraBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.RotatePet, self));
+
+	SmartNavigation_AddJumpNavigationOverride(PetJournalPetCard.modelScene, SMART_NAV_INPUT_DIRECTION.LEFT, function()
+		local numPets, numOwned = C_PetJournal.GetNumPets();
+		if (numOwned > 0) and PetJournalPetCard.petID then
+			local function FindPet(frame, elementData)
+				return frame.petID == PetJournalPetCard.petID;
+			end
+			local foundFrame = self.ScrollBox:FindFrameByPredicate(FindPet);
+			if foundFrame then
+				return foundFrame;
+			end
+		end
+		return nil;
+	end);
+end
+
+function PetJournalMixin:InitializeGamepad()
+	self.SummonButton:Hide();
+	PetJournalPetCard.modelScene.RotateLeftButton:Hide();
+	PetJournalPetCard.modelScene.RotateRightButton:Hide();
+
+	self.searchBox:HookScript("OnEditFocusGained", function()
+		local button = SmartNavigation:GetCurrentButton();
+		if not button or (button ~= self.searchBox) then
+			SmartNavigation:SelectButton(self.searchBox);
+		end
+	end);
+end
+
+function PetJournalMixin:SmartNavSelectFirstButton()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	local currentButton = SmartNavigation:GetCurrentButton();
+	if currentButton and (currentButton.buttonContext ~= "ButtonContext_CompanionListButton") then
+		return;
+	end
+
+	if not SmartNavigation:IsActiveFrame(CollectionsJournal) then
+		return;
+	end
+
+	local function FindFrameByPetID(numOwned)
+		if (numOwned > 0) and PetJournalPetCard.petID then
+			local function FindPet(frame, elementData)
+				return frame.petID == PetJournalPetCard.petID;
+			end
+			return self.ScrollBox:FindFrameByPredicate(FindPet);
+		end
+		return nil;
+	end
+
+	local function FindFirstFrameByIndex(numOwned)
+		if (numOwned > 0) then
+			local function FindPet(frame, elementData)
+				return frame.index == 1;
+			end
+			return self.ScrollBox:FindFrameByPredicate(FindPet);
+		end
+		return nil;
+	end
+
+	local numPets, numOwned = C_PetJournal.GetNumPets();
+
+	if (numPets > 0) then
+		local foundFrame = FindFrameByPetID(numOwned);
+		if foundFrame then
+			SmartNavigation:SelectButton(foundFrame);
+			return;
+		end
+
+		if not foundFrame then
+			foundFrame = FindFirstFrameByIndex(numOwned);
+			if foundFrame then
+				PetJournalPetCard.petIndex = 1;
+				local ID, species, owned = C_PetJournal.GetPetInfoByIndex(index);
+				PetJournalPetCard.petID = (owned and ID) or nil;
+				PetJournalPetCard.speciesID = species;
+				PetJournal_UpdatePetCard(PetJournalPetCard);
+				PetJournal_UpdateSummonButtonState();
+				SmartNavigation:SelectButton(foundFrame);
+				return;
+			end
+		end
+	end
+
+	local searchBox = PetJournal.searchBox;
+	SmartNavigation:SelectButton(searchBox);
+	searchBox:SetFocus();
+
+end
+
+function PetJournalMixin:SmartNavTabFocus()
+	SmartNavigation:SetScrollFrameForFrame(CollectionsJournal, self.ScrollBox);
+	GamepadScrollBarHint:SetOwner(self.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+
+	SmartNavigation:SelectButton(nil);
+
+	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, function(petJournal, frame, elementData)
+		frame:OnGamepadReleased();
+	end, self);
+
+	self:SmartNavSelectFirstButton();
+end
+
+function PetJournalMixin:SmartNavTabUnfocus()
+	self.ScrollBox:UnregisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, self);
+end
+
+function PetJournalMixin:SmartNavUpdateTabFocus(show)
+	if show then
+		self:SmartNavTabFocus();
+	else
+		self:SmartNavTabUnfocus();
+	end
+end
+
+PetJournalModelSceneMixin = {}
+
+function PetJournalModelSceneMixin:OnSmartNavDeselect()
+	GamepadMode.DeactivateBindingGroup(PetJournal.cameraBindings);
+	GamepadScrollBarHint:Show();
+
+	PetJournalPetCard.modelScene:AdjustCameraGamepad(nil, nil);
+end
+
+function PetJournalModelSceneMixin:OnSmartNavSelect()
+	GamepadMode.ActivateBindingGroup(PetJournal.cameraBindings);
+	GamepadScrollBarHint:Hide();
+end
+
 function PetJournalUtil_GetDisplayName(petID)
 	local _, customName, _, _, _, _, _, petName = C_PetJournal.GetPetInfoByPetID(petID);
 	if ( customName ) then
@@ -44,6 +308,8 @@ function PetJournal_OnLoad(self)
 	PetJournal_ShowPetCard(1);
 
 	self.FilterDropdown:SetWidth(90)
+
+	self:RegisterForTransitions();
 end
 
 function PetJournal_InitFilterDropdown(self)
@@ -201,6 +467,10 @@ function PetJournal_UpdateSummonButtonState()
 	if (GameTooltip:GetOwner() == PetJournal.SummonButton) then
 		PetJournalSummonButton_OnEnter(PetJournal.SummonButton);
 	end
+
+	if PetJournal.footer then
+		PetJournal.footer:Refresh();
+	end
 end
 
 -- SUMMON RANDOM FAVORITE PET ---
@@ -319,13 +589,19 @@ function PetJournal_InitPetButton(pet, elementData)
 		pet.selectedTexture:Hide()
 	end
 
-
-
 	if ( petID ) then
 		local start, duration, enable = C_PetJournal.GetPetCooldownByGUID(pet.petID);
 		if (start) then
 			CooldownFrame_Set(pet.dragButton.Cooldown, start, duration, enable);
 		end
+	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		SmartNavigation_ClearJumpNavigationOverrides(pet.dragButton);
+
+		SmartNavigation_AddIgnoreInputNavigationOverride(pet.dragButton, SMART_NAV_INPUT_DIRECTION.UP);
+		SmartNavigation_AddIgnoreInputNavigationOverride(pet.dragButton, SMART_NAV_INPUT_DIRECTION.DOWN);
+		SmartNavigation_AddIgnoreInputNavigationOverride(pet.dragButton, SMART_NAV_INPUT_DIRECTION.LEFT);
 	end
 end
 
@@ -339,6 +615,8 @@ function PetJournal_UpdatePetList()
 
 	local numPets, numOwned = C_PetJournal.GetNumPets();
 	PetJournal.PetCount.Count:SetText(numOwned);
+
+	PetJournal:SmartNavSelectFirstButton();
 end
 
 function PetJournal_OnSearchTextChanged(self)

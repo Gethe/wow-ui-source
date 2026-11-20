@@ -662,14 +662,14 @@ function UnitPopupRemoveBnetFriendButtonMixin:OnClick(contextData)
 			if accountInfo.friendLevel == Enum.BattleNetFriendLevel.Title then
 				promptText = string.format(REMOVE_TITLE_FRIEND_CONFIRMATION, accountInfo.accountName);
 			elseif accountInfo.isBattleTagFriend then
-				promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);
+				promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, BNet_GetNameForDisplayByFriendLevel(accountInfo.accountName, accountInfo.friendLevel));
 			else
-				promptText = string.format(REMOVE_FRIEND_CONFIRMATION, accountInfo.accountName);
+				promptText = string.format(REMOVE_FRIEND_CONFIRMATION, BNet_GetNameForDisplayByFriendLevel(accountInfo.accountName, accountInfo.friendLevel));
 			end
 			StaticPopup_Show("CONFIRM_REMOVE_BN_FRIEND", promptText, nil, accountInfo.bnetAccountID);
 		end
 	else
-		promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, contextData.battleTag);
+		promptText = string.format(BATTLETAG_REMOVE_FRIEND_CONFIRMATION, BNet_GetBattleTagForDisplay(contextData.battleTag));
 		local text2 = nil;
 		StaticPopup_Show("CONFIRM_REMOVE_BN_FRIEND", promptText, text2, contextData.bnetIDAccount);
 	end
@@ -729,7 +729,7 @@ function UnitPopupBnetBlockButtonMixin:OnClick(contextData)
 		return;
 	end
 
-	local text1 = string.format(BLOCK_FRIEND_CONFIRMATION, accountInfo.accountName);
+	local text1 = string.format(BLOCK_FRIEND_CONFIRMATION, BNet_GetNameForDisplayByFriendLevel(accountInfo.accountName, accountInfo.friendLevel));
 	StaticPopup_Show("CONFIRM_BLOCK_FRIEND", text1, nil, bnetAccountID);
 end
 

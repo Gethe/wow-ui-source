@@ -13,6 +13,7 @@ function SharedReportFrameMixin:OnLoad()
 
 	self.ReportingMajorCategoryDropdown:SetWidth(200);
 	self.ReportingMajorCategoryDropdown:SetDefaultText(REPORTING_MAKE_SELECTION);
+	self:RegisterForTransitions();
 end
 
 function SharedReportFrameMixin:OnHide()
@@ -20,13 +21,13 @@ function SharedReportFrameMixin:OnHide()
 		self:Reset();
 	end
 	if InputUtil.IsGamepadUIEnabled() then
-		GamepadMode.FrameControlsManager:FrameHidden(self);
+		GamepadMode.FrameControlsManager:HandlePopupHide(self);
 	end
 end
 
 function SharedReportFrameMixin:OnShow()
 	if InputUtil.IsGamepadUIEnabled() then
-		GamepadMode.FrameControlsManager:FrameShown(self);
+		GamepadMode.FrameControlsManager:HandlePopupShown(self);
 	end
 end
 
@@ -73,7 +74,26 @@ function SharedReportFrameMixin:UpdateThankYouMessage(showThankYouMessage)
 	self.ReportingMajorCategoryDropdown:SetShown(not showThankYouMessage);
 	self.ThankYouText:SetShown(showThankYouMessage);
 	self.Watermark:SetShown(showThankYouMessage);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self:UpdateGamepadButtons(showThankYouMessage);
+	end
+	
 	self:Layout();
+end
+
+function SharedReportFrameMixin:UpdateGamepadButtons(showThankYouMessage)
+	if showThankYouMessage then
+		self.GamepadCancelButton:SetText(EXIT);
+		self.GamepadCancelButton:ClearAllPoints();
+		self.GamepadCancelButton:SetPoint("BOTTOM", self, "BOTTOM", 0, 13);
+		SmartNavigation:HideCursor();
+	else
+		self.GamepadCancelButton:SetText(CANCEL);
+		self.GamepadCancelButton:ClearAllPoints();
+		self.GamepadCancelButton:SetPoint("LEFT", self.ReportButton, "RIGHT", 36, 0);
+		SmartNavigation:ShowCursor(true);
+	end
 end
 
 function SharedReportFrameMixin:SetupDropdownByReportType(reportType)
@@ -244,6 +264,44 @@ end
 
 function SharedReportFrameMixin:SetMinorCategoryFlag(flag, flagValue)
 	self.minorCategoryFlags:SetOrClear(flag, flagValue);
+end
+
+function SharedReportFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitGamepad, self));
+end
+
+function SharedReportFrameMixin:SetupGamepad()
+	self.binding = GamepadMode.CreateBindingGroup("ReportFrameBindings");
+	self.binding:AddFunctionBinding(GAMEPAD_FACE_LEFT, function()
+		if self.ReportButton:IsShown() and self.ReportButton:IsEnabled() then
+			self.ReportButton:Click();
+		end
+	end);
+
+	self.ReportButton:SetHeight(25);
+	self.reportIcon = GamepadMode.AddGamepadIconToButton(self.ReportButton, GAMEPAD_FACE_LEFT);
+	self.cancelIcon = GamepadMode.AddGamepadIconToButton(self.GamepadCancelButton, GAMEPAD_FACE_RIGHT);
+end
+
+function SharedReportFrameMixin:InitGamepad()
+	self.CloseButton:Hide();
+	self.ReportButton:ClearAllPoints();
+	self.ReportButton:SetPoint("BOTTOMRIGHT", self, "BOTTOM", -18, 13);
+	self.GamepadCancelButton:Show();
+end
+
+function SharedReportFrameMixin:FocusGamepad()
+	GamepadMode.ActivateBindingGroup(self.binding);
+	GamepadMode.SetGamepadIconShown(self.reportIcon, true);
+	GamepadMode.SetGamepadIconShown(self.cancelIcon, true);
+end
+
+function SharedReportFrameMixin:UnfocusGamepad()
+	GamepadMode.DeactivateBindingGroup(self.binding);
+	GamepadMode.SetGamepadIconShown(self.reportIcon, false);
+	GamepadMode.SetGamepadIconShown(self.cancelIcon, false);
 end
 
 ScreenshotModeFrameMixin = {};

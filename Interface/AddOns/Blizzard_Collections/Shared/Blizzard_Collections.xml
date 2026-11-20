@@ -8,6 +8,11 @@
 		</Anchors>
 		<Frames>
 			<Frame parentKey="TabContainer" inherits="CollectionsJournalTabContainer"/>
+			<Frame name="CollectionsJournalTabIndicators" parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="isVertical" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad function="CollectionsJournal_OnLoad"/>

@@ -76,6 +76,7 @@ end
 	{
 	  showFontOffset: font string offset from button center when the icon is shown
 	  hideFontOffset: font string offset from button center when the icon is hidden
+	  anchorIconToButton: anchors the icon to the left of the button instead of the font string
 	}
 ]]
 function GamepadMode.UpdateGamepadIconAnchor(icon, opts)
@@ -97,7 +98,10 @@ function GamepadMode.UpdateGamepadIconAnchor(icon, opts)
 
 	local fontString = button:GetFontString();
 	local _, anchorFrame = icon:GetPoint();
-	if fontString then
+
+	if opts.anchorIconToButton then
+		icon:SetPoint("RIGHT", button, "LEFT", X_OFFSET, Y_OFFSET);
+	elseif fontString then
 		-- Update the fontstring's anchor to account for the icon's visibility possibly changing.
 		fontString:ClearAllPoints();
 		fontString:SetPoint("CENTER", button, "CENTER", extraOffset, 0);

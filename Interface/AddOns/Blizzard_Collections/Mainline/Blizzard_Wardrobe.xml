@@ -98,6 +98,9 @@
 
 	<Button name="WardrobeSlotButtonTemplate" parentArray="Buttons" mixin="WardrobeItemsCollectionSlotButtonMixin" virtual="true">
 		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_WardrobeSlotButton" type="string"/>
+		</KeyValues>
+		<KeyValues>
 			<KeyValue key="transmogType" value="Enum.TransmogType.Appearance" type="global"/>
 			<KeyValue key="isSecondary" value="false" type="boolean"/>
 		</KeyValues>
@@ -257,6 +260,16 @@
 					<OnLeave function="GameTooltip_Hide"/>
 				</Scripts>
 				<Frames>
+					<Frame parentKey="GamepadFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_LEFT" type="global"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="28" y="28"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-8" y="0"/>
+						</Anchors>
+					</Frame>
 					<Frame parentKey="ProgressFrame" mixin="WardrobeCollectionFrameSearchBoxProgressMixin" hidden="true">
 						<Size x="0" y="24"/>
 						<Anchors>
@@ -409,6 +422,18 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.SearchBox" relativePoint="RIGHT" x="5" y="0"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="GamepadFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="28" y="28"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-2" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 			</DropdownButton>
 
 			<DropdownButton parentKey="ClassDropdown" inherits="WowStyle1DropdownTemplate" mixin="WardrobeCollectionClassDropdownMixin">

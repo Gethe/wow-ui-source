@@ -24,6 +24,9 @@ function GamepadTabIndicatorsMixin:OnHide()
 end
 
 function GamepadTabIndicatorsMixin:SetUpTabs(inTabs, reverse)
+	table.wipe(self.tabs);
+	table.wipe(self.visibleTabs);
+
 	if not reverse then
 		for _ , tab in ipairs(inTabs) do
 			SmartNavigation_MarkFrameIgnored(tab);
@@ -39,7 +42,7 @@ function GamepadTabIndicatorsMixin:SetUpTabs(inTabs, reverse)
 	self:UpdateTabVisibility();
 
 	local parent = self:GetParent();
-	if parent and parent.GetFocusFrameGlow then
+	if parent and parent.GetFocusFrameGlow and #inTabs > 0 then
 		local frameGlow = parent:GetFocusFrameGlow();
 		local firstTab = inTabs[1];
 		local firstTabLevel = firstTab:GetFrameLevel();
@@ -74,7 +77,7 @@ function GamepadTabIndicatorsMixin:UpdateTabVisibility()
 		if tab:IsVisible() then
 			table.insert(self.visibleTabs, tab);
 
-			if (tab == activeTab or tab:GetID() == activeIndex) then
+			if ((tab == activeTab) or ((activeIndex ~= nil) and tab:GetID() == activeIndex)) then
 				self.currentIndex = #self.visibleTabs;
 			end
 		end

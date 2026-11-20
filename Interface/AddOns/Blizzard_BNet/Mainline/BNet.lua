@@ -232,7 +232,7 @@ function BNToastMixin:ShowToast()
 
 		self.IconTexture:SetTexCoord(0, 0.25, 0.5, 1);
 		topLine:Show();
-		topLine:SetText(FRIENDS_BNET_NAME_COLOR:WrapTextInColorCode(accountInfo.accountName));
+		topLine:SetText(FRIENDS_BNET_NAME_COLOR:WrapTextInColorCode(BNet_GetNameForDisplayByFriendLevel(accountInfo.accountName, accountInfo.friendLevel)));
 		bottomLine:Show();
 		bottomLine:SetText(FRIENDS_GRAY_COLOR:WrapTextInColorCode(BN_TOAST_ONLINE));
 	elseif ( toastType == BN_TOAST_TYPE_OFFLINE ) then
@@ -245,7 +245,7 @@ function BNToastMixin:ShowToast()
 
 		self.IconTexture:SetTexCoord(0, 0.25, 0.5, 1);
 		topLine:Show();
-		topLine:SetFormattedText(FRIENDS_BNET_NAME_COLOR:WrapTextInColorCode(accountInfo.accountName));
+		topLine:SetFormattedText(FRIENDS_BNET_NAME_COLOR:WrapTextInColorCode(BNet_GetNameForDisplayByFriendLevel(accountInfo.accountName, accountInfo.friendLevel)));
 		bottomLine:Show();
 		bottomLine:SetText(BN_TOAST_OFFLINE);
 		bottomLine:SetTextColor(FRIENDS_GRAY_COLOR.r, FRIENDS_GRAY_COLOR.g, FRIENDS_GRAY_COLOR.b);
@@ -260,7 +260,7 @@ function BNToastMixin:ShowToast()
 
 		BNToastFrameIconTexture:SetTexCoord(0, 0.25, 0, 0.5);
 		topLine:Show();
-		topLine:SetText(accountInfo.accountName);
+		topLine:SetText(BNet_GetNameForDisplayByFriendLevel(accountInfo.accountName, accountInfo.friendLevel));
 		topLine:SetTextColor(FRIENDS_BNET_NAME_COLOR.r, FRIENDS_BNET_NAME_COLOR.g, FRIENDS_BNET_NAME_COLOR.b);
 		bottomLine:Show();
 		bottomLine:SetText(accountInfo.customMessage);

@@ -1906,6 +1906,16 @@ function SmartNavigationMixin:GetActiveFrame()
 	end
 end
 
+function SmartNavigationMixin:IsActiveFrame(frame)
+	if not self.activeInfo then
+		return false;
+	end
+	if not self.activeInfo.frame then
+		return false;
+	end
+	return self.activeInfo.frame == frame;
+end
+
 -- Specifying a focus group owner will set the active frame to the focus group owner and then enter the focus group.
 function SmartNavigationMixin:EnterFocusGroup(inFocusKey, optionalFocusGroupOwner, button, scrollFrame)
 	-- Secure only for now, needs extra plumbing to allow insecure

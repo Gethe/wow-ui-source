@@ -169,14 +169,14 @@ function CompactRaidFrameContainerMixin:GetBounds()
 			-- Party/Arena frames are tracked for updates but are parented elsewhere and are not laid out by this container.
 			if frame:GetParent() == self and frame:IsVisible() then
 				local left, bottom, width, height = frame:GetRect();
-				local right  = left + width;
-				local top = bottom - height;
+				local right = left + width;
+				local top = bottom + height;
 
 				minX = math.min(minX, left);
 				maxX = math.max(maxX, right);
 
-				minY = math.min(minY, top);
-				maxY = math.max(maxY, bottom);
+				minY = math.min(minY, bottom);
+				maxY = math.max(maxY, top);
 			end
 		end
 	end
@@ -185,9 +185,9 @@ function CompactRaidFrameContainerMixin:GetBounds()
 end
 
 function CompactRaidFrameContainerMixin:RefreshSize()
-	local left, right, top, bottom = self:GetBounds();
+	local left, right, bottom, top = self:GetBounds();
 	local width = right - left;
-	local height = bottom - top;
+	local height = top - bottom;
 
 	self:SetSize(width, height);
 end

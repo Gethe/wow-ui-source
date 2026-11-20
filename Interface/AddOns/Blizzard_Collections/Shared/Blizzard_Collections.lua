@@ -152,11 +152,74 @@ end
 function CollectionsJournalMixin:SetupTabs()
 end
 
+function CollectionsJournalMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+end
+
+function CollectionsJournalMixin:SetupGamepad()
+	self.TabIndicators:SetUpTabs(self.TabContainer.Tabs);
+end
+
+function CollectionsJournalMixin:InitializeGamepad()
+	CollectionsJournalCloseButton:Hide();
+end
+
+local function UpdateFooterVis(frame, show)
+	local footer = frame.footer;
+	if show then
+		footer:ShowAndActivateBindings();
+	else
+		footer:HideAndDeactivateBindings();
+	end
+
+	if frame.SmartNavUpdateTabFocus then
+		frame:SmartNavUpdateTabFocus(show);
+	end
+end
+
+function CollectionsJournalMixin:UpdateTabFocus(selectedID)
+	SmartNavigation:ClearLastTarget(self);
+	SmartNavigation:SetScrollFrameForFrame(self, nil);
+
+	UpdateFooterVis(MountJournal, selectedID == 1);
+	UpdateFooterVis(PetJournal, selectedID == 2);
+	UpdateFooterVis(ToyBox, selectedID == 3);
+	UpdateFooterVis(WardrobeCollectionFrame, selectedID == 5);
+end
+
+function CollectionsJournalMixin:FocusGamepad()
+	EventRegistry:RegisterCallback("CollectionsJournal.TabSet", function(_, tabContainer, selectedID)
+		self:UpdateTabFocus(selectedID);
+	end, self);
+
+	self.TabIndicators:Show();
+
+	self.TabIndicators:SetCurrentIndex(CollectionsJournal_GetTab(self));
+	self.TabIndicators:UpdateTabIndicators();
+
+	self:UpdateTabFocus(CollectionsJournal_GetTab(self));
+end
+
+function CollectionsJournalMixin:UnfocusGamepad()
+	UpdateFooterVis(MountJournal, false);
+	UpdateFooterVis(PetJournal, false);
+	UpdateFooterVis(ToyBox, false);
+	UpdateFooterVis(WardrobeCollectionFrame, false);
+
+	self.TabIndicators:Hide();
+
+	EventRegistry:UnregisterCallback("CollectionsJournal.TabSet", self);
+end
+
 function CollectionsJournal_OnLoad(self)
 	self:SetTitle(COLLECTIONS);
 	self:SetupTabs();
 	CollectionsJournal_SetNumTabs_Internal(self.TabContainer, #self.TabContainer.Tabs);
 	CollectionsJournal_SetTab_Internal(self.TabContainer, tonumber(GetCVar("petJournalTab")) or 1);
+
+	self:RegisterForTransitions();
 end
 
 function CollectionsJournal_OnShow(self)

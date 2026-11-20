@@ -215,6 +215,33 @@ function SocialUIOnlineStatusDropdownMixin:InitializeMenu()
 		CreatePresenceRadio(Enum.SocialUIPresenceType.Away, SOCIAL_UI_PRESENCE_TYPE_LABEL_AWAY);
 		CreatePresenceRadio(Enum.SocialUIPresenceType.Busy, SOCIAL_UI_PRESENCE_TYPE_LABEL_BUSY);
 		CreatePresenceRadio(Enum.SocialUIPresenceType.AppearOffline, SOCIAL_UI_PRESENCE_TYPE_LABEL_APPEAR_OFFLINE);
+
+		if InputUtil.IsGamepadUIEnabled() then
+			rootDescription:QueueDivider();
+			rootDescription:CreateButton(SOCIAL_UI_MENU_IGNORE_LIST_BUTTON_LABEL, function()
+				local isCurrentlyShown = SocialUIFrame:GetActiveSideWindowType() == SocialUISideWindowType.IgnoreListFrame;
+				if isCurrentlyShown then
+					SocialUIFrame:TriggerEvent(SocialUIFrameMixin.Event.SideWindowHideRequested, SocialUISideWindowType.IgnoreListFrame);
+				else
+					SocialUIFrame:TriggerEvent(SocialUIFrameMixin.Event.SideWindowShowRequested, SocialUISideWindowType.IgnoreListFrame);
+				end
+			end);
+
+			rootDescription:CreateButton(CONTEXT_ACTION_LABEL_SHARE_BATTLE_TAG, function()
+				local battleTag = BNet_GetBattleTagSelf();
+
+				if not battleTag then
+					return;
+				end
+
+				local activeChatFrame = FCFDock_GetSelectedWindow(GENERAL_CHAT_DOCK);
+				if activeChatFrame and activeChatFrame:IsShown() then
+					activeChatFrame:SetGamepadFocus();
+				end
+
+				ChatFrameUtil.OpenChat(battleTag);
+			end);
+		end
 	end);
 
 	self:SetScript("OnEnter", function()
@@ -275,7 +302,7 @@ function SocialUIBattleNetMenuButtonMixin:OnLeave()
 end
 
 function SocialUIBattleNetMenuButtonMixin:ShouldShowIgnoreListMenuOption()
-	return not C_Glue.IsOnGlueScreen();
+	return not C_Glue.IsOnGlueScreen() and not InputUtil.IsGamepadUIEnabled();
 end
 
 function SocialUIBattleNetMenuButtonMixin:HasAnyAvailableMenuOptions()
@@ -284,7 +311,14 @@ end
 
 SocialUIPersonalBattleTagDisplayMixin = {};
 
+function SocialUIPersonalBattleTagDisplayMixin:ShouldShowHideBattleTagButton()
+	-- overridden in other flavors
+	return false;
+end
+
 function SocialUIPersonalBattleTagDisplayMixin:ShowBestDisplayTextAndButton()
+	self.BattleTagHiddenButton:Refresh();
+
 	if not BNFeaturesEnabled() then
 		return;
 	end
@@ -296,7 +330,8 @@ function SocialUIPersonalBattleTagDisplayMixin:ShowBestDisplayTextAndButton()
 		self:ShowBattleNetUnavailableNotice();
 	end
 	self.BattleNetUnavailableNoticeButton:SetShown(not isConnectedToBattleNet);
-	self.CopyBattleTagToClipboardButton:SetShown(isConnectedToBattleNet);
+	self.CopyBattleTagToClipboardButton:SetShown(isConnectedToBattleNet and not InputUtil.IsGamepadUIEnabled());
+	self.BattleTagHiddenButton:SetShown(self:ShouldShowHideBattleTagButton());
 end
 
 function SocialUIPersonalBattleTagDisplayMixin:ShowBattleNetUnavailableNotice()
@@ -305,7 +340,7 @@ end
 
 function SocialUIPersonalBattleTagDisplayMixin:ShowBattleTag()
 	self.battleTag = BNet_GetBattleTagSelf();
-	local battleTagComponents = BNet_GetBattleTagComponents(self.battleTag);
+	local battleTagComponents = BNet_GetBattleTagComponents(BNet_GetBattleTagSelfForDisplay());
 	local coloredBattleTag = BATTLE_TAG_FONT_COLOR:WrapTextInColorCode(battleTagComponents.prefix or "") .. BATTLE_TAG_SUFFIX_FONT_COLOR:WrapTextInColorCode(battleTagComponents.tagSplitSymbol or "") .. BATTLE_TAG_SUFFIX_FONT_COLOR:WrapTextInColorCode(battleTagComponents.suffix or "");
 	self.DisplayText:SetText(coloredBattleTag);
 end
@@ -370,6 +405,68 @@ function SocialUICopyBattleTagToClipboardButtonMixin:DisplayCopiedNotice()
 	ChatFrameUtil.AddSystemMessage(SOCIAL_UI_PERSONAL_BATTLE_TAG_COPIED_NOTICE);
 end
 
+SocialUIBattleTagHiddenButtonMixin = CreateFromMixins(ButtonStateBehaviorMixin);
+
+function SocialUIBattleTagHiddenButtonMixin:OnLoad()
+	-- Overridden in game or family specific file overlays.
+end
+
+function SocialUIBattleTagHiddenButtonMixin:OnEnter()
+	ButtonStateBehaviorMixin.OnEnter(self);
+	self:AddTooltip();
+end
+
+function SocialUIBattleTagHiddenButtonMixin:AddTooltip()
+	local tooltip = GetAppropriateTooltip();
+	tooltip:SetOwner(self, "ANCHOR_RIGHT");
+	GameTooltip_SetTitle(tooltip, self:IsBattleTagMasked() and STREAMER_SHOW_BATTLETAG or STREAMER_HIDE_BATTLETAG, HIGHLIGHT_FONT_COLOR);
+	tooltip:Show();
+end
+
+function SocialUIBattleTagHiddenButtonMixin:OnLeave()
+	ButtonStateBehaviorMixin.OnLeave(self);
+	GetAppropriateTooltip():Hide();
+end
+
+function SocialUIBattleTagHiddenButtonMixin:IsBattleTagMasked()
+	return CVarCallbackRegistry:GetCVarValueBool("playerBattleTagNameMasking");
+end
+
+function SocialUIBattleTagHiddenButtonMixin:GetHiddenIconAtlas()
+	-- Overridden in game or family specific file overlays.
+	return nil;
+end
+
+function SocialUIBattleTagHiddenButtonMixin:GetShownIconAtlas()
+	-- Overridden in game or family specific file overlays.
+	return nil;
+end
+
+function SocialUIBattleTagHiddenButtonMixin:Refresh()
+	local isMasked = self:IsBattleTagMasked();
+	self.HiddenIcon:SetShown(isMasked);
+	self.ShownIcon:SetShown(not isMasked);
+
+	local highlightAtlas = isMasked and self:GetHiddenIconAtlas() or self:GetShownIconAtlas();
+	if highlightAtlas then
+		self:GetHighlightTexture():SetAtlas(highlightAtlas);
+	end
+
+	if GetAppropriateTooltip():IsOwned(self) then
+		self:AddTooltip();
+	end
+end
+
+function SocialUIBattleTagHiddenButtonMixin:Toggle()
+	SetCVar("playerBattleTagNameMasking", not self:IsBattleTagMasked());
+end
+
+function SocialUIBattleTagHiddenButtonMixin:OnClick()
+	self:Toggle();
+
+	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
+end
+
 SocialUIBattleNetUnavailableNoticeButtonMixin = CreateFromMixins(SocialUISystemMixin);
 
 function SocialUIBattleNetUnavailableNoticeButtonMixin:OnClick()
@@ -403,12 +500,16 @@ function SocialUIBattleNetControlsContainerMixin:OnShow()
 	FrameUtil.RegisterFrameForEvents(self, SocialUIBattleNetControlsContainerEvents);
 	EventRegistry:RegisterCallback("TextSizeManager.OnTextScaleUpdated", self.LayoutPersonalBattleTagDisplayText, self);
 
+	-- The displayed BattleTag is masked based on this CVar, so redraw it as soon as it changes.
+	CVarCallbackRegistry:RegisterCallback("playerBattleTagNameMasking", self.RefreshPersonalBattleTagDisplay, self);
+
 	self:FullRefresh();
 end
 
 function SocialUIBattleNetControlsContainerMixin:OnHide()
 	FrameUtil.UnregisterFrameForEvents(self, SocialUIBattleNetControlsContainerEvents);
 	EventRegistry:UnregisterCallback("TextSizeManager.OnTextScaleUpdated", self);
+	CVarCallbackRegistry:UnregisterCallback("playerBattleTagNameMasking", self);
 end
 
 function SocialUIBattleNetControlsContainerMixin:RefreshElementVisibility()
@@ -448,10 +549,29 @@ function SocialUIBattleNetControlsContainerMixin:LayoutPersonalBattleTagDisplayT
 	local battleTagDisplay = self.PersonalBattleTagDisplay;
 	local displayText = battleTagDisplay.DisplayText;
 
+	-- The BattleTagHiddenButton is anchored to the right edge of the display, so the text and the button that follows it must stay clear of it.
+	-- The button sits at the right edge's inset, plus a small gap so the two hit targets don't touch.
+	local hiddenButton = battleTagDisplay.BattleTagHiddenButton;
+	local hiddenButtonInset = 9;
+	local hiddenButtonGap = 4;
+	local hiddenButtonSpace = hiddenButton:IsShown() and (hiddenButton:GetWidth() + hiddenButtonInset + hiddenButtonGap) or 0;
+
+	-- We have a button anchored to the right side of the text, so we need to account for its width to make sure the text + button both fit within the background.
+	local buttonPadding = 16;
+	local visibleButton = battleTagDisplay.CopyBattleTagToClipboardButton:IsShown() and battleTagDisplay.CopyBattleTagToClipboardButton or battleTagDisplay.BattleNetUnavailableNoticeButton;
+	local buttonSpace = visibleButton:GetWidth() + buttonPadding + hiddenButtonSpace;
+
 	-- The battleTagDisplay's left side is directly anchored to OnlineStatusDropdown's right side. That is our limit for text growth.
 	-- Let's measure the center of the background to that left side to figure out how much space the text has to grow to the left before overlapping
 	local backgroundCenterX = (self.BattleNetBackground:GetCenter());
 	local availableHalfWidth = backgroundCenterX - battleTagDisplay:GetLeft();
+
+	-- When the hidden button is shown, centered text can also run into it (through the button that follows the text) on the right side.
+	if hiddenButtonSpace > 0 then
+		local buttonGap = 8;
+		local availableRightHalfWidth = battleTagDisplay:GetRight() - backgroundCenterX - hiddenButtonSpace - buttonGap - visibleButton:GetWidth();
+		availableHalfWidth = math.min(availableHalfWidth, availableRightHalfWidth);
+	end
 
 	local textWidth = displayText:GetUnboundedStringWidth();
 	local textFitsCentered = (textWidth / 2) <= availableHalfWidth;
@@ -464,11 +584,6 @@ function SocialUIBattleNetControlsContainerMixin:LayoutPersonalBattleTagDisplayT
 	else
 		displayText:SetPoint("LEFT", battleTagDisplay, "LEFT", 4, 0);
 		displayText:SetJustifyH("LEFT");
-
-		-- We have a button anchored to the right side of the text, so we need to account for its width to make sure the text + button both fit within the background.
-		local buttonPadding = 16;
-		local visibleButton = battleTagDisplay.CopyBattleTagToClipboardButton:IsShown() and battleTagDisplay.CopyBattleTagToClipboardButton or battleTagDisplay.BattleNetUnavailableNoticeButton;
-		local buttonSpace = visibleButton:GetWidth() + buttonPadding;
 		displayText:SetWidth(math.min(textWidth, battleTagDisplay:GetWidth() - buttonSpace));
 	end
 end
@@ -601,6 +716,7 @@ function SocialUIIgnoreListMixin:OnLoad()
 	self:InitializeFrameVisuals();
 	self:InitializeScrollBox();
 	self:InitializeButtons();
+	self:RegisterForTransitions();
 end
 
 function SocialUIIgnoreListMixin:InitializeUserScaledSizing()
@@ -698,6 +814,10 @@ function SocialUIIgnoreListMixin:OnShow()
 	self:FullRefresh();
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
 end
 
 function SocialUIIgnoreListMixin:OnHide()
@@ -705,6 +825,10 @@ function SocialUIIgnoreListMixin:OnHide()
 	EventRegistry:UnregisterCallback("TextSizeManager.OnTextScaleUpdated", self);
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
 end
 
 function SocialUIIgnoreListMixin:OnEvent(_event, ...)
@@ -750,6 +874,10 @@ end
 
 function SocialUIIgnoreListMixin:RefreshButtons()
 	self.UnblockButton:SetEnabled(self.selectionBehavior:HasSelection());
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.footer:Refresh();
+	end
 end
 
 function SocialUIIgnoreListMixin:SelectFirstEntryIfNoneSelected()
@@ -813,6 +941,64 @@ function SocialUIIgnoreListMixin:UnblockSelected()
 
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPTION_CHECKBOX_ON);
 end
+
+function SocialUIIgnoreListMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitGamepad, self));
+end
+
+function SocialUIIgnoreListMixin:SetupGamepad()
+	local function UnblockPlayer()
+		self.UnblockButton:Click();
+	end
+
+	local function CanUnblockPlayer()
+		return self.UnblockButton:IsEnabled();
+	end
+
+	local function BlockNewPlayer()
+		self.BlockButton:Click();
+	end
+
+	local function CanBlockNewPlayer()
+		return self.BlockButton:IsEnabled();
+	end
+
+	local unblockPlayer = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, UnblockPlayer, SOCIAL_UI_IGNORE_LIST_REMOVE_BUTTON_LABEL);
+	unblockPlayer:AddCondition(CanUnblockPlayer);
+
+	local blockNewPlayer = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, BlockNewPlayer, CONTEXT_ACTION_LABEL_IGNORE_NEW_PLAYER);
+	blockNewPlayer:AddCondition(CanBlockNewPlayer);
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self);
+	self.footer:AddPromptedBinding(unblockPlayer);
+	self.footer:AddPromptedBinding(blockNewPlayer);
+	self.footer:AddStandardBackPrompt();
+	self.footer:Finalize();
+end
+
+function SocialUIIgnoreListMixin:InitGamepad()
+	self.CloseButton:Hide();
+	self.UnblockButton:Hide();
+	self.BlockButton:Hide();
+end
+
+function SocialUIIgnoreListMixin:FocusGamepad()
+	self.footer:ShowAndActivateBindings();
+
+	SmartNavigation:SetScrollFrameForFrame(self, self.ScrollBox);
+	GamepadScrollBarHint:SetOwner(self.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+end
+
+function SocialUIIgnoreListMixin:UnfocusGamepad()
+	self.footer:HideAndDeactivateBindings();
+
+	SmartNavigation:SetScrollFrameForFrame(self, nil);
+	GamepadScrollBarHint:Hide();
+end
+
 
 SocialUIIgnoreListHeaderMixin = {};
 

@@ -2,7 +2,7 @@
 ## Dep: Blizzard_CharacterFrame [AllowLoadGameType classic]
 ## AllowLoadGameType: standard, camelot, classic
 Shared\MainMenuBarBagManager.lua
-Classic\MainMenuBarBagButtonsConsts.lua [AllowLoadGameType vanilla, tbc]
+Classic\MainMenuBarBagButtonsConsts.lua [AllowLoadGameType classic]
 Wrath\MainMenuBarBagButtonsConsts.lua [AllowLoadGameType wrath, cata]
 Mists\MainMenuBarBagButtonsConsts.lua [AllowLoadGameType mists]
 Shared\MainMenuBarBagButtons.lua [AllowLoadGameType mainline]

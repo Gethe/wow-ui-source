@@ -116,7 +116,10 @@
 		<HighlightFont style="UserScaledFontGameHighlight"/>
 	</Button>
 
-	<Frame name="AddFriendFrame" parent="UIParent" hidden="true" inherits="ResizeLayoutFrame" mixin="AddFriendFrameMixin" frameStrata="DIALOG">
+	<Frame name="AddFriendFrame" parent="UIParent" hidden="true" inherits="ResizeLayoutFrame, FocusFramesInterfaceTemplate" mixin="AddFriendFrameMixin" frameStrata="DIALOG">
+		<KeyValues>
+			<KeyValue key="layoutType" type="string" value="DialogFrameTemplate"/>
+		</KeyValues>
 		<Size x="1" y="1"/>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTemplate"/>
@@ -258,6 +261,16 @@
 							<OnClick method="OnClick"/>
 						</Scripts>
 					</Button>
+					<Frame parentKey="InfoIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="22" y="22"/>
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentInfoButton" relativePoint="RIGHT" x="3" y="1" />
+						</Anchors>
+					</Frame>
 					<Frame parentKey="TitleContainer" inherits="ResizeLayoutFrame">
 						<Size x="1" y="1"/>
 						<KeyValues>

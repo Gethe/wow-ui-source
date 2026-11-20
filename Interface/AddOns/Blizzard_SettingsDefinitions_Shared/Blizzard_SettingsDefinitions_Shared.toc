@@ -16,6 +16,8 @@ AccessibilitySettingsPreview.lua
 [Family]\QuestTextPreview.xml [AllowLoadGameType mainline]
 [Family]\TextSizePreview.lua [AllowLoadGameType mainline]
 [Family]\TextSizePreview.xml [AllowLoadGameType mainline]
+[Family]\TextOverrides.lua [AllowLoadGameType mainline] [ExcludeLoadGameType camelot]
+[Game]\TextOverrides.lua [AllowLoadGameType camelot]
 [Family]\Text.lua [AllowLoadGameType mainline]
 AudioAssist.lua
 AudioAssist.xml

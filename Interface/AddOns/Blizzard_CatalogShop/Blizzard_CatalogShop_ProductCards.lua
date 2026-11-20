@@ -125,10 +125,12 @@ local function SubTimeAndGameTimeCardLayout(card)
 	container.RectIcon:SetPoint("CENTER", 0, 40);
 	container.RectIcon:SetSize(atlasWidth, atlasHeight);
 
-	local timeTexture = CatalogShopUtil.GetTimeTexture(card.productInfo, card.productInfo.cardDisplayData.productType);
-	if timeTexture then
-		container.RectIcon:Show();
-		container.RectIcon:SetAtlas(timeTexture);
+	if card.productInfo.wideCardBGOverrideProductURL == nil or not card.productInfo.useWideCardSettings then
+		local timeTexture = CatalogShopUtil.GetTimeTexture(card.productInfo, card.productInfo.cardDisplayData.productType);
+		if timeTexture then
+			container.RectIcon:Show();
+			container.RectIcon:SetAtlas(timeTexture);
+		end
 	else
 		container.RectIcon:Hide();
 	end

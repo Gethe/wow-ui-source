@@ -2200,7 +2200,7 @@ function TransmogCharacterMixin:SetupSlots()
 			if not slotFrame then
 				-- Try to select the primary slot if this was the secondary slot that is now hidden
 				local linkedSlotsInfo = C_TransmogOutfitInfo.GetLinkedSlotInfo(slot);
-				if slot == linkedSlotsInfo.secondarySlotInfo.slot then
+				if linkedSlotsInfo and slot == linkedSlotsInfo.secondarySlotInfo.slot then
 					slotFrame = self:GetSlotFrame(linkedSlotsInfo.primarySlotInfo.slot, linkedSlotsInfo.primarySlotInfo.type);
 				end
 			end

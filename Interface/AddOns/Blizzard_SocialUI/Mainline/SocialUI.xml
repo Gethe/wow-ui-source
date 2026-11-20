@@ -11,6 +11,11 @@
 					<Anchor point="TOP" y="-22"/>
 				</Anchors>
 			</Frame>
+			<Frame parentKey="TabIndicators" inherits="GamepadTabIndicatorsTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="isVertical" value="true" type="boolean"/>
+				</KeyValues>
+			</Frame>
 		</Frames>
 		<Layers>
 			<Layer level="ARTWORK">

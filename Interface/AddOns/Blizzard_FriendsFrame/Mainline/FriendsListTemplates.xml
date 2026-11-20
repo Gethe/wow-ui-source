@@ -112,6 +112,7 @@
 			<KeyValue key="secondaryTextIndent" value="1" type="number"/>
 
 			<KeyValue key="stateDisplayXOffset" value="2" type="number"/>
+			<KeyValue key="buttonContext" value="ButtonContext_FriendsListCard" type="string"/>
 		</KeyValues>
 		<Frames>
 			<Frame parentKey="PresenceHolder" inherits="SocialCardPresenceHolderTemplate">
@@ -119,6 +120,9 @@
 			</Frame>
 
 			<Button parentKey="PartyButton" inherits="FriendsListSocialCardPartyButtonTemplate">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Anchors>
 					<Anchor point="RIGHT" x="-4"/>
 				</Anchors>

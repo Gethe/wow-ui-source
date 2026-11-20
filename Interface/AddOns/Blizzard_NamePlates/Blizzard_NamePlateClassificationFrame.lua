@@ -120,13 +120,17 @@ function NamePlateClassificationFrameMixin:GetClassificationAtlasElement()
 		if classification == "elite" or classification == "worldboss" then
 			return "nameplates-icon-elite-gold";
 		elseif classification == "rare" then
-			return "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star";
+			return self:GetRareClassificationAtlasElement();
 		elseif classification == "rareelite" then
 			return "nameplates-icon-elite-silver";
 		end
 	end
 
 	return nil;
+end
+
+function NamePlateClassificationFrameMixin:GetRareClassificationAtlasElement()
+	return "UI-HUD-UnitFrame-Target-PortraitOn-Boss-Rare-Star";
 end
 
 function NamePlateClassificationFrameMixin:UpdateClassificationIndicator()

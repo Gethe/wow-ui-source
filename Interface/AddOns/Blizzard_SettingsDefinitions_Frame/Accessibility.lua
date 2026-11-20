@@ -155,7 +155,7 @@ local function Register()
 	end
 
 	-- Enable Dracthyr Tap Controls (Source in Combat)
-	if C_CVar.GetCVar("empowerTapControls") then
+	if CombatOverrides.HasEmpowerTapControls() then
 		layout:AddMirroredInitializer(Settings.EmpoweredTapControlsInitializer);
 	end
 

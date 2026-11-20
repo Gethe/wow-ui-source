@@ -659,6 +659,10 @@ function CatalogShopUtil.SetupModelSceneForMounts(modelScene, modelSceneID, disp
 				return;
 			end
 
+			-- We don't currently have the mountID to fetch extra mount info from C_MountJournal, so we default to isSelfMount = false
+			-- If we ever need to support a self-mounted mount in Shop, we would need to resolve the mountID to get the isSelfMount flag from C_MountJournal
+			--local _defaultCreatureDisplayID, _descriptionText, _sourceText, isSelfMount, _, _, _animID, _spellVisualKitID, _disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(data.mountID);
+			local isSelfMount = false;
 			if (isSelfMount) then
 				actor:SetAnimationBlendOperation(Enum.ModelBlendOperation.None);
 				actor:SetAnimation(CatalogShopConstants.DefaultAnimID.MountSelfIdle);
@@ -669,13 +673,11 @@ function CatalogShopUtil.SetupModelSceneForMounts(modelScene, modelSceneID, disp
 			local showPlayer = forceHidePlayer == nil or not forceHidePlayer; -- fetch this instead
 			local useNativeForm = ShouldUseNativeForm();
 
-			local isSelfMount = false;
 			local disablePlayerMountPreview = false; -- some mounts are flagged to not show the player on the mount - this is static data we need to fetch
 			local spellVisualInfo = C_CatalogShop.GetSpellVisualInfoForMount(displayData.spellVisualID);
 			local spellVisualKitID = spellVisualInfo and spellVisualInfo.spellVisualKitID or nil;
 			local animID = spellVisualInfo and spellVisualInfo.animID or nil;
 
-			--local defaultCreatureDisplayID, descriptionText, sourceText, isSelfMount, _, _, animID, spellVisualKitID, disablePlayerMountPreview = C_MountJournal.GetMountInfoExtraByID(data.mountID);
 			-- RNM : This would be nice to skip if it's a card
 			if (showPlayer) then
 				modelScene:AttachPlayerToMount(actor, animID, isSelfMount, disablePlayerMountPreview, spellVisualKitID, useNativeForm, optionalRiderTag);

@@ -49,6 +49,22 @@ function AlertMountEquipmentFeatureMixin:ValidateIsShown()
 	self:SetShown(not GetCVarBitfield("closedInfoFrames", LE_FRAME_TUTORIAL_MOUNT_EQUIPMENT_SLOT_FRAME));
 end
 
+MountListButtonMixin = {}
+function MountListButtonMixin:OnSmartNavSelect()
+	self.HighlightTexture:Hide();
+	self:Click();
+end
+
+function MountListButtonMixin:OnGamepadReleased()
+	SmartNavigation_ClearJumpNavigationOverrides(self.DragButton);
+
+	local button = SmartNavigation:GetCurrentButton();
+	if button == self then
+		-- Ensure `OnLeave` gets called before the frame is re-used.
+		SmartNavigation:SelectButton(nil);
+	end
+end
+
 MountEquipmentButtonMixin = {};
 function MountEquipmentButtonMixin:Initialize(item)
 	self.ItemIcon:SetTexture(item and item:GetItemIcon() or nil);
@@ -126,6 +142,281 @@ function MountEquipmentButtonMixin:OnLeave()
 	GameTooltip:Hide();
 end
 
+MountJournalMixin = {}
+
+function MountJournalMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+end
+
+function MountJournalMixin:SetupGamepadFooter()
+	local function MountButtonEnabled()
+		return MountJournal.MountButton:IsEnabled();
+	end
+	local function MountButtonClick()
+		MountJournal.MountButton:Click();
+	end
+	local function MountButtonLabel()
+		return MountJournal.MountButton:GetText();
+	end
+
+	local mountBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, "MountJournal_Mount_PromptedBinding");
+	mountBinding:AddFooterBinding({
+		label = MountButtonLabel,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_MountListButton",
+		conditions = { MountButtonEnabled, },
+	});
+	mountBinding:AddFooterFunction({
+		bindingFunctions = MountButtonClick,
+	})
+
+	local function MountIsCollected()
+		local button = SmartNavigation:GetCurrentButton();
+		return MountListItem_IsCollected(button, button.index);
+	end
+	local function MountCreateCtxMenu()
+		local button = SmartNavigation:GetCurrentButton();
+		MountListItem_CreateContextMenu(button, button.index);
+	end
+
+	local ctxMenuBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, "MountJournal_CtxMenu_PromptedBinding");
+	ctxMenuBinding:AddFooterBinding({
+		label = CONTEXT_ACTION_LABEL_MORE_ACTIONS,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_MountListButton",
+		conditions = { MountIsCollected, },
+	});
+	ctxMenuBinding:AddFooterFunction({
+		bindingFunctions = MountCreateCtxMenu,
+	})
+
+	local function BindMountToActionBar()
+		local button = SmartNavigation:GetCurrentButton();
+		GamepadActionBarEditFrame:BindSpell(button.spellID);
+	end
+
+	local bindBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, "MountJournal_Bind_PromptedBinding");
+	bindBinding:AddFooterBinding({
+		label = CONTEXT_ACTION_LABEL_BIND_TO_GAMEPAD_ACTION_BAR,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_MountListButton",
+		conditions = { MountIsCollected, },
+	});
+	bindBinding:AddFooterFunction({
+		bindingFunctions = BindMountToActionBar,
+	})
+
+	local function TogglePlayerClick()
+		MountJournal.MountDisplay.ModelScene.TogglePlayer:Click();
+	end
+
+	local togglePlayerBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, "MountJournal_TogglePlayer_PromptedBinding");
+	togglePlayerBinding:AddFooterBinding({
+		label = MOUNT_JOURNAL_PLAYER,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+	})
+	togglePlayerBinding:AddFooterFunction({
+		bindingFunctions = TogglePlayerClick,
+	})
+
+	local function FocusSearchBox()
+		local searchBox = MountJournal.searchBox;
+		if searchBox.GamepadFocusIcon:IsShown() then
+			SmartNavigation:SelectButton(searchBox);
+			searchBox:SetFocus();
+		end
+	end
+	local function ShouldShowFocusSearchBox()
+		local button = SmartNavigation:GetCurrentButton();
+		return button ~= MountJournal.searchBox;
+	end
+
+	local focusSearchBox = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, FocusSearchBox, nil);
+	focusSearchBox:SetCustomPromptFrame(MountJournal.searchBox.GamepadFocusIcon);
+	focusSearchBox:AddCondition(ShouldShowFocusSearchBox);
+	focusSearchBox:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local mountZoomBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_VERTICAL, "MountJournal_Zoom_PromptedBinding");
+	mountZoomBinding:AddFooterBinding({
+		label = FRAME_ACTION_ZOOM,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_MountModelScene",
+	})
+
+	local mountRotateBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_HORIZONTAL, "MountJournal_Rot_PromptedBinding");
+	mountRotateBinding:AddFooterBinding({
+		label = ACTION_LABEL_ROTATE,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_MountModelScene",
+	})
+
+	local function ResetMount()
+		MountJournal.MountDisplay.ModelScene.ControlFrame.resetButton:Click();
+	end
+	local mountResetBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_STICK_RIGHT_PRESS, "MountJournal_Reset_PromptedBinding");
+	mountResetBinding:AddFooterBinding({
+		label = RESET,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_MountModelScene",
+	})
+	mountResetBinding:AddFooterFunction({
+		bindingFunctions = ResetMount,
+	})
+
+	local mountFooter = GamepadSharedUtility.CreatePromptedBindingFooter(CollectionsJournal, "Collections_Mount");
+	mountFooter:AddPromptedBinding(mountBinding);
+	mountFooter:AddPromptedBinding(ctxMenuBinding);
+	mountFooter:AddPromptedBinding(bindBinding);
+	mountFooter:AddPromptedBinding(togglePlayerBinding);
+	mountFooter:AddPromptedBinding(focusSearchBox);
+	mountFooter:AddPromptedBinding(mountZoomBinding);
+	mountFooter:AddPromptedBinding(mountRotateBinding);
+	mountFooter:AddPromptedBinding(mountResetBinding);
+	mountFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
+	mountFooter:Finalize();
+
+	return mountFooter;
+end
+
+function MountJournalMixin:RotateAndZoomMount(inX, inY)
+	local rotSpeed = (inX ~= 0 and inX) or nil;
+	local zoomSpeed = (inY ~= 0 and inY) or nil;
+
+	MountJournal.MountDisplay.ModelScene:AdjustCameraGamepad(rotSpeed, zoomSpeed);
+end
+
+function MountJournalMixin:SetupGamepad()
+	self.footer = self:SetupGamepadFooter();
+
+	self.cameraBindings = GamepadMode.CreateBindingGroup("MountJournalBindings");
+	self.cameraBindings:AddAxisBinding(GAMEPAD_STICK_RIGHT, GenerateClosure(self.RotateAndZoomMount, self));
+
+	SmartNavigation_AddJumpNavigationOverride(MountJournal.MountDisplay.ModelScene, SMART_NAV_INPUT_DIRECTION.LEFT, function()
+		if MountJournal.selectedMountID and (MountJournal.numOwned > 0) then
+			 local foundFrame = MountJournal.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+				return elementData.mountID == MountJournal.selectedMountID;
+			end);
+			if foundFrame then
+				return foundFrame;
+			end
+		end
+		return nil;
+	end);
+end
+
+function MountJournalMixin:InitializeGamepad()
+	MountJournal.MountButton:Hide();
+
+	self.searchBox:HookScript("OnEditFocusGained", function()
+		local button = SmartNavigation:GetCurrentButton();
+		if not button or (button ~= self.searchBox) then
+			SmartNavigation:SelectButton(self.searchBox);
+		end
+	end);
+
+end
+
+function MountJournalMixin:SmartNavSelectFirstButton()
+	if not InputUtil.IsGamepadUIEnabled() then
+		return;
+	end
+
+	local currentButton = SmartNavigation:GetCurrentButton();
+	if currentButton and (currentButton.buttonContext ~= "ButtonContext_MountListButton") then
+		return;
+	end
+
+	if not SmartNavigation:IsActiveFrame(CollectionsJournal) then
+		return;
+	end
+
+	local function FindFrameByMountID()
+		if MountJournal.selectedMountID and (MountJournal.numOwned > 0) then
+			return MountJournal.ScrollBox:FindFrameByPredicate(function(frame, elementData)
+				return elementData.mountID == MountJournal.selectedMountID;
+			end);
+		end
+		return nil;
+	end
+
+	local foundFrame = FindFrameByMountID();
+	if foundFrame then
+		SmartNavigation:SelectButton(foundFrame);
+		return;
+	end
+
+	if not foundFrame and (MountJournal.numOwned > 0) and (C_MountJournal.GetNumDisplayedMounts() > 0) then
+		MountJournal_Select(1);
+		foundFrame = FindFrameByMountID();
+		if foundFrame then
+			SmartNavigation:SelectButton(foundFrame);
+			return;
+		end
+	end
+
+	local searchBox = MountJournal.searchBox;
+	SmartNavigation:SelectButton(searchBox);
+	searchBox:SetFocus();
+end
+
+function MountJournalMixin:SmartNavTabFocus()
+	SmartNavigation:SetScrollFrameForFrame(CollectionsJournal, self.ScrollBox);
+	GamepadScrollBarHint:SetOwner(self.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:Show();
+
+	SmartNavigation:SelectButton(nil);
+
+	self.ScrollBox:RegisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, function(mountJournal, frame, elementData)
+		frame:OnGamepadReleased();
+	end, self);
+
+	self:SmartNavSelectFirstButton();
+end
+
+function MountJournalMixin:SmartNavTabUnfocus()
+	self.ScrollBox:UnregisterCallback(ScrollBoxListMixin.Event.OnReleasedFrame, self);
+end
+
+function MountJournalMixin:SmartNavUpdateTabFocus(show)
+	if show then
+		self:SmartNavTabFocus();
+	else
+		self:SmartNavTabUnfocus();
+	end
+end
+
+MountJournalModelSceneMixin = {}
+
+function MountJournalModelSceneMixin:OnSmartNavDeselect()
+	GamepadMode.DeactivateBindingGroup(MountJournal.cameraBindings);
+	GamepadScrollBarHint:Show();
+
+	MountJournal.MountDisplay.ModelScene:AdjustCameraGamepad(nil, nil);
+end
+
+function MountJournalModelSceneMixin:OnSmartNavSelect()
+	GamepadMode.ActivateBindingGroup(MountJournal.cameraBindings);
+	GamepadScrollBarHint:Hide();
+end
+
+function MountJournalModelSceneMixin:OnEnter(button)
+	ModelSceneMixin.OnEnter(self, button);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.ControlFrame:Hide();
+	end
+end
+
+function MountJournalModelSceneMixin:OnLeave(button)
+	ModelSceneMixin.OnLeave(self, button);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		self.ControlFrame:Hide();
+	end
+end
+
 function MountJournal_OnLoad(self)
 	self:RegisterEvent("COMPANION_LEARNED");
 	self:RegisterEvent("COMPANION_UNLEARNED");
@@ -187,6 +478,8 @@ function MountJournal_OnLoad(self)
 	
 	MountJournal_SetPendingMountChanges(false);
 	self.ToggleDynamicFlightFlyoutButton:SetPopup(self.DynamicFlightFlyoutPopup);
+
+	self:RegisterForTransitions();
 end
 
 local function CreateContextMenu(owner, rootDescription, index)
@@ -269,7 +562,7 @@ function MountJournal_InitMountButton(button, elementData)
 		if button.name:GetNumLines() == 1 then
 			yOffset = 6;
 		else
-			yOffset = 5;
+			yOffset = 5;
 		end
 	end
 	button.name:SetPoint("LEFT", button.icon, "RIGHT", 10, yOffset);
@@ -338,6 +631,14 @@ function MountJournal_InitMountButton(button, elementData)
 	if ( button.showingTooltip ) then
 		MountJournalMountButton_UpdateTooltip(button);
 	end
+
+	if InputUtil.IsGamepadUIEnabled() then
+		SmartNavigation_ClearJumpNavigationOverrides(button.DragButton);
+
+		SmartNavigation_AddIgnoreInputNavigationOverride(button.DragButton, SMART_NAV_INPUT_DIRECTION.UP);
+		SmartNavigation_AddIgnoreInputNavigationOverride(button.DragButton, SMART_NAV_INPUT_DIRECTION.DOWN);
+		SmartNavigation_AddIgnoreInputNavigationOverride(button.DragButton, SMART_NAV_INPUT_DIRECTION.LEFT);
+	end
 end
 
 function MountJournal_OnEvent(self, event, ...)
@@ -347,9 +648,15 @@ function MountJournal_OnEvent(self, event, ...)
 			local skipMountDisplay = true;
 			MountJournal_FullUpdate(self, skipMountDisplay);
 		end
+	elseif ( event == "UNIT_AURA" ) then
+		local unit, unitAuraUpdateInfo = ...;
+		if unit == "player" then
+			local forceSceneChange = false;
+			MountJournal_UpdateMountDisplay(forceSceneChange);
+		end
 	elseif ( event == "MOUNT_JOURNAL_SEARCH_UPDATED" ) then
 		local skipMountDisplay = true;
-		MountJournal_FullUpdate(self, skipMountDisplay);
+		MountJournal_FullUpdate(self, skipMountDisplay);
 	elseif ( event == "UI_MODEL_SCENE_INFO_UPDATED" ) then
 		if (self:IsVisible()) then
 			local forceSceneChange = true;
@@ -590,6 +897,8 @@ function MountJournal_FullUpdate(self, skipMountDisplay)
 end
 
 function MountJournal_OnShow(self)
+	self:RegisterUnitEvent("UNIT_AURA", "player");
+
 	MountJournal_FullUpdate(self);
 
 	self.ToggleDynamicFlightFlyoutButton:UpdateVisibility();
@@ -609,6 +918,8 @@ function MountJournal_OnShow(self)
 end
 
 function MountJournal_OnHide(self)
+	self:UnregisterEvent("UNIT_AURA");
+
 	C_MountJournal.ClearRecentFanfares();
 	EventRegistry:TriggerEvent("MountJournal.OnHide");
 end
@@ -648,6 +959,8 @@ function MountJournal_UpdateMountList()
 		MountJournal_UpdateMountDisplay(forceSceneChange);
 		MountJournal.MountCount.Count:SetText(0);
 	end
+
+	MountJournal:SmartNavSelectFirstButton();
 end
 
 function MountJournalMountButton_UpdateTooltip(self)
@@ -765,6 +1078,10 @@ function MountJournal_UpdateMountDisplay(forceSceneChange, refreshPlayer)
 		MountJournal.MountDisplay.NoMounts:Show();
 		MountJournal.MountButton:SetEnabled(false);
 	end
+
+	if MountJournal.footer then
+		MountJournal.footer:Refresh();
+	end
 end
 
 function MountJournal_Select(index)
@@ -862,12 +1179,20 @@ function MountJournalMountButton_OnEnter(self)
 	GameTooltip:Show();
 end
 
+function MountListItem_IsCollected(self, index)
+	return select(11, C_MountJournal.GetDisplayedMountInfo(index))
+end
+
+function MountListItem_CreateContextMenu(parent, index)
+	MenuUtil.CreateContextMenu(parent, CreateContextMenu, index);
+end
+
 function MountListDragButton_OnClick(self, button)
 	local parent = self:GetParent();
 	if ( button ~= "LeftButton" ) then
-		local isCollected = select(11, C_MountJournal.GetDisplayedMountInfo(parent.index));
+		local isCollected = MountListItem_IsCollected(parent, parent.index);
 		if isCollected then
-			MenuUtil.CreateContextMenu(self, CreateContextMenu, parent.index);
+			MountListItem_CreateContextMenu(self, parent.index);
 		end
 	elseif ( IsModifiedClick("CHATLINK") ) then
 		local id = parent.spellID;
@@ -885,9 +1210,9 @@ end
 
 function MountListItem_OnClick(self, button)
 	if ( button ~= "LeftButton" ) then
-		local isCollected = select(11, C_MountJournal.GetDisplayedMountInfo(self.index));
+		local isCollected = MountListItem_IsCollected(self, self.index);
 		if isCollected then
-			MenuUtil.CreateContextMenu(self, CreateContextMenu, self.index);
+			MountListItem_CreateContextMenu(self, self.index);
 		end
 	elseif ( IsModifiedClick("CHATLINK") ) then
 		local id = self.spellID;

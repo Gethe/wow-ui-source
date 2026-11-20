@@ -695,7 +695,6 @@ Interface\AddOns\Blizzard_ActionBarController\ActionBarController.lua
 Interface\AddOns\Blizzard_ActionBarController\ActionBarController.xml
 Interface\AddOns\Blizzard_ActionBarController\Blizzard_ActionBarController.toc
 Interface\AddOns\Blizzard_ActionBar\Blizzard_ActionBar.toc
-Interface\AddOns\Blizzard_ActionBar\Camelot\ActionButtonOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Camelot\ActionButtonUtilOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Camelot\ExtraActionBarOverrides.lua
 Interface\AddOns\Blizzard_ActionBar\Camelot\MainMenuBarEndCaps.lua
@@ -2248,7 +2247,6 @@ Interface\AddOns\Blizzard_GlueXML\Mainline\RealmList.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\RealmList.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\Redlist.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\ServerAlert.xml
-Interface\AddOns\Blizzard_GlueXML\Mainline\StarterEditionPopUpTemplates.xml
 Interface\AddOns\Blizzard_GlueXML\Mainline\SuperDistrict.lua
 Interface\AddOns\Blizzard_GlueXML\Mainline\SuperDistrict.xml
 Interface\AddOns\Blizzard_GlueXML\MovieFrame.lua
@@ -2269,6 +2267,7 @@ Interface\AddOns\Blizzard_GlueXML\Shared\GameLogoDarkBackdrop.lua
 Interface\AddOns\Blizzard_GlueXML\Shared\GameLogoDarkBackdrop.xml
 Interface\AddOns\Blizzard_GlueXML\Shared\HardcoreFrames.lua
 Interface\AddOns\Blizzard_GlueXML\Shared\HardcoreFrames.xml
+Interface\AddOns\Blizzard_GlueXML\Shared\StarterEditionPopUpTemplates.xml
 Interface\AddOns\Blizzard_GlueXML\SocialContract.lua
 Interface\AddOns\Blizzard_GlueXML\SocialContract.xml
 Interface\AddOns\Blizzard_GlueXML\StarterEditionPopUp.xml
@@ -2787,6 +2786,7 @@ Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlateUnitFrame.lua
 Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlates.lua
 Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlates.toc
 Interface\AddOns\Blizzard_NamePlates\Blizzard_NamePlates.xml
+Interface\AddOns\Blizzard_NamePlates\Camelot\Blizzard_NamePlateClassificationFrameOverrides.lua
 Interface\AddOns\Blizzard_NamePlates\Camelot\Blizzard_NamePlateConstants.lua
 Interface\AddOns\Blizzard_NamePlates\Camelot\Blizzard_NamePlateFrameOptionsOverrides.lua
 Interface\AddOns\Blizzard_NamePlates\Camelot\Blizzard_NamePlateLevelFrame.lua
@@ -3328,11 +3328,11 @@ Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Blizzard_SettingsDefinitions
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\AccessibilityOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\AudioOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\ColorblindOverrides.lua
+Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\CombatOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\ControlsOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\InterfaceOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\KeybindingsOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\NameplatesOverrides.lua
-Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Camelot\SocialOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Colorblind.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Combat.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\CombatAudioAlertConstants.lua
@@ -3358,6 +3358,7 @@ Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Nameplates.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Nameplates.xml
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\PingSystem.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\PingSystem.xml
+Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Shared\SocialOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\Social.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Frame\WoWHack\CombatOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\AccessibilitySettingsPreview.lua
@@ -3366,6 +3367,7 @@ Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Audio.xml
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\AudioAssist.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\AudioAssist.xml
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Blizzard_SettingsDefinitions_Shared.toc
+Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Camelot\TextOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Gamepad.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Graphics.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Graphics.xml
@@ -3376,6 +3378,7 @@ Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mac.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\QuestTextPreview.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\QuestTextPreview.xml
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\Text.lua
+Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\TextOverrides.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\TextSizePreview.lua
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Mainline\TextSizePreview.xml
 Interface\AddOns\Blizzard_SettingsDefinitions_Shared\Network.lua
@@ -3703,6 +3706,7 @@ Interface\AddOns\Blizzard_SharedXML\ModelSceneMixin.xml
 Interface\AddOns\Blizzard_SharedXML\ModelSceneTemplates.lua
 Interface\AddOns\Blizzard_SharedXML\ModelSceneTemplates.xml
 Interface\AddOns\Blizzard_SharedXML\MoneyFormatter.lua
+Interface\AddOns\Blizzard_SharedXML\NameMaskingUtil.lua
 Interface\AddOns\Blizzard_SharedXML\NewFeatureLabel.lua
 Interface\AddOns\Blizzard_SharedXML\NewFeatureLabel.xml
 Interface\AddOns\Blizzard_SharedXML\NineSlice.lua
@@ -3866,6 +3870,7 @@ Interface\AddOns\Blizzard_SocialUIShared\SocialUISharedTemplates.xml
 Interface\AddOns\Blizzard_SocialUIShared\SocialUISystemMixin.lua
 Interface\AddOns\Blizzard_SocialUIShared\SocialUIUtil.lua
 Interface\AddOns\Blizzard_SocialUI\Blizzard_SocialUI.toc
+Interface\AddOns\Blizzard_SocialUI\Camelot\SocialUITemplatesOverrides.lua
 Interface\AddOns\Blizzard_SocialUI\Mainline\Localization.lua
 Interface\AddOns\Blizzard_SocialUI\Mainline\SocialUI.lua
 Interface\AddOns\Blizzard_SocialUI\Mainline\SocialUI.xml
@@ -4597,42 +4602,5 @@ Interface\AddOns\Deprecated_PaperDoll\Deprecated_PaperDoll.lua
 Interface\AddOns\Deprecated_PaperDoll\Deprecated_PaperDoll.toc
 Interface\AddOns\middleclass\middleclass.lua
 Interface\AddOns\middleclass\middleclass.toc
-Interface\WorldMap\Argus.zmp
-Interface\WorldMap\Azeroth.zmp
-Interface\WorldMap\BlastedLands_terrain1.zmp
-Interface\WorldMap\BrokenIsles.zmp
-Interface\WorldMap\BrokenShore_terrain1.zmp
-Interface\WorldMap\BrokenShore_terrain2.zmp
-Interface\WorldMap\Draenor.zmp
-Interface\WorldMap\DragonIsles.zmp
-Interface\WorldMap\Dustwallow_terrain1.zmp
-Interface\WorldMap\Expansion01.zmp
-Interface\WorldMap\Gilneas_terrain1.zmp
-Interface\WorldMap\Gilneas_terrain2.zmp
-Interface\WorldMap\Harandar.zmp
-Interface\WorldMap\Hyjal_terrain1.zmp
-Interface\WorldMap\Kalimdor.zmp
-Interface\WorldMap\Khaz Algar (Surface).zmp
-Interface\WorldMap\Khaz Algar.zmp
-Interface\WorldMap\Krasarang_terrain1.zmp
-Interface\WorldMap\KulTiras.zmp
-Interface\WorldMap\LostCityofTolvir.zmp
-Interface\WorldMap\Northrend.zmp
-Interface\WorldMap\Pandaria.zmp
-Interface\WorldMap\Silithus_terrain1.zmp
-Interface\WorldMap\TheLostIsles_terrain1.zmp
-Interface\WorldMap\TheLostIsles_terrain2.zmp
-Interface\WorldMap\TwilightHighlands_terrain1.zmp
-Interface\WorldMap\Uldum_terrain1.zmp
-Interface\WorldMap\Voidstorm.zmp
-Interface\WorldMap\Zandalar.zmp
-Interface\WorldMap\garrisonffhorde_tier1.zmp
-Interface\WorldMap\garrisonffhorde_tier2.zmp
-Interface\WorldMap\garrisonffhorde_tier3.zmp
-Interface\WorldMap\garrisonffhorde_tier4.zmp
-Interface\WorldMap\garrisonsmvalliance_tier1.zmp
-Interface\WorldMap\garrisonsmvalliance_tier2.zmp
-Interface\WorldMap\garrisonsmvalliance_tier3.zmp
-Interface\WorldMap\garrisonsmvalliance_tier4.zmp
 Interface\ui-gen-addon-list.txt
 Interface\ui-toc-list.txt

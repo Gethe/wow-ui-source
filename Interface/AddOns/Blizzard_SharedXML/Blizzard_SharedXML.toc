@@ -14,6 +14,7 @@ SharedColorConstants.lua [AllowLoadGameType mainline]
 LinkUtil.lua
 InterfaceUtil.lua
 UnitUtil.lua
+NameMaskingUtil.lua
 AccountUtil.lua
 GameRulesUtil.lua
 Mainline\GameRulesUtil.lua [AllowLoadGameType mainline]

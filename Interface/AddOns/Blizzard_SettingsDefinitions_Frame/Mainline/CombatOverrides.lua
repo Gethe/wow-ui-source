@@ -245,6 +245,10 @@ end
 function CombatOverrides.AdjustCombatSettings(category)
 end
 
+function CombatOverrides.HasEmpowerTapControls()
+	return C_CVar.GetCVar("empowerTapControls");
+end
+
 function CombatOverrides.RunSettingsCallback(callback)
 	if not C_GameRules.IsPlunderstorm() then
 		callback();

@@ -54,13 +54,14 @@ local UnitHealPredictionCalculatorShared =
 		{
 			Name = "UnitMaximumHealthMode",
 			Type = "Enumeration",
-			NumValues = 2,
+			NumValues = 3,
 			MinValue = 0,
-			MaxValue = 1,
+			MaxValue = 2,
 			Fields =
 			{
 				{ Name = "Default", Type = "UnitMaximumHealthMode", EnumValue = 0, Documentation = { "Use maximum unit health as-is without adjustments." } },
 				{ Name = "WithAbsorbs", Type = "UnitMaximumHealthMode", EnumValue = 1, Documentation = { "Use maximum unit health with total damage absorb shields added." } },
+				{ Name = "ExpandToFitAbsorbs", Type = "UnitMaximumHealthMode", EnumValue = 2, Documentation = { "Use the greater of maximum unit health or the sum of current health and total damage absorb shields." } },
 			},
 		},
 		{

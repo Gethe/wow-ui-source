@@ -5,15 +5,16 @@
 [Family]\InterfaceOverrides.lua
 [Family]\ControlsOverrides.lua [ExcludeLoadGameType camelot]
 [Family]\CombatOverrides.lua
-[Family]\SocialOverrides.lua
+Shared\SocialOverrides.lua
+[Family]\SocialOverrides.lua [ExcludeLoadGameType camelot classic]
 [Family]\ColorblindOverrides.lua
 [Family]\KeybindingsOverrides.lua
 [Family]\AccessibilityOverrides.lua
 [Family]\NameplatesOverrides.lua
+[Game]\CombatOverrides.lua [AllowLoadGameType camelot]
 [Game]\NameplatesOverrides.lua [AllowLoadGameType camelot]
 [Game]\ColorblindOverrides.lua [AllowLoadGameType camelot]
 [Game]\ControlsOverrides.lua [AllowLoadGameType camelot]
-[Game]\SocialOverrides.lua [AllowLoadGameType camelot]
 [Game]\KeybindingsOverrides.lua [AllowLoadGameType camelot]
 [Game]\AccessibilityOverrides.lua [AllowLoadGameType camelot]
 [Game]\InterfaceOverrides.lua [AllowLoadGameType camelot]

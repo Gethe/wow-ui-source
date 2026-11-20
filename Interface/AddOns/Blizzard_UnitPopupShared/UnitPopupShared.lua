@@ -114,7 +114,7 @@ function UnitPopupManager:OpenMenu(which, contextData)
 			elementDescription:AddInitializer(contextData.menuMainTitlePreInitializer);
 		end
 		elementDescription:AddInitializer(function(frame, description, menu)
-			local title, class = GetNameAndClass(contextData.unit, contextData.name);
+			local title, class = GetNameAndClass(contextData.unit, contextData.displayName or contextData.name);
 			frame.fontString:SetText(title);
 
 			if contextData.titleColor then

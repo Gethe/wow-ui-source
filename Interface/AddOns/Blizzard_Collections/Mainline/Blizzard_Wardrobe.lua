@@ -4,6 +4,162 @@ WARDROBE_TABS_MAX_WIDTH = 185;
 
 WardrobeCollectionFrameMixin = { };
 
+function WardrobeCollectionFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+end
+
+function WardrobeCollectionFrameMixin:SetupGamepadFooter()
+	local function WardrobeCreateCtxMenu()
+		local button = SmartNavigation:GetCurrentButton();
+		button:MouseDown("RightButton");
+		button:MouseUp("RightButton");
+	end
+
+	local ctxMenuBinding = GamepadSharedUtility.CreatePromptedBinding({ GAMEPAD_FACE_BOTTOM, GAMEPAD_FACE_TOP }, "Wardrobe_CtxMenu_PromptedBinding");
+	ctxMenuBinding:AddFooterBinding({
+		label = CONTEXT_ACTION_LABEL_MORE_ACTIONS,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_WardrobeModelButton",
+	});
+	ctxMenuBinding:AddFooterFunction({
+		bindingFunctions = { WardrobeCreateCtxMenu, WardrobeCreateCtxMenu },
+	})
+
+	local function FocusSearchBox()
+		local searchBox = self.SearchBox;
+		if searchBox.GamepadFocusIcon:IsShown() then
+			SmartNavigation:SelectButton(searchBox);
+			searchBox:SetFocus();
+		end
+	end
+	local function ShouldShowFocusSearchBox()
+		local button = SmartNavigation:GetCurrentButton();
+		return button ~= self.SearchBox;
+	end
+
+	local function OpenFilter()
+		local filter = self.FilterButton;
+		filter:MouseDown();
+		filter:MouseUp();
+	end
+
+	local filterDropdown = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_RIGHT, OpenFilter, nil);
+	filterDropdown:SetCustomPromptFrame(self.FilterButton.GamepadFocusIcon);
+
+	local focusSearchBox = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, FocusSearchBox, nil);
+	focusSearchBox:SetCustomPromptFrame(self.SearchBox.GamepadFocusIcon);
+	focusSearchBox:AddCondition(ShouldShowFocusSearchBox);
+	focusSearchBox:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local wardrobeFooter = GamepadSharedUtility.CreatePromptedBindingFooter(CollectionsJournal, "Collections_Wardrobe");
+	wardrobeFooter:AddPromptedBinding(ctxMenuBinding);
+	wardrobeFooter:AddPromptedBinding(filterDropdown);
+	wardrobeFooter:AddPromptedBinding(focusSearchBox);
+	wardrobeFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
+	wardrobeFooter:Finalize();
+
+	return wardrobeFooter;
+end
+
+function WardrobeCollectionFrameMixin:SetupGamepad()
+	self.footer = self:SetupGamepadFooter();
+
+	SmartNavigation_AddJumpNavigationOverride(self.ItemsTab, SMART_NAV_INPUT_DIRECTION.DOWN, self.ClassDropdown);
+	SmartNavigation_AddJumpNavigationOverride(self.SetsTab, SMART_NAV_INPUT_DIRECTION.DOWN, self.ClassDropdown);
+
+	SmartNavigation_AddJumpNavigationOverride(self.ClassDropdown, SMART_NAV_INPUT_DIRECTION.RIGHT, self.ItemsCollectionFrame.SlotsFrame.Buttons[1]);
+
+	for _, model in ipairs(self.ItemsCollectionFrame.Models) do
+		model.buttonContext = "ButtonContext_WardrobeModelButton";
+	end
+
+	do
+		local function SlotsFrameToWeaponDropdown()
+			if self.ItemsCollectionFrame.WeaponDropdown:IsShown() then
+				return self.ItemsCollectionFrame.WeaponDropdown;
+			end
+			return nil;
+		end
+
+		local slotNameToDropDown = {
+			["LEGSSLOT"] = true,
+			["FEETSLOT"] = true,
+			["MAINHANDSLOT"] = true,
+			["SECONDARYHANDSLOT"] = true,
+			["RANGEDSLOT"] = true,
+		};
+
+		for i, button in ipairs(self.ItemsCollectionFrame.SlotsFrame.Buttons) do
+			if not button.isSmallButton then
+				local slotName = button.transmogLocation:GetSlotName();
+				if slotNameToDropDown[slotName] then
+					SmartNavigation_AddJumpNavigationOverride(button, SMART_NAV_INPUT_DIRECTION.DOWN, SlotsFrameToWeaponDropdown);
+				end
+			end
+		end
+	end
+end
+
+function WardrobeCollectionFrameMixin:InitializeGamepad()
+	self.FilterButton:ClearAllPoints();
+	self.FilterButton:SetPoint("LEFT", self.SearchBox, "RIGHT", 30, 0);
+
+	self.searchBox:HookScript("OnEditFocusGained", function()
+		local button = SmartNavigation:GetCurrentButton();
+		if not button or (button ~= self.SearchBox) then
+			SmartNavigation:SelectButton(self.SearchBox);
+		end
+	end);
+
+end
+
+local function IsWardrobeModelButtonForPagination()
+	local button = SmartNavigation:GetCurrentButton();
+	if not button then
+		return false;
+	end
+	if not button.buttonContext then
+		return false;
+	end
+	return button.buttonContext == "ButtonContext_WardrobeModelButton";
+end
+
+function WardrobeCollectionFrameMixin:TurnPageRight()
+	if not IsWardrobeModelButtonForPagination() then
+		return;
+	end
+	self.ItemsCollectionFrame.PagingFrame.NextPageButton:Click();
+end
+
+function WardrobeCollectionFrameMixin:TurnPageLeft()
+	if not IsWardrobeModelButtonForPagination() then
+		return;
+	end
+	self.ItemsCollectionFrame.PagingFrame.PrevPageButton:Click();
+end
+
+function WardrobeCollectionFrameMixin:SmartNavTabFocus()
+	SmartNavigation:SelectFirstButton(true);
+
+	SmartNavigation:RegisterCallback("HitRightEdge", self.TurnPageRight, self);
+	SmartNavigation:RegisterCallback("HitLeftEdge", self.TurnPageLeft, self);
+end
+
+function WardrobeCollectionFrameMixin:SmartNavTabUnfocus()
+	SmartNavigation:UnregisterCallback("HitRightEdge", self);
+	SmartNavigation:UnregisterCallback("HitLeftEdge", self);
+end
+
+function WardrobeCollectionFrameMixin:SmartNavUpdateTabFocus(show)
+	if show then
+		self:SmartNavTabFocus();
+	else
+		self:SmartNavTabUnfocus();
+	end
+end
+
 function WardrobeCollectionFrameMixin:ClickTab(tab)
 	self:SetTab(tab:GetID());
 	PanelTemplates_ResizeTabsToFit(WardrobeCollectionFrame, WARDROBE_TABS_MAX_WIDTH);
@@ -18,7 +174,11 @@ function WardrobeCollectionFrameMixin:SetTab(tabID)
 		self.ItemsCollectionFrame:Show();
 		self.SetsCollectionFrame:Hide();
 		self.SearchBox:ClearAllPoints();
-		self.SearchBox:SetPoint("TOPRIGHT", -107, -35);
+		if InputUtil.IsGamepadUIEnabled() then
+			self.SearchBox:SetPoint("TOPRIGHT", self, "TOPRIGHT", -132, -35);
+		else
+			self.SearchBox:SetPoint("TOPRIGHT", -107, -35);
+		end
 		self.SearchBox:SetWidth(115);
 		local enableSearchAndFilter = self.ItemsCollectionFrame.transmogLocation and self.ItemsCollectionFrame.transmogLocation:IsAppearance()
 		self.SearchBox:SetEnabled(enableSearchAndFilter);
@@ -130,6 +290,8 @@ function WardrobeCollectionFrameMixin:OnLoad()
 
 	-- TODO: Remove this at the next deprecation reset
 	self.searchBox = self.SearchBox;
+
+	self:RegisterForTransitions();
 end
 
 function WardrobeCollectionFrameMixin:OnEvent(event, ...)

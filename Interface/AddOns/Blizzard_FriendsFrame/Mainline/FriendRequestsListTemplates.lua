@@ -386,7 +386,7 @@ local function GetRequesterNameColor(elementData)
 end
 
 local function BuildRequesterNameDisplayText(elementData)
-	local accountName = elementData.accountName or "";
+	local accountName = BNet_GetNameForDisplayByFriendLevel(elementData.accountName or "", elementData.friendLevel);
 	local nameColor = GetRequesterNameColor(elementData);
 	return nameColor:WrapTextInColorCode(accountName);
 end
@@ -543,7 +543,7 @@ function FriendRequestsListSocialCardDeclineButtonMixin:OnLoad()
 			local blockButton = rootDescription:CreateButton(BLOCK_INVITES, function()
 				local inviteInfo = C_BattleNet.GetFriendInviteInfo(self.inviteIndex);
 				local inviteID = inviteInfo and inviteInfo.inviteID or nil;
-				local accountName = inviteInfo and inviteInfo.accountName or nil;
+				local accountName = inviteInfo and BNet_GetNameForDisplayByFriendLevel(inviteInfo.accountName, inviteInfo.friendLevel) or nil;
 				StaticPopup_Show("CONFIRM_BLOCK_INVITES", accountName, nil, inviteID);
 			end);
 			blockButton:AddInitializer(SocialUIUtil.InitializeUserScaledDropdownButton);

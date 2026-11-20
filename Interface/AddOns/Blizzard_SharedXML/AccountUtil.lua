@@ -42,6 +42,56 @@ function BNet_GetBNetIDAccount(name)
 	return C_AutoComplete.GetAutoCompletePresenceID(name);
 end
 
+function BNet_GetBattleTagForDisplay(battleTag, isPlayer)
+	if not battleTag or battleTag == "" then
+		return battleTag;
+	end
+
+	local cvar = isPlayer and "playerBattleTagNameMasking" or "battleTagNameMasking";
+	if NameMaskingUtil.IsMaskingEnabled(cvar) then
+		return NameMaskingUtil.MaskName(battleTag);
+	end
+
+	return battleTag;
+end
+
+-- The player's own full BattleTag for display, masked when playerBattleTagNameMasking is enabled. Use the unmasked
+-- BNet_GetBattleTagSelf for anything functional, like sharing or copying the BattleTag.
+function BNet_GetBattleTagSelfForDisplay()
+	return BNet_GetBattleTagForDisplay(BNet_GetBattleTagSelf(), true);
+end
+
+-- bnetIDAccount is optional and identifies whether the name is the player's own.
+function BNet_GetNameForDisplayByFriendLevel(accountName, friendLevel, chatFrame, bnetIDAccount)
+	if not accountName or accountName == "" then
+		return accountName;
+	end
+
+	local isPlayer = bnetIDAccount and BNIsSelf(bnetIDAccount);
+	local cvar = NameMaskingUtil.GetNameMaskingCVar(friendLevel, isPlayer);
+	if cvar and ChatFrameUtil.IsMaskingEnabled(cvar, chatFrame) then
+		return NameMaskingUtil.MaskName(accountName);
+	end
+
+	return accountName;
+end
+
+function BNet_GetAccountNameForDisplay(accountName, bnetIDAccount, chatFrame)
+	-- The player's own account needs no friend level lookup.
+	if bnetIDAccount and BNIsSelf(bnetIDAccount) then
+		return BNet_GetNameForDisplayByFriendLevel(accountName, nil, chatFrame, bnetIDAccount);
+	end
+
+	-- Skip the account lookup when no other player's name would be masked.
+	if not ChatFrameUtil.IsMaskingEnabled("battleTagNameMasking", chatFrame)
+		and not ChatFrameUtil.IsMaskingEnabled("realIDNameMasking", chatFrame) then
+		return accountName;
+	end
+
+	local accountInfo = bnetIDAccount and C_BattleNet.GetAccountInfoByID(bnetIDAccount);
+	return BNet_GetNameForDisplayByFriendLevel(accountName, accountInfo and accountInfo.friendLevel, chatFrame, bnetIDAccount);
+end
+
 function BNet_GetBNetAccountName(accountInfo)
 	if not accountInfo then
 		return;
@@ -49,7 +99,9 @@ function BNet_GetBNetAccountName(accountInfo)
 
 	local name = accountInfo.accountName;
 	if name == "" then
-		name = BNet_GetTruncatedBattleTag(accountInfo.battleTag);
+		name = BNet_GetTruncatedBattleTag(accountInfo.battleTag, BNIsSelf(accountInfo.bnetAccountID));
+	else
+		name = BNet_GetNameForDisplayByFriendLevel(name, accountInfo.friendLevel, nil, accountInfo.bnetAccountID);
 	end
 
 	return name;
@@ -66,13 +118,13 @@ function BNet_GetBNetIDAccountFromCharacterName(name)
 	end
 end
 
-function BNet_GetTruncatedBattleTag(battleTag)
+function BNet_GetTruncatedBattleTag(battleTag, isPlayer)
 	if battleTag then
 		local symbol = string.find(battleTag, "#");
 		if ( symbol ) then
-			return string.sub(battleTag, 1, symbol - 1);
+			return BNet_GetBattleTagForDisplay(string.sub(battleTag, 1, symbol - 1), isPlayer);
 		else
-			return battleTag;
+			return BNet_GetBattleTagForDisplay(battleTag, isPlayer);
 		end
 	else
 		return "";

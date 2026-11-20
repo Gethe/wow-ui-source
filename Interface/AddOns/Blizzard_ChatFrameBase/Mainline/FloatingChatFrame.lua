@@ -956,9 +956,9 @@ function FCF_OpenTemporaryWindow(chatType, chatTarget, sourceChatFrame, selectWi
 		--Copy over messages
 		local accessID = ChatHistory_GetAccessID(chatType, chatTarget);
 		for i = 1, sourceChatFrame:GetNumMessages() do
-			local text, r, g, b, chatTypeID, messageAccessID, lineID = sourceChatFrame:GetMessageInfo(i);
+			local text, r, g, b, chatTypeID, messageAccessID, lineID, event, eventArgs, MessageFormatter = sourceChatFrame:GetMessageInfo(i);
 			if accessID == messageAccessID then
-				chatFrame:AddMessage(text, r, g, b, chatTypeID, messageAccessID, lineID);
+				chatFrame:AddMessage(text, r, g, b, chatTypeID, messageAccessID, lineID, event, eventArgs, MessageFormatter);
 			end
 		end
 
@@ -1034,6 +1034,9 @@ function FCF_SetWindowName(frame, name, doNotSave)
 		end
 	else
 		FCFDock_SetDirty(GENERAL_CHAT_DOCK);
+	end
+	if ( frame.chatType == "WHISPER" or frame.chatType == "BN_WHISPER" ) then
+		name = ChatFrameUtil.GetWhisperDisplayName(frame.chatType, name, nil, frame);
 	end
 	frame.name = name;
 	-- "name" for whisper tabs is the player name
@@ -2287,6 +2290,9 @@ function FCFDock_AddChatFrame(dock, chatFrame, position)
 
 	dock.overflowButton.list:Hide();
 	FCFDock_UpdateTabs(dock);
+
+	-- Whether a window is masked depends on whether it is docked.
+	ChatFrameUtil.RefreshMaskedChatFrame(chatFrame);
 end
 
 function FCFDock_RemoveChatFrame(dock, chatFrame)
@@ -2320,6 +2326,9 @@ function FCFDock_RemoveChatFrame(dock, chatFrame)
 	dock.overflowButton.list:Hide();
 	FCF_CheckShowChatFrame(chatFrame);
 	FCFDock_UpdateTabs(dock);
+
+	-- Whether a window is masked depends on whether it is docked.
+	ChatFrameUtil.RefreshMaskedChatFrame(chatFrame);
 end
 
 function FCFDock_HasDockedChatFrame(dock, chatFrame)

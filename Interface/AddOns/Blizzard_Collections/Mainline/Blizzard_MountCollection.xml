@@ -77,7 +77,10 @@
 		</Animations>
 	</Button>
 
-	<Button name="MountListButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="MountListButtonTemplate" mixin="MountListButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_MountListButton" type="string"/>
+		</KeyValues>
 		<Size x="208" y="46"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -180,7 +183,7 @@
 				</Scripts>
 			</Button>
 		</Frames>
-		<HighlightTexture atlas="PetList-ButtonHighlight"/>
+		<HighlightTexture atlas="PetList-ButtonHighlight" parentKey="HighlightTexture"/>
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -214,7 +217,7 @@
 		</HighlightTexture>
 	</Button>
 	
-	<Frame name="MountJournal" parent="CollectionsJournal" setAllPoints="true">
+	<Frame name="MountJournal" mixin="MountJournalMixin" parent="CollectionsJournal" setAllPoints="true">
 		<Frames>
 			<Frame parentKey="SummonRandomFavoriteSpellFrame" inherits="UIPanelSpellButtonFrameTemplate" mixin="MountJournalSummonRandomFavoriteSpellFrameMixin">
 				<Size x="206" y="33"/>
@@ -409,11 +412,26 @@
 				</Anchors>
 			</DropdownButton>
 			<EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" parentKey="searchBox" letters="40">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Size x="145" y="20"/>
 				<Anchors>
 					<!-- Overidden in CollectionsJournal_SearchBox_OnLoad -->
 					<Anchor point="TOPLEFT" relativeKey="$parent.LeftInset" x="15" y="-9"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="GamepadFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_LEFT" type="global"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="28" y="28"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-8" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnLoad function="CollectionsJournal_SearchBox_OnLoad" inherit="prepend"/>
 					<OnTextChanged function="MountJournal_OnSearchTextChanged"/>
@@ -451,6 +469,9 @@
 				<Frames>
 					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
 					<Button parentKey="InfoButton" motionScriptsWhileDisabled="true" inherits="InlineHyperlinkFrameTemplate">
+						<KeyValues>
+							<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+						</KeyValues>
 						<KeyValues>
 							<KeyValue key="hasIconHyperlinks" value="true" type="boolean"/>
 						</KeyValues>
@@ -506,18 +527,27 @@
 							</Layer>
 						</Layers>
 					</Button>
-					<ModelScene parentKey="ModelScene" useParentLevel="true" inherits="WrappedAndUnwrappedModelScene">
+					<ModelScene parentKey="ModelScene" mixin="MountJournalModelSceneMixin" useParentLevel="true" inherits="WrappedAndUnwrappedModelScene">
+						<KeyValues>
+							<KeyValue key="buttonContext" value="ButtonContext_MountModelScene" type="string"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 							<Anchor point="BOTTOMRIGHT"/>
 						</Anchors>
 						<Frames>
 							<Frame parentKey="ControlFrame" frameLevel="500" inherits="ModelSceneControlFrameTemplate" >
+								<KeyValues>
+									<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="BOTTOM" x="0" y="10"/>
 								</Anchors>
 							</Frame>
 							<CheckButton parentKey="TogglePlayer" mixin="PlayerPreviewToggle" inherits="UICheckButtonTemplate" >
+								<KeyValues>
+									<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+								</KeyValues>
 								<Anchors>
 									<Anchor point="BOTTOMRIGHT" >
 										<Offset x="0" y="0"/>

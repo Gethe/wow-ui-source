@@ -17,13 +17,14 @@
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
 
-	<Frame name="FriendsFriendsFrame" parent="UIParent" inherits="UserScaledFrameTemplate" hidden="true" frameStrata="DIALOG" mixin="FriendsFriendsFrameMixin">
+	<Frame name="FriendsFriendsFrame" parent="UIParent" inherits="UserScaledFrameTemplate, FocusFramesInterfaceTemplate" hidden="true" frameStrata="DIALOG" mixin="FriendsFriendsFrameMixin">
 		<KeyValues>
 			<KeyValue key="baseWidth" value="314" type="number"/>
 			<KeyValue key="baseHeight" value="345" type="number"/>
 			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
 			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
 			<KeyValue key="scaleWeight" value="0.8" type="number"/>
+			<KeyValue key="layoutType" type="string" value="DialogFrameTemplate"/>
 		</KeyValues>
 		<Anchors>
 			<Anchor point="CENTER" y="50"/>
@@ -48,11 +49,23 @@
 					<KeyValue key="useScaleWeight" value="true" type="boolean"/>
 					<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
 					<KeyValue key="scaleWeight" value="0.8" type="number"/>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
 				</KeyValues>
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Title" relativePoint="BOTTOMLEFT" x="-1" y="-5"/>
 				</Anchors>
 			</DropdownButton>
+
+			<Frame parentKey="DropdownIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+				<KeyValues>
+					<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_RIGHT" type="global"/>
+					<KeyValue key="useDropShadow" value="true" type="boolean"/>
+				</KeyValues>
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="RIGHT" relativeKey="$parent.FriendsDropdown" relativePoint="LEFT" x="-3" y="1" />
+				</Anchors>
+			</Frame>
 
 			<Button parentKey="SendRequestButton" inherits="UIPanelButtonUserScaledTemplate" text="SEND_REQUEST">
 				<KeyValues>

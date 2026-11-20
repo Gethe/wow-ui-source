@@ -31,6 +31,20 @@ local CatalogShopConstants =
 			},
 		},
 		{
+			Name = "ProductPriceFilterReason",
+			Type = "Enumeration",
+			NumValues = 4,
+			MinValue = 0,
+			MaxValue = 3,
+			Fields =
+			{
+				{ Name = "Unfiltered", Type = "ProductPriceFilterReason", EnumValue = 0 },
+				{ Name = "UnsupportedCurrency", Type = "ProductPriceFilterReason", EnumValue = 1 },
+				{ Name = "NoPrice", Type = "ProductPriceFilterReason", EnumValue = 2 },
+				{ Name = "RewardsCurrencyMismatch", Type = "ProductPriceFilterReason", EnumValue = 3 },
+			},
+		},
+		{
 			Name = "SelectionConstraint",
 			Type = "Enumeration",
 			NumValues = 3,

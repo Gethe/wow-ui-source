@@ -241,6 +241,7 @@ function FriendsFrame_ShowBNDropdown(name, connected, lineID, chatType, chatFram
 			chatType = chatType,
 			chatTarget = name,
 			chatFrame = chatFrame,
+			displayName = BNet_GetAccountNameForDisplay(name, bnetIDAccount, chatFrame),
 			bnetIDAccount = bnetIDAccount,
 			battleTag = battleTag,
 			ownerFrame = chatFrame,
@@ -317,6 +318,12 @@ function FriendsFrame_OnLoad(self)
 	self:RegisterEvent("GROUP_JOINED");
 	self:RegisterEvent("GROUP_LEFT");
 	self:RegisterEvent("PLAYER_GUILD_UPDATE");
+
+	CVarCallbackRegistry:RegisterCallback("battleTagNameMasking", function() FriendsList_Update(true); end);
+	CVarCallbackRegistry:RegisterCallback("playerBattleTagNameMasking", function() FriendsList_Update(true); FriendsFrame_CheckBattlenetStatus(); end);
+	CVarCallbackRegistry:RegisterCallback("realIDNameMasking", function() FriendsList_Update(true); end);
+	CVarCallbackRegistry:RegisterCallback("streamerNameMasking", function() FriendsList_Update(true); end);
+	CVarCallbackRegistry:RegisterCallback("streamerMode", function() FriendsList_Update(true); end);
 
 	PanelTemplates_UpdateTabs(self);
 	self.selectedFriend = 1;
@@ -1741,8 +1748,8 @@ function FriendsFrame_CheckBattlenetStatus()
 	if ( BNFeaturesEnabled() ) then
 		if ( BNConnected() ) then
 			FriendsFrameBattlenetFrame.BroadcastFrame:UpdateBroadcast();
-			local _, battleTag = BNGetInfo();
-			if ( battleTag ) then
+			local battleTag = BNet_GetBattleTagSelfForDisplay();
+			if ( battleTag ~= "" ) then
 				local symbol = string.find(battleTag, "#");
 				if ( symbol ) then
 					local suffix = string.sub(battleTag, symbol);
@@ -1929,7 +1936,7 @@ function FriendsFrame_UpdateFriendInviteButton(button, elementData)
 
 	local inviteInfo = C_BattleNet.GetFriendInviteInfo(id);
 	local inviteID = inviteInfo and inviteInfo.inviteID or nil;
-	local accountName = inviteInfo and inviteInfo.accountName or nil;
+	local accountName = inviteInfo and BNet_GetNameForDisplayByFriendLevel(inviteInfo.accountName, inviteInfo.friendLevel) or nil;
 	button.Name:SetText(accountName);
 	button.inviteID = inviteID;
 	button.inviteIndex = button.id;

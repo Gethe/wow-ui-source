@@ -1,6 +1,166 @@
 local TOYS_PER_PAGE = 18;
 local TOY_FANFARE_MODEL_SCENE = 253;
 
+ToyBoxMixin = {}
+
+function ToyBoxMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+end
+
+function ToyBoxMixin:SetupGamepadFooter()
+	local function ToySpellButtonClick()
+		local button = SmartNavigation:GetCurrentButton();
+		button:Click();
+	end
+	local function ToySpellButtonLabel()
+		local button = SmartNavigation:GetCurrentButton();
+		if ToySpellButton_HasFanFare(button) then
+			return UNWRAP;
+		end
+		return USE;
+	end
+
+	local toyBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, "ToyBox_Use_PromptedBinding");
+	toyBinding:AddFooterBinding({
+		label = ToySpellButtonLabel,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_ToySpellButton",
+	});
+	toyBinding:AddFooterFunction({
+		bindingFunctions = ToySpellButtonClick,
+	})
+
+	local function PlayerHasToyForButton()
+		local button = SmartNavigation:GetCurrentButton();
+		return PlayerHasToy(button.itemID);
+	end
+	local function ToyCreateCtxMenu()
+		local button = SmartNavigation:GetCurrentButton();
+		ToySpellButton_CreateContextMenu(button, button.itemID);
+	end
+
+	local ctxMenuBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, "ToyBox_CtxMenu_PromptedBinding");
+	ctxMenuBinding:AddFooterBinding({
+		label = CONTEXT_ACTION_LABEL_MORE_ACTIONS,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_ToySpellButton",
+		conditions = { PlayerHasToyForButton, },
+	});
+	ctxMenuBinding:AddFooterFunction({
+		bindingFunctions = ToyCreateCtxMenu,
+	})
+
+	local function BindToyToActionBar()
+		local button = SmartNavigation:GetCurrentButton();
+		GamepadActionBarEditFrame:BindItem(button.itemID);
+	end
+
+	local bindBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, "ToyBox_Bind_PromptedBinding");
+	bindBinding:AddFooterBinding({
+		label = CONTEXT_ACTION_LABEL_BIND_TO_GAMEPAD_ACTION_BAR,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		buttonContexts = "ButtonContext_ToySpellButton",
+		conditions = { PlayerHasToyForButton, },
+	});
+	bindBinding:AddFooterFunction({
+		bindingFunctions = BindToyToActionBar,
+	})
+
+	local function FocusSearchBox()
+		local searchBox = ToyBox.searchBox;
+		if searchBox.GamepadFocusIcon:IsShown() then
+			SmartNavigation:SelectButton(searchBox);
+			searchBox:SetFocus();
+		end
+	end
+	local function ShouldShowFocusSearchBox()
+		local button = SmartNavigation:GetCurrentButton();
+		return button ~= ToyBox.searchBox;
+	end
+
+	local focusSearchBox = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_MENU_LEFT, FocusSearchBox, nil);
+	focusSearchBox:SetCustomPromptFrame(ToyBox.searchBox.GamepadFocusIcon);
+	focusSearchBox:AddCondition(ShouldShowFocusSearchBox);
+	focusSearchBox:SetVisibilityType(PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE);
+
+	local toyBoxFooter = GamepadSharedUtility.CreatePromptedBindingFooter(CollectionsJournal, "Collections_ToyBox");
+	toyBoxFooter:AddPromptedBinding(toyBinding);
+	toyBoxFooter:AddPromptedBinding(ctxMenuBinding);
+	toyBoxFooter:AddPromptedBinding(bindBinding);
+	toyBoxFooter:AddPromptedBinding(focusSearchBox);
+	toyBoxFooter:AddStandardBackPrompt(FRAME_ACTION_CLOSE);
+	toyBoxFooter:Finalize();
+
+	return toyBoxFooter;
+end
+
+function ToyBoxMixin:SetupGamepad()
+	self.footer = self:SetupGamepadFooter();
+
+	for i = 1, TOYS_PER_PAGE do
+		local button = ToyBox.iconsFrame["spellButton"..i];
+		button.buttonContext = "ButtonContext_ToySpellButton";
+	end
+end
+
+function ToyBoxMixin:InitializeGamepad()
+	self.searchBox:HookScript("OnEditFocusGained", function()
+		local button = SmartNavigation:GetCurrentButton();
+		if not button or (button ~= self.searchBox) then
+			SmartNavigation:SelectButton(self.searchBox);
+		end
+	end);
+end
+
+local function IsToySpellButtonForPagination()
+	local button = SmartNavigation:GetCurrentButton();
+	if not button then
+		return false;
+	end
+	if not button.buttonContext then
+		return false;
+	end
+	return button.buttonContext == "ButtonContext_ToySpellButton";
+end
+
+function ToyBoxMixin:TurnPageRight()
+	if not IsToySpellButtonForPagination() then
+		return;
+	end
+	self.PagingFrame.NextPageButton:Click();
+end
+
+function ToyBoxMixin:TurnPageLeft()
+	if not IsToySpellButtonForPagination() then
+		return;
+	end
+	self.PagingFrame.PrevPageButton:Click();
+end
+
+function ToyBoxMixin:SmartNavTabFocus()
+	if SmartNavigation:IsActiveFrame(CollectionsJournal) then
+		SmartNavigation:SelectFirstButton(true);
+	end
+
+	SmartNavigation:RegisterCallback("HitRightEdge", self.TurnPageRight, self);
+	SmartNavigation:RegisterCallback("HitLeftEdge", self.TurnPageLeft, self);
+end
+
+function ToyBoxMixin:SmartNavTabUnfocus()
+	SmartNavigation:UnregisterCallback("HitRightEdge", self);
+	SmartNavigation:UnregisterCallback("HitLeftEdge", self);
+end
+
+function ToyBoxMixin:SmartNavUpdateTabFocus(show)
+	if show then
+		self:SmartNavTabFocus();
+	else
+		self:SmartNavTabUnfocus();
+	end
+end
+
 function ToyBox_OnLoad(self)
 	self.firstCollectedToyID = 0; -- used to track which toy gets the favorite helpbox
 	self.autoPageToCollectedToyID = UIParent.autoPageToCollectedToyID or nil;
@@ -42,7 +202,15 @@ function ToyBox_OnLoad(self)
 			};
 			HelpTip:Show(self, helpTipInfo, self.PagingFrame);
 		end
+
+		if InputUtil.IsGamepadUIEnabled() then
+			if SmartNavigation:IsActiveFrame(CollectionsJournal) then
+				SmartNavigation:SelectFirstButton(true);
+			end
+		end
 	end
+
+	self:RegisterForTransitions();
 end
 
 function ToyBox_InitFilterDropdown(self)
@@ -236,21 +404,36 @@ function ToySpellButton_OnEnter(self)
 	ToySpellButton_UpdateButton(self);
 end
 
+function ToySpellButton_HasFanFare(self)
+	if ( (ToyBox.fanfareToys[self.itemID] ~= nil) and (ToyBox.fanfareToys[self.itemID] == true) ) then
+		return true;
+	end
+	return false;
+end
+
+function ToySpellButton_Unwrap(self)
+	ToyBox.fanfareToys[self.itemID] = false;
+	ToyBox.newToys[self.itemID] = nil;
+
+	if ( self.modelScene ) then
+		local function OnFinishedCallback()
+			C_ToyBoxInfo.ClearFanfare(self.itemID);
+			ToySpellButton_UpdateButton(self);
+
+			if ToyBox.footer then
+				ToyBox.footer:Refresh();
+			end
+		end
+		self.modelScene:StartUnwrapAnimation(OnFinishedCallback);
+
+		ToySpellButton_FadeInIcon(self);
+	end
+end
+
 function ToySpellButton_OnClick(self, button)
 	if ( button == "LeftButton" ) then
-		if ( (ToyBox.fanfareToys[self.itemID] ~= nil) and (ToyBox.fanfareToys[self.itemID] == true) ) then
-			ToyBox.fanfareToys[self.itemID] = false;
-			ToyBox.newToys[self.itemID] = nil;
-
-			if ( self.modelScene ) then
-				local function OnFinishedCallback()
-					C_ToyBoxInfo.ClearFanfare(self.itemID);
-					ToySpellButton_UpdateButton(self);
-				end
-				self.modelScene:StartUnwrapAnimation(OnFinishedCallback);
-
-				ToySpellButton_FadeInIcon(self);
-			end
+		if (ToySpellButton_HasFanFare(self)) then
+			ToySpellButton_Unwrap(self);
 		else
 			UseToy(self.itemID);
 		end
@@ -433,6 +616,10 @@ function ToyBox_UpdateButtons()
 	for i = 1, TOYS_PER_PAGE do
 	    local button = ToyBox.iconsFrame["spellButton"..i];
 		ToySpellButton_UpdateButton(button);
+	end
+
+	if ToyBox.footer then
+		ToyBox.footer:Refresh();
 	end
 end
 

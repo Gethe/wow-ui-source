@@ -148,12 +148,18 @@ function ModelSceneMixin:AttachPlayerToMount(mountActor, animID, isSelfMount, di
 			local autoDress = true;
 			local hideWeapons = true;
 
+			local playerModelSet;
 			if C_Glue.IsOnGlueScreen() then
 				local characterIndex = nil;  -- defaults to selected character.
-				playerActor:SetPlayerModelFromGlues(characterIndex, sheatheWeapons, autoDress, hideWeapons, usePlayerNativeForm);
+				playerModelSet = playerActor:SetPlayerModelFromGlues(characterIndex, sheatheWeapons, autoDress, hideWeapons, usePlayerNativeForm);
 			else
-				playerActor:SetModelByUnit("player", sheatheWeapons, autoDress, hideWeapons, usePlayerNativeForm);
+				playerModelSet = playerActor:SetModelByUnit("player", sheatheWeapons, autoDress, hideWeapons, usePlayerNativeForm);
 			end
+
+			if not playerModelSet or mountActor:GetModelFileID() == 0 then
+				return;
+			end
+
 			local calcMountScale = mountActor:CalculateMountScale(playerActor);
 			local inverseScale = 1 / calcMountScale;
 			playerActor:SetRequestedScale( inverseScale );
@@ -329,6 +335,16 @@ function ModelSceneMixin:OnUpdate(elapsed)
 			self.activeCamera:AdjustYaw(1, 1, increment);
 		end
 
+		if self.gamepadRotSpeed and (self.gamepadRotSpeed ~= 0) then
+			local delta = math.pi * self.gamepadRotSpeed * elapsed;
+			self.activeCamera:AdjustYaw(delta, delta, 1);
+		end
+
+		if self.gamepadZoomSpeed and (self.gamepadZoomSpeed ~= 0) then
+			local PER_TICK_ZOOM = 10;
+			self.activeCamera:OnMouseWheel(PER_TICK_ZOOM * self.gamepadZoomSpeed * elapsed);
+		end
+
 		self.activeCamera:OnUpdate(elapsed);
 	end
 
@@ -389,6 +405,17 @@ function ModelSceneMixin:AdjustCameraYaw(direction, increment)
 	if self.activeCamera then
 		self.yawDirection = direction;
 		self.increment = increment;
+	end
+end
+
+function ModelSceneMixin:AdjustCameraGamepad(rotationSpeed, zoomSpeed)
+	if self.activeCamera then
+		local canZoom = self.activeCamera:GetZoomAvailable();
+		if canZoom then
+			self.gamepadZoomSpeed = zoomSpeed;
+		end
+
+		self.gamepadRotSpeed = rotationSpeed;
 	end
 end
 

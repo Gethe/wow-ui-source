@@ -2,7 +2,10 @@
 ..\..\Blizzard_SharedXML\UI.xsd">
 	<Texture name="ExpBar-Divider" atlas="PetJournal-ExpBar-Divider" useAtlasSize="true" virtual="true"/>
 
-	<Button name="CompanionListButtonTemplate" motionScriptsWhileDisabled="true" virtual="true">
+	<Button name="CompanionListButtonTemplate" mixin="CompanionListButtonMixin" motionScriptsWhileDisabled="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="buttonContext" value="ButtonContext_CompanionListButton" type="string"/>
+		</KeyValues>
 		<Size x="208" y="46"/>
 		<Layers>
 			<Layer level="BACKGROUND">
@@ -112,7 +115,7 @@
 				</Scripts>
 			</Button>
 		</Frames>
-		<HighlightTexture atlas="PetList-ButtonHighlight"/>
+		<HighlightTexture atlas="PetList-ButtonHighlight" parentKey="HighlightTexture"/>
 		<Scripts>
 			<OnLoad>
 				self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
@@ -124,7 +127,7 @@
 			</OnDragStart>
 		</Scripts>
 	</Button>
-	<Frame name="PetJournal" parent="CollectionsJournal" setAllPoints="true" hidden="true">
+	<Frame name="PetJournal" mixin="PetJournalMixin" parent="CollectionsJournal" setAllPoints="true" hidden="true">
 		<Frames>
 			<Frame parentKey="PetCount" inherits="CollectionsCountTemplate">
 				<KeyValues>
@@ -161,11 +164,26 @@
 				</Anchors>
 			</Frame>
 			<EditBox name="$parentSearchBox" inherits="SearchBoxTemplate" parentKey="searchBox" letters="40">
+				<KeyValues>
+					<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+				</KeyValues>
 				<Size x="145" y="20"/>
 				<Anchors>
 					<!-- Overidden in CollectionsJournal_SearchBox_OnLoad -->
 					<Anchor point="TOPLEFT" relativeTo="$parentLeftInset" x="15" y="-9"/>
 				</Anchors>
+				<Frames>
+					<Frame parentKey="GamepadFocusIcon" inherits="InputIconTextureFrameTemplate" hidden="true">
+						<KeyValues>
+							<KeyValue key="mappedButtonKey" value="GAMEPAD_MENU_LEFT" type="global"/>
+							<KeyValue key="useDropShadow" value="true" type="boolean"/>
+						</KeyValues>
+						<Size x="28" y="28"/>
+						<Anchors>
+							<Anchor point="RIGHT" relativePoint="LEFT" x="-8" y="0"/>
+						</Anchors>
+					</Frame>
+				</Frames>
 				<Scripts>
 					<OnLoad function="CollectionsJournal_SearchBox_OnLoad" inherit="prepend"/>
 					<OnTextChanged function="PetJournal_OnSearchTextChanged"/>
@@ -202,6 +220,9 @@
 				<Frames>
 					<Frame parentKey="ShadowOverlay" inherits="ShadowOverlayTemplate" useParentLevel="true" setAllPoints="true"/>
 					<Button name="$parentPetInfo" parentKey="PetInfo">
+						<KeyValues>
+							<KeyValue key="smartNavigationIgnored" value="true" type="boolean"/>
+						</KeyValues>
 						<Size x="208" y="46"/>
 						<Anchors>
 							<Anchor point="TOPLEFT" relativeKey="$parent" relativePoint="TOPLEFT" x="6" y="-6"/>
@@ -287,7 +308,10 @@
 							<OnDragStart function="PetJournalDragButton_OnDragStart"/>
 						</Scripts>
 					</Button>
-					<ModelScene parentKey="modelScene" useParentLevel="true" inherits="WrappedAndUnwrappedModelScene">
+					<ModelScene parentKey="modelScene" mixin="PetJournalModelSceneMixin" useParentLevel="true" inherits="WrappedAndUnwrappedModelScene">
+						<KeyValues>
+							<KeyValue key="buttonContext" value="ButtonContext_PetModelScene" type="string"/>
+						</KeyValues>
 						<Anchors>
 							<Anchor point="TOPLEFT"/>
 							<Anchor point="BOTTOMRIGHT"/>

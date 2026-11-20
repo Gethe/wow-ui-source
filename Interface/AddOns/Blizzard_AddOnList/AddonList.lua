@@ -12,7 +12,7 @@ local function UpdateDefaultAddOnCharacter()
 	-- In Glue this defaults to "All", in-game it should default to the current character at design request.
 	if InGlue() then
 		addonCharacter = ALL_CHARACTERS;
-	else		
+	else
 		addonCharacter = UnitGUID("player");
 	end
 end
@@ -893,6 +893,10 @@ function AddonTooltip_Update(owner)
 end
 
 function AddonTooltip_ActionBlocked(addon)
+	if not addon then
+		return;
+	end
+
 	ADDON_ACTIONS_BLOCKED[addon] = (ADDON_ACTIONS_BLOCKED[addon] or 0) + 1;
 end
 

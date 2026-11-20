@@ -267,7 +267,10 @@
 	</Frame>
 
 	<!-- Not Enough Gold and no tokens. Display if attempt to login with a greater than level 20 character/ -->
-	<Frame name="SubscriptionRequestDialog" toplevel="true" parent="VisibilityFramesContainer" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground">
+	<Frame name="SubscriptionRequestDialog" toplevel="true" parent="VisibilityFramesContainer" enableMouse="true" frameStrata="DIALOG" hidden="true" inherits="ReactivateDialogBackground, FocusFramesInterfaceTemplate" mixin="SubscriptionRequestDialogMixin">
+		<KeyValues>
+			<KeyValue key="layoutType" value="DialogFrameTemplate" type="string"/>
+		</KeyValues>
 		<Size x="450" y="64"/>
 		<Anchors>
 			<Anchor point="CENTER" x="0" y="64"/>
@@ -332,7 +335,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-			<OnHide function="AccountReactivate_RecheckEligibility"/>
+			<OnLoad method="OnLoad"/>
+			<OnShow method="OnShow"/>
+			<OnHide method="OnHide"/>
 		</Scripts>
 	</Frame>
 </Ui>

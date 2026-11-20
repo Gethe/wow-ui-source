@@ -83,7 +83,7 @@
 	<Button name="LegacyChallengeCategoryTemplate" inherits="ListHeaderVisualTemplate" mixin="LegacyChallengeCategoryMixin" virtual="true">
 		<Size y="25"/>
 		<Layers>
-			<Layer level="ARTWORK">
+			<Layer level="ARTWORK" textureSubLevel="1">
 				<Texture parentKey="NotificationIcon" atlas="UI-HUD-MicroMenu-Communities-Icon-Notification" hidden="true">
 					<Size x="14" y="14"/>
 				</Texture>

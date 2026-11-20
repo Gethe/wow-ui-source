@@ -64,6 +64,12 @@
 				</Anchors>
 			</Button>
 
+			<Button parentKey="BattleTagHiddenButton" inherits="SocialUIBattleTagHiddenButtonTemplate">
+				<Anchors>
+					<Anchor point="RIGHT" relativePoint="RIGHT" x ="-9"/>
+				</Anchors>
+			</Button>
+
 			<Button parentKey="BattleNetUnavailableNoticeButton" inherits="SocialUIBattleNetUnavailableNoticeButtonTemplate" propagateMouseInput="Motion">
 				<Anchors>
 					<Anchor point="LEFT" relativeKey="$parent.DisplayText" relativePoint="RIGHT" x="8"/>
@@ -88,6 +94,34 @@
 			</Layer>
 		</Layers>
 		<HighlightTexture parentKey="HighlightTexture" atlas="friends-icon-battlenet-copy" alphaMode="ADD" alpha="0.5"/>
+		<Scripts>
+			<OnLoad method="OnLoad"/>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave method="OnLeave"/>
+			<OnClick method="OnClick"/>
+		</Scripts>
+	</Button>
+
+	<Button name="SocialUIBattleTagHiddenButtonTemplate" mixin="SocialUIBattleTagHiddenButtonMixin" virtual="true">
+		<Size x="13" y="13"/>
+		<Layers>
+			<Layer level="ARTWORK">
+				<!-- Art assets currently set up in game-specific OnLoad handlers. -->
+				<Texture parentKey="HiddenIcon" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+				<Texture parentKey="ShownIcon">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<HighlightTexture parentKey="HighlightTexture" alphaMode="ADD" alpha="0.5"/>
 		<Scripts>
 			<OnLoad method="OnLoad"/>
 			<OnMouseDown method="OnMouseDown"/>
@@ -387,13 +421,14 @@
 		<HighlightTexture file="Interface\QuestFrame\UI-QuestTitleHighlight" alphaMode="ADD"/>
 	</Button>
 
-	<Frame name="SocialUIIgnoreListFrameTemplate" inherits="ButtonFrameTemplate, UserScaledFrameTemplate" mixin="SocialUIIgnoreListMixin, SocialUISystemMixin" virtual="true">
+	<Frame name="SocialUIIgnoreListFrameTemplate" inherits="ButtonFrameTemplate, UserScaledFrameTemplate, FocusFramesInterfaceTemplate" mixin="SocialUIIgnoreListMixin, SocialUISystemMixin" virtual="true">
 		<KeyValues>
 			<KeyValue key="baseWidth" value="320" type="number"/>
 			<KeyValue key="baseHeight" value="292" type="number"/>
 			<KeyValue key="useScaleWeight" value="true" type="boolean"/>
 			<KeyValue key="useScaleWeightForHeight" value="true" type="boolean"/>
 			<KeyValue key="scaleWeight" value="0.8" type="number"/>
+			<KeyValue key="layoutType" type="string" value="ButtonFrameTemplateNoPortrait"/>
 		</KeyValues>
 		<Frames>
 			<Button parentKey="BlockButton" inherits="UIPanelButtonUserScaledTemplate" text="SOCIAL_UI_IGNORE_LIST_BLOCK_BUTTON_LABEL">

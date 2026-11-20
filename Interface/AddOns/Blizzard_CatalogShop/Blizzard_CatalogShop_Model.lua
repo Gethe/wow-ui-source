@@ -158,8 +158,10 @@ function CatalogShopModelSceneContainerFrameMixin:UpdatePlayerModel(data)
 		local modelScene = self.MainModelScene;
 		local playerActor = modelScene:GetPlayerActor("player-rider");
 		local mountActor = modelScene:GetActorByTag(CatalogShopConstants.DefaultActorTag.Mount);
-		if (playerActor and mountActor) then
-			mountActor:DetachFromMount(playerActor);
+		if playerActor and mountActor and mountActor:GetModelFileID() ~= 0 then
+			if playerActor:GetModelFileID() ~= 0 then
+				mountActor:DetachFromMount(playerActor);
+			end
 			playerActor:ClearModel();
 			local isSelfMount = false;
 			local disablePlayerMountPreview = false; -- some mounts are flagged to not show the player on the mount - this is static data we need to fetch

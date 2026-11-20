@@ -2627,6 +2627,10 @@ end
 
 function ChatConfigWideCheckboxMixin:LeaveChannel()
 	local channelIndex = self:GetID();
+	if not CHAT_CONFIG_CHANNEL_LIST[channelIndex] then
+		return;
+	end
+
 	if CHAT_CONFIG_CHANNEL_LIST[channelIndex].isBlank then
 		for i = channelIndex, #CHAT_CONFIG_CHANNEL_LIST - 1 do
 			ChatConfigChannelSettings_SwapChannelsByIndex(i, i + 1);
@@ -2697,7 +2701,10 @@ function CreateAvailableChatChannelList(self, ...)
 			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].maxWidth = CHATCONFIG_CHANNELS_MAXWIDTH;
 			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].buttonText = CHAT_JOIN;
 			CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[count].buttonFunc = function (self)
-					SlashCmdList["JOIN"](CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[self:GetParent():GetID()].channelName); 
+					local channelData = CHAT_CONFIG_AVAILABLE_CHANNEL_LIST[self:GetParent():GetID()];
+					if channelData then
+						SlashCmdList["JOIN"](channelData.channelName);
+					end
 				end;
 			count = count+1;
 		end

@@ -1,6 +1,18 @@
 professionsFrameWidthOverride = 750;
 
 function ProfessionsMixin:RefreshRightTabs()
+	-- NPC crafters have no use for the profession tabs or the overview.
+	local isNPCCrafting = C_TradeSkillUI.IsNPCCrafting();
+	self.ProfessionsOverviewTab:SetShown(not isNPCCrafting);
+	if isNPCCrafting then
+		self:HideRightTabs();
+		self.selectedGamepadTabID = nil;
+		if InputUtil.IsGamepadUIEnabled() then
+			self.TabIndicators:UpdateTabVisibility();
+		end
+		return;
+	end
+
 	local prim1, prim2, sec1, sec2, sec3, sec4, sec5 = GetProfessions();
 
 	local nextTab = 1;
@@ -85,6 +97,12 @@ function ProfessionsMixin:RightTabSelected(frame)
 		end
 
 		self:UpdateSmartNavFocus();
+	end
+end
+
+function ProfessionsMixin:HideRightTabs()
+	for _, tab in ipairs(self.rightProfessionTabs) do
+		tab:Hide();
 	end
 end
 

@@ -1073,9 +1073,130 @@ function ChatFrameUtil.FlashTabIfNotShown(chatFrame, info, type, chatGroup, chat
 	end
 end
 
+-- The chat types whose sender name is a BattleTag or Real ID name.
+local BNET_WHISPER_CHAT_TYPES = {
+	BN_WHISPER = true,
+	BN_WHISPER_INFORM = true,
+};
+
+function ChatFrameUtil.GetWhisperDisplayName(chatType, name, bnetIDAccount, chatFrame)
+	if not name or not BNET_WHISPER_CHAT_TYPES[chatType] then
+		return name;
+	end
+
+	return BNet_GetAccountNameForDisplay(name, bnetIDAccount or BNet_GetBNetIDAccount(name), chatFrame);
+end
+
+-- The chat types whose message text is masked, and the CVar that enables it.
+local MASKED_MESSAGE_CVARS = {
+	PARTY = "groupMessageMasking",
+	PARTY_LEADER = "groupMessageMasking",
+	RAID = "groupMessageMasking",
+	RAID_LEADER = "groupMessageMasking",
+	RAID_WARNING = "groupMessageMasking",
+	WHISPER = "whisperMessageMasking",
+	BN_WHISPER = "whisperMessageMasking",
+};
+
+function ChatFrameUtil.GetMaskedMessageDisplayText(chatType, message, senderGUID, chatFrame)
+	local cvar = MASKED_MESSAGE_CVARS[chatType];
+	if not message or not cvar or not ChatFrameUtil.IsMaskingEnabled(cvar, chatFrame) then
+		return message;
+	end
+
+	-- Don't mask the local player's own messages, even if they are sent to a masked chat type.
+	if senderGUID and senderGUID == UnitGUID("player") then
+		return message;
+	end
+
+	-- Matches one UTF-8 encoded character at a time so multi-byte characters become a single asterisk.
+	local maskedMessage = string.gsub(message, "[%z\1-\127\194-\244][\128-\191]*", "*");
+	return maskedMessage;
+end
+
+local function IsReformattableMessage(message, r, g, b, infoID, accessID, typeID, event, eventArgs, MessageFormatter)
+	if not event or not eventArgs or not MessageFormatter then
+		return false;
+	end
+
+	local chatType = string.sub(event, 10);
+	if not BNET_WHISPER_CHAT_TYPES[chatType] and not MASKED_MESSAGE_CVARS[chatType] then
+		return false;
+	end
+
+	-- Censored lines are displayed through their own hyperlinks and cannot be rebuilt from the event args.
+	local lineID = eventArgs[11];
+	return not (lineID and C_ChatInfo.IsChatLineCensored(lineID));
+end
+
+-- Rebuilds the masked chat of one chat window: existing whisper and group chat lines, the whisper tab title and the edit box header.
+function ChatFrameUtil.RefreshMaskedChatFrame(chatFrame)
+	-- Docking can happen while chat frames are still being created.
+	if not chatFrame.historyBuffer then
+		return;
+	end
+	local function ReformatMessage(message, r, g, b, infoID, accessID, typeID, event, eventArgs, MessageFormatter, ...)
+		-- The formatter may have been created for another window (when a whisper is popped out), so it is told which one this is.
+		local newMessage = MessageFormatter(nil, true, chatFrame);
+		return newMessage or message, r, g, b, infoID, accessID, typeID, event, eventArgs, MessageFormatter, ...;
+	end
+
+	chatFrame:TransformMessages(IsReformattableMessage, ReformatMessage);
+
+	local chatType = chatFrame.chatType;
+	if chatFrame.isTemporary and chatFrame.inUse and (chatType == "WHISPER" or chatType == "BN_WHISPER") and chatFrame.chatTarget then
+		FCF_SetWindowName(chatFrame, chatFrame.chatTarget);
+	end
+
+	local editBox = chatFrame.editBox;
+	if editBox then
+		local editBoxChatType = editBox:GetChatType();
+		if editBoxChatType == "WHISPER" or editBoxChatType == "BN_WHISPER" then
+			editBox:UpdateHeader();
+		end
+	end
+end
+
+-- Rebuilds every place that displays masked chat.
+function ChatFrameUtil.RefreshMaskedChat()
+	ChatFrameUtil.ForEachChatFrame(ChatFrameUtil.RefreshMaskedChatFrame);
+	FCF_DockUpdate();
+end
+
+CVarCallbackRegistry:RegisterCallback("whisperMessageMasking", function() ChatFrameUtil.RefreshMaskedChat() end);
+CVarCallbackRegistry:RegisterCallback("battleTagNameMasking", function() ChatFrameUtil.RefreshMaskedChat(); end);
+CVarCallbackRegistry:RegisterCallback("playerBattleTagNameMasking", function() ChatFrameUtil.RefreshMaskedChat(); end);
+CVarCallbackRegistry:RegisterCallback("realIDNameMasking", function() ChatFrameUtil.RefreshMaskedChat(); end);
+CVarCallbackRegistry:RegisterCallback("groupMessageMasking", function() ChatFrameUtil.RefreshMaskedChat(); end);
+CVarCallbackRegistry:RegisterCallback("streamerNameMasking", function() ChatFrameUtil.RefreshMaskedChat(); end);
+CVarCallbackRegistry:RegisterCallback("streamerMode", function() ChatFrameUtil.RefreshMaskedChat(); end);
+CVarCallbackRegistry:RegisterCallback("streamerModeDockedChat", function() ChatFrameUtil.RefreshMaskedChat(); end);
+
+function ChatFrameUtil.IsMaskingEnabled(cvar, chatFrame)
+	if not NameMaskingUtil.IsMaskingEnabled(cvar) then
+		return false;
+	end
+
+	if chatFrame and chatFrame.isDocked and CVarCallbackRegistry:GetCVarValueBool("streamerModeDockedChat") then
+		return false;
+	end
+
+	return true;
+end
+
+-- Calls GetDecoratedSenderName for a message displayed in the given chat window, so docked windows can be excluded from masking.
+function ChatFrameUtil.GetDecoratedSenderNameForFrame(chatFrame, event, ...)
+	return ChatFrameUtil.GetDecoratedSenderNameInternal(chatFrame, event, ...);
+end
+
 function ChatFrameUtil.GetDecoratedSenderName(event, ...)
+	return ChatFrameUtil.GetDecoratedSenderNameInternal(nil, event, ...);
+end
+
+function ChatFrameUtil.GetDecoratedSenderNameInternal(chatFrame, event, ...)
 	local text, senderName, languageName, channelName, playerName2, specialFlags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, senderGUID, bnSenderID, isMobile, discordInfo = ...;
 	local chatType = string.sub(event, 10);
+	local whisperChatType = chatType;
 
 	if string.find(chatType, "^WHISPER") then
 		chatType = "WHISPER";
@@ -1096,6 +1217,8 @@ function ChatFrameUtil.GetDecoratedSenderName(event, ...)
 			decoratedPlayerName = Ambiguate(decoratedPlayerName, "none");
 		end
 	end
+
+	decoratedPlayerName = ChatFrameUtil.GetWhisperDisplayName(whisperChatType, decoratedPlayerName, bnSenderID, chatFrame);
 
 	if (discordInfo and discordInfo.userID ~= 0) then
 		local shouldShowGlobalName = discordInfo.type == Enum.DiscordDisplayNameType.GlobalName;

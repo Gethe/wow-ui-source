@@ -105,6 +105,8 @@ local function RegisterTextSettings()
 	RegisterFontResize(category);
 	RegisterQuestTextContrast(category);
 
+	RegisterStreamerMode(category, layout);
+
 	Settings.RegisterCategory(category, SETTING_GROUP_ACCESSIBILITY);
 end
 

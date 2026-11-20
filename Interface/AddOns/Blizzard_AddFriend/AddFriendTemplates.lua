@@ -49,7 +49,7 @@ end
 
 function BattleNetInviteFrameMixin:OnBattleTagFriendInviteByIDRequested(bnetIDAccount, accountName)
 	local sendInviteCallback = GenerateClosure(BNSendFriendInviteByID, bnetIDAccount);
-	self:ShowInviteConfirmation(accountName, Enum.BattleNetFriendLevel.BattleTag, sendInviteCallback);
+	self:ShowInviteConfirmation(BNet_GetAccountNameForDisplay(accountName, bnetIDAccount), Enum.BattleNetFriendLevel.BattleTag, sendInviteCallback);
 end
 
 function BattleNetInviteFrameMixin:ShowInviteConfirmation(name, friendLevel, sendInviteCallback)
@@ -113,6 +113,7 @@ AddFriendFrameMixin = {};
 function AddFriendFrameMixin:OnLoad()
 	self.exclusive = true;
 	self.hideOnEscape = true;
+	self:RegisterForTransitions();
 end
 
 function AddFriendFrameMixin:OnShow()
@@ -125,11 +126,19 @@ function AddFriendFrameMixin:OnShow()
 
 	local areTitleFriendsEnabled = C_BattleNet.AreTitleFriendsEnabled();
 	infoContainer.RightTextContainer.Description:SetText(areTitleFriendsEnabled and WOW_FRIEND_DESCRIPTION or CHARACTER_FRIEND_INFO);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameShown(self);
+	end
 end
 
 function AddFriendFrameMixin:OnHide()
 	self.editFocus = nil;
 	PlaySound(SOUNDKIT.IG_MAINMENU_CLOSE);
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:FrameHidden(self);
+	end
 end
 
 function AddFriendFrameMixin:Resize()
@@ -177,12 +186,67 @@ function AddFriendFrameMixin:ShowEntry()
 		self.editFocus:SetFocus();
 	end
 	AddFriendEntryFrame:Show();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		AddFriendNameEditBox:SetFocus();
+	end
+
 	self:Resize();
 	PlaySound(SOUNDKIT.IG_MAINMENU_OPEN);
 end
 
 function AddFriendFrameMixin:SetErrorMessageShown(shown)
 	self.EntryFrame.EditBoxContainer.ErrorMessage:SetShown(shown);
+end
+
+function AddFriendFrameMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitGamepad, self));
+end
+
+function AddFriendFrameMixin:SetupGamepad()
+	self.useCustomNavigation = true;
+
+	local function Back()
+		if AddFriendEntryFrameCancelButton:IsVisible() then
+			AddFriendEntryFrameCancelButton:Click()
+		elseif AddFriendInfoFrame.OkayButton:IsVisible() then
+			AddFriendInfoFrame.OkayButton:Click();
+		end
+	end
+
+	self.binding = GamepadMode.CreateBindingGroup("AddFriendFrameBindings");
+	self.binding:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, function() AddFriendEntryFrameAcceptButton:Click() end);
+	self.binding:AddFunctionBinding(GAMEPAD_FACE_RIGHT, Back);
+	self.binding:AddFunctionBinding(GAMEPAD_MENU_RIGHT, function() AddFriendEntryFrameInfoButton:Click() end);
+
+	AddFriendEntryFrameAcceptButton:SetHeight(25);
+	AddFriendEntryFrameCancelButton:SetHeight(25);
+	AddFriendInfoFrame.OkayButton:SetHeight(25);
+
+	self.sendRequestIcon = GamepadMode.AddGamepadIconToButton(AddFriendEntryFrameAcceptButton, GAMEPAD_FACE_BOTTOM);
+	self.cancelIcon = GamepadMode.AddGamepadIconToButton(AddFriendEntryFrameCancelButton, GAMEPAD_FACE_RIGHT);
+	self.okayIcon = GamepadMode.AddGamepadIconToButton(AddFriendInfoFrame.OkayButton, GAMEPAD_FACE_RIGHT);
+end
+
+function AddFriendFrameMixin:InitGamepad()
+	self.CloseButton:Hide();
+	AddFriendEntryFrame.InfoIcon:Show();
+end
+
+function AddFriendFrameMixin:FocusGamepad()
+	GamepadMode.ActivateBindingGroup(self.binding);
+	GamepadMode.SetGamepadIconShown(self.sendRequestIcon, true);
+	GamepadMode.SetGamepadIconShown(self.cancelIcon, true);
+	GamepadMode.SetGamepadIconShown(self.okayIcon, true);
+end
+
+function AddFriendFrameMixin:UnfocusGamepad()
+	GamepadMode.DeactivateBindingGroup(self.binding);
+	GamepadMode.SetGamepadIconShown(self.sendRequestIcon, false);
+	GamepadMode.SetGamepadIconShown(self.cancelIcon, false);
+	GamepadMode.SetGamepadIconShown(self.okayIcon, false);
 end
 
 function AddFriendNameEditBox_OnTextChanged(self, userInput)

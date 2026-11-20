@@ -3,7 +3,8 @@ function ProfessionsCraftingPageMixin:GetDesiredPageWidth()
 end
 
 function ProfessionsCraftingPageMixin:GetSchematicWidth(useCondensedPanel)
-	return useCondensedPanel and 500 or 360;
+	local isCondensed = useCondensedPanel and not C_TradeSkillUI.IsNPCCrafting();
+	return isCondensed and 500 or 360;
 end
 
 function ProfessionsCraftingPageMixin:SetRankBarAnchors()

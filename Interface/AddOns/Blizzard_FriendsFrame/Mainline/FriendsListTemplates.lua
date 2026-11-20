@@ -823,6 +823,7 @@ function FriendsListSocialCardMixin:OpenMenu()
 		bnetIDAccount = accountInfo.bnetAccountID,
 		friendsList = true,
 		name = accountInfo.accountName,
+		displayName = BNet_GetAccountNameForDisplay(accountInfo.accountName, accountInfo.bnetAccountID),
 		titleColor = FriendsListUtil.GetFriendNameColorForFriendType(accountInfo),
 		menuMainTitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownMainTitle,
 		menuSubtitlePreInitializer = SocialUIUtil.InitializeUserScaledDropdownTitle,

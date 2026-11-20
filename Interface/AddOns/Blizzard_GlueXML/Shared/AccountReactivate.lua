@@ -337,3 +337,83 @@ function AccountReactivate_RecheckEligibility()
 	TOKEN_COUNT_UPDATED = false;
 	CharacterSelect_CheckVeteranStatus();
 end
+
+SubscriptionRequestDialogMixin = {}
+
+function SubscriptionRequestDialogMixin:OnLoad()
+	self:RegisterForTransitions();
+end
+
+function SubscriptionRequestDialogMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+end
+
+function SubscriptionRequestDialogMixin:SetupGamepad()
+	local function ActivateButtonEnabled()
+		return self.Accept:IsEnabled();
+	end
+	local function ActivateButtonClick()
+		self.Accept:Click();
+	end
+	local function ActivateButtonLabel()
+		return self.Accept:GetText();
+	end
+
+	local activateBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_BOTTOM, "ActivateButton_PromptedBinding");
+	activateBinding:AddFooterBinding({
+		label = ActivateButtonLabel,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ONLY_IF_USABLE,
+		conditions = { ActivateButtonEnabled, },
+	});
+	activateBinding:AddFooterFunction({
+		bindingFunctions = ActivateButtonClick,
+	})
+
+	local function CloseButtonClick()
+		self.CloseButton:Click();
+	end
+
+	local closeBinding = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, "CloseButton_PromptedBinding");
+	closeBinding:AddFooterBinding({
+		label = FRAME_ACTION_CLOSE,
+		visibilityType = PromptedBindingMixin.VISIBILITY_TYPE.ALWAYS,
+	});
+	closeBinding:AddFooterFunction({
+		bindingFunctions = CloseButtonClick,
+	})
+
+	self.footer = GamepadSharedUtility.CreatePromptedBindingFooter(self, "SubscriptionRequestDialog_Footer");
+	self.footer:AddPromptedBinding(activateBinding);
+	self.footer:AddPromptedBinding(closeBinding);
+	self.footer:Finalize();
+
+	self.activateButtonIcon = GamepadMode.AddGamepadIconToButton(self.Accept, GAMEPAD_FACE_BOTTOM);
+	GamepadMode.SetGamepadIconShown(self.activateButtonIcon, false);
+
+	self.useCustomNavigation = true;
+end
+
+function SubscriptionRequestDialogMixin:FocusGamepad()
+	GamepadMode.SetGamepadIconShown(self.activateButtonIcon, true);
+	self.footer:ShowAndActivateBindings();
+end
+
+function SubscriptionRequestDialogMixin:UnfocusGamepad()
+	GamepadMode.SetGamepadIconShown(self.activateButtonIcon, false);
+	self.footer:HideAndDeactivateBindings();
+end
+
+function SubscriptionRequestDialogMixin:OnShow()
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupShown(self);
+	end
+end
+
+function SubscriptionRequestDialogMixin:OnHide()
+	AccountReactivate_RecheckEligibility();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupHide(self);
+	end
+end

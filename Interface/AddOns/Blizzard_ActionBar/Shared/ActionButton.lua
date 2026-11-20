@@ -1908,7 +1908,7 @@ function ActionButtonCastingAnimFrameMixin:OnHide()
 end
 
 function ActionButtonCastingAnimFrameMixin:GetCooldownFrameAlpha()
-	return 1;
+	return 0.64;
 end
 
 function ActionButtonCastingAnimFrameMixin:FinishAnimAndPlayBurst()

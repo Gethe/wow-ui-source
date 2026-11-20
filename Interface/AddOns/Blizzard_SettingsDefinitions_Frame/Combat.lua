@@ -146,7 +146,7 @@ local function Register()
 	end
 
 	-- Enable Dracthyr Tap Controls
-	if C_CVar.GetCVar("empowerTapControls") then
+	if CombatOverrides.HasEmpowerTapControls() then
 		local function GetTapControlOptions()
 			local container = Settings.CreateControlTextContainer();
 			container:Add(0, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION, SETTING_EMPOWERED_SPELL_INPUT_HOLD_OPTION_TOOLTIP);

@@ -27,45 +27,11 @@ function LegacySystemFrameMixin:OnShow()
 
 	-- Currency and renown may have changed while the frame was closed.
 	LegacySystem.UpdateCurrencyInfo();
-
-	if InputUtil.IsGamepadUIEnabled() then
-		local LegacyTreeTalentPanel = self.TreePage.LegacyTreeTraitPanel;
-		LegacyTreeTalentPanel:RegisterCallback("TalentButtonReleased", function(_, button, forReinstantiation)
-			self:TalentButtonReleased_TreePage(button, forReinstantiation);
-		end, self);
-
-		LegacyTreeTalentPanel:RegisterCallback("TalentButtonAcquired", function(_, button, forReinstantiation)
-			self:TalentButtonAcquired_TreePage(button);
-		end, self);
-
-		EventRegistry:RegisterCallback("TalentFrameBase.ButtonsUpdated", function(_, treeId)
-			self:TalentButtonsUpdated_TreePage();
-		end, self);
-
-		EventRegistry:RegisterCallback("Legacy.RefreshChallenges", function(_)
-			self:OnChallengeRefresh();
-		end, self);
-
-		SmartNavigation:RegisterCallback("SelectedButtonUpdated", function()
-			self:SmartNavSelectedButtonUpdated();
-		end, self);
-	end
 end
 
 function LegacySystemFrameMixin:OnHide()
 	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_CLOSE);
 	UpdateMicroButtons();
-
-	if InputUtil.IsGamepadUIEnabled() then
-		local LegacyTreeTalentPanel = self.TreePage.LegacyTreeTraitPanel;
-		LegacyTreeTalentPanel:UnregisterCallback("TalentButtonReleased", self);
-		LegacyTreeTalentPanel:UnregisterCallback("TalentButtonAcquired", self);
-
-		EventRegistry:UnregisterCallback("TalentFrameBase.ButtonsUpdated", self);
-		EventRegistry:UnregisterCallback("Legacy.RefreshChallenges", self);
-
-		SmartNavigation:UnregisterCallback("SelectedButtonUpdated", self);
-	end
 end
 
 function LegacySystemFrameMixin:OnEvent(event, ...)
@@ -624,6 +590,27 @@ function LegacySystemFrameMixin:TalentButtonsUpdated_TreePage()
 end
 
 function LegacySystemFrameMixin:FocusGamepad()
+	local LegacyTreeTalentPanel = self.TreePage.LegacyTreeTraitPanel;
+	LegacyTreeTalentPanel:RegisterCallback("TalentButtonReleased", function(_, button, forReinstantiation)
+		self:TalentButtonReleased_TreePage(button, forReinstantiation);
+	end, self);
+
+	LegacyTreeTalentPanel:RegisterCallback("TalentButtonAcquired", function(_, button, forReinstantiation)
+		self:TalentButtonAcquired_TreePage(button);
+	end, self);
+
+	EventRegistry:RegisterCallback("TalentFrameBase.ButtonsUpdated", function(_, treeId)
+		self:TalentButtonsUpdated_TreePage();
+	end, self);
+
+	EventRegistry:RegisterCallback("Legacy.RefreshChallenges", function(_)
+		self:OnChallengeRefresh();
+	end, self);
+
+	SmartNavigation:RegisterCallback("SelectedButtonUpdated", function()
+		self:SmartNavSelectedButtonUpdated();
+	end, self);
+
 	self.TabIndicators:Show();
 
 	self.TabIndicators:SetCurrentIndex(self.currentPage);
@@ -637,6 +624,15 @@ function LegacySystemFrameMixin:UnfocusGamepad()
 		footer:HideAndDeactivateBindings();
 	end
 	self.TabIndicators:Hide();
+
+	local LegacyTreeTalentPanel = self.TreePage.LegacyTreeTraitPanel;
+	LegacyTreeTalentPanel:UnregisterCallback("TalentButtonReleased", self);
+	LegacyTreeTalentPanel:UnregisterCallback("TalentButtonAcquired", self);
+
+	EventRegistry:UnregisterCallback("TalentFrameBase.ButtonsUpdated", self);
+	EventRegistry:UnregisterCallback("Legacy.RefreshChallenges", self);
+
+	SmartNavigation:UnregisterCallback("SelectedButtonUpdated", self);
 end
 
 function LegacySystemFrameMixin:UpdateSmartNavFocus(pageId)

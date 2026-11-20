@@ -251,7 +251,10 @@
 			<OnShow function="PVPRoleCheckPopup_OnShow"/>
 		</Scripts>
 	</Frame>
-	<Frame name="PVPReadyDialog" parent="UIParent" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
+	<Frame name="PVPReadyDialog" parent="UIParent" mixin="PVPReadyDialogMixin" inherits="FocusFramesInterfaceTemplate" frameStrata="DIALOG" toplevel="true" enableMouse="true" hidden="true">
+		<KeyValues>
+			<KeyValue key="layoutType" value="DialogFrameTemplate" type="string"/>
+		</KeyValues>
 		<Size x="306" y="210"/>
 		<Layers>
 			<Layer level="BACKGROUND" textureSubLevel="2">
@@ -290,7 +293,7 @@
 		</Layers>
 		<Frames>
 			<Frame parentKey="Border" inherits="DialogBorderTranslucentTemplate"/>
-			<Button name="$parentCloseButton" inherits="UIPanelHideButtonNoScripts">
+			<Button name="$parentCloseButton" parentKey="closeButton" inherits="UIPanelHideButtonNoScripts">
 				<Size x="20" y="20"/>
 				<Anchors>
 					<Anchor point="TOPRIGHT" x="-1" y="-1"/>

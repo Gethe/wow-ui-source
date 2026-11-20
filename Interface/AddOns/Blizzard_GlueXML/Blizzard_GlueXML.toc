@@ -135,7 +135,7 @@ SocialContract.xml [AllowLoadGameType mainline]
 
 PromotionFrame.lua
 PromotionFrame.xml
-[Family]\StarterEditionPopUpTemplates.xml [ExcludeLoadGameType camelot, classic]
+Shared\StarterEditionPopUpTemplates.xml [ExcludeLoadGameType camelot]
 [Game]\StarterEditionPopUpTemplates.xml [AllowLoadGameType camelot]
 StarterEditionPopUp.xml
 

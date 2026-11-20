@@ -243,6 +243,7 @@ end
 
 function ModelScenelRotateButtonMixin:OnSmartNavClick()
 	self:RotateStep();
+	PlaySound(SOUNDKIT.IG_INVENTORY_ROTATE_CHARACTER);
 end
 
 function ModelScenelRotateButtonMixin:RotateStep()

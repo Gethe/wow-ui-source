@@ -18,6 +18,7 @@ local EDIT_FRAME_DISPLAY_ACTION_TYPES =
 	FLYOUT = "FLYOUT",
 	EQUIPMENTSET = "EQUIPMENTSET",
 	OUTFIT = "OUTFIT",
+	COMPANION_PET = "COMPANION_PET",
 	UNSPECIFIED = "UNSPECIFIED",
 }
 
@@ -265,6 +266,12 @@ function GamepadActionBarEditFrameMixin:DisplayOutfitAction(outfitID)
 	self.displayedActionType = EDIT_FRAME_DISPLAY_ACTION_TYPES.OUTFIT;
 end
 
+function GamepadActionBarEditFrameMixin:DisplayCompanionPetAction(petID)
+	local _, customName, _, _, _, _, _, name, icon = C_PetJournal.GetPetInfoByPetID(petID);
+	self:UpdateActionDisplay(customname or name, icon, GameTooltip.SetCompanionPet, petID);
+	self.displayedActionType = EDIT_FRAME_DISPLAY_ACTION_TYPES.COMPANION_PET;
+end
+
 --[[
 	When the LB modifier state changes the edit frame is responsible for adding or removing
 	binding sets that enable/disable specific edit frame related actions depending on which
@@ -436,6 +443,12 @@ end
 function GamepadActionBarEditFrameMixin:BindOutfit(outfitID)
 	self:DisplayOutfitAction(outfitID);
 	self:SetDisplayedActionPickupInfo(C_TransmogOutfitInfo.PickupOutfit, outfitID);
+	self:EnterBindingMode();
+end
+
+function GamepadActionBarEditFrameMixin:BindCompanionPet(petID)
+	self:DisplayCompanionPetAction(petID);
+	self:SetDisplayedActionPickupInfo(C_PetJournal.PickupPet, petID);
 	self:EnterBindingMode();
 end
 
