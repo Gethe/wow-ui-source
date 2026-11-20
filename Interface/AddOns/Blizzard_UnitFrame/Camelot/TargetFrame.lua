@@ -86,9 +86,10 @@ function TargetFrameMixin:UpdateHealthBarVisuals(classification)
 end
 
 function TargetFrameMixin:CheckBattlePet()
+	local highLeveTexture = self.TargetFrameContent.TargetFrameContentContextual.HighLevelTexture;
 	local isBattlePet = UnitIsWildBattlePet(self.unit) or UnitIsBattlePetCompanion(self.unit);
 	self.TargetFrameContent.TargetFrameContentMain.LevelBackgroundCircle:SetShown(not isBattlePet);
-	self.TargetFrameContent.TargetFrameContentMain.LevelText:SetShown(not isBattlePet);
+	self.TargetFrameContent.TargetFrameContentMain.LevelText:SetShown(not isBattlePet and not highLeveTexture:IsShown());
 	-- Always hidden in Camelot
 	self.TargetFrameContent.TargetFrameContentContextual.PetBattleIcon:Hide();
 end

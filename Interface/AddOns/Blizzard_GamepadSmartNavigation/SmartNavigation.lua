@@ -948,9 +948,9 @@ end
 
 function SmartNavigationMixin:SelectFirstButton(forceReselect)
 	if self.activeInfo then
-		if self.activeInfo.lastButton then
+		if self.activeInfo.lastButton and self:IsButtonValid(self.activeInfo.lastButton) then
 			self:SelectButton(self.activeInfo.lastButton, forceReselect);
-		elseif self.activeInfo.targetButton then
+		elseif self.activeInfo.targetButton and self:IsButtonValid(self.activeInfo.targetButton) then
 			self:SelectButton(self.activeInfo.targetButton, forceReselect);
 		else
 			self:SelectButton(self:FindTopLeftButton(self.activeInfo), forceReselect);

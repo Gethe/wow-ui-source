@@ -49,7 +49,6 @@ local INVITE_RESTRICTION_GAME_MODE = 13;
 
 local FriendListEntries = { };
 local playerRealmID;
-local playerRealmName;
 local playerFactionGroup;
 
 FRIENDSFRAME_SUBFRAMES = { "FriendsListFrame", "QuickJoinFrame", "RecentAlliesFrame", "RecruitAFriendFrame", "RaidFrame" };
@@ -385,7 +384,6 @@ function FriendsFrame_OnShow(self)
 	local inPlunderstorm = C_GameRules.GetActiveGameMode() == Enum.GameMode.Plunderstorm;
 	if not onGlues and not inPlunderstorm then
 		playerRealmID = GetRealmID();
-		playerRealmName = GetRealmName();
 		playerFactionGroup = UnitFactionGroup("player");
 		UpdateMicroButtons();
 		FriendsFrame_CheckQuickJoinHelpTip();
@@ -2062,7 +2060,7 @@ function FriendsListButtonMixin:OnEnter()
 					end, gameAccountInfo.subIcon);
 				end
 				if (gameAccountInfo.clientProgram == BNET_CLIENT_WOW) and (gameAccountInfo.wowProjectID == WOW_PROJECT_ID) then
-					if (gameAccountInfo.realmName == playerRealmName) and (gameAccountInfo.factionName == playerFactionGroup) then
+					if C_BattleNet.IsGameAccountOnSameRealm(gameAccountInfo.gameAccountID) and (gameAccountInfo.factionName == playerFactionGroup) then
 						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName, gameAccountInfo.characterLevel, raceName, className);
 					else
 						text = text..string.format(FRIENDS_TOOLTIP_WOW_TOON_TEMPLATE, gameAccountInfo.characterName..CANNOT_COOPERATE_LABEL, gameAccountInfo.characterLevel, raceName, className);
@@ -2161,7 +2159,7 @@ function FriendsFrame_BattlenetInviteByIndex(friendIndex)
 		local lastGameAccountGUID;
 		for i = 1, numGameAccounts do
 			local gameAccountInfo = C_BattleNet.GetFriendGameAccountInfo(friendIndex, i);
-			if gameAccountInfo.playerGuid and (gameAccountInfo.factionName == playerFactionGroup) and (gameAccountInfo.realmID ~= 0) then
+			if gameAccountInfo.playerGuid and (gameAccountInfo.factionName == playerFactionGroup) and gameAccountInfo.hasRealmInfo then
 				numValidGameAccounts = numValidGameAccounts + 1;
 				lastGameAccountID = gameAccountInfo.gameAccountID;
 				lastGameAccountGUID = gameAccountInfo.playerGuid;
@@ -2208,7 +2206,7 @@ function FriendsFrame_SetupTravelPassDropdown(friendIndex, attachedTo)
 					end
 				elseif gameAccountInfo.wowProjectID ~= WOW_PROJECT_ID then
 					restriction = INVITE_RESTRICTION_WOW_PROJECT_ID;
-				elseif gameAccountInfo.realmID == 0 then
+				elseif not gameAccountInfo.hasRealmInfo then
 					restriction = INVITE_RESTRICTION_INFO;
 				elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= playerRealmID) then
 					restriction = INVITE_RESTRICTION_REALM;
@@ -2252,7 +2250,7 @@ function CanCooperateWithGameAccount(accountInfo)
 	if not accountInfo then
 		return false;
 	end
-	return accountInfo.gameAccountInfo.realmID and accountInfo.gameAccountInfo.realmID > 0 and accountInfo.gameAccountInfo.factionName == playerFactionGroup;
+	return accountInfo.gameAccountInfo.hasRealmInfo and accountInfo.gameAccountInfo.factionName == playerFactionGroup;
 end
 
 --
@@ -2334,7 +2332,7 @@ function FriendsFrame_GetInviteRestriction(index)
 				elseif not C_PartyInfo.CanFormCrossFactionParties() then
 					restriction = max(INVITE_RESTRICTION_FACTION, restriction);
 				end
-			elseif gameAccountInfo.realmID == 0 then
+			elseif not gameAccountInfo.hasRealmInfo then
 				restriction = max(INVITE_RESTRICTION_INFO, restriction);
 			elseif (gameAccountInfo.wowProjectID == WOW_PROJECT_CLASSIC) and (gameAccountInfo.realmID ~= currentPlayerRealmID) then
 				restriction = max(INVITE_RESTRICTION_REALM, restriction);

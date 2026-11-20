@@ -300,6 +300,21 @@ local BattleNet =
 			},
 		},
 		{
+			Name = "IsGameAccountOnSameRealm",
+			Type = "Function",
+			SecretArguments = "AllowedWhenUntainted",
+
+			Arguments =
+			{
+				{ Name = "id", Type = "number", Nilable = false },
+			},
+
+			Returns =
+			{
+				{ Name = "isOnSameRealm", Type = "bool", Nilable = false },
+			},
+		},
+		{
 			Name = "SearchFriends",
 			Type = "Function",
 			HasRestrictions = true,
@@ -522,6 +537,7 @@ local BattleNet =
 				{ Name = "realmName", Type = "string", Nilable = true },
 				{ Name = "realmDisplayName", Type = "string", Nilable = true },
 				{ Name = "realmID", Type = "number", Nilable = true },
+				{ Name = "hasRealmInfo", Type = "bool", Nilable = false },
 				{ Name = "factionName", Type = "string", Nilable = true },
 				{ Name = "raceName", Type = "string", Nilable = true },
 				{ Name = "classID", Type = "number", Nilable = true },
