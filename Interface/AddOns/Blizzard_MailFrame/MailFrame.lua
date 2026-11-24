@@ -1320,9 +1320,11 @@ function SendMailFrame_Update()
 	end
 
 	-- Enable or disable C.O.D. depending on whether or not there's an item to send
-	if ( itemCount > 0 and C_Mail.IsCODEnabled()) then
-		SendMailCODButton:Enable();
-		SendMailCODButtonText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+	if ( itemCount > 0 ) then
+		if ( C_Mail.IsCODEnabled() ) then
+			SendMailCODButton:Enable();
+			SendMailCODButtonText:SetTextColor(NORMAL_FONT_COLOR.r, NORMAL_FONT_COLOR.g, NORMAL_FONT_COLOR.b);
+		end
 
 		if SendMailSubjectEditBox:GetText() == "" or SendMailSubjectEditBox:GetText() == SendMailFrame.previousItem then
 			itemTitle = itemTitle or "";

@@ -1,9 +1,9 @@
 local characterCopyRegions = {
-	[1] = NORTH_AMERICA,
-	[2] = KOREA,
-	[3] = EUROPE,
-	[4] = TAIWAN,
-	[5] = CHINA,
+	[91] = NORTH_AMERICA,
+	[92] = KOREA,
+	[93] = EUROPE,
+	[94] = TAIWAN,
+	[95] = CHINA,
 };
 
 -- COPY CHARACTER
@@ -44,6 +44,14 @@ StaticPopupDialogs["COPY_IN_PROGRESS"] = {
 	ignoreKeys = true,
 	spinner = true,
 }
+
+local function GetFullNameWithoutRealm(name, surname)
+	if ( name and name ~= "" and surname and surname ~= "" ) then
+		return name .. Constants.CharacterNameSeparatorConsts.CHARACTERNAME_SURNAME_SEPARATOR .. surname;
+	end
+
+	return name;
+end
 
 function CopyCharacterFromLive()
 	if ( not IsGMClient() ) then
@@ -101,10 +109,16 @@ function CopyCharacterCopy_OnClick(self)
 	if ( not StaticPopup_IsAnyDialogShown() ) then
 		local selectedIndex = CopyCharacterFrame.SelectedIndex;
 		if ( selectedIndex and (selectedIndex <= GetNumAccountCharacters()) ) then
-			local name, realm = GetAccountCharacterInfo(selectedIndex);
-			StaticPopup_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, name, realm));
+			local name, realm, class, level, surname = GetAccountCharacterInfo(selectedIndex);
+			if ( C_CharacterCreation.AreRegionalUniqueNamesEnabled() ) then
+				StaticPopup_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, GetFullNameWithoutRealm(name,surname), realm));
+			else
+				StaticPopup_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, name, realm));
+			end
 		elseif ( IsGMClient() ) then
-			StaticPopup_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, CopyCharacterFrame.CharacterName:GetText(), CopyCharacterFrame.Surname:GetText()));
+			local fullName = GetFullNameWithoutRealm(CopyCharacterFrame.CharacterName:GetText(), CopyCharacterFrame.Surname:GetText());
+			-- TODO(CAM-49947): replace with new COPY_CHARACTER_MANUAL
+			StaticPopup_Show("COPY_CHARACTER", format(COPY_CHARACTER_CONFIRM, fullName, ""));
 		end
 	end
 end
@@ -122,8 +136,9 @@ function CopyKeyBindings_OnClick(self)
 end
 
 function CopyCharacterEntry_Init(self, characterIndex)
-	local name, realm, class, level = GetAccountCharacterInfo(characterIndex);
-	self.Name:SetText(name);
+	local name, realm, class, level, surname = GetAccountCharacterInfo(characterIndex);
+	local fullName = GetFullNameWithoutRealm(name, surname);
+	self.Name:SetText(fullName);
 	self.Server:SetText(realm);
 	self.Class:SetText(class);
 	self.Level:SetText(level);

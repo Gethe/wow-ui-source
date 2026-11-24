@@ -94,9 +94,7 @@ function ProfessionsRecipeListMixin:OnLoad()
 				end);
 
 				button:SetScript("OnHide", function()
-					EventRegistry:RegisterCallback("ProfessionsRecipeListMixin.Event.RefreshCraftableCount", function()
-						button:SetCraftableCount(self.hideCraftableCount);
-					end, button);
+					EventRegistry:UnregisterCallback("ProfessionsRecipeListMixin.Event.RefreshCraftableCount", button);
 				end);
 			end
 			factory("ProfessionsRecipeListRecipeTemplate", Initializer);
@@ -356,6 +354,10 @@ function ProfessionsRecipeListRecipeMixin:Init(node, hideCraftableCount)
 end
 
 function ProfessionsRecipeListRecipeMixin:SetCraftableCount(hideCraftableCount)
+	if not self.GetElementData then
+		return;
+	end
+
 	local elementData = self:GetElementData();
 	local recipeID = elementData.data.recipeInfo.recipeID;
 

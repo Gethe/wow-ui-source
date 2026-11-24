@@ -320,6 +320,8 @@ function PVPReadyDialog_OnLoad(self)
 	self:RegisterEvent("UPDATE_BATTLEFIELD_STATUS");
 	self:RegisterEvent("PVP_BRAWL_INFO_UPDATED");
 	self:RegisterEvent("PVP_ROLE_POPUP_HIDE");
+
+	self:RegisterForTransitions();
 end
 
 function PVPReadyDialog_OnEvent(self, event, ...)
@@ -349,6 +351,10 @@ end
 
 function PVPReadyDialog_OnHide(self)
 	self.battlefieldIndex = nil;
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupHide(self);
+	end
 end
 
 function PVPReadyDialog_Showing(index)
@@ -435,6 +441,10 @@ function PVPReadyDialog_Display(self, index, displayName, isRated, queueType, ga
 	PlaySound(SOUNDKIT.PVP_THROUGH_QUEUE);
 	StaticPopupSpecial_Show(self);
 	FlashClientIcon();
+
+	if InputUtil.IsGamepadUIEnabled() then
+		GamepadMode.FrameControlsManager:HandlePopupShown(self);
+	end
 end
 
 -------------------------------------------------------------------------
@@ -491,3 +501,71 @@ function PVPHelper_QueueAllowsLeaveQueueWithMatchReady(queueType)
 	return true;
 end
 
+-------------------------------------------------------------------------
+---- PVP Ready Dialog Mixin
+---------------------------------------------------------------------------
+
+PVPReadyDialogMixin = {}
+
+function PVPReadyDialogMixin:RegisterForTransitions()
+	InputUtil.RegisterForInterfaceTransitions(self, nil);
+	InputUtil.RegisterGamepadSetup(self, GenerateClosure(self.SetupGamepad, self));
+	InputUtil.RegisterGamepadInit(self, GenerateClosure(self.InitializeGamepad, self));
+end
+
+function PVPReadyDialogMixin:SetupGamepad()
+	self.bindingHoldTimer = {};
+
+	local function HandleBinding(button, icon, down)
+		if not button:IsShown() then
+			return;
+		end
+
+		local holdTime = 0.5;
+		if (down) then
+			icon:BeginHold(holdTime);
+			self.bindingHoldTimer[button] = C_Timer.NewTimer(holdTime, function()
+				button:Click();
+				self.bindingHoldTimer[button] = nil;
+			end);
+		elseif (self.bindingHoldTimer[button] ~= nil) then
+			self.bindingHoldTimer[button]:Cancel();
+			self.bindingHoldTimer[button] = nil;
+
+			icon:EndHold();
+		end
+	end
+
+	self.binding = GamepadMode.CreateBindingGroup("PVPReadyDialogBindings");
+	self.binding:AddFunctionBinding(GAMEPAD_FACE_BOTTOM, function(down)
+		HandleBinding(self.enterButton, self.enterButtonIcon, down);
+	end, GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
+	self.binding:AddFunctionBinding(GAMEPAD_FACE_RIGHT, function(down)
+		HandleBinding(self.leaveButton, self.leaveButtonIcon, down);
+	end, GAMEPAD_BUTTON_ANY_DOWN_OR_UP);
+
+	self.enterButtonIcon = GamepadMode.AddGamepadIconToButton(self.enterButton, GAMEPAD_FACE_BOTTOM, { isHoldAction = true, });
+	self.leaveButtonIcon = GamepadMode.AddGamepadIconToButton(self.leaveButton, GAMEPAD_FACE_RIGHT, { isHoldAction = true, });
+
+	GamepadMode.SetGamepadIconShown(self.enterButtonIcon, false);
+	GamepadMode.SetGamepadIconShown(self.leaveButtonIcon, false);
+
+	self.skipGamepadAutoFocus = true;
+	self.useCustomNavigation = true;
+end
+
+function PVPReadyDialogMixin:InitializeGamepad()
+	self.closeButton:Hide();
+end
+
+function PVPReadyDialogMixin:FocusGamepad()
+	GamepadMode.ActivateBindingGroup(self.binding);
+	GamepadMode.SetGamepadIconShown(self.enterButtonIcon, true);
+	GamepadMode.SetGamepadIconShown(self.leaveButtonIcon, true);
+end
+
+function PVPReadyDialogMixin:UnfocusGamepad()
+	GamepadMode.DeactivateBindingGroup(self.binding);
+	GamepadMode.SetGamepadIconShown(self.enterButtonIcon, false);
+	GamepadMode.SetGamepadIconShown(self.leaveButtonIcon, false);
+end
