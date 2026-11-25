@@ -622,7 +622,7 @@ function WorldMapMixin:FocusDetails()
 
 	GamepadMode.ActivateBindingGroup(self.questDetailCursorBindings);
 	SmartNavigation:SetScrollFrameForFrame(self, self.QuestLog.DetailsFrame.ScrollFrame);
-	GamepadScrollBarHint:SetOwner( self.QuestLog.DetailsFrame.ScrollFrame.ScrollBar.Track.Thumb, "CENTER");
+	GamepadScrollBarHint:SetOwner(self.QuestLog.DetailsFrame.ScrollFrame.ScrollBar.Track.Thumb, "CENTER");
 	GamepadScrollBarHint:Show();
 	QuestMapDetailsScrollFrame:SetVerticalScroll(0);
 
@@ -826,6 +826,28 @@ function WorldMapMixin:HideStateChangeIndicators()
 	end
 end
 
+function WorldMapMixin:GetActiveFooter()
+	local focus = self.currentFocus;
+	if (focus == QUEST_FOCUS) then
+		return self.questLogFooter;
+	elseif (focus == DETAILS_FOCUS) then
+		return self.questDetailsFooter;
+	elseif (focus == MAP_FOCUS) then
+		return self.worldMapFooter;
+	end
+
+	return nil;
+end
+
+function WorldMapMixin:OnQuestLogUpdate()
+	if InputUtil.IsGamepadUIEnabled() then
+		local activeFooter = self:GetActiveFooter();
+		if activeFooter then
+			activeFooter:Refresh();
+		end
+	end
+end
+
 function WorldMapMixin:UpdateStateChangeIndicators()
 	self:HideStateChangeIndicators();
 
@@ -837,15 +859,11 @@ function WorldMapMixin:UpdateStateChangeIndicators()
 	end
 
 	local focus = self.currentFocus;
-	local activeFooter = nil;
+	local activeFooter = self:GetActiveFooter();
 
 	if (focus == QUEST_FOCUS) then
-		activeFooter = self.questLogFooter;
 		GamepadMode.ActivateBindingGroup(self.questLogTooltipBindings);
-	elseif (focus == DETAILS_FOCUS) then
-		activeFooter = self.questDetailsFooter;
 	elseif (focus == MAP_FOCUS) then
-		activeFooter = self.worldMapFooter;
 		GamepadMode.ActivateBindingGroup(self.worldMapCursorBindings);
 	end
 
@@ -918,8 +936,14 @@ function WorldMapMixin:OpenQuestOptions()
 			end
 		end
 	else
-		local questID = QuestMapFrame.DetailsFrame.questID;
+		local questID = QuestMapFrame_GetDetailQuestID();
+		if not questID then
+			return;
+		end
 		local questButton = QuestLogQuests_GetQuestButton(questID);
+		if not questButton then
+			return;
+		end
 		SmartNavigation:SuspendCursor(false);
 		self:ClearBindings();
 		QuestMapLogTitleButton_CreateContextMenu(questButton, self);
@@ -1137,8 +1161,21 @@ function WorldMapMixin:SetupGamepad()
 	self.questLogTooltipBindings:AddFunctionBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.OpenQuestOptions, self));
 
 	-- Quest Details actions.
+	local function IsQuestDetailsOptionsValid()
+		local questID = QuestMapFrame_GetDetailQuestID();
+		if not questID then
+			return false;
+		end
+		local questButton = QuestLogQuests_GetQuestButton(questID);
+		if not questButton then
+			return false;
+		end
+		return true;
+	end
+
 	local questDetailsFocusPage = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_LEFT, GenerateClosure(self.FocusSelectedQuest, self), CONTEXT_ACTION_LABEL_FOCUS);
 	local questDetailsOptionsPage = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_TOP, GenerateClosure(self.OpenQuestOptions, self), CONTEXT_ACTION_LABEL_OPTIONS);
+	questDetailsOptionsPage:AddCondition(IsQuestDetailsOptionsValid);
 	local questDetailsFocusMap = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_DPAD_LEFT, GenerateClosure(self.FocusMap, self), WORLD_MAP);
 	local questDetailsBackPage = GamepadSharedUtility.CreatePromptedBinding(GAMEPAD_FACE_RIGHT, GenerateClosure(self.CloseQuestDetails, self), FRAME_ACTION_BACK);
 
